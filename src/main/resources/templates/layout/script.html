@@ -10,9 +10,11 @@
   <script th:src="${baseUrl + '/static/libs/browser-polyfill.min.js' }"></script>
   <!--全局引入baseURL-->
   <script th:inline="javascript">
-    const SYS_DATE = [[${ session.TmgReferListCurrentDate }]] || new Date()
-    const {protocol,hostname,port,pathname} = location
-    let BASE_URL
+    var SYS_DATE = [[${ session.TmgReferListCurrentDate }]] || new Date()
+    var protocol = location.protocol
+    var hostname = location.hostname
+    var port = location.port
+    var BASE_URL
     if (parseInt(port) !== 80) {
       BASE_URL = protocol + '//' + hostname + ':' + port
     } else {
