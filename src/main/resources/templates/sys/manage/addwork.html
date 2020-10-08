@@ -48,7 +48,7 @@
 
                <Drawer class="tc" placement="right" width="700" :closable="false"
                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <Tabs :animated="false" v-model="currentTab">
                 <tab-pane label="ツリー" name="organisationTree">
                         <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
@@ -70,7 +70,7 @@
                             </div>
                         </Row>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf($event,0)" ref="tree"
                                   empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -96,7 +96,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf($event,1)" ref="tree"
                                   empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -441,7 +441,7 @@
                     isFixed:'', //月次確定情報
                     isSearchHistory: false, //是否允许点击遮罩层关闭
                     selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
-                    currentTab: '',         //組織のツリーと検索タブーを切り替え
+                    currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree", //組織のツリーと検索タブーを切り替え
                     deptDrawShow: false,    //組織ツリー用
                     treeData:[],            //組織ツリー用
                     empDeptLoading: false,  // 組織ツリーloading用
@@ -493,7 +493,7 @@
                         txtTmgReferListTreeViewPermTargetSection:'',
                         txtTmgReferListTreeViewRecordDate:'',
                         txtTmgReferListTreeViewPermTargetGroup:'',
-                        hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
+                        hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href,'psApp'),
                         txtDYYYYMM: '',
@@ -696,6 +696,7 @@
 //head用　所属　年月　氏名
                 //初期化処理
                 async getInit() {
+                    console.log([[${ session }]])
                     let targetPermEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                     let targetPermGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
@@ -703,6 +704,22 @@
                         this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/MM/dd')
                     }
                     await this.getOrgTree()
+                    await this.getSearchCondition()
+
+                    //検索の初期化対応
+                    this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                    this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                    this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                    this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                    this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                    this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
+                    if(this.query.hidSelectTab == '1'){
+                        this.searchOrgTree()
+                    }
 
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
@@ -744,7 +761,6 @@
                     }
                     //一覧画面取得
 
-                    await this.getSearchCondition()
                     await this.getWorkDateList()
                     this.getTitleData()
                 },
@@ -863,7 +879,7 @@
                     await this.getOrgTree()
                     this.$Notice.success({ title:'所属図更新完了' })
                 },
-                async handleClickLeaf(e) {
+                async handleClickLeaf(e, tabType) {
                     //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                     //よって、二回目クリックすると、何もしない
                     console.log(e)
@@ -879,6 +895,7 @@
                     this.referListObject[group] = e[0].groupid
                     this.deptName = e[0].secnic
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
+                    this.query.hidSelectTab = tabType
                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.kanjiName = e[0].empname
                     this.workTypeName=e[0].wokertypename

@@ -75,7 +75,7 @@
                             </div>
                         </Row>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf($event,0)" ref="tree"
                                   empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -101,7 +101,7 @@
                             職員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf($event,1)" ref="tree"
                                   empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -615,7 +615,9 @@
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
                 },
                 handleSelector() { },
-                async handleClickLeaf(e) {
+                async handleClickLeaf(e, tabType) {
+                    console.log("tabType")
+                    console.log(tabType)
                     //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                     //よって、二回目クリックすると、何もしない
                     if(!e[0]) return
@@ -635,6 +637,7 @@
                     this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
+                    this.query.hidSelectTab = tabType
                     this.getData(true)
                 },
                 // 摘要更新
