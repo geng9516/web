@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper">
+
+    <update id="updateNotificationItem">
+        UPDATE
+            TMG_NOTIFICATION
+        SET
+            TNTF_CMODIFIERUSERID= #{paramNotificationList.userCode},
+            TNTF_DMODIFIEDDATE      = SYSDATE,
+            TNTF_CMODIFIERPROGRAMID ='TmgNotification_'||'|'||#{paramNotificationList.action},
+            TNTF_CKANJINAME         = #{paramNotificationList.txtName},
+            TNTF_CRELATION          = #{paramNotificationList.txtRelation},
+            TNTF_DDATEOFBIRTH       = #{paramNotificationList.txtBirthday},
+            TNTF_NNUMBER_OF_TARGET  = #{paramNotificationList.txtTargetNumber}
+        WHERE TNTF_CCUSTOMERID = #{paramNotificationList.custId}
+          AND TNTF_CCOMPANYID = #{paramNotificationList.compId}
+          AND (TNTF_CNTFNO = (SELECT
+                                  NVL(TNTF_CNTFNO_MOTO, TNTF_CNTFNO)
+                              FROM
+                                  TMG_NOTIFICATION
+                              WHERE
+                                  TNTF_CCUSTOMERID = #{paramNotificationList.custId}
+                                AND TNTF_CCOMPANYID  = #{paramNotificationList.compId}
+                                AND TNTF_CNTFNO      = #{paramNotificationList.ntfNo}
+        )
+            OR TNTF_CNTFNO_MOTO = (SELECT
+                                       NVL(TNTF_CNTFNO_MOTO, TNTF_CNTFNO)
+                                   FROM
+                                       TMG_NOTIFICATION
+                                   WHERE
+                                       TNTF_CCUSTOMERID = #{paramNotificationList.custId}
+                                     AND TNTF_CCOMPANYID  = #{paramNotificationList.compId}
+                                     AND TNTF_CNTFNO      = #{paramNotificationList.ntfNo}
+            )
+            )
+    </update>
+
+</mapper>
