@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.mapper;
+package jp.smartcompany.job.modules.core.mapper.TmgNtfActionLog;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -28,4 +28,4 @@ public interface TmgNtfactionlogMapper extends BaseMapper<TmgNtfactionlogDO> {
          * @return Map
          */
         List<NtfActionLogVo> selectNtfActionLog(Map<String, Object> map);
-        }
+}

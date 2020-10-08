@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.mapper;
+package jp.smartcompany.job.modules.core.mapper.TmgNotification;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -64,4 +64,4 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
          * 承認後更新のSEQ
          */
         int updateNotificationItem(@Param("paramNotificationList") ParamNotificationListDto params);
-        }
+}

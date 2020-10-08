@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper">
+
+    <select id="selectNotificationDetail" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo">
+        SELECT
+            TNTF_CALTEREMPLOYEEID,
+            TMG_F_GET_ME_NAME ( TNTF_CALTEREMPLOYEEID, to_date( #{baseDate}, #{dateFormat} ), 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CALTEREMPLOYEEID_NAME,
+            TNTF_CNTFNO,
+            TNTF_CEMPLOYEEID,
+            TMG_F_GET_ME_NAME ( TNTF_CEMPLOYEEID, to_date( #{baseDate}, #{dateFormat} ), 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CEMPLOYEEID_NAME,
+            TNTF_CBOSS,
+            TMG_F_GET_ME_NAME ( TNTF_CBOSS, to_date( #{baseDate}, #{dateFormat} ), 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CBOSS_NAME,
+            TNTF_CCANCEL,
+            TMG_F_GET_ME_NAME ( TNTF_CCANCEL, to_date( #{baseDate}, #{dateFormat} ), 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CCANCEL_NAME,
+            TNTF_CTYPE,
+            TMG_F_GET_MGD ( TNTF_CTYPE, to_date( #{baseDate}, #{dateFormat} ), TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CTYPE_NAME,
+            TO_CHAR( TNTF_DBEGIN, #{dateFormat} ) TNTF_DBEGIN,
+            TO_CHAR( NVL( TNTF_DDAIKYU, TNTF_DEND ), #{dateFormat} ) TNTF_DEND,
+            TNTF_NTIME_OPEN,
+            TNTF_NTIME_CLOSE,
+            TMG_F_CONV_MIN2HHMI ( TNTF_NTIMEZONE_OPEN, 0 ) TNTF_NTIMEZONE_OPEN_HHMI,
+            TMG_F_CONV_MIN2HHMI ( TNTF_NTIMEZONE_CLOSE, 0 ) TNTF_NTIMEZONE_CLOSE_HHMI,
+            DECODE( TNTF_NMON, 1, 1, NULL ) TNTF_NMON,
+            DECODE( TNTF_NTUE, 1, 1, NULL ) TNTF_NTUE,
+            DECODE( TNTF_NWED, 1, 1, NULL ) TNTF_NWED,
+            DECODE( TNTF_NTHU, 1, 1, NULL ) TNTF_NTHU,
+            DECODE( TNTF_NFRI, 1, 1, NULL ) TNTF_NFRI,
+            DECODE( TNTF_NSAT, 1, 1, NULL ) TNTF_NSAT,
+            DECODE( TNTF_NSUN, 1, 1, NULL ) TNTF_NSUN,
+            TNTF_COWNCOMMENT,
+            TNTF_CBOSSCOMMENT,
+            TO_CHAR( TNTF_DBOSS, #{datetimeFormat} ) TNTF_DBOSS,
+            TO_CHAR( TNTF_DCANCEL, #{dateFormat} ) TNTF_DCANCEL,
+            TNTF_CCANCELCOMMENT,
+            TO_CHAR( TNTF_DMODIFIEDDATE, #{datetimeFormat} ) TNTF_DMODIFIEDDATE,
+            TMG_F_GET_MO (
+                    ( SELECT HD_CSECTIONID_FK FROM HIST_DESIGNATION WHERE HD_CCUSTOMERID_CK = TNTF_CCUSTOMERID AND HD_CCOMPANYID_CK = TNTF_CCOMPANYID AND HD_CEMPLOYEEID_CK = TNTF_CEMPLOYEEID AND HD_DSTARTDATE_CK <![CDATA[<=]]> TNTF_DBEGIN AND HD_DENDDATE >= TNTF_DBEGIN AND HD_CIFKEYORADDITIONALROLE = '0' ),
+                    TNTF_DBEGIN,
+                    0,
+                    TNTF_CCUSTOMERID,
+                    TNTF_CCOMPANYID,
+                    #{lang}
+                ) HD_CSECTIONID_FK,
+            TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( TNTF_CEMPLOYEEID, TNTF_DBEGIN, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ), TNTF_DBEGIN, TNTF_CCUSTOMERID, TNTF_CCOMPANYID, #{lang} ) TEM_CWORKTYPEID,
+            TNTF_CSTATUSFLG,
+            TNTF_NNORESERVED,
+            TO_CHAR( TNTF_DDAIKYU, #{dateFormat} ) TNTF_DDAIKYU,
+            TNTF_CSICK_TYPE,
+            TNTF_CSICK_NAME,
+            TNTF_CSAME_SICK_TYPE,
+            TNTF_CDISASTER,
+            TO_CHAR( TNTF_DPERIOD_DATE, #{dateFormat} ) TNTF_DPERIOD_DATE,
+            TNTF_NUAPPER_ADDITION,
+            TNTF_CNTFNO_IM,
+            TMG_F_CONV_MIN2HHMI ( TNTF_NRESTOPEN, 0 ) AS TNTF_NRESTOPEN,
+            TMG_F_CONV_MIN2HHMI ( TNTF_NRESTCLOSE, 0 ) AS TNTF_NRESTCLOSE,
+            TNTF_CKANJINAME,
+            TNTF_CRELATION,
+            TO_CHAR( TNTF_DDATEOFBIRTH, #{dateFormat} ) AS TNTF_DDATEOFBIRTH,
+            TMG_F_GET_MGD_N ( TNTF_CTYPE, to_date(#{baseDate}, #{dateFormat} ), 2, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CTYPE_N2,
+            TMG_F_GET_MGD ( TNTF_CDISASTER, to_date( #{baseDate}, #{dateFormat} ), TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CDISASTER_DETAIL,
+            (
+                SELECT
+                    MGD_CSPARECHAR3
+                FROM
+                    MAST_GENERIC_DETAIL
+                WHERE
+                    MGD_CCUSTOMERID = TNTF_CCUSTOMERID
+                  AND MGD_CCOMPANYID_CK_FK = TNTF_CCOMPANYID
+                  AND MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+                  AND MGD_CLANGUAGE_CK = #{lang}
+                  AND MGD_DSTART_CK <![CDATA[<=]]> to_date( #{baseDate}, #{dateFormat} )
+                  AND MGD_DEND >= to_date( #{baseDate}, #{dateFormat} )
+                  AND MGD_CSPARECHAR2 = TNTF_CTYPE
+            ) AS TNTF_CTYPE_C3,
+            TNTF_NNUMBER_OF_TARGET,
+            TMG_F_GET_MGD_N (
+                    (
+                        SELECT
+                            MGD_CSPARECHAR2
+                        FROM
+                            MAST_GENERIC_DETAIL
+                        WHERE
+                            MGD_CCUSTOMERID = TNTF_CCUSTOMERID
+                          AND MGD_CCOMPANYID_CK_FK = TNTF_CCOMPANYID
+                          AND MGD_CGENERICGROUPID = 'TMG_NTFAPPROVE_LEVEL'
+                          AND MGD_CLANGUAGE_CK = #{lang}
+                          AND MGD_DSTART_CK <![CDATA[<=]]> to_date( #{baseDate}, #{dateFormat} )
+                          AND MGD_DEND >= to_date( #{baseDate}, #{dateFormat} )
+                          AND MGD_CSPARECHAR1 = TNTF_CTYPE
+                    ),
+                    to_date( #{baseDate}, #{dateFormat} ),
+                    1,
+                    TNTF_CCUSTOMERID,
+                    TNTF_CCOMPANYID,
+                    #{lang}
+                ) AS APPROVEL_LEVEL,
+            TMG_F_GET_MGD (
+                    (
+                        SELECT
+                            MGD_CSPARECHAR2
+                        FROM
+                            MAST_GENERIC_DETAIL
+                        WHERE
+                            MGD_CCUSTOMERID = TNTF_CCUSTOMERID
+                          AND MGD_CCOMPANYID_CK_FK = TNTF_CCOMPANYID
+                          AND MGD_CGENERICGROUPID = 'TMG_NTFAPPROVE_LEVEL'
+                          AND MGD_CLANGUAGE_CK = #{lang}
+                          AND MGD_DSTART_CK  <![CDATA[<=]]> to_date( #{baseDate}, #{dateFormat} )
+                          AND MGD_DEND >= to_date( #{baseDate}, #{dateFormat} )
+                          AND MGD_CSPARECHAR1 = TNTF_CTYPE
+                    ),
+                    to_date( #{baseDate}, #{dateFormat} ),
+                    TNTF_CCUSTOMERID,
+                    TNTF_CCOMPANYID,
+                    #{lang}
+                ) AS APPROVEL_LEVEL_NAME,
+            (
+                SELECT
+                    TMG_F_GET_MP ( D.HD_CPOSTID_FK, to_date( #{baseDate}, #{dateFormat} ), D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, #{lang} )
+                FROM
+                    HIST_DESIGNATION D
+                WHERE
+                    D.HD_CCUSTOMERID_CK = TNTF_CCUSTOMERID
+                  AND D.HD_CCOMPANYID_CK = TNTF_CCOMPANYID
+                  AND D.HD_CEMPLOYEEID_CK = TNTF_CEMPLOYEEID
+                  AND TRUNC( to_date( #{baseDate}, #{dateFormat} ) ) BETWEEN D.HD_DSTARTDATE_CK
+                    AND D.HD_DENDDATE
+                  AND D.HD_CIFKEYORADDITIONALROLE = 0
+            ) AS POSTID,
+            TMG_F_GET_MGD_N ( TNTF_CAPPROVAL_LEVEL,  #{baseDate}, 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID, #{lang} ) AS CAPPROVAL_LEVEL
+        FROM
+            TMG_NOTIFICATION
+        WHERE
+            TNTF_CCUSTOMERID = #{customerId}
+          AND TNTF_CCOMPANYID = #{companyId}
+          AND TNTF_CNTFNO = #{ntfNo}
+    </select>
+
+</mapper>

@@ -1,10 +1,10 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
-import jp.smartcompany.job.modules.core.mapper.TmgNtfactionlogMapper;
-import jp.smartcompany.job.modules.core.service.ITmgNtfactionlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.core.mapper.TmgNtfActionLog.TmgNtfactionlogMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
+import jp.smartcompany.job.modules.core.service.ITmgNtfactionlogService;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NtfActionLogVo;
 import org.springframework.stereotype.Repository;
 
