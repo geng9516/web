@@ -188,7 +188,7 @@
           </radio-group>
         </div>
         <i-table class="mt10" border :row-class-name="rowClassName" :columns="columnsforView" :disabled-hover="true"
-          :data="detailData.originalUserList" :loading="loading" no-data-text="">
+          :data="userTypeTableData" :loading="loading" no-data-text="">
           <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
           </template>
 
@@ -328,6 +328,17 @@
         tableHeadFixed() {
           if (this.contentScrollTop > 220) return true
           else return false
+        },
+        userTypeTableData() {
+          if(this.useType === 'start') {
+            return this.detailData.originalUserList
+          }
+
+          if(this.useType === 'end') {
+            return this.detailData.list
+          }
+
+          return this.detailData.userList
         }
       },
       methods: {
@@ -445,7 +456,10 @@
           this.useDrawerShow = true
           this.useTitle = 'パスワード編集画面'
           const { data } = await this.http.post('sys/usermanager/show/password?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
-          console.log(data)
+          this.detailData.userList = data.userList
+          this.detailData.userIds = data.userList.map(e => e.maCuserid)
+          this.detailData.min = data.passwordMinLen
+          this.detailData.max = data.passwordMaxLen
 
         }),
         handleUseStart: Debounce(async function () {
@@ -480,7 +494,6 @@
           const { data } = await this.http.post('sys/usermanager/show/endDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
           this.detailData.endDate = Utils.formatDate(data.defaultEndDate, 'yyyy/mm/dd')
           this.detailData.list = data.list
-          console.log(this.detailData)
         }),
         cancelLock: Debounce(async function () {
           const list = this.$refs.table.getSelection().map(e => e.maCuserid)
