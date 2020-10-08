@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+
+    <!--  週勤務パターンを取得する -->
+    <resultMap id="selectCsvRefMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO">
+        <result column="twp_nid" property="twp_nid" javaType="java.lang.String"/>
+        <result column="twp_cemployeeid" property="twp_cemployeeid" javaType="java.lang.String"/>
+        <result column="twp_dstartdate" property="twp_dstartdate" javaType="java.lang.String"/>
+        <result column="twp_denddate" property="twp_denddate" javaType="java.lang.String"/>
+        <result column="period" property="period" javaType="java.lang.String"/>
+        <result column="twp_copen1" property="twp_copen1" javaType="java.lang.String"/>
+        <result column="twp_cclose1" property="twp_cclose1" javaType="java.lang.String"/>
+        <result column="rest1" property="rest1" javaType="java.lang.String"/>
+        <result column="workname1" property="workname1" javaType="java.lang.String"/>
+        <result column="twp_copen2" property="twp_copen2" javaType="java.lang.String"/>
+        <result column="twp_cclose2" property="twp_cclose2" javaType="java.lang.String"/>
+        <result column="rest2" property="rest2" javaType="java.lang.String"/>
+        <result column="workname2" property="workname2" javaType="java.lang.String"/>
+        <result column="twp_copen3" property="twp_copen3" javaType="java.lang.String"/>
+        <result column="twp_cclose3" property="twp_cclose3" javaType="java.lang.String"/>
+        <result column="rest3" property="rest3" javaType="java.lang.String"/>
+        <result column="workname3" property="workname3" javaType="java.lang.String"/>
+        <result column="twp_copen4" property="twp_copen4" javaType="java.lang.String"/>
+        <result column="twp_cclose4" property="twp_cclose4" javaType="java.lang.String"/>
+        <result column="rest4" property="rest4" javaType="java.lang.String"/>
+        <result column="workname4" property="workname4" javaType="java.lang.String"/>
+        <result column="twp_copen5" property="twp_copen5" javaType="java.lang.String"/>
+        <result column="twp_cclose5" property="twp_cclose5" javaType="java.lang.String"/>
+        <result column="rest5" property="rest5" javaType="java.lang.String"/>
+        <result column="workname5" property="workname5" javaType="java.lang.String"/>
+        <result column="twp_copen6" property="twp_copen6" javaType="java.lang.String"/>
+        <result column="twp_cclose6" property="twp_cclose6" javaType="java.lang.String"/>
+        <result column="rest6" property="rest6" javaType="java.lang.String"/>
+        <result column="workname6" property="workname6" javaType="java.lang.String"/>
+        <result column="twp_copen7" property="twp_copen7" javaType="java.lang.String"/>
+        <result column="twp_cclose7" property="twp_cclose7" javaType="java.lang.String"/>
+        <result column="rest7" property="rest7" javaType="java.lang.String"/>
+        <result column="workname7" property="workname7" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!-- 週勤務パターンを取得する -->
+    <select id="selectCsvReference" parameterType="java.util.HashMap" resultMap="selectCsvRefMap">
+        select
+            twp_cemployeeid,
+            twp_nid,
+            to_char(twp_dstartdate, 'yyyy/mm/dd')as twp_dstartdate
+             ,to_char(twp_denddate, 'yyyy/mm/dd') as twp_denddate
+             ,to_char(twp_dstartdate, 'yyyy/mm/dd') || ' - ' || to_char(twp_denddate , 'yyyy/mm/dd') as period
+             ,nvl(twp_copen1, ' ') as twp_copen1
+             ,nvl(twp_cclose1, ' ') as twp_cclose1
+             ,nvl(twp_crestopen1 || decode(twp_crestopen1, null , '', ' - ') ||twp_crestclose1, ' ') as rest1
+             ,decode(twp_cholflg1, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen1, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname1
+             ,nvl(twp_copen2, ' ') as twp_copen2
+             ,nvl(twp_cclose2, ' ') as twp_cclose2
+             ,nvl(twp_crestopen2 || decode(twp_crestopen2, null , '', ' - ') || twp_crestclose2, ' ') as rest2
+             ,decode(twp_cholflg2, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck<![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen2, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname2
+             ,nvl(twp_copen3, ' ') as twp_copen3
+             ,nvl(twp_cclose3, ' ') as twp_cclose3
+             ,nvl(twp_crestopen3 || decode(twp_crestopen3, null , '', ' - ') ||twp_crestclose3, ' ') as rest3
+             ,decode(twp_cholflg3, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen3, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname3
+             ,nvl(twp_copen4, ' ') as twp_copen4
+             ,nvl(twp_cclose4, ' ') as twp_cclose4
+             ,nvl(twp_crestopen4 || decode(twp_crestopen4, null , '', ' - ') || twp_crestclose4, ' ') as rest4
+             ,decode(twp_cholflg4, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen4, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname4
+             ,nvl(twp_copen5, ' ') as twp_copen5
+             ,nvl(twp_cclose5, ' ') as twp_cclose5
+             ,nvl(twp_crestopen5 || decode(twp_crestopen5, null , '', ' - ') || twp_crestclose5, ' ') as rest5
+             ,decode(twp_cholflg5, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen5, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname5
+             ,nvl(twp_copen6, ' ') as twp_copen6
+             ,nvl(twp_cclose6, ' ') as twp_cclose6
+             ,nvl(twp_crestopen6 || decode(twp_crestopen6, null , '', ' - ') || twp_crestclose6, ' ') as rest6
+             ,decode(twp_cholflg6, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen6, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname6
+             ,nvl(twp_copen7, ' ') as twp_copen7
+             ,nvl(twp_cclose7, ' ') as twp_cclose7
+             ,nvl(twp_crestopen7 || decode(twp_crestopen7, null , '', ' - ') || twp_crestclose7, ' ') as rest7
+             ,decode(twp_cholflg7, 1, (select mgd_workname
+                                       from tmg_v_mgd_work4weekptn
+                                       where mgd_ccustomerid = #{custId}
+                                         and mgd_ccompanyid_ck_fk = #{compCode}
+                                         and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                         and mgd_dend <![CDATA[>=]]> sysdate
+                                         and mgd_clanguage_ck = #{language}
+                                         and mgd_work_type = 2
+                                         and mgd_disporder = 2), 3, (select mgd_workname
+                                                                     from tmg_v_mgd_work4weekptn
+                                                                     where mgd_ccustomerid = #{custId}
+                                                                       and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                       and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                       and mgd_dend <![CDATA[>=]]> sysdate
+                                                                       and mgd_clanguage_ck = #{language}
+                                                                       and mgd_work_type = 2
+                                                                       and mgd_disporder = 3), decode(twp_copen7, null, (select
+                                                                                                                             mgd_workname
+                                                                                                                         from tmg_v_mgd_work4weekptn
+                                                                                                                         where mgd_ccustomerid = #{custId}
+                                                                                                                           and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                           and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                           and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                           and mgd_clanguage_ck = #{language}
+                                                                                                                           and mgd_work_type = 3), (select mgd_workname
+                                                                                                                                                    from tmg_v_mgd_work4weekptn
+                                                                                                                                                    where mgd_ccustomerid = #{custId}
+                                                                                                                                                      and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                                                                                      and mgd_dstart_ck <![CDATA[<=]]> sysdate
+                                                                                                                                                      and mgd_dend <![CDATA[>=]]> sysdate
+                                                                                                                                                      and mgd_clanguage_ck = #{language}
+                                                                                                                                                      and mgd_work_type = 1))) as workname7
+        from tmg_week_pattern
+        where twp_nid = #{twp_nid}
+          and twp_ccustomerid = #{custId}
+          and twp_ccompanyid = #{compCode}
+          and twp_cemployeeid = #{employeeId}
+    </select>
+
+</mapper>

@@ -18,7 +18,7 @@ public class BaseTimesDTO {
     private String sToday;
     private String sYesterday;
     private String sNow;
-    private String sTosStartMinutesday;
+    private String sStartMinutes;
     private String sEndMinutes;
 
 

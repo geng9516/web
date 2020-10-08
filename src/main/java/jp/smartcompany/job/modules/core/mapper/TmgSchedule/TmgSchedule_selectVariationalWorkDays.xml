@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 基準日の月に４週間の変形労働制の期間が存在するか -->
+    <select id="selectVariationalWorkDays" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select count(1)
+        from mast_generic_detail g
+        where g.mgd_ccustomerid = #{custId}
+          and g.mgd_ccompanyid_ck_fk = #{compCode}
+          and g.mgd_cgenericgroupid = 'TMG_VARIATIONAL_WORK'
+          and g.mgd_cgenericdetailid_ck =  #{employeeId}
+          and g.mgd_clanguage_ck = #{language}
+          and (trunc(g.mgd_dstart_ck, 'mm') = trunc(to_date(#{targetDate}, 'yyyy/mm/dd'), 'mm')
+            or trunc(g.mgd_dend, 'mm') = trunc(to_date(#{targetDate},'yyyy/mm/dd'), 'mm'))
+    </select>
+
+</mapper>

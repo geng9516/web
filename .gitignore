@@ -1,7 +1,6 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
 upload/
-*log*/
 ~*.docx
 ~*.xlsx
 node_modules

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- エラーチェックを削除する -->
+    <delete id="deleteDetailCheck" parameterType="java.util.HashMap">
+        delete from tmg_daily_detail_check
+        where tdad_ccustomerid = #{custId}
+        and tdad_ccompanyid = #{compCode}
+        and tdad_cmodifieruserid = #{sLoginUserCode}
+        <if test="sTargetDate != null">
+            and tdad_dyyyymmdd = #{sTargetDate}
+        </if>
+    </delete>
+
+</mapper>

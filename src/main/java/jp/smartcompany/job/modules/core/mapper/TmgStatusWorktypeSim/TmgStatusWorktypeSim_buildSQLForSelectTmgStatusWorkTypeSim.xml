@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <!-- 段階導入シュミレーション登録情報を取得する -->
+    <select id="buildSQLForSelectTmgStatusWorkTypeSim" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select tsws_cstatus as code,mgd_wtsimstatus_name as name
+        from tmg_status_worktype_sim,
+             (select mgd_ccustomerid,mgd_ccompanyid_ck_fk,mgd_wtsimstatus_code,mgd_wtsimstatus_name
+              from tmg_v_mgd_wtsimstatus
+              where mgd_dstart_ck <![CDATA[<=]]> trunc(sysdate)
+                and mgd_dend <![CDATA[>=]]> trunc(sysdate)
+                and mgd_clanguage_ck = #{language})
+        where tsws_ccustomerid = #{custId}
+          and tsws_ccompanyid = #{compCode}
+          and tsws_dstartdate <![CDATA[<=]]> trunc(sysdate)
+          and tsws_denddate <![CDATA[>=]]> trunc(sysdate)
+          and tsws_ccustomerid = mgd_ccustomerid(+)
+          and tsws_ccompanyid = mgd_ccompanyid_ck_fk(+)
+          and tsws_cstatus = mgd_wtsimstatus_code(+)
+    </select>
+
+</mapper>

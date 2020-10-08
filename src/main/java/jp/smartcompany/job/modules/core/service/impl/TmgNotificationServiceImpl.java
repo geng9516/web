@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
-import jp.smartcompany.job.modules.core.mapper.TmgNotificationMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;

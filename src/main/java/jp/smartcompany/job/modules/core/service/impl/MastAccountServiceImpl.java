@@ -8,7 +8,7 @@ import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerUpdateParamDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
-import jp.smartcompany.job.modules.core.mapper.MastAccountMapper;
+import jp.smartcompany.job.modules.core.mapper.MastAccount.MastAccountMapper;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;

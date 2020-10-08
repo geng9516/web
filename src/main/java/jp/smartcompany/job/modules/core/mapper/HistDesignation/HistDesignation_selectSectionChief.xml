@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectSectionChief" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
+        -- 指定組織の所属長の異動暦情報取得Query（DesignationDao_selectSectionChief.sql）
+        SELECT
+            HD_CCUSTOMERID_CK AS customerCode, -- 顧客コード
+            HD_CCOMPANYID_CK AS companyCode, -- 法人コード
+            MAC_CLAYEREDCOMPANYID AS companyHierarchy, -- 法人内部階層コード
+            MAC_NSEQ AS companyOrder, -- 法人並び順
+            PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
+            HD_CUSERID AS userid, -- ユーザID
+            HD_CEMPLOYEEID_CK AS employee, -- 社員番号
+            PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
+            ME_CKANANAME AS nameKana, -- 氏名カナ
+            HD_CSECTIONID_FK AS section, -- 組織コード
+            MO_CLAYEREDSECTIONID AS sectionHierarchy, -- 組織内部階層コード
+            MO_NSEQ AS sectionOrder, -- 組織並び順
+            PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, '${language}') AS sectionName, -- 組織名称
+            HD_CPOSTID_FK AS postCode, -- 役職コード
+            MAP_NWEIGHTAGE AS postRank, -- 役職順位
+            PSMASTER.FUNC_GET_POST_NAME(MAP_ID, '${language}') AS postName, -- 役職名称
+            HD_CIFKEYORADDITIONALROLE AS attachRole, -- 本務兼務区分コード
+            HD_DSTARTDATE_CK AS personnelChangesBigin, -- 異動暦開始日取得
+            '' AS judgDiv, -- 判定区分
+            '' AS evalLevel, -- 評価者レベル
+            '' AS reportLine, -- レポートラインタイプ
+            HD_CBOSSORNOT AS bossOrNot -- 所属長フラグ
+        FROM
+            HIST_DESIGNATION,
+            MAST_EMPLOYEES,
+            MAST_COMPANY,
+            MAST_ORGANISATION,
+            MAST_POST
+        WHERE
+
+          -- HIST_DESIGNATION
+            HD_CCUSTOMERID_CK = #{custId}
+          AND HD_CCOMPANYID_CK = #{compId}
+          AND HD_CSECTIONID_FK = #{sectionId}
+          AND HD_CBOSSORNOT = '1' -- 0:一般 / 1:所属長
+          AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+          AND	HD_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
+
+          -- MAST_EMPLOYEES
+          AND	ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK
+          AND	ME_CUSERID = HD_CUSERID
+          AND	ME_DSTARTDATE <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+          AND	ME_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
+
+          -- MAST_COMPANY
+          AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
+          AND	MAC_CLANGUAGE = 'ja'
+          AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+          AND	MAC_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+
+          -- MAST_ORGANISATION
+          AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+          AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
+          AND	MO_CLANGUAGE = 'ja'
+          AND	MO_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+          AND	MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+
+          -- MAST_POST
+          AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+          AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
+          AND	MAP_CLANGUAGE = 'ja'
+          AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+          AND	MAP_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+
+        ORDER BY
+            HD_DSTARTDATE_CK,
+            ME_CEMPLOYEEID_CK
+    </select>
+
+</mapper>

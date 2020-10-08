@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <resultMap id="selectTmgStatusMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgStatusDTO">
+        <result column="fixed_monthly" property="fixed_monthly" javaType="java.lang.String"/>
+        <result column="fixed_salary" property="fixed_salary" javaType="java.lang.String"/>
+        <result column="tda_cstatusflg" property="tda_cstatusflg" javaType="java.lang.String"/>
+        <result column="tmo_cstatusflg" property="tmo_cstatusflg" javaType="java.lang.String"/>
+        <result column="is_future" property="is_future" javaType="java.lang.String"/>
+    </resultMap>
+
+
+    <select id="buildSQLForSelectTmgStatus" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
+        select #{group}(tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_monthly
+        ,#{group}(tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_salary
+        from tmg_monthly m
+        where m.tmo_cemployeeid = #{employeeId}
+          and m.tmo_dyyyymm <![CDATA[>=]]>  TRUNC(#{dstart}, 'MM')
+          and m.tmo_dyyyymm <![CDATA[<=]]>  TRUNC(#{dend}, 'MM')
+          and m.tmo_ccompanyid = #{compCode}
+          and m.tmo_ccustomerid = #{custId}
+    </select>
+
+</mapper>

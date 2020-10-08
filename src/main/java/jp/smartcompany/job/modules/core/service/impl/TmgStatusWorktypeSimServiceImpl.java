@@ -1,13 +1,12 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgStatusWorktypeSimDO;
-import jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSimMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper;
 import jp.smartcompany.job.modules.core.service.ITmgStatusWorktypeSimService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ConditionColDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDataDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationInsertDTO;
-import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -133,7 +132,7 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
         params.put("compCode", compCode);
         params.put("employeeId", employeeId);
         params.put("modifierprogramid", modifierprogramid);
-        return baseMapper.buildSQLForDeleteTmgTrgger(params);
+        return baseMapper.buildSQLForDeleteTmgTrigger(params);
     }
 
     @Override
@@ -145,7 +144,7 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
         params.put("minDate", minDate);
         params.put("maxDate", maxDate);
         params.put("modifierprogramid", modifierprogramid);
-        return baseMapper.buildSQLForInsertTmgTrgger(params);
+        return baseMapper.buildSQLForInsertTmgTrigger(params);
     }
 
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectemployeeDetail" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo">
+        SELECT
+            TMG_F_GET_ME_NAME ( #{employeeId}, TRUNC( SYSDATE ), 0, #{custId}, #{compId} ) as NAME,
+            TMG_F_GET_MO (
+                    (
+                        SELECT
+                            HD_CSECTIONID_FK
+                        FROM
+                            HIST_DESIGNATION
+                        WHERE
+                            HD_CCUSTOMERID_CK = #{custId}
+                          AND HD_CCOMPANYID_CK = #{compId}
+                          AND HD_CEMPLOYEEID_CK = #{employeeId}
+                          AND HD_DSTARTDATE_CK <![CDATA[<=]]>  TRUNC( SYSDATE )
+                          AND HD_DENDDATE >= TRUNC( SYSDATE )
+                          AND HD_CIFKEYORADDITIONALROLE = '0'
+                    ),
+                    TRUNC( SYSDATE ),
+                    0,
+                    #{custId},
+                    #{compId},
+                    #{language}
+                ) AS SECTION,
+            TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( #{employeeId}, TRUNC( SYSDATE ), #{custId}, #{compId} ), TRUNC( SYSDATE ), #{custId}, #{compId}, #{language}) AS WORKTYPE,
+            (
+                SELECT
+                    TMG_F_GET_MP ( D.HD_CPOSTID_FK, SYSDATE, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
+                FROM
+                    HIST_DESIGNATION D
+                WHERE
+                    D.HD_CCUSTOMERID_CK = #{custId}
+                  AND D.HD_CCOMPANYID_CK = #{compId}
+                  AND D.HD_CEMPLOYEEID_CK = #{employeeId}
+                  AND TRUNC( SYSDATE ) BETWEEN D.HD_DSTARTDATE_CK
+                    AND D.HD_DENDDATE
+                  AND D.HD_CIFKEYORADDITIONALROLE = 0
+            ) AS POST
+        FROM
+            DUAL
+    </select>
+
+</mapper>

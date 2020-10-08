@@ -1,7 +1,8 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.mapper.PatternSettingMapper;
+import jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ import java.util.List;
  * @date 2020/06/12
  **/
 @Repository
-public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper, Object> implements IPatternSettingService {
+public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper, TmgPatternDO> implements IPatternSettingService {
 
     @Override
     public List<TmgPatternDTO> selectTmgPattern(String custId, String compCode, String sectionId,String groupId) {

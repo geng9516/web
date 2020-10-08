@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
-import jp.smartcompany.job.modules.core.mapper.TmgTimepunchMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
@@ -43,7 +43,7 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         params.put("modifierprogramid", modifierprogramid);
         params.put("minDate", minDate);
         params.put("maxDate", maxDate);
-        baseMapper.insertTmgTrgger(params);
+        baseMapper.insertTmgTrigger(params);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         params.put("custId", custId);
         params.put("employeeId", employeeId);
         params.put("modifierprogramid", modifierprogramid);
-        baseMapper.deleteTmgTrgger(params);
+        baseMapper.deleteTmgTrigger(params);
     }
 
     @Override

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 起算日を取得します -->
+    <select id="selectDetailPeriod" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select to_char(tmg_4calc_get_startdate_4weeks( #{custId},#{compCode},TRUNC(SYSDATE),#{employeeId})) as detailPeriod from dual
+    </select>
+
+
+</mapper>

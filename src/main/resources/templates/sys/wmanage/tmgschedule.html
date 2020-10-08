@@ -48,7 +48,7 @@
                     </i-button>
                 <Drawer class="tc" placement="right" width="700" :closable="false"
                      :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <Tabs :animated="false" v-model="currentTab">
                 <tab-pane label="ツリー" name="organisationTree">
                       <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -635,7 +635,7 @@
                 },
                 selectedDeptViewType: 3,
                 searchEmpTreeData: [],        //組織ツリー用
-                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree",         //組織のツリーと検索タブーを切り替え
                 empDeptLoading: false,  // 組織ツリーloading用
                 deptDrawShow: false,    //組織ツリー用
                 treeData:[],            //組織ツリー用
@@ -644,6 +644,7 @@
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     txtTmgReferListTreeViewAdminTargetSection:'',
                     txtTmgReferListTreeViewAdminTargetEmp:'',
                     EmployeeCode:'',
@@ -757,6 +758,21 @@
                 }
                 console.log([[${ session }]])
                 await this.getOrgTree()
+                this.getSearchCondition()
+                //検索の初期化対応
+                this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
+                if(this.query.hidSelectTab == '1'){
+                    this.searchOrgTree()
+                }
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
@@ -1704,9 +1720,6 @@
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                console.log("-----------------------------------1------------------------------------")
-                console.log(this.query.txtTmgReferListTreeViewAdminTargetEmp)
-                console.log(this.query.txtTmgReferListTreeViewAdminTargetSection)
                 //当前页面请求参数
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
@@ -1811,13 +1824,13 @@
             handleScroll: Throttle(function(e) {
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
-            currentTabChanged(name) {
-                if (name=="organisationTree") {
-                    this.query.hidSelectTab='0'
-                } else if (name=="organisationSearch") {
-                    this.query.hidSelectTab='1'
-                }
-            },
+            // currentTabChanged(name) {
+            //     if (name=="organisationTree") {
+            //         this.query.hidSelectTab='0'
+            //     } else if (name=="organisationSearch") {
+            //         this.query.hidSelectTab='1'
+            //     }
+            // },
             async handleDeptViewTypeChange() {
                 await this.getOrgTree()
                 this.$Notice.success({ title:'所属図更新完了' })

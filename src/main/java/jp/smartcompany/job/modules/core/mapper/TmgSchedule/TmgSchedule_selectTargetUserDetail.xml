@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!--  対象ユーザー情報 -->
+    <resultMap id="selectTargetUserDetailMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO">
+        <result column="name" property="name" javaType="java.lang.String"/>
+        <result column="dept" property="dept" javaType="java.lang.String"/>
+        <result column="workType" property="workType" javaType="java.lang.String"/>
+        <result column="workTypeCode" property="workTypeCode" javaType="java.lang.String"/>
+        <result column="posi" property="posi" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--  対象ユーザー情報 -->
+    <select id="selectTargetUserDetail" parameterType="java.util.HashMap" resultMap="selectTargetUserDetailMap">
+        select tmg_f_get_me_name(#{employeeId}, to_date(#{baseDate},'yyyy/mm/dd'), 0, #{compCode} ,#{custId}) as name
+             ,tmg_f_get_mo(#{targetSecCode}, to_date(#{baseDate}, 'yyyy/mm/dd'),0, #{compCode} ,#{custId}) as dept
+             ,tmg_f_get_mgd(tmg_f_get_workertype(#{employeeId}, to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode} ,#{custId}), to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode} ,#{custId},  #{language}) as workType
+             ,tmg_f_get_workertype(#{employeeId}, to_date(#{baseDate},'yyyy/mm/dd'), #{compCode} ,#{custId}) as workTypeCode
+             ,(select tmg_f_get_mp(d.hd_cpostid_fk, to_date(#{startDispDate},'yyyy/mm/dd'), d.hd_ccustomerid_ck, d.hd_ccompanyid_ck, #{language}) as posi
+               from hist_designation d
+               where d.hd_ccustomerid_ck =  #{compCode}
+                 and d.hd_ccompanyid_ck = #{custId}
+                 and d.hd_cemployeeid_ck = #{employeeId}
+                 and trunc(to_date(#{startDispDate}, 'yyyy/mm/dd')) between d.hd_dstartdate_ck
+                   and d.hd_denddate and d.hd_cifkeyoradditionalrole = 0)
+        from dual
+    </select>
+</mapper>

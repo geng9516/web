@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectemployeeList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeListVo">
+        SELECT
+            e.EMPID EMPID,
+            TMG_F_GET_ME_NAME(e.EMPID,'${date}',0,'${custId}','${compId}') EMPNAME
+        FROM
+            (${sql}) e
+        ORDER BY
+            e.SEQ
+    </select>
+
+
+</mapper>

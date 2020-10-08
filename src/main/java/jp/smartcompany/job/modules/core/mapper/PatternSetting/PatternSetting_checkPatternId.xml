@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 指定された勤務パターンIDがDBに存在している場合 -->
+    <select id="checkPatternId" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tpa_cpatternid from tmg_pattern where tpa_cpatternid = #{patternId} and tpa_ccompanyid=#{compCode} and tpa_dstartdate <![CDATA[<=]]> trunc(sysdate)
+    </select>
+
+</mapper>

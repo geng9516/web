@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
+    <resultMap id="selectTmgPatternOwnMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO">
+        <result column="tpa_ccustomerid" property="tpa_ccustomerid"/>
+        <result column="tpa_ccompanyid" property="tpa_ccompanyid"/>
+        <result column="tpa_csectionid" property="tpa_csectionid"/>
+        <result column="tpa_csectionname" property="tpa_csectionname"/>
+        <result column="tpa_cgroupid" property="tpa_cgroupid"/>
+        <result column="tpa_dstartdate" property="tpa_dstartdate"/>
+        <result column="tpa_denddate" property="tpa_denddate"/>
+        <result column="tpa_cpatternid" property="tpa_cpatternid"/>
+        <result column="tpa_cpatternname" property="tpa_cpatternname"/>
+        <result column="tpa_cdefaultflg" property="tpa_cdefaultflg"/>
+        <result column="timerange" property="timerange"/>
+        <result column="tpa_ndate_change_time" property="tpa_ndate_change_time"/>
+        <result column="tpa_c2caldays" property="tpa_c2caldays"/>
+        <result column="tpa_cnextptn" property="tpa_cnextptn"/>
+        <result column="cnextptname" property="cnextptname"/>
+    </resultMap>
+
+    <!-- TMG_PATTERNより利用可能な勤務パターンを取得する(自組織分)  -->
+    <select id="selectTmgPatternOwn" parameterType="java.util.HashMap" resultMap="selectTmgPatternOwnMap">
+        select tab1.ccustomerid as tpa_ccustomerid
+        ,tab1.ccompanyid as tpa_ccompanyid
+        ,tab1.csectionid as tpa_csectionid
+        ,tab1.cgroupid as tpa_cgroupid
+        ,tab1.dstartdate as tpa_dstartdate
+        ,tab1.denddate as tpa_denddate
+        ,tab1.cpatternid as tpa_cpatternid
+        ,tab1.cpatternname as tpa_cpatternname
+        ,tab1.cdefaultflg as tpa_cdefaultflg
+        ,tmg_f_timerange_table_json(tab1.timerange) as timerange
+        ,tmg_f_conv_min2hhmi(tab1.ndate_change_time, 0) as tpa_ndate_change_time
+        ,tab1.c2caldays as tpa_c2caldays
+        ,tab1.cnextptn as tpa_cnextptn
+        ,tab2.tpa_cpatternname as cnextptname
+        from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode},#{sectionId}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if>, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
+        where  tab1.cnextptn = tab2.tpa_cpatternid(+) and tab1.csectionid = #{sectionId}
+        order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid
+    </select>
+
+</mapper>

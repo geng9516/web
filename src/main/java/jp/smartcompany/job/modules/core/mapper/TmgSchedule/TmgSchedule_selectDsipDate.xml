@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- 基本労働制対象者の表示開始?終了日の取得する -->
+    <select id="selectDsipDate" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select to_char(trunc(to_date(#{baseDate}), 'day'), 'yyyy/mm/dd') as start_date
+             ,to_char(next_day(last_day(to_date(#{lastday})) - 1, 7),'yyyy/mm/dd') as end_date
+        from tmg_monthly
+        where tmo_cemployeeid = #{employeeId}
+          and tmo_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+          and tmo_ccompanyid = #{compCode}
+          and tmo_ccustomerid = #{custId}
+          and tmo_nmonth_chk_flg is null
+    </select>
+</mapper>

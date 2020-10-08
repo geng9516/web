@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 勤務パターン休憩時間DTO -->
+    <parameterMap id="insertTmgPatternRestPluralMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternRestDTO">
+        <parameter property="custId"/>
+        <parameter property="compCode"/>
+        <parameter property="sectionId"/>
+        <parameter property="groupId"/>
+        <parameter property="minDate"/>
+        <parameter property="maxDate"/>
+        <parameter property="employeeId"/>
+        <parameter property="modifierprogramid"/>
+        <parameter property="patternId"/>
+        <parameter property="restOpen"/>
+        <parameter property="restClose"/>
+    </parameterMap>
+
+
+
+    <!-- 勤務パターン休憩時間　保存する -->
+    <insert id="insertTmgPatternRestPlural" parameterMap="insertTmgPatternRestPluralMap">
+        insert into tmg_pattern_rest
+        (tpr_ccustomerid, tpr_ccompanyid, tpr_csectionid, tpr_cgroupid,
+         tpr_dstartdate, tpr_denddate, tpr_cmodifieruserid,
+         tpr_dmodifieddate, tpr_cmodifierprogramid, tpr_cpatternid, tpr_seq,
+         tpr_nrestopen, tpr_nrestclose)
+        values
+        (#{custId},#{compCode}, #{sectionId},  #{groupId},
+         to_date(#{minDate}, 'yyyy/mm/dd'), to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId},
+         sysdate, #{modifierprogramid},#{patternId}, 1,
+         tmg_f_conv_hhmi2min(#{restOpen}), tmg_f_conv_hhmi2min(#{restClose}))
+    </insert>
+
+</mapper>

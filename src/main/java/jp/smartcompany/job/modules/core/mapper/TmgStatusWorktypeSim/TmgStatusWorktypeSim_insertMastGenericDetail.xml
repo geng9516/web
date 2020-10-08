@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+
+    <parameterMap id="insertMastGenericDetailMap" type="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationInsertDTO">
+        <parameter property="psCustId"></parameter>
+        <parameter property="psCompId"></parameter>
+        <parameter property="psGroupCode"></parameter>
+        <parameter property="psDetailId"></parameter>
+        <parameter property="psMasterCode"></parameter>
+        <parameter property="psLanguage"></parameter>
+        <parameter property="psStartDate"></parameter>
+        <parameter property="psEndDate"></parameter>
+        <parameter property="psUpdateUser"></parameter>
+        <parameter property="psExuludecondType"></parameter>
+        <parameter property="psExuludecondFrom"></parameter>
+        <parameter property="psExuludecondTo"></parameter>
+    </parameterMap>
+
+
+    <!-- マスタデータを入力する -->
+    <insert id="insertMastGenericDetail" parameterMap="insertMastGenericDetailMap" useGeneratedKeys="false">
+        <selectKey resultType="long" keyProperty="mgd_id" order="BEFORE">
+            SELECT mast_generic_detail_seq.NEXTVAL FROM dual
+        </selectKey>
+        insert into mast_generic_detail(mgd_id,mgd_ccustomerid,mgd_ccompanyid_ck_fk,mgd_cgenericgroupid,mgd_cgenericdetailid_ck,
+        mgd_cmastercode,mgd_clanguage_ck,mgd_dstart_ck,mgd_dend,mgd_cmodifieruserid,
+        mgd_dmodifieddate,mgd_csparechar1,mgd_csparechar2,mgd_csparechar3,versionno)
+        select mast_generic_detail_seq.nextval,m.* from(
+        <foreach collection="list" item="list" index="index" separator="union all">
+            select
+            #{list.psCustId},#{list.psCompId},#{list.psGroupCode},#{list.psDetailId},
+            #{list.psMasterCode},#{list.psLanguage},#{list.psStartDate},#{list.psEndDate},#{list.psUpdateUser},
+            sysdate,#{list.psExuludecondType},#{list.psExuludecondFrom},#{list.psExuludecondTo},'1' from dual
+        </foreach>
+        ) m
+    </insert>
+
+</mapper>

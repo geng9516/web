@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectSecGroupId" resultType="jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId">
+        SELECT
+            HD_CSECTIONID_FK                                AS  SECTIONID
+             ,   coalesce(TGRM_CGROUPID, HD_CSECTIONID_FK||'|000000') AS  GROUPID
+        INTO
+            WS_SECTIONID
+            ,   WS_GROUPID
+        FROM
+            HIST_DESIGNATION                    R1
+           ,   TMG_GROUP_MEMBER                    R2
+        WHERE
+            R1.HD_CCUSTOMERID_CK            =   #{customerId}
+          AND     R1.HD_CCOMPANYID_CK             =   #{companyId}
+          AND     R1.HD_CEMPLOYEEID_CK            =   #{employeeId}
+          AND     R1.HD_DSTARTDATE_CK             <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+          AND     R1.HD_DENDDATE                  >=  #{yyyymmdd,jdbcType=DATE}
+          AND     R1.HD_CIFKEYORADDITIONALROLE    =   '0'
+          AND     R2.TGRM_CCUSTOMERID(+)          =   R1.HD_CCUSTOMERID_CK
+          AND     R2.TGRM_CCOMPANYID(+)           =   R1.HD_CCOMPANYID_CK
+          AND     R2.TGRM_CEMPLOYEEID(+)          =   R1.HD_CEMPLOYEEID_CK
+          AND     R2.TGRM_CSECTIONID(+)           =   R1.HD_CSECTIONID_FK
+          AND     R2.TGRM_DSTARTDATE(+)           <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+          AND     R2.TGRM_DENDDATE(+)             >=  #{yyyymmdd,jdbcType=DATE}
+    </select>
+
+</mapper>

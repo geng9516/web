@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
@@ -14,7 +15,7 @@ import java.util.List;
  * @description 予定作成
  * @date 2020/05/25
  **/
-public interface ITmgScheduleService extends IService<Object> {
+public interface ITmgScheduleService extends IService<TmgPatternDO> {
 
     /**
      * 年次休暇残

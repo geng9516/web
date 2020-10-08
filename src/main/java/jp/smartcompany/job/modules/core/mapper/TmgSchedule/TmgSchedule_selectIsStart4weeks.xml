@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 表示基準日が4週間単位の変形労働に則っているか -->
+    <select id="selectIsStart4weeks" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select 1 from dual where mod(to_date(#{targetDate},'yyyy/MM/dd')-to_date(#{detailPeriod},'yyyy/MM/dd'),7*4)=0
+    </select>
+
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!--  今月の月中有給付与の情報 -->
+    <select id="selectHalfwayPaidHoliday" parameterType="java.util.HashMap" resultType="jp.smartcompany.job.modules.tmg.schedule.dto.HalfwayPaidHolidayDTO">
+        select tmo_npaid_begining_days
+             ,tmo_npaid_begining_hours
+             ,tmo_npaid_rest_days
+             ,tmo_npaid_rest_hours
+             ,to_char(tph_dyyyymmdd, 'mm月dd日') tph_dyyyymmdd
+        from tmg_employees ,
+             tmg_monthly ,
+             tmg_paid_holiday
+        where tem_ccustomerid = #{custId}
+          and tem_ccompanyid = #{compCode}
+          and tem_cemployeeid = #{employeeId}
+          and tem_dstartdate <![CDATA[<=]]> trunc(sysdate)
+          and tem_denddate <![CDATA[>=]]> trunc(sysdate)
+          and tem_cworktypeid in ('tmg_workertype|20', 'tmg_workertype|30')
+          and tmo_ccustomerid = tem_ccustomerid
+          and tmo_ccompanyid = tem_ccompanyid
+          and tmo_cemployeeid = tem_cemployeeid
+          and tmo_dstartdate <![CDATA[<=]]> trunc(sysdate)
+          and tmo_denddate <![CDATA[>=]]> trunc(sysdate)
+          and tmo_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+          and tph_ccustomerid = tem_ccustomerid
+          and tph_ccompanyid = tem_ccompanyid
+          and tph_cemployeeid = tem_cemployeeid
+          and tph_dstartdate <![CDATA[<=]]> trunc(sysdate)
+          and tph_denddate <![CDATA[>=]]> trunc(sysdate)
+          and tph_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+          and tph_dyyyymm <![CDATA[!=]]> tph_dyyyymmdd
+    </select>
+
+</mapper>

@@ -5,7 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
-import jp.smartcompany.job.modules.core.mapper.HistDesignationMapper;
+import jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
@@ -140,7 +140,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
          * */
         @Override
         public String selectSectionNAme(String custId,String compId,Date date,String sectionId){
-                return baseMapper.selectSectionNAme(custId,compId,date,sectionId);
+                return baseMapper.selectSectionName(custId,compId,date,sectionId);
         }
 
         /**

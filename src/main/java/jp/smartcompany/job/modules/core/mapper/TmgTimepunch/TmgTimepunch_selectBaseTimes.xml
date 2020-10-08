@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <resultMap id="selectBaseTimesMap" type="jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO">
+        <result column="sToday" property="sToday"></result>
+        <result column="sYesterday" property="sYesterday"></result>
+        <result column="sNow" property="sNow"></result>
+        <result column="sStartMinutes" property="sStartMinutes"></result>
+        <result column="sEndMinutes" property="sEndMinutes"></result>
+    </resultMap>
+
+    <!-- 本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得します -->
+    <select id="selectBaseTimes" parameterType="java.util.HashMap" resultMap="selectBaseTimesMap">
+        select to_char(sysdate, 'yyyy/mm/dd') as sToday
+             ,to_char(sysdate - 1, 'yyyy/mm/dd') as sYesterday
+             ,tmg_f_conv_hhmi2min(to_char(sysdate, 'hh24:mi')) as sNow
+             ,tco_nopen as sStartMinutes
+             ,tco_nclose as sEndMinutes
+        from tmg_company
+        where tco_ccustomerid = #{custId}
+          and tco_ccompanyid = #{compCode}
+          and tco_dstartdate <![CDATA[<=]]> trunc(sysdate)
+          and tco_denddate <![CDATA[>=]]> trunc(sysdate)
+    </select>
+
+</mapper>

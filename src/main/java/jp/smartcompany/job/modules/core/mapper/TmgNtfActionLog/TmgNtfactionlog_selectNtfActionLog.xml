@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNtfActionLog.TmgNtfactionlogMapper">
+    <select id="selectNtfActionLog" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.NtfActionLogVo">
+        SELECT
+            TMG_F_GET_ME_NAME ( TNAL_CMODIFIERUSERID, #{psDate,jdbcType=DATE}, 0, TNAL_CCUSTOMERID, TNAL_CCOMPANYID ) AS EMPNAME,
+            TMG_F_GET_MGD ( TNAL_CNTFACTION, #{psDate,jdbcType=DATE}, TNAL_CCUSTOMERID, TNAL_CCOMPANYID, #{psLanguage}  ) AS NTFACTIONNAME,
+            TMG_F_GET_MGD ( TNAL_CAFT_STATUSFLG, #{psDate,jdbcType=DATE}, TNAL_CCUSTOMERID, TNAL_CCOMPANYID, #{psLanguage} ) AS STATUSNAME,
+            TMG_F_GET_MGD ( TNAL_CAFT_APPROVAL_LEVEL,#{psDate,jdbcType=DATE}, TNAL_CCUSTOMERID, TNAL_CCOMPANYID, #{psLanguage} ) AS CAPPROVAL_LEVEL,
+            TO_CHAR( TNAL_DMODIFIEDDATE, 'yyyy/mm/dd hh24:mi' ) AS TNAL_DMODIFIEDDATE,
+            TNAL_CUPDATECCOMMENT
+        FROM
+            TMG_NTFACTIONLOG
+        WHERE
+            TNAL_CCUSTOMERID = #{psCustId}
+            AND TNAL_CCOMPANYID = #{psCompCode}
+            AND TNAL_CNTFNO = #{psNtfNo}
+        ORDER BY
+            TNAL_DMODIFIEDDATE
+    </select>
+</mapper>

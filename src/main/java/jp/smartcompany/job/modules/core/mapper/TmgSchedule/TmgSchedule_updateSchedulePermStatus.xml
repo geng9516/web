@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- 確認ボタンのフラグレコード更新処理 -->
+    <update id="updateSchedulePermStatus" parameterType="java.util.HashMap">
+        update tmg_employee_attribute a
+        set tes_cattribute = #{onff},
+            tes_cmodifieruserid = #{employeeId},
+            tes_dmodifieddate = sysdate ,
+            tes_cmodifierprogramid = #{modifierprogramid}
+        where a.tes_ccustomerid = #{custId}
+          and a.tes_ccompanyid = #{compCode}
+          and a.tes_cemployeeid = #{employeeId}
+          and a.tes_dstartdate <![CDATA[<=]]> trunc(to_date(#{baseDate}, 'yyyy/mm/dd'),'mm')
+          and a.tes_denddate <![CDATA[>=]]> trunc(to_date(#{baseDate}, 'yyyy/mm/dd'),'mm')
+          and a.tes_ctype = #{type}
+    </update>
+
+
+</mapper>

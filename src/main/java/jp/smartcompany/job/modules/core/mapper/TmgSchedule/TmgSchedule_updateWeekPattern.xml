@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 勤務パターンを更新する -->
+    <update id="updateWeekPattern" parameterType="java.util.HashMap">
+        update tmg_week_pattern p
+        set p.twp_dstartdate = #{twp_dstartdate},
+            p.twp_denddate = #{twp_denddate},
+            p.twp_cmodifieruserid = #{modifieruserid}
+        where p.twp_nid = #{twp_nid}
+    </update>
+
+</mapper>

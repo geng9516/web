@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 検索対象年月日の開始日 -->
+    <select id="selectBaseDateFor4Week" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select decode(sign(max(tda_dyyyymmdd) - to_date(#{startDate})), - 1,
+                      to_char(max(tda_dyyyymmdd) - #{param4WeekAfter}, 'yyyy/mm/dd'), decode(sign(
+                                                                                                     max(tda_dyyyymmdd) - to_date(#{endDate})), - 1,
+                                                                                             to_char(max(tda_dyyyymmdd) - #{param4WeekAfter}, 'yyyy/mm/dd'), decode(
+                                                                                                     sign(min(tda_dyyyymmdd) - to_date(#{startDate})), 1,
+                                                                                                     to_char(min(tda_dyyyymmdd), 'yyyy/mm/dd'), decode(sign(
+                                                                                                                                                               min(tda_dyyyymmdd) - to_date(#{endDate})), 1,
+                                                                                                                                  to_char(min(tda_dyyyymmdd), 'yyyy/mm/dd')))))  as baseDate
+        from tmg_daily
+        where tda_cemployeeid = #{employeeId}
+          and tda_ccompanyid = #{compCode}
+          and tda_ccustomerid = #{custId}
+    </select>
+
+</mapper>
