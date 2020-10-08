@@ -46,7 +46,7 @@
 
                     <Drawer class="tc" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                        <Tabs :animated="false" v-model="currentTab">
                             <tab-pane label="ツリー" name="organisationTree">
                                 <div class="titlenorm mt15">
                                     <Icon type="logo-buffer"></Icon>
@@ -71,12 +71,12 @@
                                     <i-col span="15">
                                         <i-input v-model="referListObject.hidSearchData" @on-search="handleClickEmpLeaf"
                                                  class="mar mb5 like-select" search enter-button placeholder="検索">
-                                            <i-select v-model="queryList.hidSearchItems" slot="prepend" style="width: 108px"
+                                            <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px"
                                                       placeholder="項目" transfer>
                                                 <i-option v-for="(item,i) of searchTypesList" :value="item.value">
                                                     {{ item.name }}</i-option>
                                             </i-select>
-                                            <i-select v-model="queryList.hidSearchCondition"  slot="append"
+                                            <i-select v-model="referListObject.hidSearchCondition"  slot="append"
                                                       style="width: 108px" placeholder="条件" transfer>
                                                 <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
                                                     {{ item.name }}</i-option>
@@ -88,15 +88,8 @@
                                                   style="width: 100px" @click="handleClickEmpLeaf">検索</i-button>
                                     </i-col>
                                 </Row>
-                                <!--                                <div class="titlenorm mt15">-->
-                                <!--                                    <Icon type="logo-buffer"></Icon>-->
-                                <!--                                    職員-->
-                                <!--                                </div>-->
-                                <!--                                <div style="position: relative;">-->
-                                <!--                                    <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="職員データなし"></Tree>-->
-                                <!--                                    <Spin size="large" fix v-if="emplistLoading"></Spin>-->
-                                <!--                                </div>-->
                             </tab-pane>
+                            <Alert class="primary-info mt10">※検索結果の上位100件を表示しています。</Alert>
                         </Tabs>
                     </Drawer>
                     <!-- 共通組織図画面 end-->
@@ -424,6 +417,8 @@
                         [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
                         hidSearchData:'',
+                        hidSearchItems:'EMPLOYEEID',
+                        hidSearchCondition:'BROADMATCH',
                         txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -438,7 +433,6 @@
                         txtAction: 'ACT_DISP_MONTHLY',
                         txtDYYYYMM: '',
                         txtDYYYYMMDD: '',
-                        hidSearchData:'',
                         txtCallBeanAction: 'ACT_DISP_MONTHLY',
                         txtTmgReferListTreeViewRecordDate: '',
                         txtTmgReferListTreeViewAdminTargetSection: '',
@@ -446,8 +440,10 @@
                         txtTmgReferListTreeViewAdminTargetEmpName: '',
                         txtCEMPLOYEEID: '',
                         sectionid: '',
-	                    hidSearchItems:'EMPLOYEEID',
-    	                hidSearchCondition:'BROADMATCH',
+                        hidSearchItems: [[${ session.SearchItems }]],     //検索種別
+                        hidSearchCondition: [[${ session.SearchCondition }]], //検索条件
+                        hidSearchData: [[${ session.SearchData }]],      //検索対象
+                        hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0',     //組織タブー0：ツリ、1:検索
                         recordDate: '',
                         txtUserCode: '',
                         txtExecuteEmpId: '',
@@ -459,7 +455,7 @@
                     deptDrawShow: false,
                     treeData: [],
                     selectDisabled: false,   　//年月選択可否制御
-                    currentTab: '',         //組織のツリーと検索タブーを切り替え
+                    currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree", //組織のツリーと検索タブーを切り替え
                     dispMonthlyList: [],       //年月リスト
                     model1: '',
                     approval: false,
@@ -484,7 +480,7 @@
                     //body 使用参数
                     query: {
                         txtTmgReferListTreeViewAdminTargetEmp: '',        //組織ツリーで選択した職員番号
-                        hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
+                        hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0',      //組織タブー0：ツリ、1:検索
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         txtDYYYYMM: '',
                         txtDYYYYMMDD: '',
@@ -812,7 +808,7 @@
                         this.selectDisabled = false
                         this.preMonthShow = false
                         this.nextMonthShow = false
-                        if( this.treeData.length !== 0 && data.length === 0) {
+                        if( this.treeData.length !== 0) {
                             this.$Message.error({
                             background: true,
                             closable: true,
@@ -826,15 +822,24 @@
                     this.queryList.txtAction = 'ACT_DISP_MONTHLY'
                     const { data } = await this.http.get('sys/permStatList/selectDayHead', this.queryList)
                     this.tableHead = data
+                    if (this.queryList.hidSelectTab == '1'){
+                        this.deptName = '職員により検索中'
+                        this.queryList.txtUserCode = null
+                    }
                 },
                 async getTableData() {
                     this.listLoading  = true
+
+                    if (this.queryList.hidSelectTab == '1'){
+                        this.deptName = '職員により検索中'
+                        this.queryList.txtUserCode = null
+                    }
+
                     const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.queryList)
                     this.tableData = data.tmgMonthlyInfoVOList
                     this.approval = data.approval
                     this.listLoading  = false
                     this.isSearchHistory = false
-
                     //他画面へ遷移するとき、職員番号と職員氏名をデフォルト値として設定する
                     // this.queryList.txtTmgReferListTreeViewAdminTargetEmp = data.tmgMonthlyInfoVOList[0].empid
                     // this.queryList.txtTmgReferListTreeViewAdminTargetEmpName = data.tmgMonthlyInfoVOList[0].empname
@@ -977,24 +982,27 @@
                     //よって、二回目クリックすると、何もしない
                     if(!e[0]) return
 
-                    console.log('e2')
-                    console.log(e)
                     this.deptDrawShow = false
                     this.queryList.txtAction = 'ACT_DISP_MONTHLY'
                     this.deptName = e[0].secnic
                     this.queryList.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                     this.queryList.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-
+                    this.queryList.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    // 部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                    this.queryList.txtUserCode = null
+                    console.log("------------1----------------"+this.deptName )
                     //年月リストの取得
                     //初期化
                     this.tableHead = []
                     this.tableData = []
                     this.approval = false
+                    //ツリーを選択するの場合、0で設定する
+                    this.queryList.hidSelectTab='0'
                     await this.getDispTmgMonthlyList()
                     await this.getTableHead()
-                    if(this.dispMonthlyList.length>0){
+                    // if(this.dispMonthlyList.length>0){
                         await this.getTableData()
-                    }
+                    // }
                 },
                 async getEmpList() {
                     try {
@@ -1013,14 +1021,15 @@
                 // this.queryList.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 // this.queryList.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 // this.queryList.txtUserCode = e[0].empid
-                    this.deptName = '職員により検索中'
                     this.queryList.hidSelectTab = '1'
                     this.queryList.hidSearchData = this.referListObject.hidSearchData
-                    this.deptDrawShow = false
+                    this.queryList.hidSearchItems = this.referListObject.hidSearchItems
+                    this.queryList.hidSearchCondition = this.referListObject.hidSearchCondition
 
     	            // this.getDispTmgMonthlyList()
         	        // this.getTableHead()
                     // this.getData(true)
+                    this.getDispTmgMonthlyList()
                     this.getTableData()
                 },
                 showName(e) {
@@ -1223,11 +1232,11 @@
                     console.log("tabPaneClick")
                     console.log(name)
 
-                    if (name=="organisationTree") {
-	                    this.queryList.hidSelectTab='0'
-                    } else if (name=="organisationSearch") {
-	                    this.queryList.hidSelectTab='1'
-                    }
+                    // if (name=="organisationTree") {
+	                //     this.queryList.hidSelectTab='0'
+                    // } else if (name=="organisationSearch") {
+	                //     this.queryList.hidSelectTab='1'
+                    // }
                 },
                 //日次承認画面用
                 //一覧から日次実績をクリックする
@@ -1828,6 +1837,17 @@
                     this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     await this.getOrgTree()
                     await this.getSearchCondition()
+
+                    //検索の初期化対応
+                    this.queryList.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.queryList.hidSearchItems = [[${ session.hidSearchItems }]]
+                    this.queryList.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                    this.queryList.hidSearchData = [[${ session.hidSearchData }]]
+
+                    this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                    this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                    this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
 
                     this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
