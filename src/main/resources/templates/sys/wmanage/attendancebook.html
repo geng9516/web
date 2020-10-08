@@ -51,7 +51,7 @@
                 <!-- 共通組織図画面 start-->
              <Drawer :closable="false" class="tc" placement="right" title="所属職員を選択してください" width="700"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <Tabs :animated="false" v-model="currentTab">
                 <tab-pane label="ツリー" name="organisationTree">
                       <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -241,7 +241,7 @@
                     employeeId: '',        //組織ツリーで選択した職員番号
                     year: '',              //年度情報
                     month: 0,              //表示開始月
-                    hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
                     comment: this.tmyComment,                                  //摘要
                     txtTmgReferListTreeViewAdminTargetSection: '',
@@ -287,7 +287,7 @@
                 searchTypesList: [],     //組織ツリー用
                 searchConditionsList: [],//組織ツリー用
                 empDeptLoading: false,  // 組織ツリーloading用
-                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree", //組織のツリーと検索タブーを切り替え
                 ledgerParamVO: {
                     txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
                     txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
@@ -509,6 +509,7 @@
                 // 職員情報取得
                 const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
                 this.workType = data.worktype
+                this.deptName = data.section
             },
             searchOrgTree: Debounce( async function() {
                 this.empDeptLoading = true
@@ -707,13 +708,13 @@
             cancelComment() {
                 this.commentBtnShow = false
             },
-            currentTabChanged(name) {
-                if (name=="organisationTree") {
-                    this.query.hidSelectTab='0'
-                } else if (name=="organisationSearch") {
-                    this.query.hidSelectTab='1'
-                }
-            },
+            // currentTabChanged(name) {
+            //     if (name=="organisationTree") {
+            //         this.query.hidSelectTab='0'
+            //     } else if (name=="organisationSearch") {
+            //         this.query.hidSelectTab='1'
+            //     }
+            // },
             async　pdfDownload() {
                 this.pdfDownloadLoading = true
                 const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
@@ -733,6 +734,22 @@
                 console.log([[${ session }]])
                 await this.getOrgTree()
                 this.getSearchCondition()
+
+                //検索の初期化対応
+                this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
+                if(this.query.hidSelectTab == '1'){
+                    this.searchOrgTree()
+                }
+
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
