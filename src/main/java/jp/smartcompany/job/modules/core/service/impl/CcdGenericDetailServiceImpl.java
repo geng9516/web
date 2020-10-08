@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.CcdGenericDetailDO;
-import jp.smartcompany.job.modules.core.mapper.CcdGenericDetailMapper;
+import jp.smartcompany.job.modules.core.mapper.CcdGenericDetail.CcdGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.ICcdGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

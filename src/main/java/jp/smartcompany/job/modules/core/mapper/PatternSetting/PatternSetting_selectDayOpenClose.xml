@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 時刻の規定範囲を取得します -->
+    <select id="selectDayOpenClose" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select tmg_f_conv_min2hhmi(tco_nopen) as OPEN,tmg_f_conv_min2hhmi(tco_nclose) as CLOSE from tmg_company
+    </select>
+
+</mapper>

@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.mapper.MastPostMapper;
+import jp.smartcompany.job.modules.core.mapper.MastPost.MastPostMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPostDO;
 import jp.smartcompany.job.modules.core.service.IMastPostService;
 import org.springframework.stereotype.Service;

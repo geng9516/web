@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用) -->
+    <select id="selectWorkPatternIkkatu" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select 'TMG_PATTERN|' as cpatternid
+             ,'(変更しない)' as cpatternname
+             ,null as json
+        from dual
+        union
+        select 'TMG_PATTERN|' || cpatternid as cpatternid
+             ,cpatternname
+             ,tmg_f_timerange_table_json(timerange) as json
+        from table(tmg_f_get_tmg_pattern_list(#{custId}, #{compCode}, #{sectionid},#{groupid}, #{baseDate}))
+    </select>
+
+</mapper>

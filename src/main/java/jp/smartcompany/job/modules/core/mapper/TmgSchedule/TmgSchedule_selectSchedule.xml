@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- [勤怠]日別情報より予定データを取得します -->
+    <resultMap id="selectScheduleMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.ScheduleDataDTO">
+        <result column="tda_nmmdd" property="tda_nmmdd" javaType="java.lang.String"/>
+        <result column="tda_nmmday" property="tda_nmmday" javaType="java.lang.String"/>
+        <result column="tda_cworkingid_mm" property="tda_cworkingid_mm" javaType="java.lang.String"/>
+        <result column="tda_nopen_p" property="tda_nopen_p" javaType="java.lang.String"/>
+        <result column="tda_nclose_p" property="tda_nclose_p" javaType="java.lang.String"/>
+        <result column="tda_nrestopen_p" property="tda_nrestopen_p" javaType="java.lang.String"/>
+        <result column="tda_nrestclose_p" property="tda_nrestclose_p" javaType="java.lang.String"/>
+        <result column="tda_cmessage" property="tda_cmessage" javaType="java.lang.String"/>
+        <result column="tda_nlock_p" property="tda_nlock_p" javaType="java.lang.Integer"/>
+        <result column="tda_cworkingid_p" property="tda_cworkingid_p" javaType="java.lang.String"/>
+        <result column="tda_ccustomerid" property="tda_ccustomerid" javaType="java.lang.String"/>
+        <result column="tda_cbusinesstripid_p" property="tda_cbusinesstripid_p" javaType="java.lang.String"/>
+        <result column="tda_cbusinesstripid_mm" property="tda_cbusinesstripid_mm" javaType="java.lang.String"/>
+        <result column="tda_ccomment_p" property="tda_ccomment_p" javaType="java.lang.String"/>
+        <result column="tda_dmmdd" property="tda_dmmdd" javaType="java.lang.String"/>
+        <result column="avgworktime" property="avgworktime" javaType="java.lang.String"/>
+        <result column="mgd_csparechar4" property="mgd_csparechar4" javaType="java.lang.String"/>
+        <result column="timerange" property="timerange" javaType="java.lang.String"/>
+        <result column="duty" property="duty" javaType="java.lang.String"/>
+        <result column="astem_cworktypeid" property="astem_cworktypeid" javaType="java.lang.String"/>
+        <result column="json" property="json" javaType="java.lang.String"/>
+        <result column="holflgCalendar" property="holflgCalendar" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!-- [勤怠]日別情報より予定データを取得します -->
+    <select id="selectSchedule" parameterType="java.util.HashMap" resultMap="selectScheduleMap">
+        select
+        case when rownum = 1 and to_char(tda_dyyyymmdd, 'dd')<![CDATA[!=]]>'01' then
+        to_char(tda_dyyyymmdd,'mm/dd')
+        when rownum > 1 and to_char(tda_dyyyymmdd, 'dd') = '01' then
+        to_char(tda_dyyyymmdd,'mm/dd')
+        else
+        to_char(tda_dyyyymmdd, 'dd')
+        end as tda_nmmdd ,
+        to_char(tda_dyyyymmdd, 'dy') as tda_nmmday ,
+        tmg_f_get_mgd(tda_cworkingid_p, trunc((to_date(#{dStart})), 'mm')) as tda_cworkingid_mm,
+        nvl(tmg_f_conv_min2hhmi(tda_nopen_p, 0), ' ') as tda_nopen_p ,
+        nvl(tmg_f_conv_min2hhmi(tda_nclose_p, 0), ' ') as tda_nclose_p ,
+        tmg_f_conv_min2hhmi(tda_nrestopen_p, 0) as tda_nrestopen_p ,
+        tmg_f_conv_min2hhmi(tda_nrestclose_p, 0) as tda_nrestclose_p ,
+        nvl(tda_cmessage, ' ') tda_cmessage,
+        greatest(tda_nlock_p,${useFixedFunction}(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid)) as tda_nlock_p ,
+        tda_cworkingid_p ,
+        to_char(tda_dyyyymmdd, 'yyyy/mm/dd') as tda_ccustomerid ,
+        tda_cstatusflg ,
+        tda_cbusinesstripid_p ,
+        tmg_f_get_mgd(tda_cbusinesstripid_p, trunc((to_date(#{dStart})),'mm')) tda_cbusinesstripid_mm,
+        tda_ccomment_p ,
+        to_char(tda_dyyyymmdd, 'mm/dd') tda_dmmdd,
+        nvl(tmg_f_get_avgworktime(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid), '0') as avgworktime,
+        tmg_f_get_employees_workday(tda_cworkingid_p, tda_ccustomerid,tda_ccompanyid) as mgd_csparechar4 ,
+        tmg_f_timerange_table_json(tmg_f_get_timerange_tbl_tdad(tda_ccustomerid, tda_ccompanyid, tda_cemployeeid,tda_dyyyymmdd, #{ctpye_plan}, null)) as timerange,
+        tmg_f_get_dutyresults(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid, #{language}) as duty,
+        tmg_f_get_workertype(tda_cemployeeid, tda_dyyyymmdd) as astem_cworktypeid,
+        tmg_f_timerange_table_json((tmg_f_get_pattern_default(tda_ccustomerid, tda_ccompanyid,tda_cemployeeid, tda_dyyyymmdd)) .timerange) as json,
+        tmg_f_get_holflg_of_calendar(tda_dyyyymmdd, tda_ccustomerid,tda_ccompanyid, tda_cemployeeid) as holflgCalendar
+        from tmg_daily
+        where tda_cemployeeid = #{employeeId}
+        and tda_ccompanyid = #{compCode}
+        and tda_ccustomerid = #{custId}
+        <if test="isVariationalWorkDays == false">
+            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')  <!-- 日曜日 -->
+            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{dEnd}, 'yyyy/mm/dd')     <!-- 土曜日 -->
+        </if>
+        <if test="isVariationalWorkDays == true">
+            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')
+            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{dEnd}, 'yyyy/mm/dd')
+        </if>
+        and #{manageflg} <![CDATA[!=]]> tmg_f_is_manageflg(#{employeeId}, trunc(to_date(#{dStart}, 'yyyy/mm/dd')), last_day(to_date(#{dEnd}, 'yyyy/mm/dd')), #{compCode}, #{custId})
+        order by tda_dyyyymmdd
+    </select>
+
+</mapper>

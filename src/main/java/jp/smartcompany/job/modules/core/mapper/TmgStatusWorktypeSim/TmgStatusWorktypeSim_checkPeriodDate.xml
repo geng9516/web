@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <!-- 期間時間をチャックする -->
+    <select id="checkPeriodDate" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select count(*)
+        from(select distinct to_char(mgd_dstart_ck, 'yyyy/mm/dd') as start_time,to_char(mgd_dend, 'yyyy/mm/dd') as end_time
+             from tmg_v_mgd_excludecond4thw
+             where mgd_ccustomerid = #{custId}
+               and mgd_ccompanyid_ck_fk = #{compCode}
+               and mgd_clanguage_ck = #{language}
+               and mgd_cgenericgroupid = #{genericgroupId}) tab
+        where #{startDate} between start_time and end_time or #{endDate} between start_time and end_time
+    </select>
+
+
+</mapper>

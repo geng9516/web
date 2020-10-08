@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <resultMap id="selectWeekPtnMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType">
+        <result column="mgd_work" property="mgd_work"/>
+        <result column="mgd_workname" property="mgd_workname"/>
+    </resultMap>
+
+    <!-- 週勤務パターン画面に勤務区分リスト -->
+    <select id="selectWeekPtn" parameterType="java.util.HashMap" resultMap="selectWeekPtnMap">
+        select mgd_work,mgd_workname
+        from tmg_v_mgd_work4weekptn
+        where mgd_ccustomerid = #{custId}
+          and mgd_ccompanyid_ck_fk = #{compCode}
+          and mgd_dstart_ck <![CDATA[<=]]> sysdate
+          and mgd_dend <![CDATA[>=]]> sysdate
+          and mgd_clanguage_ck = #{language}
+        order by mgd_disporder
+    </select>
+
+</mapper>

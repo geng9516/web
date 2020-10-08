@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!-- 打刻画面表示判断 -->
+    <select id="selectIsTimePunchTarget" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tmg_f_is_timepunch_target(#{custId},#{compCode},#{employeeId},#{targetDate}) as timePunchTarget  from dual
+    </select>
+
+</mapper>

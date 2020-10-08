@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <!--段階導入シミュレーション登録情報に登録する-->
+    <update id="updateTmgStatusWorkTypeSim" parameterType="java.util.HashMap">
+        update tmg_status_worktype_sim
+        <set>
+            tsws_cmodifierprogramid=#{psModifierProgramId},tsws_cmodifieruserid=#{psModifierUserId},tsws_dmodifieddate=sysdate,tsws_cstatus=#{psStatus}
+        </set>
+        where tsws_ccustomerid=#{psCustId} and tsws_ccompanyid=#{psCompId} and tsws_dstartdate <![CDATA[<=]]> TRUNC(SYSDATE) and tsws_denddate <![CDATA[>=]]> TRUNC(SYSDATE)
+    </update>
+
+</mapper>

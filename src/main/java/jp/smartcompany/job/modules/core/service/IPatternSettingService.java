@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.List;
  * @description 勤務パターン設定
  * @date 2020/05/25
  **/
-public interface IPatternSettingService extends IService<Object> {
+public interface IPatternSettingService extends IService<TmgPatternDO> {
 
     /**
      * TMG_PATTERNより利用可能な勤務パターンを取得する

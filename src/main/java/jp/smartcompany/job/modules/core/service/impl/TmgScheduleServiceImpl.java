@@ -1,7 +1,8 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.mapper.TmgScheduleMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
@@ -19,7 +20,7 @@ import java.util.List;
  * @date 2020/05/25
  **/
 @Repository
-public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Object> implements ITmgScheduleService {
+public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, TmgPatternDO> implements ITmgScheduleService {
     @Override
     public NpaidRestDTO selectTmgMonthly(String employeeId, String workYear, String compCode, String custId) {
         HashMap<String, Object> params = new HashMap<String, Object>();

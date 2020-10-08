@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!--  TMG_TRIGGERへINSERTする -->
+    <insert id="insertTmgTrigger" parameterType="java.util.HashMap">
+        insert into tmg_trigger
+        (ttr_ccustomerid, ttr_ccompanyid, ttr_cemployeeid, ttr_dstartdate,
+         ttr_denddate, ttr_cmodifieruserid, ttr_dmodifieddate,ttr_cmodifierprogramid,
+         ttr_cprogramid)
+        values
+        (#{custId},#{compCode}, #{employeeId},to_date(#{minDate}, 'yyyy/mm/dd'),
+         to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId}, trunc(sysdate, 'dd'),#{modifierprogramid},
+         #{modifierprogramid})
+    </insert>
+
+</mapper>

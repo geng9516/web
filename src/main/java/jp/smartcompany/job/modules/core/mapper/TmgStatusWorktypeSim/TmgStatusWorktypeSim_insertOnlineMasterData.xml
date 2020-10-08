@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <!-- 臨時マスタデータをオンラインデータに確定する -->
+    <insert id="insertOnlineMasterData" parameterType="java.util.HashMap">
+        <selectKey resultType="long" keyProperty="mgd_id" order="BEFORE">
+            SELECT mast_generic_detail_seq.NEXTVAL FROM dual
+        </selectKey>
+        insert into mast_generic_detail
+        (mgd_id, mgd_ccustomerid, mgd_ccompanyid_ck_fk,mgd_cgenericgroupid, mgd_cgenericdetailid_ck, mgd_cmastercode,
+        mgd_clanguage_ck, mgd_dstart_ck, mgd_dend, mgd_cmodifieruserid,mgd_dmodifieddate, mgd_csparechar1,
+        mgd_csparechar2,mgd_csparechar3, versionno)
+        select mast_generic_detail_seq.NEXTVAL,mgd_ccustomerid,mgd_ccompanyid_ck_fk,#{onlinegroupId}, mast_generic_detail_seq.currval,concat(concat(#{onlinegroupId},'-'),
+        mast_generic_detail_seq.currval)
+        ,mgd_clanguage_ck,mgd_dstart_ck,mgd_dend,mgd_cmodifieruserid,sysdate,mgd_csparechar1
+        ,mgd_csparechar2,mgd_csparechar3,versionno
+        from mast_generic_detail
+        where mgd_cgenericgroupid = #{genericgroupId}
+        and mgd_ccustomerid = #{custId}
+        and mgd_ccompanyid_ck_fk = #{compCode}
+        and mgd_clanguage_ck = #{language}
+    </insert>
+
+</mapper>

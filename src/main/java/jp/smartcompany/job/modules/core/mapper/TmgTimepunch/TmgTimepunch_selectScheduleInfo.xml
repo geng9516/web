@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!-- 予定データ取得 -->
+    <resultMap id="selectScheduleInfoMap" type="jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO">
+        <result column="tda_cemployeeid" property="tda_cemployeeid"></result>
+        <result column="tda_dyyyymmdd" property="tda_dyyyymmdd"></result>
+        <result column="tda_nopen_p" property="tda_nopen_p"></result>
+        <result column="tda_nclose_p" property="tda_nclose_p"></result>
+        <result column="timerange" property="timerange"></result>
+    </resultMap>
+
+    <!-- 予定データ取得 -->
+    <select id="selectScheduleInfo" parameterType="java.util.HashMap" resultMap="selectScheduleInfoMap">
+        select  d.tda_dyyyymmdd
+             ,d.tda_nopen_p
+             ,d.tda_nclose_p
+             ,tmg_f_timerange_table_json(tmg_f_get_timerange_tbl_tdad(
+                tda_ccustomerid, tda_ccompanyid, tda_cemployeeid,
+                tda_dyyyymmdd, 'TMG_ITEMS|PlanRest', null)) as timerange
+        from tmg_daily d
+        where to_char(d.tda_dyyyymmdd, 'yyyy/mm/dd') = #{targetDate}
+          and d.tda_ccompanyid = #{compCode}
+          and d.tda_ccustomerid =  #{custId}
+          and d.tda_cemployeeid = #{employeeId}
+    </select>
+</mapper>

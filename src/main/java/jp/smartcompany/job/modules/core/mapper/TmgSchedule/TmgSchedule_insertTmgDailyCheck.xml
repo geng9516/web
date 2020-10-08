@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- [勤怠]日別情報を更新する -->
+    <insert id="insertTmgDailyCheck" parameterType="java.util.HashMap">
+        insert into tmg_daily_check
+        (tda_ccustomerid, tda_ccompanyid, tda_cemployeeid, tda_dstartdate,tda_denddate, tda_cmodifieruserid, tda_dmodifieddate,
+        tda_cmodifierprogramid, tda_nyyyy, tda_dyyyymm, tda_dyyyymmdd,tda_cstatusflg, tda_cholflg, tda_cworkingid_p,
+        tda_nopen_p,tda_nclose_p, tda_nrestopen_p, tda_nrestclose_p,tda_cmodifieruserid_p, tda_dmodifieddate_p, tda_nopen_n,
+        tda_nclose_n,tda_nrestopen_n, tda_nrestclose_n,tda_cmodifieruserid_n, tda_dmodifieddate_n, tda_cworkingid_r,tda_cbusinesstripid_r,
+        tda_nopen_r, tda_nclose_r, tda_nrestopen_r,tda_nrestclose_r, tda_cmodifieruserid_r, tda_dmodifieddate_r,tda_cbusinesstripid_p,
+        tda_ccomment_p, tda_cpatternid)
+        select tda_ccustomerid
+        ,tda_ccompanyid
+        ,tda_cemployeeid
+        ,tda_dstartdate
+        ,tda_denddate
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tmg_schedule_cmodifierprogramid}
+        ,tda_nyyyy
+        ,tda_dyyyymm
+        ,tda_dyyyymmdd
+        <if test="isClearResult == true">
+            ,least(tda_cstatusflg, 'TMG_DATASTATUS|1')
+        </if>
+        <if test="isClearResult == false">
+            ,least(tda_cstatusflg, 'TMG_DATASTATUS|3')
+        </if>
+        ,concat(concat(#{cs_mgd_holflg},'|'), tmg_f_get_mgd_n(#{tda_cworkingid_p}, tda_dyyyymmdd, 2,tda_ccustomerid, tda_ccompanyid, #{language}))
+        ,#{tda_cworkingid_p}
+        ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+        ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        <if test="bNoWorking == true">
+            ,null
+            ,null
+        </if>
+        <if test="bNoWorking == false">
+            ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+            ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+        </if>
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        <if test="isClearResult == true">
+            ,#{tda_cworkingid_p}
+            ,#{tda_cbusinesstripid_p}
+            <if test="bNoWorking == true">
+                <!-- 就業区分が就業禁止(有給)、就業禁止(無給)の場合はTDA_NOPEN_R、TDA_NCLOSE_Rへの始業、終業時間の反映を行わない -->
+                ,null
+                ,null
+            </if>
+            <if test="bNoWorking == false">
+                ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+                ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+            </if>
+        </if>
+        <if test="isClearResult == false">
+            <!-- 実績クリア不可の場合、システム日付と更新対象の日付を比較して、システム日付以前であれば実績始業・実績終業の値を据え置き -->
+            ,decode(sign(tda_dyyyymmdd - sysdate), 1, #{tda_cworkingid_p},TDA_CWORKINGID_R)
+            ,decode(sign(tda_dyyyymmdd - sysdate), 1, #{tda_cbusinesstripid_p},TDA_CBUSINESSTRIPID_R)
+            <if test="bNoWorking == true">
+                ,null
+                ,null
+            </if>
+            <if test="bNoWorking == false">
+                ,decode(sign(tda_dyyyymmdd - sysdate), 1,tmg_f_conv_hhmi2min(#{tda_nopen_p}),tda_nopen_r)
+                ,decode(sign(tda_dyyyymmdd - sysdate), 1,tmg_f_conv_hhmi2min(#{tda_nclose_p}),tda_nclose_r)
+            </if>
+        </if>
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tda_cbusinesstripid_p}
+        ,#{tda_ccomment_p}
+        ,tda_cpatternid
+        from tmg_daily
+        where tda_cemployeeid = #{employeeid}
+        and tda_dyyyymmdd = trunc(to_date(#{dyyyymmdd}), 'dd')
+        and tda_ccompanyid = #{compCode}
+        and tda_ccustomerid = #{custId}
+        and tda_dyyyymm = trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_dstartdate <![CDATA[<=]]> trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_denddate <![CDATA[>=]]> trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_nlock_p = 0
+
+    </insert>
+
+</mapper>

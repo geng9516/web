@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
+    <resultMap id="selectTmgPatternAppliesMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO">
+        <result column="cust" property="cust"/>
+        <result column="comp" property="comp"/>
+        <result column="empid" property="empid"/>
+        <result column="empname" property="empname"/>
+        <result column="tpaa_cpatternid" property="tpaa_cpatternid"/>
+        <result column="tpa_cpatternname" property="tpa_cpatternname"/>
+        <result column="cworktypeid" property="cworktypeid"/>
+        <result column="cworktypename" property="cworktypename"/>
+    </resultMap>
+
+    <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
+    <select id="selectTmgPatternApplies" parameterType="java.util.HashMap" resultMap="selectTmgPatternAppliesMap">
+        select t0.cust
+        ,t0.comp
+        ,t0.empid
+        ,t0.empname
+        ,tmg_f_get_pattern_default(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) .cpatternid as tpaa_cpatternid
+        ,tmg_f_get_pattern_default(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) .cpatternname as tpa_cpatternname
+        ,tmg_get_worktypeid(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) as cworktypeid
+        ,tmg_f_get_mgd(tmg_get_worktypeid(t0.cust, t0.comp, t0.empid,to_date(#{baseDate}, 'yyyy/mm/dd')), to_date(#{baseDate},'yyyy/mm/dd'), t0.cust, t0.comp, #{language}) as cworktypename
+        ,(select decode(count(1), 0, 0, 1)
+        from tmg_personal_pattern
+        where tppa_ccustomerid = t0.cust
+        and tppa_ccompanyid = t0.comp
+        and tppa_cemployeeid = t0.empid
+        and to_date(#{baseDate}, 'yyyy/mm/dd') between tppa_dstartdate
+        and tppa_denddate and (tppa_nkinmu_num1 is not null
+        or tppa_nkinmu_num2 is not null
+        or tppa_nkinmu_num3 is not null
+        or tppa_nkinmu_num4 is not null
+        or tppa_nkinmu_num5 is not null)) as personal_pattern_use
+        from (
+        <if test="targetEmployees != null">
+            ${targetEmployees}
+        </if>
+        ) t0
+        where exists (select 1
+        from tmg_group_member
+        where tgrm_ccustomerid = t0.cust
+        and tgrm_ccompanyid = t0.comp
+        and tgrm_cemployeeid = t0.empid
+        and tgrm_dstartdate <![CDATA[<=]]> to_date(#{baseDate}, 'yyyy/mm/dd')
+        and tgrm_denddate <![CDATA[>=]]> to_date(#{baseDate}, 'yyyy/mm/dd'))
+        order by empid
+    </select>
+
+</mapper>

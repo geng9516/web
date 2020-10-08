@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <!-- HR連携除外条件マスタ情報を取得する -->
+    <select id="selectSimulationMaster" parameterType="java.util.HashMap" resultMap="selectSimulationMasterMap">
+        select tab1.start_time
+             ,tab1.end_time
+             ,tab1.period
+             ,tab1.mgd_excludecond_type
+             ,tab2.mgd_excludecond_type_name
+             ,tab1.excludecond
+        from
+            (select tab1.start_time
+                  ,tab1.end_time
+                  , tab1.start_time||'-'|| tab1.end_time as period
+                  ,tab1.mgd_excludecond_type
+                  ,listagg(tab1.excludecond, ',') within group(order by tab1.rownumid) as excludecond
+             from (select tab.start_time
+                        ,tab.end_time
+                        ,tab.mgd_excludecond_type
+                        ,case when tab.mgd_excludecond_to is not null then tab.mgd_excludecond_from
+                     || '-' || tab.mgd_excludecond_to else tab.mgd_excludecond_from
+                     || tab.mgd_excludecond_to end as excludecond
+                        ,tab.rownumid
+                   from (select rownum as rownumid
+                              ,mgd_excludecond_type
+                              ,mgd_excludecond_from
+                              ,mgd_excludecond_to
+                              ,to_char(mgd_dstart_ck, 'yyyy/mm/dd') as start_time
+                              ,to_char(mgd_dend, 'yyyy/mm/dd') as end_time
+                         from tmg_v_mgd_excludecond4thw
+                         where mgd_ccustomerid = #{custId}
+                           and mgd_ccompanyid_ck_fk =  #{compCode}
+                           and mgd_clanguage_ck = #{language}
+                           and mgd_cgenericgroupid = #{genericgroupId}
+                         order by mgd_dstart_ck, mgd_excludecond_type,
+                                  mgd_excludecond_from) tab) tab1
+             group by tab1.start_time, tab1.end_time, tab1.mgd_excludecond_type)tab1,(select mgd_excludecond_type
+                                                                                           ,mgd_excludecond_type_name
+                                                                                           ,mgd_excludecond_length
+                                                                                      from tmg_v_mgd_excludecond_ctl
+                                                                                      where mgd_ccustomerid = #{custId}
+                                                                                        and mgd_ccompanyid_ck_fk = #{compCode}
+                                                                                        and mgd_dstart_ck <![CDATA[<=]]> trunc(sysdate)
+                                                                                        and mgd_dend >= trunc(sysdate)
+                                                                                        and mgd_clanguage_ck = #{language}
+                                                                                        and mgd_excludecond_edit_flg = #{editFlag}
+                                                                                      order by mgd_excludecond_type) tab2
+        where tab1.mgd_excludecond_type = tab2.mgd_excludecond_type
+        order by tab1.start_time,tab1.end_time desc
+    </select>
+
+    <resultMap id="selectSimulationMasterMap" type="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDataDTO">
+        <result property="start_time" column="start_time"></result>
+        <result property="end_time" column="end_time"></result>
+        <result property="period" column="period"></result>
+        <result property="mgd_excludecond_type" column="mgd_excludecond_type"></result>
+        <result property="mgd_excludecond_type_name" column="mgd_excludecond_type_name"></result>
+        <result property="excludecond" column="excludecond"></result>
+    </resultMap>
+
+</mapper>

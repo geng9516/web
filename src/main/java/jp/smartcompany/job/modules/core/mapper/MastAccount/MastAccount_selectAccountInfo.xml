@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastAccount.MastAccountMapper">
+
+    <select id="selectAccountInfo" resultType="jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO">
+        -- 获取登录用户的详细信息
+        SELECT DISTINCT
+            HD_CCUSTOMERID_CK,
+            HD_CCOMPANYID_CK,
+            MAC_CLAYEREDCOMPANYID,
+            MAC_NSEQ,
+            PSMASTER.FUNC_GET_COMP_NAME(
+                    MAC_CCUSTOMERID_CK_FK, MAC_CCOMPANYID_CK, NULL, 'ja'
+                ) MAC_CCOMPANYNAME,
+            HD_CEMPLOYEEID_CK,
+            HD_CUSERID,
+            PSMASTER.FUNC_GET_EMP_NAME(
+                    ME_CCUSTOMERID_CK, ME_CCOMPANYID, ME_CEMPLOYEEID_CK, NULL, 'ja'
+                ) ME_CEMPLOYEENAME,
+            ME_CKANANAME,
+            HD_CSECTIONID_FK,
+            MO_CLAYEREDSECTIONID,
+            MO_NSEQ,
+            PSMASTER.FUNC_GET_SECTION_NAME(
+                    MO_CCUSTOMERID_CK_FK, MO_CCOMPANYID_CK_FK, MO_CSECTIONID_CK, NULL,'ja'
+                ) MO_CSECTIONNAME,
+            HD_CPOSTID_FK,
+            MAP_NWEIGHTAGE,
+            PSMASTER.FUNC_GET_POST_NAME(
+                    MAP_CCUSTOMERID_CK_FK, MAP_CCOMPANYID_CK_FK, MAP_CPOSTID_CK, NULL,'ja'
+                ) MAP_CPOSTNAME,
+            HD_CIFKEYORADDITIONALROLE,
+            HD_DSTARTDATE_CK,
+            HD_CBOSSORNOT,
+            TMG_F_GET_MGD(TEM_CWORKTYPEID, SYSDATE, TEM_CCUSTOMERID, TEM_CCOMPANYID, 'ja') WORK_TYPE_NAME
+        FROM
+            MAST_ACCOUNT,
+            MAST_EMPLOYEES,
+            HIST_DESIGNATION,
+            MAST_COMPANY,
+            MAST_ORGANISATION,
+            MAST_POST,
+            TMG_EMPLOYEES
+        WHERE
+            MA_CACCOUNT = #{value}
+          AND	MA_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	MA_DEND >= TRUNC(SYSDATE)
+          AND	ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+          AND	ME_CUSERID = MA_CUSERID
+          AND	ME_DSTARTDATE <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	ME_DENDDATE >= TRUNC(SYSDATE)
+          AND	HD_CCUSTOMERID_CK = ME_CCUSTOMERID_CK
+          AND	HD_CUSERID = ME_CUSERID
+          AND	HD_DSTARTDATE_CK <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	HD_DENDDATE >= TRUNC(SYSDATE)
+          AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
+          AND	MAC_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	MAC_DEND >= TRUNC(SYSDATE)
+          AND	MAC_CLANGUAGE = 'ja'
+          AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+          AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
+          AND	MO_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	MO_DEND >= TRUNC(SYSDATE)
+          AND	MO_CLANGUAGE = 'ja'
+          AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+          AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+          AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
+          AND	MAP_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND	MAP_DEND >= TRUNC(SYSDATE)
+          AND	MAP_CLANGUAGE = 'ja'
+          AND   TEM_CCUSTOMERID = ME_CCUSTOMERID_CK
+          AND   ME_CCOMPANYID = TEM_CCOMPANYID
+          AND   TEM_DSTARTDATE <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND   TEM_DENDDATE >= TRUNC(SYSDATE)
+          AND   TEM_CEMPLOYEEID = ME_CEMPLOYEEID_CK
+        ORDER BY
+            HD_CIFKEYORADDITIONALROLE
+    </select>
+
+</mapper>

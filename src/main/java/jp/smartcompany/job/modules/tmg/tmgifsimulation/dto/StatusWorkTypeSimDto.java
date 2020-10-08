@@ -11,6 +11,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StatusWorkTypeSimDto {
-    private String tswsCstatus;
-    private String mgdWtsimstatusName;
+    private String code;
+    private String name;
 }

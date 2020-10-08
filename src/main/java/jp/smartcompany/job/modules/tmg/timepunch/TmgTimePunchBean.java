@@ -641,7 +641,7 @@ public class TmgTimePunchBean {
                 sToday = baseTimesDTO.getSToday();
                 sYesterday = baseTimesDTO.getSYesterday();
                 sNow = baseTimesDTO.getSNow();
-                sStartMinutes = baseTimesDTO.getSTosStartMinutesday();
+                sStartMinutes = baseTimesDTO.getSStartMinutes();
                 // 更新条件用、更新値用の日付情報を作成する
                 if (Integer.parseInt(sNow) < Integer
                         .parseInt(sStartMinutes)) {

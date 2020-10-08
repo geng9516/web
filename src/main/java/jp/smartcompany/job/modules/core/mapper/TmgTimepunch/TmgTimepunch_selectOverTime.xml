@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+    <!--  超過勤務時間-->
+    <select id="selectOverTime" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select nvl(tmg_f_conv_min2hhmi(sum(r1.tdt_nvalue), 0), 0) as overtime
+        from tmg_daily_totalization r1
+        where r1.tdt_ccustomerid = #{custId}
+          and r1.tdt_ccompanyid = #{compCode}
+          and r1.tdt_cemployeeid = #{employeeId}
+          and r1.tdt_dyyyymmdd <![CDATA[>=]]> #{startDate}
+          and r1.tdt_dyyyymmdd <![CDATA[<=]]> #{endDate}
+          and r1.tdt_ctotalizationid = 'TMG_TOTALITEM|overtime_total'
+    </select>
+
+</mapper>

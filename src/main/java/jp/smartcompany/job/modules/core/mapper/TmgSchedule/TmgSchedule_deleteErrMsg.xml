@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- エラーメッセージを削除する -->
+    <delete id="deleteErrMsg" parameterType="java.util.HashMap">
+        delete from tmg_errmsg
+        where ter_cmodifierprogramid =#{tmg_schedule_cmodifierprogramid}
+          and ter_cmodifieruserid = #{employeeId}
+          and ter_ccustomerid = #{custId}
+          and ter_ccompanyid = #{compCode}
+    </delete>
+
+</mapper>

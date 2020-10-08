@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.HistBonusDO;
-import jp.smartcompany.job.modules.core.mapper.HistBonusMapper;
+import jp.smartcompany.job.modules.core.mapper.HistBonus.HistBonusMapper;
 import jp.smartcompany.job.modules.core.service.IHistBonusService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

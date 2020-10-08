@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!--  [勤怠]週次勤務パターン（エラーチェック用）登録  -->
+    <parameterMap id="insertTmgWeekPatternCheckMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternCheckDTO">
+        <parameter property="custId"></parameter>
+        <parameter property="compCode"></parameter>
+        <parameter property="employeeId"></parameter>
+        <parameter property="twp_cmodifieruserid"></parameter>
+        <parameter property="twp_cmodifierprogramid"></parameter>
+        <parameter property="twp_dstartdate"></parameter>
+        <parameter property="twp_denddate"></parameter>
+        <parameter property="period"></parameter>
+        <parameter property="twp_copen1"></parameter>
+        <parameter property="twp_cclose1"></parameter>
+        <parameter property="twp_crestopen1"></parameter>
+        <parameter property="twp_crestclose1"></parameter>
+        <parameter property="twp_cholflg1"></parameter>
+        <parameter property="twp_copen2"></parameter>
+        <parameter property="twp_cclose2"></parameter>
+        <parameter property="twp_crestopen2"></parameter>
+        <parameter property="twp_crestclose2"></parameter>
+        <parameter property="twp_cholflg2"></parameter>
+        <parameter property="twp_copen3"></parameter>
+        <parameter property="twp_cclose3"></parameter>
+        <parameter property="twp_crestopen3"></parameter>
+        <parameter property="twp_crestclose3"></parameter>
+        <parameter property="twp_cholflg3"></parameter>
+        <parameter property="twp_copen4"></parameter>
+        <parameter property="twp_cclose4"></parameter>
+        <parameter property="twp_crestopen4"></parameter>
+        <parameter property="twp_crestclose4"></parameter>
+        <parameter property="twp_cholflg4"></parameter>
+        <parameter property="twp_copen5"></parameter>
+        <parameter property="twp_cclose5"></parameter>
+        <parameter property="twp_crestopen5"></parameter>
+        <parameter property="twp_crestclose5"></parameter>
+        <parameter property="twp_cholflg5"></parameter>
+        <parameter property="twp_copen6"></parameter>
+        <parameter property="twp_cclose6"></parameter>
+        <parameter property="twp_crestopen6"></parameter>
+        <parameter property="twp_crestclose6"></parameter>
+        <parameter property="twp_cholflg6"></parameter>
+        <parameter property="twp_copen7"></parameter>
+        <parameter property="twp_cclose7"></parameter>
+        <parameter property="twp_crestopen7"></parameter>
+        <parameter property="twp_crestclose7"></parameter>
+        <parameter property="twp_cholflg7"></parameter>
+    </parameterMap>
+
+
+    <!-- [勤怠]週次勤務パターン（エラーチェック用）登録 -->
+    <insert id="insertTmgWeekPatternCheck" parameterMap="insertTmgWeekPatternCheckMap">
+        insert into tmg_week_pattern_check
+        (twp_nid , twp_ccustomerid , twp_ccompanyid , twp_cemployeeid ,
+         twp_dstartdate , twp_denddate , twp_cmodifieruserid ,twp_dmodifieddate ,
+         twp_cmodifierprogramid , twp_copen1 ,twp_cclose1 , twp_crestopen1 ,
+         twp_crestclose1 , twp_cholflg1 ,twp_copen2 , twp_cclose2 ,
+         twp_crestopen2 , twp_crestclose2 ,twp_cholflg2 , twp_copen3 ,
+         twp_cclose3 , twp_crestopen3 ,twp_crestclose3 , twp_cholflg3 ,
+         twp_copen4 , twp_cclose4 ,twp_crestopen4 , twp_crestclose4 ,
+         twp_cholflg4 , twp_copen5 ,twp_cclose5 , twp_crestopen5 ,
+         twp_crestclose5 , twp_cholflg5 ,twp_copen6 , twp_cclose6 ,
+         twp_crestopen6 , twp_crestclose6 ,twp_cholflg6 , twp_copen7 ,
+         twp_cclose7 , twp_crestopen7 ,twp_crestclose7 , twp_cholflg7)
+        values
+        (tmg_week_pattern_seq.nextval , #{custId} , #{compCode} , #{employeeId} ,
+         trunc(to_date(#{twp_dstartdate})), trunc(to_date(#{twp_denddate})),#{twp_cmodifieruserid} , sysdate ,
+         #{twp_cmodifierprogramid} ,#{twp_copen1} , #{twp_cclose1} , #{twp_crestopen1} ,
+         #{twp_crestclose1} , #{twp_cholflg1} , #{twp_copen2} , #{twp_cclose2}  ,
+         #{twp_crestopen2}  ,#{twp_crestclose2} , #{twp_cholflg2}, #{twp_copen3},
+         #{twp_cclose3} , #{twp_crestopen3} , #{twp_crestclose3}  , #{twp_cholflg3},
+         #{twp_copen4},  #{twp_cclose4} ,  #{twp_crestopen4}  ,  #{twp_crestclose4} ,
+         #{twp_cholflg4} ,  #{twp_copen5}  , #{twp_cclose5}  , #{twp_crestopen5},
+         #{twp_crestclose5} ,  #{twp_cholflg5}, #{twp_copen6}, #{twp_cclose6} ,
+         #{twp_crestopen6},  #{twp_crestclose6},  #{twp_cholflg6} , #{twp_copen7},
+         #{twp_cclose7}, #{twp_crestopen7} , #{twp_crestclose7} , #{twp_cholflg7} )
+    </insert>
+
+</mapper>

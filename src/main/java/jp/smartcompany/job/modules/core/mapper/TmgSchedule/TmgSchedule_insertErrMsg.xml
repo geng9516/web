@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- エラーメッセージに追加する -->
+    <insert id="insertErrMsg" parameterType="java.util.HashMap">
+        insert into tmg_errmsg
+        (ter_ccustomerid, ter_ccompanyid, ter_dstartdate, ter_denddate,
+         ter_cmodifieruserid, ter_dmodifieddate, ter_cmodifierprogramid,
+         ter_cerrcode, ter_clanguage)
+        select #{custId}
+             ,#{compCode}
+             ,to_date(#{minDate}, 'yyyy/mm/dd')
+             ,to_date(#{maxDate}, 'yyyy/mm/dd')
+             ,#{modifieruserid}
+             ,sysdate
+             ,#{modifierprogramid}
+             ,tmg_f_check_week_pattern(#{employeeId}, add_months(trunc(sysdate,'mm'), 1), #{custId}, #{compCode})
+             ,#{language}
+        from dual
+    </insert>
+
+</mapper>

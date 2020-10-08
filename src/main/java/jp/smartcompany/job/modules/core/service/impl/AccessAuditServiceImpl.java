@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.CoreBean;
-import jp.smartcompany.job.modules.core.mapper.AccessAuditMapper;
+import jp.smartcompany.job.modules.core.mapper.AccessAudit.AccessAuditMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.boot.util.SysUtil;

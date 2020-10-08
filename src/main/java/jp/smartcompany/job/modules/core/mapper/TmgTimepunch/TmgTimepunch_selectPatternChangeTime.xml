@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!-- 勤務パターンの変更時間を取得する -->
+    <select id="selectPatternChangeTime" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select p.tpa_ndate_change_time
+        from tmg_pattern p
+        where p.tpa_ccustomerid = #{custId}
+          and p.tpa_ccompanyid = #{compCode}
+          and p.tpa_csectionid = #{sectionId}
+          and p.tpa_cpatternid = #{patternId}
+    </select>
+
+</mapper>

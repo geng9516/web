@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 日次詳細情報登録（休憩時間：予定） -->
+    <insert id="insertTmgDailyDetailCheckRest" parameterType="java.util.HashMap">
+        insert into tmg_daily_detail_check
+        (tdad_ccustomerid
+        , tdad_ccompanyid
+        , tdad_cemployeeid
+        , tdad_dstartdate
+        , tdad_denddate
+        , tdad_cmodifieruserid
+        , tdad_dmodifieddate
+        , tdad_cmodifierprogramid
+        , tdad_nyyyy
+        , tdad_dyyyymm
+        , tdad_dyyyymmdd
+        , tdad_cnotworkid
+        , tdad_nopen
+        , tdad_nclose
+        , tdad_seq)
+        select #{custId}
+        , #{compCode}
+        ,#{employeeId}
+        ,to_date('1900/01/01', 'yyyy/mm/dd')  <!--データ開始日-->
+        ,to_date('2222/12/31', 'yyyy/mm/dd')  <!--データ終了日-->
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tmg_schedule_cmodifierprogramid}
+        ,to_char(to_date(#{sTargetDate}), 'yyyy')
+        ,trunc(to_date(#{sTargetDate}), 'mm')
+        ,to_date(#{sTargetDate})
+        ,#{sNotWorkId}
+        ,tmg_f_conv_hhmi2min(#{nRestOpen})
+        ,tmg_f_conv_hhmi2min(#{nRestClose})
+        ,(select nvl(max(tdad_seq), 0) + 1
+        from tmg_daily_detail
+        where tdad_ccustomerid = #{custId}
+        and tdad_ccompanyid = #{compCode}
+        and tdad_cemployeeid = #{employeeId}
+        and tdad_dyyyymmdd = to_date(#{sTargetDate})
+        and (tdad_cnotworkid = #{notworkingid_plan_rest}
+        or tdad_cnotworkid = #{notworkingid_notice_rest}
+        or tdad_cnotworkid = #{notworkingid_result_rest}))
+        from dual
+        <!-- 実績クリア不可の場合、システム日付以前なら実績登録を行わない -->
+        <if test="isClearResult == false and isNotWorkId == true">
+            where to_date(#{sTargetDate})>sysdate
+        </if>
+    </insert>
+
+</mapper>
