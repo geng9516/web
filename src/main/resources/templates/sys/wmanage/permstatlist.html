@@ -71,12 +71,12 @@
                                     <i-col span="15">
                                         <i-input v-model="referListObject.hidSearchData" @on-search="handleClickEmpLeaf"
                                                  class="mar mb5 like-select" search enter-button placeholder="検索">
-                                            <i-select v-model="queryList.hidSearchItems" slot="prepend" style="width: 108px"
+                                            <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px"
                                                       placeholder="項目" transfer>
                                                 <i-option v-for="(item,i) of searchTypesList" :value="item.value">
                                                     {{ item.name }}</i-option>
                                             </i-select>
-                                            <i-select v-model="queryList.hidSearchCondition"  slot="append"
+                                            <i-select v-model="referListObject.hidSearchCondition"  slot="append"
                                                       style="width: 108px" placeholder="条件" transfer>
                                                 <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
                                                     {{ item.name }}</i-option>
@@ -97,6 +97,7 @@
                                 <!--                                    <Spin size="large" fix v-if="emplistLoading"></Spin>-->
                                 <!--                                </div>-->
                             </tab-pane>
+                            <Alert class="primary-info mt10">※検索結果の上位100件を表示しています。</Alert>
                         </Tabs>
                     </Drawer>
                     <!-- 共通組織図画面 end-->
@@ -424,6 +425,8 @@
                         [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
                         hidSearchData:'',
+                        hidSearchItems:'EMPLOYEEID',
+                        hidSearchCondition:'BROADMATCH',
                         txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -438,7 +441,6 @@
                         txtAction: 'ACT_DISP_MONTHLY',
                         txtDYYYYMM: '',
                         txtDYYYYMMDD: '',
-                        hidSearchData:'',
                         txtCallBeanAction: 'ACT_DISP_MONTHLY',
                         txtTmgReferListTreeViewRecordDate: '',
                         txtTmgReferListTreeViewAdminTargetSection: '',
@@ -446,8 +448,9 @@
                         txtTmgReferListTreeViewAdminTargetEmpName: '',
                         txtCEMPLOYEEID: '',
                         sectionid: '',
-	                    hidSearchItems:'EMPLOYEEID',
-    	                hidSearchCondition:'BROADMATCH',
+                        hidSearchItems: [[${ session.SearchItems }]],     //検索種別
+                        hidSearchCondition: [[${ session.SearchCondition }]], //検索条件
+                        hidSearchData: [[${ session.SearchData }]],      //検索対象
                         recordDate: '',
                         txtUserCode: '',
                         txtExecuteEmpId: '',
@@ -829,6 +832,10 @@
                 },
                 async getTableData() {
                     this.listLoading  = true
+                    if (this.queryList.hidSelectTab == '1'){
+                        this.deptName = '職員により検索中'
+                        this.queryList.txtUserCode = null
+                    }
                     const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.queryList)
                     this.tableData = data.tmgMonthlyInfoVOList
                     this.approval = data.approval
@@ -1013,10 +1020,10 @@
                 // this.queryList.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 // this.queryList.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 // this.queryList.txtUserCode = e[0].empid
-                    this.deptName = '職員により検索中'
                     this.queryList.hidSelectTab = '1'
                     this.queryList.hidSearchData = this.referListObject.hidSearchData
-                    this.deptDrawShow = false
+                    this.queryList.hidSearchItems = this.referListObject.hidSearchItems
+                    this.queryList.hidSearchCondition = this.referListObject.hidSearchCondition
 
     	            // this.getDispTmgMonthlyList()
         	        // this.getTableHead()
@@ -1828,6 +1835,17 @@
                     this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     await this.getOrgTree()
                     await this.getSearchCondition()
+
+                    //検索の初期化対応
+                    this.queryList.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.queryList.hidSearchItems = [[${ session.hidSearchItems }]]
+                    this.queryList.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                    this.queryList.hidSearchData = [[${ session.hidSearchData }]]
+
+                    this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                    this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                    this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
 
                     this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
