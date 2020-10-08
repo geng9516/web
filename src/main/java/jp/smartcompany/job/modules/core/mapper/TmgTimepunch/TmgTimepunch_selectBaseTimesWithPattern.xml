@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!-- 打刻更新先となる日と今日の日付を取得するクエリ -->
+    <select id="selectBaseTimesWithPattern" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select to_char(tmg_f_get_timepunch_targetdate(#{custId},#{compCode},#{employeeId},sysdate),'yyyy/mm/dd') as baseTime from dual
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!--エラーメッセージを取得する-->
+    <select id="selectErrMsg" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select ter_cerrcode
+        from tmg_errmsg
+        where ter_ccustomerid =  #{custId}
+          and ter_ccompanyid = #{compCode}
+          and ter_cmodifieruserid = #{modifieruserid}
+          and ter_cmodifierprogramid =#{modifierprogramid}
+
+    </select>
+
+</mapper>

@@ -4,12 +4,11 @@ import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDate
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
-import jp.smartcompany.job.modules.core.mapper.HistGroupdatapermissionMapper;
+import jp.smartcompany.job.modules.core.mapper.HistGroupdatapermission.HistGroupdatapermissionMapper;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- 勤怠トリガーテーブルから該当データを削除する -->
+    <delete id="deleteTmgTrigger" parameterType="java.util.HashMap">
+        delete from tmg_trigger
+        where ttr_cmodifierprogramid =#{tmg_schedule_cmodifierprogramid}
+          and ttr_cmodifieruserid = #{employeeId}
+          and ttr_ccustomerid = #{custId}
+          and ttr_ccompanyid = #{compCode}
+    </delete>
+
+</mapper>

@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.ContTreegenerationDO;
-import jp.smartcompany.job.modules.core.mapper.ContTreegenerationMapper;
+import jp.smartcompany.job.modules.core.mapper.ContTreegeneration.ContTreegenerationMapper;
 import jp.smartcompany.job.modules.core.service.IContTreegenerationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

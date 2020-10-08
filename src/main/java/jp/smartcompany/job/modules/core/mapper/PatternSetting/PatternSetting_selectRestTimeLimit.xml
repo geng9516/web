@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 勤務時間・休憩時間の制限値取得 -->
+    <resultMap id="selectRestTimeLimitMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO">
+        <result column="genericCode" property="genericCode"/>
+        <result column="genericDesc" property="genericDesc"/>
+        <result column="limit_rest_lower" property="limit_rest_lower"/>
+        <result column="limit_work_lower" property="limit_work_lower"/>
+        <result column="limit_work_upper" property="limit_work_upper"/>
+    </resultMap>
+
+    <!--  勤務時間・休憩時間の制限値取得 -->
+    <select id="selectRestTimeLimit" parameterType="java.util.HashMap" resultMap="selectRestTimeLimitMap">
+        select mgd_cgenericdetailid_ck as genericCode
+             ,mgd_csparechar1 as genericDesc
+             ,mgd_nsparenum1 as limit_rest_lower
+             ,mgd_nsparenum2 as limit_work_lower
+             ,mgd_nsparenum3 as limit_work_upper
+        from mast_generic_detail
+        where mgd_ccustomerid = #{custId}
+          and mgd_ccompanyid_ck_fk = #{compCode}
+          and mgd_clanguage_ck = #{language}
+          and mgd_cgenericgroupid = 'TMG_LIMIT'
+          and mgd_cgenericdetailid_ck like 'RESTTIME%'
+          and mgd_dstart_ck <![CDATA[<=]]>  trunc(sysdate)
+          and mgd_dend  <![CDATA[>=]]> trunc(sysdate)
+        order by mgd_cmastercode
+    </select>
+
+</mapper>

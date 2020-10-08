@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectemployee" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo">
+        SELECT
+            TMG_F_GET_ME_NAME ( D.HD_CEMPLOYEEID_CK, #{recordDate,jdbcType=DATE} , 0, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK ) as NAME,
+            (
+                TMG_F_GET_MO ( D.HD_CSECTIONID_FK, #{recordDate,jdbcType=DATE},0, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
+                )  AS SECTION,
+            TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( D.HD_CEMPLOYEEID_CK, #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK ), #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, #{language})
+                                                                                                                                AS WORKTYPE,
+            (
+                TMG_F_GET_MP ( D.HD_CPOSTID_FK, #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
+                ) AS POST
+        FROM
+            HIST_DESIGNATION D
+        WHERE
+            D.HD_CCUSTOMERID_CK = #{custId}
+          AND D.HD_CCOMPANYID_CK = #{compId}
+          AND D.HD_CEMPLOYEEID_CK = #{employeeId}
+          AND #{recordDate,jdbcType=DATE} BETWEEN D.HD_DSTARTDATE_CK
+            AND D.HD_DENDDATE
+          AND D.HD_CIFKEYORADDITIONALROLE = 0
+    </select>
+
+</mapper>

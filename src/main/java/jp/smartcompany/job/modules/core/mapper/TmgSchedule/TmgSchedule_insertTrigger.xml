@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- トリガーに追加する -->
+    <insert id="insertTrigger" parameterType="java.util.HashMap">
+        insert into tmg_trigger
+        (ttr_ccustomerid , ttr_ccompanyid , ttr_cemployeeid ,
+        ttr_dstartdate , ttr_denddate , ttr_cmodifieruserid ,
+        ttr_dmodifieddate , ttr_cmodifierprogramid , ttr_cprogramid ,
+        ttr_cparameter1,ttr_dparameter1)
+        values
+        (#{custId} , #{compCode} , #{employeeId},
+        to_date('1900/01/01', 'yyyy/mm/dd'),  <!--データ開始日-->
+        to_date('2222/12/31', 'yyyy/mm/dd'),  <!--データ終了日-->
+        #{sLoginUserCode} , sysdate ,
+        #{modifierprogramid} ,
+        #{sAction},
+        #{sAction},
+        add_months(trunc(sysdate, 'MM'), 1))
+    </insert>
+
+</mapper>

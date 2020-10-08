@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+
+    <!--  平日時の勤務時間 -->
+    <select id="selectWorkingHours" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tmg_f_get_avgworktime( #{employeeId} ,to_date( #{baseDate}, 'yyyy/mm/dd') ,#{compCode} ,#{custId}) as workingHours from dual
+    </select>
+
+
+</mapper>

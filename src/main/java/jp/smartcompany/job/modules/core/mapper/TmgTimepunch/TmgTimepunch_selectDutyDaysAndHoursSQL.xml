@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper">
+
+    <!-- 出勤日数と時間数を取得SQLを返却する -->
+    <select id="selectDutyDaysAndHoursSQL" parameterType="java.util.HashMap" resultMap="selectDutyDaysAndHoursMap">
+        select mgd_cheader,mgd_csql
+        from tmg_v_mgd_dispmonthlyitems
+        where mgd_ccustomerid = #{custId}
+          and mgd_ccompanyid_ck_fk = #{compCode}
+          and mgd_clanguage_ck = #{language}
+          and mgd_cheader in ('勤務日数','勤務時間')
+          and mgd_dstart_ck  <![CDATA[<=]]> sysdate
+          and mgd_dend <![CDATA[>=]]> sysdate
+        order by mgd_nseq
+    </select>
+
+    <!-- 出勤日数と時間数を取得 -->
+    <resultMap id="selectDutyDaysAndHoursMap" type="jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO">
+        <result column="mgd_cheader" property="mgd_cheader"></result>
+        <result column="mgd_csql" property="mgd_csql"></result>
+        <!--<result column="mgd_ccolumnkey" property="mgd_ccolumnkey"></result>-->
+    </resultMap>
+
+</mapper>

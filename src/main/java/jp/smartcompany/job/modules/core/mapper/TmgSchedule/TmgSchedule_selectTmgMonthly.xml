@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- 年次休暇残 -->
+    <resultMap id="selectTmgMonthlyMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.NpaidRestDTO">
+        <result column="tmo_npaid_rest_days" property="tmo_npaid_rest_days" javaType="java.lang.String"/>
+        <result column="tmo_npaid_rest_hours" property="tmo_npaid_rest_hours" javaType="java.lang.String"/>
+        <result column="tmo_nmonth_chk_flg" property="tmo_nmonth_chk_flg" javaType="java.lang.String"/>
+    </resultMap>
+    <!-- 年次休暇残 -->
+    <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
+        select nrest_days as tmo_npaid_rest_days
+             ,nrest_hours as tmo_npaid_rest_hours
+        from (tmg_select_holiday_rest(#{custId},#{compCode}, #{employeeId}, trunc(to_date(#{workYear}))))
+        where trunc(dbegin) <![CDATA[<=]]> trunc(to_date(#{workYear}))
+          and trunc(dend) >=trunc(to_date(#{workYear}))
+          and ctype = 'TMG_NTFHOLRESTTYPE|010'
+    </select>
+
+</mapper>

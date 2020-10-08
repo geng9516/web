@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!--  週勤務パターン -->
+    <resultMap id="selectTmgWeekPatternMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO">
+        <result column="twp_dstartdate" property="twp_dstartdate" javaType="java.lang.String"/>
+        <result column="twp_denddate" property="twp_denddate" javaType="java.lang.String"/>
+        <result column="twp_nid" property="twp_nid" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--  週勤務パターン -->
+    <select id="selectTmgWeekPattern" parameterType="java.util.HashMap" resultMap="selectTmgWeekPatternMap">
+        select to_char(twp_dstartdate, 'yyyy/mm/dd') as twp_dstartdate
+        ,to_char(twp_denddate , 'yyyy/mm/dd') as twp_denddate
+        ,twp_nid
+        from tmg_week_pattern
+        where twp_ccustomerid = #{custId}
+        and twp_ccompanyid = #{compCode}
+        and twp_cemployeeid = #{employeeId}
+        <!--and twp_denddate >= trunc(sysdate)-->
+        <if test="isAfter == true">
+            and twp_dstartdate <![CDATA[<]]> trunc(add_months(to_date(#{baseDate},'yyyy/MM/dd'), 1))
+            and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate},'yyyy/MM/dd'))
+        </if>
+        <if test="isAfter == false">
+            and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate},'yyyy/MM/dd'))
+        </if>
+        order by twp_denddate
+    </select>
+
+
+</mapper>

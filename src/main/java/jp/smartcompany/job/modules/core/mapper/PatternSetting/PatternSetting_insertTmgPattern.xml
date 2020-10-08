@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- 勤務パターン　保存する -->
+    <parameterMap id="insertTmgPatternMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO">
+        <parameter property="custId"/>
+        <parameter property="compCode"/>
+        <parameter property="sectionId"/>
+        <parameter property="groupId"/>
+        <parameter property="minDate"/>
+        <parameter property="maxDate"/>
+        <parameter property="employeeId"/>
+        <parameter property="modifierprogramid"/>
+        <parameter property="patternId"/>
+        <parameter property="patternName"/>
+        <parameter property="defaultFlag"/>
+        <parameter property="changeTime"/>
+        <parameter property="nextptn"/>
+        <parameter property="c2caldays"/>
+        <parameter property="nopen"/>
+        <parameter property="nclose"/>
+    </parameterMap>
+
+    <!-- 勤務パターン　保存する -->
+    <insert id="insertTmgPattern" parameterMap="insertTmgPatternMap">
+        insert into tmg_pattern
+        (tpa_ccustomerid, tpa_ccompanyid, tpa_csectionid, tpa_cgroupid,
+         tpa_dstartdate, tpa_denddate, tpa_cmodifieruserid,
+         tpa_dmodifieddate, tpa_cmodifierprogramid, tpa_cpatternid,
+         tpa_cpatternname, tpa_cdefaultflg, tpa_ndate_change_time,
+         tpa_cnextptn, tpa_c2caldays, tpa_nopen, tpa_nclose)
+        values
+        (#{custId},#{compCode}, #{sectionId},  #{groupId},
+         to_date(#{minDate}, 'yyyy/mm/dd'), to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId},
+         sysdate,#{modifierprogramid},#{patternId},
+         #{patternName},#{defaultFlag}, tmg_f_conv_hhmi2min(#{changeTime}),
+         #{nextptn},#{c2caldays}, tmg_f_conv_hhmi2min(#{nopen}), tmg_f_conv_hhmi2min(#{nclose}))
+    </insert>
+
+</mapper>

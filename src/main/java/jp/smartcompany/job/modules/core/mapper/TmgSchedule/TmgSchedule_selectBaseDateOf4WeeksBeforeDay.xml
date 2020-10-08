@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- 4週間単位の変形労働制職員対応 -->
+    <select id="selectBaseDateOf4WeeksBeforeDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select pre_data.pre_start,pre_data.pre_end
+        from (select to_char (decode(tmg_f_get_basedate_fourweeks(0 ,to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'), #{employeeId} ,  #{compCode} ,#{custId}), null, trunc(to_date(#{baseDate},'yyyy/mm/dd') - 1, 'mm'),tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate},'yyyy/mm/dd') - 1 , to_date(#{detailPeriod},'yyyy/mm/dd'),#{employeeId} , '01' , '01')),'yyyy/mm/dd') as pre_start
+                   ,to_char (decode(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId},  #{compCode} ,#{custId}), null, last_day(to_date(#{baseDate},'yyyy/mm/dd') - 1), to_date(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId},'01' , '01'), 'yyyy-mm-dd') + 7 * 4 - 1),'yyyy/mm/dd') as pre_end
+              from dual) pre_data
+        where exists(select 1 from tmg_daily
+                     where tda_ccustomerid = #{custId}
+                       and tda_ccompanyid = #{compCode}
+                       and tda_cemployeeid = #{employeeId}
+                       and tda_dyyyymmdd <![CDATA[<=]]> pre_data.pre_end)
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastAccount.MastAccountMapper">
+
+    <!--用户管理相关sql开始-->
+    <select id="selectStartCheckAccount" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerDTO">
+        -- 既存アカウントチェック
+        SELECT
+            MA_CACCOUNT
+        FROM
+            MAST_ACCOUNT
+        WHERE
+            MA_CCUSTOMERID = #{customerId}
+          AND MA_CACCOUNT = #{account}
+          AND MA_CUSERID <![CDATA[<>]]> #{userId}
+          AND MA_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+          AND MA_DEND >= TRUNC(SYSDATE)
+        UNION
+        SELECT
+            MA_CACCOUNT
+        FROM
+            MAST_ACCOUNT
+        WHERE
+            MA_CCUSTOMERID = #{customerId}
+          AND MA_CACCOUNT =  #{account}
+          AND MA_CUSERID <![CDATA[<>]]> #{userId}
+          AND MA_DSTART > TRUNC(SYSDATE)
+    </select>
+
+</mapper>

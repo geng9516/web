@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+
+    <!-- [区分]汎用マスタより区分コンボボックスの選択値を取得します -->
+    <select id="selectGenericDetail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select mgd_cmastercode,mgd_cgenericdetaildesc
+        from mast_generic_detail
+        where mgd_ccustomerid = #{custId}
+          and mgd_ccompanyid_ck_fk = #{compCode}
+          and mgd_clanguage_ck = #{language}
+          and mgd_cgenericgroupid = 'TMG_WORK'
+          and mgd_nsparenum1 = 9
+          and mgd_dstart_ck <![CDATA[<=]]> #{baseDate}
+          and mgd_dend <![CDATA[>=]]> #{baseDate}
+        order by mgd_cmastercode
+    </select>
+
+</mapper>

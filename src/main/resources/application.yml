@@ -47,7 +47,7 @@ spring:
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
 mybatis-plus:
-  mapper-locations: classpath*:jp/smartcompany/job/modules/core/mapper/*Mapper.xml
+  mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
   global-config:
     db-config:

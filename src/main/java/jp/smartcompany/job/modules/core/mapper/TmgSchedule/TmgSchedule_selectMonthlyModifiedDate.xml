@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- TmgMonthlyの更新日取得(予定確認画面) -->
+    <select id="selectMonthlyModifiedDate" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select to_char(tmo_dmodifieddate,'yyyy/mm/dd') as tmo_dmodifieddate
+        from tmg_monthly m
+        where m.tmo_ccustomerid = #{custId}
+          and m.tmo_ccompanyid = #{compCode}
+          and m.tmo_cemployeeid = #{employeeId}
+          and m.tmo_dyyyymm = trunc(to_date(#{baseDate}, 'yyyy/mm/dd'), 'mm')
+    </select>
+</mapper>

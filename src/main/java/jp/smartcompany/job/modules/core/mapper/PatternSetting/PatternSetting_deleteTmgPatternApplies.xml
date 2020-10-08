@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+
+    <!-- DELETE TMG_PATTERN_APPLIES -->
+    <delete id="deleteTmgPatternApplies" parameterType="java.util.HashMap">
+        delete from tmg_pattern_applies
+        where tpaa_ccustomerid = #{custId}
+        and tpaa_ccompanyid = #{compCode}
+        <if test="sectionId != null">
+            and tpaa_csectionid = #{sectionId}
+        </if>
+        <if test="sectionId == null">
+            and tpaa_csectionid is null
+        </if>
+        <if test="groupId != null">
+            and tpaa_cgroupid = #{groupId}
+        </if>
+        <if test="groupId == null">
+            and tpaa_cgroupid is null
+        </if>
+        and tpaa_cpatternid = #{patternId}
+    </delete>
+
+</mapper>

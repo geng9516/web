@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSim.TmgStatusWorktypeSimMapper">
+
+    <resultMap id="selectExcludecondCtlMap" type="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ConditionColDTO">
+        <result property="mgd_excludecond_type" column="mgd_excludecond_type"></result>
+        <result property="mgd_excludecond_type_name" column="mgd_excludecond_type_name"></result>
+        <result property="mgd_excludecond_length" column="mgd_excludecond_length"></result>
+        <result property="value" column="value"></result>
+    </resultMap>
+
+    <!-- HR連携除外条件区分マスタ情報の件数を取得する -->
+    <select id="selectExcludecondCtl" parameterType="java.util.HashMap" resultMap="selectExcludecondCtlMap">
+        select mgd_excludecond_type
+             ,mgd_excludecond_type_name
+             ,mgd_excludecond_length
+             ,'' as value
+        from tmg_v_mgd_excludecond_ctl
+        where mgd_ccustomerid = #{custId}
+          and mgd_ccompanyid_ck_fk = #{compCode}
+          and mgd_dstart_ck <![CDATA[<=]]> trunc(sysdate)
+          and mgd_dend >= trunc(sysdate)
+          and mgd_clanguage_ck = #{language}
+          and mgd_excludecond_edit_flg = #{editFlag}
+        order by mgd_excludecond_type
+    </select>
+
+
+</mapper>

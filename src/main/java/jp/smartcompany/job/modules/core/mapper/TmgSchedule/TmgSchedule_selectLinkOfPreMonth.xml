@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgSchedule.TmgScheduleMapper">
+    <!-- 前月リンクを取得 -->
+    <select id="selectLinkOfPreMonth" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select d.premonth
+             ,to_char(last_day(d.premonth), 'yyyy/mm/dd') premonthlastday
+        from (select to_char(min(tmo_dyyyymm), 'yyyy/mm/dd') as premonth
+              from tmg_monthly
+              where tmo_cemployeeid = #{employeeId}
+                and tmo_dyyyymm > trunc(to_date(#{baseDate}), 'mm')
+                and tmo_dyyyymm <![CDATA[<=]]> add_months(trunc(sysdate, 'mm'), 2)
+                and tmo_ccompanyid = #{compCode}
+                and tmo_ccustomerid = #{custId}
+                and tmo_dstartdate <![CDATA[<=]]> #{baseDate}
+                and tmo_denddate <![CDATA[>=]]> #{baseDate}) d
+        where d.premonth is not null
+    </select>
+</mapper>

@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
-import jp.smartcompany.job.modules.core.mapper.ConfSyscontrolMapper;
+import jp.smartcompany.job.modules.core.mapper.ConfSyscontrol.ConfSyscontrolMapper;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;

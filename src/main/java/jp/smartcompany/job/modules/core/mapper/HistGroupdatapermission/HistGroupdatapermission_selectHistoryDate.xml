@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistGroupdatapermission.HistGroupdatapermissionMapper">
+
+    <select id="selectHistoryDate" resultType="jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO" parameterType="map">
+        SELECT
+        (
+        SELECT
+        MAX(HGP_DSTARTDATE)
+        FROM
+        HIST_GROUPDATAPERMISSION
+        WHERE
+        HGP_CCUSTOMERID = #{custId}
+        AND HGP_CSYSTEMID = #{systemId}
+        <if test="groupId !=null">
+            AND HGP_CGROUPID = #{groupId}
+        </if>
+        AND HGP_DSTARTDATE <![CDATA[<]]> a.HGP_DSTARTDATE
+        ) as beforeDate,
+        a.HGP_DSTARTDATE as nowDate,
+        (
+        SELECT
+        MIN(HGP_DSTARTDATE)
+        FROM
+        HIST_GROUPDATAPERMISSION
+        WHERE
+        HGP_CCUSTOMERID	= #{custId}
+        AND HGP_CSYSTEMID = #{systemId}
+        <if test="groupId!=null">
+            AND HGP_CGROUPID = #{groupId}
+        </if>
+        AND HGP_DSTARTDATE > a.HGP_DSTARTDATE
+        ) as afterDate,
+        (
+        SELECT
+        MAX(HGP_DSTARTDATE)
+        FROM HIST_GROUPDATAPERMISSION
+        WHERE HGP_CCUSTOMERID = #{custId}
+        <if test="groupId!=null">
+            AND HGP_CGROUPID = #{groupId}
+        </if>
+        AND HGP_CSYSTEMID = #{systemId}
+        AND HGP_DSTARTDATE	<![CDATA[<=]]> TRUNC(SYSDATE)
+        ) as latestDate
+        FROM
+        (
+        SELECT MAX(HGP_DSTARTDATE) AS HGP_DSTARTDATE FROM HIST_GROUPDATAPERMISSION WHERE HGP_CCUSTOMERID = #{custId}
+        <if test="groupId!=null">
+            AND HGP_CGROUPID = #{groupId}
+        </if>
+        AND HGP_CSYSTEMID = #{systemId}
+        AND HGP_DSTARTDATE	<![CDATA[<=]]> #{searchDate}
+        ) a
+        ORDER BY HGP_DSTARTDATE
+    </select>
+</mapper>
