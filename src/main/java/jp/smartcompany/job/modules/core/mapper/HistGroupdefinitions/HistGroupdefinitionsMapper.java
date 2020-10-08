@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.mapper;
+package jp.smartcompany.job.modules.core.mapper.HistGroupdefinitions;
 
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO;
