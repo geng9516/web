@@ -2,20 +2,16 @@ package jp.smartcompany.boot.configuration.security;
 
 import jp.smartcompany.boot.configuration.security.authentication.AuthenticationProcessingFilter;
 import jp.smartcompany.boot.configuration.security.authentication.LoginEntryPoint;
-import jp.smartcompany.boot.configuration.security.authorization.SmartAccessDecisionManager;
-import jp.smartcompany.boot.configuration.security.authorization.SmartFilterInvocationSecurityMetadataSource;
 import jp.smartcompany.boot.configuration.security.handler.SmartLogoutHandler;
 import jp.smartcompany.boot.configuration.security.handler.SmartLogoutSuccessHandler;
 import jp.smartcompany.boot.configuration.security.handler.UrlAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -33,9 +29,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationProcessingFilter authenticationProcessingFilter;
 
-    private final SmartAccessDecisionManager accessDecisionManager;
-    private final SmartFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
-
     private final SecurityProperties securityProperties;
 
     @Override
@@ -49,23 +42,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                // url权限认证处理
-                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-                    @Override
-                    public <O extends FilterSecurityInterceptor> O postProcess(O o) {
-                        o.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
-                        o.setAccessDecisionManager(accessDecisionManager);
-                        return o;
-                    }
-                })
+                .antMatchers(securityProperties.getWhiteList()).permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
-                // 自定义过滤器在登录时认证用户名、密码
-                .exceptionHandling()
-                // 未登录认证异常
-                .authenticationEntryPoint(loginEntryPoint)
-                // 登录过后访问无权限的接口时自定义403响应内容
-                .accessDeniedHandler(accessDeniedHandler);
+                  .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
+                  // 自定义过滤器在登录时认证用户名、密码
+                  .exceptionHandling()
+                  // 未登录认证异常
+                  .authenticationEntryPoint(loginEntryPoint)
+                  // 登录过后访问无权限的接口时自定义403响应内容
+                  .accessDeniedHandler(accessDeniedHandler);
     }
 
     @Override
