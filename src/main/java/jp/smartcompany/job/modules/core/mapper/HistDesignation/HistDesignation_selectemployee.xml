@@ -7,21 +7,26 @@
             TMG_F_GET_ME_NAME ( D.HD_CEMPLOYEEID_CK, #{recordDate,jdbcType=DATE} , 0, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK ) as NAME,
             (
                 TMG_F_GET_MO ( D.HD_CSECTIONID_FK, #{recordDate,jdbcType=DATE},0, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
-                )  AS SECTION,
+            )  AS SECTION,
             TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( D.HD_CEMPLOYEEID_CK, #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK ), #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, #{language})
-                                                                                                                                AS WORKTYPE,
+            AS WORKTYPE,
             (
                 TMG_F_GET_MP ( D.HD_CPOSTID_FK, #{recordDate,jdbcType=DATE}, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
-                ) AS POST
+            ) AS POST,
+            D.HD_CEMPLOYEEID_CK AS CEMPLOYEEID,
+            D.HD_CSECTIONID_FK AS SECTIONID,
+            E.TGRM_CGROUPID AS GROUPID
         FROM
-            HIST_DESIGNATION D
+                HIST_DESIGNATION D,
+                TMG_GROUP_MEMBER E
         WHERE
-            D.HD_CCUSTOMERID_CK = #{custId}
-          AND D.HD_CCOMPANYID_CK = #{compId}
-          AND D.HD_CEMPLOYEEID_CK = #{employeeId}
-          AND #{recordDate,jdbcType=DATE} BETWEEN D.HD_DSTARTDATE_CK
-            AND D.HD_DENDDATE
-          AND D.HD_CIFKEYORADDITIONALROLE = 0
+                D.HD_CCUSTOMERID_CK = #{custId}
+            AND D.HD_CCOMPANYID_CK = #{compId}
+            AND D.HD_CEMPLOYEEID_CK = #{employeeId}
+            AND D.HD_CEMPLOYEEID_CK = E.TGRM_CEMPLOYEEID
+            AND #{recordDate,jdbcType=DATE} BETWEEN D.HD_DSTARTDATE_CK AND D.HD_DENDDATE
+            AND D.HD_CIFKEYORADDITIONALROLE = 0
+            AND #{recordDate,jdbcType=DATE} BETWEEN E.TGRM_DSTARTDATE AND E.TGRM_DENDDATE
     </select>
 
 </mapper>
