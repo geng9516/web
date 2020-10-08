@@ -166,6 +166,7 @@
         and tph_dyyyymm <![CDATA[>=]]> tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{preMonthDay}, 'yyyy/mm/dd'),#{custId}, #{compCode})), 0, #{dyyyymmdd}, #{custId}, #{compCode})
         and tph_dyyyymm <![CDATA[<=]]> tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{nextYearDay}, 'yyyy/mm/dd'),#{custId}, #{compCode})), 1, #{dyyyymmdd}, #{custId}, #{compCode}))
         and tph_ccompanyid = #{compCode}
+        and rownum = 1
     </select>
 
     <!-- 出勤簿リスト -->
