@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO;
-import jp.smartcompany.job.modules.core.mapper.HistGroupdefinitionsMapper;
+import jp.smartcompany.job.modules.core.mapper.HistGroupdefinitions.HistGroupdefinitionsMapper;
 import jp.smartcompany.job.modules.core.service.IHistGroupdefinitionsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

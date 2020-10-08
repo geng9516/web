@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistGroupdefinitions.HistGroupdefinitionsMapper">
+
+    <select id="selectHistGroupDefinitions" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO">
+        SELECT
+            HGD_ID,
+            HGD_CCUSTOMERID,
+            HGD_CSYSTEMID,
+            HGD_CGROUPID,
+            HGD_NSEQ,
+            HGD_DSTARTDATE,
+            HGD_DENDDATE,
+            HGD_CCOMPANYID,
+            HGD_CANDOR,
+            HGD_COPENEDPARENTHSIS,
+            HGD_CTABLEID,
+            HGD_CCOLUMNID,
+            HGD_CCOLUMNNAME,
+            HGD_CTYPEOFCOLUMN,
+            HGD_COPERATOR,
+            HGD_CVALUE,
+            HGD_CDISPLAYVALUE,
+            HGD_CCLOSEDPARENTHSIS,
+            VERSIONNO
+        FROM
+            HIST_GROUPDEFINITIONS
+        WHERE
+            HGD_CCUSTOMERID = #{custId}
+            AND HGD_CSYSTEMID = #{systemId}
+            AND HGD_CGROUPID = #{groupId}
+            <if test="searchDate!=null">
+                AND HGD_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+                AND HGD_DENDDATE  >= #{searchDate}
+            </if>
+    </select>
+
+</mapper>
