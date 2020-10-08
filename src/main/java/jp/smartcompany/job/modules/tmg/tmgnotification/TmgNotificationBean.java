@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -610,6 +611,18 @@ public class TmgNotificationBean {
             employeeDetailVo.setSApprovalLevelName(sApprovalLevelName);
         }else{
             employeeDetailVo.setSApprovalLevelName("");
+        }
+
+        HttpSession httpSession = ContextUtil.getSession();
+        if(psDBbean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION , employeeDetailVo.getSectionid());
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION_NAME , employeeDetailVo.getSection());
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP, employeeDetailVo.getGroupid());
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP, employeeDetailVo.getCemployeeid());
+        } else if (psDBbean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION , employeeDetailVo.getSectionid());
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME , employeeDetailVo.getSection());
+            httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP, employeeDetailVo.getCemployeeid());
         }
 
         return employeeDetailVo;

@@ -21,5 +21,11 @@ public class EmployeeDetailVo {
 
     private String post;// 3 役職
 
+    private String cemployeeid;// 4 職員ID
+
+    private String sectionid;// 5 所属ID
+
+    private String groupid;// 6 グループID
+
     private String sApprovalLevelName; //ログインユーザー決裁レベル(名称)返却
 }
