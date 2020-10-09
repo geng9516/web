@@ -517,6 +517,7 @@
                     btnMakeGroup: false,
                     btnEditMember: false,
                     bottomMessage: '',
+                    defaultPermissionLevel: '',
                     // 承認者追加画面
                     localValue: {
                         name: '',
@@ -813,11 +814,14 @@
                 },
                 handleRestConfirmCheckBox(e, obj) {
                     if (!e) {
-                        console.log(12)
                         obj.level = ''
+                    } else {
+                        if(this.addPermissionAdminInfo.name !== '承認者検索') {
+                            this.$set(this.permissionAdminValue[0], 'level', this.defaultPermissionLevel)
+                        }
                     }
                 },
-                handleClickEmpLeaf(e) {
+                async handleClickEmpLeaf(e) {
                     if (!e[0]) return
                     // 需要将此条得信息覆盖
                     this.addPermissionAdminInfo.name = e[0].label
@@ -828,9 +832,11 @@
                     this.$set(this.permissionAdminValue[i], 'validStartDate', e[0].dstart)
                     this.$set(this.permissionAdminValue[i], 'validEndDate', e[0].dend)
 
-                    // this.permissionAdminValue[i].validStartDate = e[0].dstart
-                    // this.permissionAdminValue[i].validEndDate = e[0].dend
-                    console.log(this.permissionAdminValue)
+                    const { data } = await this.http.get(`sys/evaluatorsetting/emplevel?empId=${e[0].empid}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`)
+                    this.defaultPermissionLevel = data.level
+                    if(this.permissionAdminValue[i].restConfirm) {
+                        this.$set(this.permissionAdminValue[i], 'level', this.defaultPermissionLevel)
+                    }
                     this.addPermissionAdminGroupDrawer = false
 
                 },
@@ -1117,11 +1123,6 @@
                                 this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
                                 return true
                             }
-                        }
-
-                        if (e.restConfirm && !e.level) {
-                            this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
-                            return true
                         }
                     })
 
