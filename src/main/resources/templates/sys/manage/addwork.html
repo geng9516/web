@@ -913,8 +913,8 @@
                 searchOrgTree: Debounce( async function() {
                     this.empDeptLoading = true
                     try {
-                        const { data } = await this.http.get('sys/tree/search', this.referListObject)
-                        this.empTreeData = Utils.convertTreeData(data)
+                        const { data,msg } = await this.http.get('sys/tree/search', this.referListObject)
+                        this.empTreeData = Utils.convertTreeData(data,false,msg)
                         this.$Notice.success({ title:'所属図更新完了' })
                     } catch (error) {
                         return
@@ -1337,11 +1337,10 @@
                 },
                 //承認
                 async updateDaily() {
-                    if (!this.errorCheck(this.workingId)) {
+                    const [check, msg] = this.errorCheck(this.workingId)
+                    if (!check) {
                         return
                     }
-
-
                     this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
                     this.tmgResultsDto.txtAction = 'ACT_EDITPERM_UPERMIT'
 
@@ -1368,7 +1367,7 @@
                     }
                     this.$Modal.confirm({
                         inDrawer: true,
-                        title: 'この内容で承認します。よろしいですか？',
+                        title: msg || 'この内容で承認します。よろしいですか？',
                         width: 400,
                         okText: 'OK',
                         cancelText: 'キャンセル',
@@ -1489,23 +1488,23 @@
                     let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                     // 出勤 or 休日出勤
                     if (!mgdCsparechar4VO || mgdCsparechar4VO.mgdCsparechar5 != '0') {
-                        return true;
+                        return [true];
                     }
                     // 修正出社時刻形式
                     if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
                         this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
-                        return false;
+                        return [false];
                     }
 
                     // 修正退社時刻形式
                     if (this.workData[2].workEnd ===null || !this.time_check(this.workData[2].workEnd)) {
                         this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
-                        return false;
+                        return [false];
                     }
 
                     if (this.dailyEdit.tdaCbosscommentR !== null && this.getLengthB(this.dailyEdit.tdaCbosscommentR) > 100) {
                         this.$Notice.error({desc: "承認者コメント考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
-                        return false;
+                        return [false];
                     }
 
                     //非勤務
@@ -1524,7 +1523,7 @@
                             return true
                         }
                     })
-                    if (checkNonDuty) return false
+                    if (checkNonDuty) return [false]
                     // 超過勤務
                     const checkOverhour = this.detailOverhoursVOList.some(e => {
 
@@ -1533,7 +1532,7 @@
                             return true
                         }
                     })
-                    if (checkOverhour) return false
+                    if (checkOverhour) return [false]
                     let nOverTimeTotal = 0;
                     // 超過勤務命令の明細部配下を行単位で取得
                     this.detailOverhoursVOList.forEach(e => {
@@ -1545,19 +1544,14 @@
                     // 超過勤務命令時間が入力されていて、超過勤務対象「無」の場合は警告メッセージを表示する
                     if (nOverTimeTotal > 0 && this.targetForOverTime === "1") {
                         // 警告メッセージの表示および、応答の確認
-
-                        if(!confirm('超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？')){
-                            return false
-                        }
+                        return [true, '超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？']
                     }
                     // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
                     if (nOverTimeTotal > this.overHourLimit) {
                         // 警告メッセージの表示および、応答の確認
-                        if(!confirm('超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？')){
-                            return false
-                        }
+                        return [true, '超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？']
                     }
-                    return true;
+                    return [true];
                 },
                 getLengthB(moji) {
                     let i, j, cnt = 0;
