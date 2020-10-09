@@ -50,14 +50,15 @@
                 </i-col>
             </Row>
         </i-col>
-        <i-col span="21" class="mt30" style="margin-left: 5.2%;width: 84.4%;">
+        <i-col span="21" class="mt30" style="margin-left: 5.5%;width: 83.7%;">
             <div class="schedule">
                 <div class="title-wrap">
                     <div class="time-title">時間</div>
                     <div class="plan-title">本日の勤務予定</div>
                 </div>
                 <ul class="time-list">
-                    <li v-model="scheduleTime" class="li" v-for="(item, i) of scheduleTime" :key="i"><span style="width:14.44px; text-align:center;  display:inline-block; margin-left: -5px;">{{ item }}</span></li>
+                    <li v-model="scheduleTime" class="li" v-for="(item, i) of scheduleTime" :key="i"><span style="width:14.44px; text-align:center;  display:inline-block; margin-left: -5px;">{{ item }}</span>
+                    </li>
                     <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer><b>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}</b>
                             <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
@@ -310,10 +311,11 @@
                 discretionDisable: true,
                 dutyAndRelaxData: {
                     dutyDates: '0',
-                    dutyHours: ['0', '0'],
+                    dutyHours: ['0', '00'],
                     npaidRestDaysHour: ['0', '0', '0'],
                     overTime: ['0', '0']
                 },
+                requestFlag: false,
                 /**********/
                 monthlyLoading: false,
                 dailyloading: false,
@@ -580,10 +582,10 @@
             this.getClockInfo()
             this.getIsDiscretion()
             this.getServerTime()
+            await this.getDutyAndRelaxDate()
             await this.getScheduleInfo()
             await this.getOverTime()
             this.dynamicScheduleFit()
-            await this.getDutyAndRelaxDate()
         },
         beforeDestroy() {
             this.$refs.clock.cleanClock()
@@ -604,27 +606,49 @@
             },
             //予定時間
             dynamicSchedule() {
-                if (!this.scheduleData[0]) {
-                    return
-                }
-                return this.scheduleData.map((e, i) => {
-                    const startTime = Utils.timeToMinute(e.split('-')[0])
-                    const endTime = Utils.timeToMinute(e.split('-')[1])
-                    const contentWidth = ((endTime - startTime) / 60) * 55.44
-                    const left = (startTime / 60 - this.scheduleSection[0]) * 55.44 + 25
-
-                    return {
-                        time: e,
-                        style: {
-                            width: `${contentWidth}px`,
-                            lineHeight: `123px`,
-                            left: `${left}px`,
-                            top: '35%',
-                            textDecoration: 'none',
-                            color: contentWidth > 100 ? 'var(--real-schedule)' : 'transparent'
+                if (this.scheduleData[0]) {
+                    return this.scheduleData.map((e, i) => {
+                        const startTime = Utils.timeToMinute(e.split('-')[0])
+                        const endTime = Utils.timeToMinute(e.split('-')[1])
+                        const contentWidth = ((endTime - startTime) / 60) * 55.44
+                        const left = (startTime / 60 - this.scheduleSection[0]) * 55.44 + 25
+                        return {
+                            time: e,
+                            style: {
+                                width: `${contentWidth}px`,
+                                lineHeight: `123px`,
+                                left: `${left}px`,
+                                top: '35%',
+                                textDecoration: 'none',
+                                color: contentWidth > 100 ? 'var(--real-schedule)' : 'transparent'
+                            }
                         }
-                    }
-                })
+                    })
+                } else {
+                    /*if (this.requestFlag) {
+                        this.scheduleData[0] = '勤務予定時間がなし'
+                        return this.scheduleData.map((e, i) => {
+                            this.scheduleData[0] = ''
+                            const startTime = 780
+                            const endTime = 1080
+                            const contentWidth = ((endTime - startTime) / 60) * 55.44
+                            const left = 358
+                            return {
+                                time: '勤務予定時間がなし',
+                                style: {
+                                    width: `${contentWidth}px`,
+                                    lineHeight: `123px`,
+                                    left: `${left}px`,
+                                    top: '35%',
+                                    textDecoration: 'none',
+                                    color: contentWidth > 100 ? 'var(--real-schedule-overwork)' : 'transparent'
+                                }
+                            }
+                        })
+                    } else {*/
+                        return
+                    //}
+                }
             },
             //超過勤務時間
             dynamicSchedule2() {
@@ -741,15 +765,17 @@
             // 社員勤務予定データを取得する
             async getScheduleInfo() {
                 const {data} = await this.http.postForm('sys/timePunch/selectScheduleInfo', this.query_schedule)
-                //console.log('schedule data:', data)
+                this.requestFlag = true;
                 if (data) {
                     this.scheduleData = data
+                } else {
+                    this.scheduleData = ['', '']
                 }
             },
             //　社員有休等情報を取得する
             async getDutyAndRelaxDate() {
                 const {data} = await this.http.postForm('sys/timePunch/selectDutyAndRelaxDate', this.query_schedule)
-                //console.log('DutyAndRelaxDate data:', data)
+
                 if (data) {
                     //月間出勤日数
                     if (data.dutyDates) {
@@ -773,6 +799,7 @@
                     }
 
                 }
+
             },
             //裁量労働の場合、超勤申請できない
             async getIsDiscretion() {
@@ -793,11 +820,16 @@
                 var endTime = "";
                 if (this.overWorkData.length > 0) {
                     //もし超過勤務時間があれば、超過勤務時間に基く
-                    endTime = Utils.timeToMinute(this.overWorkData[this.overWorkData.length - 1].split('-')[1])
-
+                    if (this.overWorkData[this.overWorkData.length - 1]) {
+                        endTime = Utils.timeToMinute(this.overWorkData[this.overWorkData.length - 1].split('-')[1])
+                    }
                 } else {
                     //無ければ、勤務予定時間に基く
-                    endTime = Utils.timeToMinute(this.scheduleData[this.scheduleData.length - 1].split('-')[1])
+                    if (this.scheduleData[this.scheduleData.length - 1]) {
+                        endTime = Utils.timeToMinute(this.scheduleData[this.scheduleData.length - 1].split('-')[1])
+                    } else {
+                        //予定時間がない場合
+                    }
                 }
                 if (data) {
                     var startSection = parseInt(data[0])
@@ -811,7 +843,6 @@
                     }
                 }
             },
-
 
             //一覧から日次実績をクリックする
             async showDay() {

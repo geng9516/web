@@ -172,12 +172,19 @@ public class TmgTimePunchBean {
     public boolean clock(String employeeId, String custId, String compId, String psAction) {
         boolean result = false;
         //lock thread safe
-        synchronized (this) {
-            this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-            this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+        try {
+            synchronized (this) {
+                this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+                this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+                //this.deleteTmgTrgger(custId, compId, employeeId, psAction);
+                result = true;
+            }
+        } catch (Exception e) {
+            result = false;
+            logger.error("打刻失敗しました", e);
+        } finally {
             this.deleteTmgTrgger(custId, compId, employeeId, psAction);
         }
-        result = true;
         return result;
     }
 

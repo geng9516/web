@@ -50,7 +50,7 @@ public class UserManagerEditStartLogicImpl implements UserManagerEditStartLogic 
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public Map<String,String> changeStartDate(UserManagerEditStartForm form) {
+    public Map<String,Object> changeStartDate(UserManagerEditStartForm form) {
         Date startDate;
         Date dateNow = DateUtil.date();
         Date endDate = SysUtil.transStringToDate(PsConst.MAXDATE);
@@ -136,7 +136,7 @@ public class UserManagerEditStartLogicImpl implements UserManagerEditStartLogic 
         //------------------------------------------------------
         //パスワード更新
         //------------------------------------------------------
-        Map<String, String> passwordMap = MapUtil.newHashMap();
+        Map<String, Object> passwordMap = MapUtil.newHashMap();
         Integer passwordType = form.getPasswordType();
         if (passwordType != null
                 && ( passwordType.equals(2)

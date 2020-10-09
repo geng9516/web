@@ -46,7 +46,7 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
    * @return 更新パスワードMap
    */
   @Override
-  public Map<String,String> updatePassword(
+  public Map<String,Object> updatePassword(
           String customerId,
           String currentUserId,
           String language,
@@ -87,7 +87,7 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
     passwordService.updateHistoryNo(userIds);
     // メール送信モードの取得
 //    String sMailSendMode = cacheUtil.getSystemProperty(USER_MANAGER_MAIL_SEND_MODE);
-    Map<String,String> passwordMap = MapUtil.newHashMap();
+    Map<String,Object> passwordMap = MapUtil.newHashMap();
 
     List<MastPasswordDO> updatePasswordList = CollUtil.newArrayList();
     for (UserManagerUpdateParamDTO dto : dtoParam) {
@@ -106,6 +106,7 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
 
         MastPasswordDO passwordDO = new MastPasswordDO();
         BeanUtil.copyProperties(dto,passwordDO);
+        passwordDO.setMapId(null);
         updatePasswordList.add(passwordDO);
         //===================================================
         //パスワード更新(4)
@@ -126,10 +127,10 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
 //                && ADD_ACCOUNT_MAIL_ID.equals(getMailId())) {
 //          this.sendAddAccountMail(dto, psLanguage, psBaseURL);
 //        }
-        passwordService.saveBatch(updatePasswordList);
 
       }
     }
+    passwordService.saveBatch(updatePasswordList);
     return passwordMap;
   }
 

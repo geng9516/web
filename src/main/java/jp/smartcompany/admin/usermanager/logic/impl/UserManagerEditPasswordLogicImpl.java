@@ -38,7 +38,7 @@ public class UserManagerEditPasswordLogicImpl implements UserManagerEditPassword
     @Override
     public Map<String,Object> showChangePassword(ChangePasswordDTO changePasswordDTO) {
         //システムプロパティ設定
-        passwordMinLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
+        passwordMinLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MIN_LEN));
         passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
         changeLimitCount = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_CHANGE_PW_LIMITATION_COUNT));
         String custId = "01";
@@ -63,7 +63,7 @@ public class UserManagerEditPasswordLogicImpl implements UserManagerEditPassword
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public Map<String,String> changePassword(UserManagerEditPasswordForm form) {
+    public Map<String,Object> changePassword(UserManagerEditPasswordForm form) {
         String customerId = "01";
         passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
         String userId = SecurityUtil.getUserId();

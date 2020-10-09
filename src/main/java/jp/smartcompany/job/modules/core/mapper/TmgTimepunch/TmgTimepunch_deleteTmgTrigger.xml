@@ -5,14 +5,12 @@
 
     <!--  TMG_TRIGGERへINSERTする -->
     <insert id="deleteTmgTrigger" parameterType="java.util.HashMap">
-        insert into tmg_trigger
-        (ttr_ccustomerid, ttr_ccompanyid, ttr_cemployeeid, ttr_dstartdate,
-         ttr_denddate, ttr_cmodifieruserid, ttr_dmodifieddate,ttr_cmodifierprogramid,
-         ttr_cprogramid)
-        values
-        (#{custId},#{compCode}, #{employeeId},to_date(#{minDate}, 'yyyy/mm/dd'),
-         to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId}, trunc(sysdate, 'dd'),#{modifierprogramid},
-         #{modifierprogramid})
+        delete from tmg_trigger
+             where ttr_ccustomerid = #{custId}
+               and ttr_ccompanyid = #{compCode}
+               and ttr_cemployeeid = #{employeeId}
+               and ttr_cmodifieruserid = #{employeeId}
+               and ttr_cmodifierprogramid =#{modifierprogramid}
     </insert>
 
 </mapper>

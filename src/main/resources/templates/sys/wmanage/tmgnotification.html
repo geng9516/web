@@ -502,7 +502,6 @@
             </i-button>
           </tab-pane>
         </Tabs>
-
       </Drawer>
     </div>
     <back-top></back-top>
@@ -1177,27 +1176,29 @@
         },
         handleRestType(e) {
           // 选择不同的休假时，判断显示不同的项目
-
           this.restApply = {
             useVacation: false,
-            restTypeId: '全て',
             weekSelected: [],
             noreserved: 1,
             _dateList: '',
             _dateListRange: ['', ''],
             dateListRange: ['', ''],
             txtAddDate: null,
-            txtTargetNumber: null
+            txtTargetNumber: null,
           }
+          this.approvalLevel = ''
           this.errorInfo = false
           this.uploadFiles = []
           this.hasPassedTimeCheck = true
           this.selectedRestInfo = {}
+
           if(!e)return
+
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+          this.approvalLevel = this.flatRestTypeList.find(t => t.ntfId === e).sparechar2
           const turnLine = Vue.filter('turnLine');
-          this.selectBiko=turnLine(this.selectedRestInfo.biko)
-          //console.log(this.selectedRestInfo)
+          this.selectBiko = turnLine(this.selectedRestInfo.biko)
+
         },
 
         handleBeforeUpload(files) {

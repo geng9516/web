@@ -504,13 +504,13 @@
                 this.query.hidSearchData = [[${ session.hidSearchData }]]
 
                 this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
-                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]]
-                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
                 this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
 
                 this.opts.hidSelectTab = [[${ session.hidSelectTab }]]
-                this.opts.hidSearchItems = [[${ session.hidSearchItems }]]
-                this.opts.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.opts.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.opts.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
                 this.opts.hidSearchData = [[${ session.hidSearchData }]]
 
 

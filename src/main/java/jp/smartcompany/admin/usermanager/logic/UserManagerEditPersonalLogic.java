@@ -8,5 +8,5 @@ public interface UserManagerEditPersonalLogic {
 
     Map<String,Object> display(String userId);
 
-    Map<String,String> updatePersonal(UserManagerEditPersonalForm form);
+    Map<String,Object> updatePersonal(UserManagerEditPersonalForm form);
 }
