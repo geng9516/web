@@ -139,7 +139,7 @@ const Utils = {
         background:true,
         closable: true,
         duration: 6.5,
-        content: msg && '参照できる組織図が存在しません。'
+        content: msg || '参照できる組織図が存在しません。'
       });
       return []
     }
