@@ -564,7 +564,7 @@
                   return this.$Notice.warning({ title: '注意', desc: '申請区分を選んでください。', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmComment != '0' && !this.restApply.owncomment) {
-                  return this.$Notice.warning({ title: '注意', desc: '申請事由等を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください。', duration: 6.5 })
                }
 
                if (!this.restApply.begin || !this.restApply.end) {
@@ -629,7 +629,7 @@
                   return this.$Notice.warning({ title: '注意', desc: '傷病名を入力してください。', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
-                  return this.$Notice.warning({ title: '注意', desc: '申請事由等を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください。', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
                   return this.$Notice.warning({ title: '注意', desc: '添付ファイルを入力してください。', duration: 6.5 })
