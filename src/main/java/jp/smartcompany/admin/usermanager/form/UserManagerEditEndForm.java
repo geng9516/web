@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.usermanager.form;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.List;
 public class UserManagerEditEndForm {
 
     @NotNull
+    @JsonFormat(pattern="yyyy/MM/dd")
     private Date endDate;
 
     private Boolean useRetireDate;
