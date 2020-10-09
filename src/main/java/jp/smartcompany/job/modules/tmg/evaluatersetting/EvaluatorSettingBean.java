@@ -158,9 +158,7 @@ public class EvaluatorSettingBean {
         Map<String,Object> map = MapUtil.newHashMap();
         try {
             Vector<Vector<Object>> rs = dbControllerLogic.executeQuery(buildSQLForSelectDefaultApproval(params), dataSource.getConnection());
-            String sLevel = (String)rs.get(1).get(0);
-            String level = sLevel.split("\\|")[1];
-            map.put("level",level);
+            map.put("level",rs.get(1).get(0));
         } catch (SQLException e) {
             e.printStackTrace();
         }
