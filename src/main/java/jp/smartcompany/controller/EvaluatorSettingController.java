@@ -209,5 +209,10 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.editEvalHandler(bean,authorityDTO);
     }
 
+    // http://localhost:6879/sys/evaluatorsetting/emplevel?empId=A0000001&txtDYYYYMMDD=2020/10/09
+    @GetMapping("emplevel")
+    public Map<String,Object> getEmpApprovalLevel(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam("empId") String empId) {
+        return evaluatorSettingBean.defaultLevelHandler(bean,empId);
+    }
 
 }

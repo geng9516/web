@@ -9,6 +9,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
@@ -26,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -43,6 +46,8 @@ public class EvaluatorSettingBean {
     private final ScCacheUtil scCacheUtil;
     private final AjaxBean ajaxBean;
     private final PsDBBeanUtil psDBBeanUtil;
+    private final DbControllerLogic dbControllerLogic;
+    private final DataSource dataSource;
 
     // 結果セット番号
     private final static int IDX_LIST			 = 0;	// グループ一覧及び承認者一覧
@@ -143,6 +148,24 @@ public class EvaluatorSettingBean {
     /*
      * ========================= 暴露给外部的handler ==================
      */
+    public Map<String,Object> defaultLevelHandler(PsDBBean bean,String empId) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setLanguage(bean.getLanguage());
+        params.setEmployee(empId);
+        Map<String,Object> map = MapUtil.newHashMap();
+        try {
+            Vector<Vector<Object>> rs = dbControllerLogic.executeQuery(buildSQLForSelectDefaultApproval(params), dataSource.getConnection());
+            String sLevel = (String)rs.get(1).get(0);
+            String level = sLevel.split("\\|")[1];
+            map.put("level",level);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
     public Map<String,Object> dispHandler(PsDBBean psDBBean) throws Exception {
         Map<String,Object> result = MapUtil.newHashMap();
