@@ -9,6 +9,6 @@ public interface UserManagerEditStartLogic {
 
     Map<String,Object> showChangeStartDate(ShowLimitDateForm form);
 
-    Map<String,String> changeStartDate(UserManagerEditStartForm form);
+    Map<String,Object> changeStartDate(UserManagerEditStartForm form);
 
 }

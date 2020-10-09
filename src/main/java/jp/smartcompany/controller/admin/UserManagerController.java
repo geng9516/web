@@ -78,7 +78,7 @@ public class UserManagerController {
     }
 
     @PostMapping("change/startDate")
-    public Map<String,String> changeStartDate(@Valid @RequestBody UserManagerEditStartForm form) {
+    public Map<String,Object> changeStartDate(@Valid @RequestBody UserManagerEditStartForm form) {
         return userManagerEditStartLogic.changeStartDate(form);
     }
     /* ============ 旧代码： UserManagerEditStartAction 结束 ===========*/
@@ -90,7 +90,7 @@ public class UserManagerController {
     }
 
     @PostMapping("personal")
-    public Map<String,String> updatePersonal(@RequestBody UserManagerEditPersonalForm form) {
+    public Map<String,Object> updatePersonal(@RequestBody UserManagerEditPersonalForm form) {
         return userManagerEditPersonalLogic.updatePersonal(form);
     }
     /* ============ UserManagerEditPersonalAction 结束 ============= */
@@ -101,7 +101,7 @@ public class UserManagerController {
         return userManagerEditPasswordLogic.showChangePassword(changePasswordDTO);
     }
     @PostMapping("change/password")
-    public Map<String,String> changePassword(@RequestBody UserManagerEditPasswordForm form) {
+    public Map<String,Object> changePassword(@RequestBody UserManagerEditPasswordForm form) {
         return userManagerEditPasswordLogic.changePassword(form);
     }
     /* ============ UserManagerEditPasswordAction 结束 ============= */

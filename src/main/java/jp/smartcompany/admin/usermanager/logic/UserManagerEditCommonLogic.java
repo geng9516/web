@@ -47,7 +47,7 @@ public interface UserManagerEditCommonLogic {
   String STATUS_INVALID_TEXT="無効";
   String STATUS_LOCKOUT_TEXT="ロックアウト";
 
-  Map<String,String> updatePassword(
+  Map<String,Object> updatePassword(
           String customerId,
           String currentUserId,
           String language,

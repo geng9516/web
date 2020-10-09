@@ -209,4 +209,5 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.editEvalHandler(bean,authorityDTO);
     }
 
+
 }

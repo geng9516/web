@@ -63,7 +63,7 @@ public class UserManagerEditPasswordLogicImpl implements UserManagerEditPassword
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public Map<String,String> changePassword(UserManagerEditPasswordForm form) {
+    public Map<String,Object> changePassword(UserManagerEditPasswordForm form) {
         String customerId = "01";
         passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
         String userId = SecurityUtil.getUserId();

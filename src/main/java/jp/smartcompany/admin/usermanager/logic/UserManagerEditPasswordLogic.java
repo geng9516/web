@@ -9,6 +9,6 @@ public interface UserManagerEditPasswordLogic {
 
     Map<String,Object> showChangePassword(ChangePasswordDTO changePasswordDTO);
 
-    Map<String,String> changePassword(UserManagerEditPasswordForm form);
+    Map<String,Object> changePassword(UserManagerEditPasswordForm form);
 
 }

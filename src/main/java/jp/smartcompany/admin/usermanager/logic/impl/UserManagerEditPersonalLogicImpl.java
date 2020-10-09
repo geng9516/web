@@ -81,7 +81,7 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
     }
 
     @Override
-    public Map<String,String> updatePersonal(UserManagerEditPersonalForm form) {
+    public Map<String,Object> updatePersonal(UserManagerEditPersonalForm form) {
         passwordMaxLen = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN);
         MastAccountDO accountDO = form.getAccount();
         String userId = form.getUserId();
@@ -165,7 +165,7 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
         //------------------------------------------------------
         //パスワード更新
         //------------------------------------------------------
-        Map <String,String> passwordMap = MapUtil.newHashMap();
+        Map <String,Object> passwordMap = MapUtil.newHashMap();
         Integer passwordType = form.getPasswordType();
         String password = form.getPassword();
         if (passwordType==2 || (passwordType == 1 && StrUtil.isNotBlank(password))) {
