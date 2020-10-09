@@ -10,6 +10,7 @@ import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditCommonLogic;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditEndLogic;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
@@ -46,7 +47,7 @@ public class UserManagerEditEndLogicImpl implements UserManagerEditEndLogic {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = GlobalException.class)
     public void changeEndDate(UserManagerEditEndForm dto) {
         List<UserManagerListDTO> accountDTOList = dto.getList();
         String userId = SecurityUtil.getUserId();
@@ -54,10 +55,12 @@ public class UserManagerEditEndLogicImpl implements UserManagerEditEndLogic {
         List<MastAccountDO> accountList = CollUtil.newArrayList();
         accountDTOList.forEach(accountDTO -> {
             MastAccountDO account = new MastAccountDO();
+            // キーID情報設定
+            account.setMaId(accountDTO.getMaId());
             account.setMaCmodifieruserid(userId);
             account.setMaDmodifieddate(date);
 
-            if (StrUtil.isNotBlank(account.getMaCuserid())) {
+            if (StrUtil.isNotBlank(accountDTO.getMaCuserid())) {
                 //「退職日を設定する」のとき
                 if (dto.getUseRetireDate()) {
                     Date retirementDate = accountDTO.getMeDdateofretirement();
@@ -67,18 +70,18 @@ public class UserManagerEditEndLogicImpl implements UserManagerEditEndLogic {
                             account.setMaDend(accountDTO.getMaDend());
                         } else {
                             // 入力値がなかったらシステム日付
-                            account.setMaDend(dto.getEndDate());
+                            account.setMaDend(date);
                         }
                     } else {
                         // 退職日を設定
                         account.setMaDend(retirementDate);
                     }
                 } else {
-                    if (accountDTO.getMaDend() != null) {
-                        account.setMaDend(accountDTO.getMaDend());
+                    if (dto.getEndDate() != null) {
+                        account.setMaDend(dto.getEndDate());
                     } else {
                         // 入力値がなかったらシステム日付
-                        account.setMaDend(dto.getEndDate());
+                        account.setMaDend(date);
                     }
                 }
                 accountList.add(account);

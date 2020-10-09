@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgWorkMoYearlistDO;
-import jp.smartcompany.job.modules.core.mapper.TmgWorkMoYearlistMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgWorkMoYearlist.TmgWorkMoYearlistMapper;
 import jp.smartcompany.job.modules.core.service.ITmgWorkMoYearlistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoYearListVo;
