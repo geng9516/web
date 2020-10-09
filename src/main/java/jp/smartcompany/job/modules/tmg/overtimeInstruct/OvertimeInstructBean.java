@@ -53,6 +53,7 @@ public class OvertimeInstructBean {
     public final ITmgDailyDetailService iTmgDailyDetailService;
     public final ITmgDailyDetailCheckService ITmgDailyDetailCheckService;
     public final ITmgTriggerService  iTmgTriggerService;
+    public final ITmgMonthlyService iTmgMonthlyService;
     //public PsDBBean psDBBean;
 
     OverTimeLimitDto overTimeLimitDtos= new OverTimeLimitDto();
@@ -444,6 +445,10 @@ public class OvertimeInstructBean {
                 }
             }
             vo.setMessage(dailyVo.getTdaCmessage());
+            // 超勤権限有無フラグ
+            vo.setOvertime(isOvertime(dailyVo.getTdaCemployeeid(),baseDate,psDBBean));
+            // 表示対象日が「確定済」かどうかの状態
+            vo.setStatus(dailyVo.getTdaCstatusflg().equals("TMG_DATASTATUS|9"));
             dailyOverTimeVos.add(vo);
         }
 
@@ -598,6 +603,27 @@ public class OvertimeInstructBean {
         ttDo.setTtrCparameter1(action);
         ttDo.setTtrDparameter1(DateUtil.parse(baseDate));
         return iTmgTriggerService.getBaseMapper().insert(ttDo);
+    }
+
+    /**
+     * 超勤権限があるかどうか判定します。
+     *
+     * @param  sEmp  職員番号
+     * @param  sDate 日付
+     * @return 判定結果（true:権限有り / false:なし）
+     */
+    public boolean isOvertime( String sEmp, String sDate ,PsDBBean psDBBean) {
+
+        // 管理サイトだったら、権限あり(true)とします。
+        if( psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) ) {
+            return true;
+        }
+
+        try {
+            return referList.hasAuthorityAtEmployee( sDate, sEmp, TmgUtil.Cs_AUTHORITY_OVERTIME );
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 //    /** 休憩時間編集機能の使用可否判定フラグ */
@@ -818,6 +844,50 @@ public class OvertimeInstructBean {
             retStyle = state+"@"+STYLE_CLASS_CHOKIN_MEIREI;
         }
         return retStyle;
+    }
+
+
+    private StatusDto getTmgStatus(String baseMonth){
+
+        List<StatusDto> statusDtos=iTmgMonthlyService.selectTmgStatus(
+                referList.buildSQLForSelectEmployees()
+                ,baseMonth
+                ,"MAX");
+        if(statusDtos.size()>0){
+            return statusDtos.get(0);
+        }
+        return null;
+    }
+    /**
+     * 超過勤務命令が編集可能か判定する。
+     *
+     * @return 判定結果（true：編集可能、false：編集不可能）
+     */
+    public boolean isEditable(String baseMonth,PsDBBean psDBBean) throws Exception {
+        boolean isEditable=false;
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
+        StatusDto statusDto=getTmgStatus(baseMonth);
+        if(statusDto == null){
+            return false;
+        }
+        // 「給与確定済」の場合、サイト関係なく常に「編集不可」
+        if(Integer.parseInt((String)statusDto.getFixedSalary()) == 1){
+            isEditable = false;
+        }
+        // 「勤怠締め完了済」の場合、管理サイトでなければ編集不可
+        else if( Integer.parseInt((String)statusDto.getFixedMonthly()) == 1 && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) ){
+            isEditable = false;
+        }
+        // いずれの条件も満たさなければ編集可
+        else{
+            isEditable = true;
+        }
+
+
+        return isEditable;
     }
 
 }

@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.StatusDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo;
 
@@ -195,4 +196,6 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
      * 対象月リストボックスのデータを取得するクエリ文を生成します。
      */
     List<ListBoxVo> selectMonthDate(String custID, String compCode);
+
+    List<StatusDto> selectTmgStatus(String employees, String recordDate, String range);
 }

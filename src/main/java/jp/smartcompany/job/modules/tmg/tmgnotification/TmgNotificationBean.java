@@ -223,7 +223,7 @@ public class TmgNotificationBean {
             nddVo.setTntfCtypeChar5(nlVo.getTntfCtypeChar5());
             nddVo.setTntfCtypeCode(nlVo.getTntfCtypeCode());
 //            nddVo.setCApprovalLevel(nlVo.getCapprovalLevel());
-            if(nlVo.getNtfapprover().indexOf(",")>-1){
+            if(!StrUtil.hasEmpty(nlVo.getNtfapprover()) && nlVo.getNtfapprover().indexOf(",")>-1){
                 nddVo.setNtfapprover(nlVo.getNtfapprover().split(","));
             }else if(!StrUtil.hasEmpty(nlVo.getNtfapprover())){
                 String[] str = {nlVo.getNtfapprover()};

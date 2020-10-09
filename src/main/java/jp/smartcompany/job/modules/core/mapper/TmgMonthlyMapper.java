@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.StatusDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
@@ -123,4 +124,8 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
     List<ListBoxVo> selectYearDate(@Param("custID")String custID, @Param("compCode")String compCode);
 
     List<ListBoxVo> selectMonthDate(@Param("custID")String custID, @Param("compCode")String compCode);
+
+    List<StatusDto> selectTmgStatus(@Param("employees")String employees,
+                                    @Param("recordDate")String recordDate,
+                                    @Param("range")String range);
 }

@@ -287,6 +287,13 @@
         ORDER BY
             TMO_DYYYYMM DESC
     </select>
+    <select id="selectTmgStatus" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.StatusDto">
+        SELECT
+            ${range}(TMG_F_IS_FIXED_MONTHLY(e.EMPID,#{recordDate},e.CUST,e.COMP))AS FIXED_MONTHLY,
+            ${range}(TMG_F_IS_FIXED_SALARY(e.EMPID,#{recordDate},e.CUST,e.COMP)) AS FIXED_SALARY
+        FROM
+            (${employees}) e
+    </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE
             TMG_MONTHLY M
