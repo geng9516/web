@@ -51,7 +51,7 @@
                 <!-- 共通組織図画面 end-->
                 <Drawer class="tc" placement="right" width="700" :closable="false"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <Tabs :animated="false" v-model="currentTab">
                 <tab-pane label="ツリー" name="organisationTree">
                       <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -72,7 +72,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf($event,0)" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -99,7 +99,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -442,7 +442,7 @@
                 isFixed:'', //月次確定情報
                 isSearchHistory: false, //是否允许点击遮罩层关闭
                 selectedDeptViewType: 3, //类型选择
-                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree", //組織のツリーと検索タブーを切り替え
                 deptDrawShow: false,    //組織ツリー用
                 treeData:[],            //組織ツリー用
                 empDeptLoading: false,  // 組織ツリーloading用
@@ -484,6 +484,7 @@
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     type: 11
@@ -492,7 +493,7 @@
                 //body 使用参数
                 query: {
                     txtTmgReferListTreeViewAdminTargetEmp: '',        //組織ツリーで選択した職員番号
-                    hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
@@ -707,6 +708,23 @@
                 }
                 console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                 await this.getOrgTree()
+                await this.getSearchCondition()
+
+                //検索の初期化対応
+                this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
+                if(this.query.hidSelectTab == '1'){
+                    this.searchOrgTree()
+                }
+
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
@@ -751,7 +769,6 @@
                     }
                 }
                 //一覧画面取得
-                await this.getSearchCondition()
                 if(this.EmpFlag){
                     await this.getWorkDateList()
                     this.getTitleData()
@@ -883,7 +900,7 @@
                     this.query.hidSelectTab='1'
                 }
             },
-            async handleClickEmpLeaf(e) {
+            async handleClickEmpLeaf(e, tabType) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
@@ -894,6 +911,7 @@
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.hidSelectTab = tabType
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.kanjiName = e[0].empname
                 this.workTypeName=e[0].wokertypename

@@ -72,7 +72,7 @@
                             職員
                         </div>
                         <div style="position: relative;">
-                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="職員データなし"></Tree>
+                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf($event,0)" class="tree mt2" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -99,7 +99,7 @@
                             職員
                         </div>
                         <div style="position: relative;">
-                            <Tree :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="職員データなし"></Tree>
+                            <Tree :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" class="tree mt2" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -656,7 +656,7 @@
                 this.deptName = e[0].secnic
                 this.getEmpList()
             },
-            handleClickEmpLeaf(e) {
+            handleClickEmpLeaf(e, tabType) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
@@ -672,6 +672,7 @@
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewAdminTargetGroup = e[0].groupid
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.hidSelectTab = tabType
                 this.getData(true)
                 console.log(e[0])
             },
