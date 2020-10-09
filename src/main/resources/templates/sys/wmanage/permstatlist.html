@@ -802,18 +802,32 @@
                     }
 
                     //年月リスト.lengthがゼロ場合、非活性化にする
-                    if (data.length === 0){
+                    if (data.length == 0 && this.queryList.hidSelectTab == '0' ){
                         this.model1 = ''
                         this.selectDisabled = false
                         this.preMonthShow = false
                         this.nextMonthShow = false
-                        if( this.treeData.length !== 0) {
+                        if(this.treeData.length !== 0) {
                             this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 6,
-                            content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
-                            });
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
+                            })
+                        }
+                    }
+                    if (data.length == 0 && this.queryList.hidSelectTab == '1' ){
+                        this.model1 = ''
+                        this.selectDisabled = false
+                        this.preMonthShow = false
+                        this.nextMonthShow = false
+                        if(this.treeData.length !== 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '条件に一致する職員が見つかりませんでした。'
+                            })
                         }
                     }
                 },
