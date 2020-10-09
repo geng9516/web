@@ -1816,8 +1816,8 @@
             searchOrgTree: Debounce( async function() {
                 this.empDeptLoading = true
                 try {
-                    const { data } = await this.http.get('sys/tree/search', this.referListObject)
-                    this.searchEmpTreeData = Utils.convertTreeData(data)
+                    const { data,msg } = await this.http.get('sys/tree/search', this.referListObject)
+                    this.searchEmpTreeData = Utils.convertTreeData(data,false,msg)
                     this.$Notice.success({ title:'所属図更新完了' })
                 } catch (error) {
                     return
