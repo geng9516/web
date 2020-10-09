@@ -770,6 +770,7 @@
                     txtTmgReferListTreeViewPermTargetGroup: '',
                     txtTmgReferListTreeViewPermTargetEmp: '',
                     txtTmgReferListTreeViewPermSelectedView: '',
+                    hidSelectTab: '0',
                     hidSearchData: '',
                     hidSearchItems: 'EMPLOYEEID',
                     hidSearchCondition: 'BROADMATCH',
@@ -843,7 +844,6 @@
                 }
                 console.log(this.referListObject)
                 await this.getOrgTree()
-                await this.getSearchCondition()
                 //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 if (targetPermSection) {
                     let getDeptCode = this.getDeptCode(this.treeData, targetPermSection)
