@@ -16,6 +16,7 @@ public class BaseSectionLogicImpl implements BaseSectionLogic {
      * @param poDto             基点組織選択用Dto
      * @return MastGroupEntity  更新用Entity
      */
+    @Override
     public MastGroupbasesectionDO insertBaseSection(BaseSectionRowListDTO poDto) {
         // 入れ替え用Entity
         MastGroupbasesectionDO oInsert = new MastGroupbasesectionDO();
