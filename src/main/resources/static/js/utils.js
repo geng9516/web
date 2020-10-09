@@ -133,13 +133,13 @@ const Utils = {
    * @param fristDisable 是否禁用第一项
    *
    */
-  convertTreeData(treeData, fristDisable) {
+  convertTreeData(treeData, fristDisable, msg) {
     if(!treeData) {
       Vue.prototype.$Message.error({
         background:true,
         closable: true,
         duration: 6.5,
-        content: '参照できる組織図が存在しません。'
+        content: msg && '参照できる組織図が存在しません。'
       });
       return []
     }
