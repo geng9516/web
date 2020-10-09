@@ -69,7 +69,7 @@
                             </div>
                         </Row>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf($event,0)" ref="tree"
                                   empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -95,7 +95,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf($event,1)" ref="tree"
                                   empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -393,6 +393,7 @@
                     [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                     [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
@@ -413,6 +414,9 @@
 
                 query: {
                     hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
+                    hidSearchItems:'',
+                    hidSearchCondition :'',
+                    hidSearchData :'',
                     EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
@@ -1172,7 +1176,7 @@
             },
 
             //组织树点选的处理
-            async handleClickLeaf(e) {
+            async handleClickLeaf(e, tabType) {
                 if(!e[0]) return
                 if(e[0].children) return
 
@@ -1196,7 +1200,9 @@
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
                 this.query.groupid=e[0].groupid
+                this.query.hidSelectTab = tabType
 
+                this.referListObject.hidSelectTab = tabType
                 this.isSearchHistory=false
 
                 //获取年月下拉列表

@@ -767,7 +767,6 @@
                         const { sectionList, recordDate, sysDate } = await this.http.get('sys/tree', this.referListObject)
                         // 转为可用数据
                         this.treeData = Utils.convertTreeData(sectionList)
-                        this.treeData2 = Utils.deepClone(this.treeData)
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                         this.sysDate = sysDate
                     } catch (error) {
@@ -982,6 +981,15 @@
                             return {
                                 name: Object.values(e)[0],
                                 value: Object.keys(e)[0],
+                            }
+                        })
+                        this.addPermissionAdminGroupList.some(e => {
+                            if(e.groupId.split('|')[1] === '000000') {
+                                this.treeData2 = [{
+                                    title: e.groupName,
+                                    secid: e.groupId.split('|')[0]
+                                }]
+                                return true
                             }
                         })
                     } catch (error) {

@@ -663,6 +663,11 @@ public class TmgReferList {
     private void sessionControl4SearchTree(int piParam, List pvSearchDataArray, String psDispLimit4Tree){
         HttpSession httpSession = ContextUtil.getSession();
         httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, getHidSelectTab());
+        if (getHidSelectTab() == ciSelectTreeTab) {
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, null);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION, null);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, null);
+        }
 
         if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
 //            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);

@@ -66,18 +66,21 @@
             </Tooltip>
           </span>
 
-          <Drawer class="tc" placement="right" width="700" v-model="deptDrawShow">
+          <Drawer class="tc" placement="right" width="700" v-model="deptDrawShow" :closable="false">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
               所属
             </div>
-            <Row class="tl mb5">
-              <!-- <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                <i-col span="7" class="no-border-radius">
-                  <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" transfer
-                    :options="startLimit" placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"
-                    @on-change="handleDeptDateChange"></date-picker>
-                </i-col> -->
+            <Row class="tl mb5" :gutter="8">
+              <i-col span="10">
+                <i-input class="mar mb5 like-select" placeholder="検索" v-model="searchDept"
+                  @keyup.enter.native="handleSearchDept">
+                </i-input>
+              </i-col>
+              <i-col span="8" class="no-border-radius">
+                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchDept">検索
+                </i-button>
+              </i-col>
             </Row>
             <div style="position: relative;">
               <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
@@ -158,8 +161,8 @@
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用開始日</span>
           <span class="input-like-span tl" style="margin-bottom: 1px;">
-            <date-picker type="date" :value="detailData.startDate" class="datepicker-single mb10" placeholder="日付" :options="startDateLimit"
-              format="yyyy/MM/dd" @on-change="detailData.startDate = $event"></date-picker>
+            <date-picker type="date" :value="detailData.startDate" class="datepicker-single mb10" placeholder="日付"
+              :options="startDateLimit" format="yyyy/MM/dd" @on-change="detailData.startDate = $event"></date-picker>
             <Checkbox v-model="detailData.useEntranceDate" class="tl mt5">各ユーザの入社年月日に設定する</Checkbox>
           </span>
         </div>
@@ -169,9 +172,9 @@
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用終了日</span>
           <span class="input-like-span tl" style="margin-bottom: 1px;">
-          <date-picker type="date" :value="detailData.endDate" class="datepicker-single mb10" placeholder="日付" :options="startDateLimit"
-            format="yyyy/MM/dd" @on-change="detailData.endDate = $event"></date-picker>
-          <Checkbox v-model="detailData.useRetireDate" class="tl mt5">各ユーザの退職日に設定する</Checkbox>
+            <date-picker type="date" :value="detailData.endDate" class="datepicker-single mb10" placeholder="日付"
+              :options="startDateLimit" format="yyyy/MM/dd" @on-change="detailData.endDate = $event"></date-picker>
+            <Checkbox v-model="detailData.useRetireDate" class="tl mt5">各ユーザの退職日に設定する</Checkbox>
           </span>
         </div>
 
@@ -294,16 +297,19 @@
               align: 'center'
             }
           ],
+          searchDept: '',
           tableData: [],
           treeData: [],
+          treeDataForSearch: [],
+          _treeData: [],
           passwordSetting: [{}, {}, {}, {}, {}],
           passwordPolicyLoading: false,
           useDrawerShow: false,
-          useType:'',
+          useType: '',
           updatePasswordPolicyLoading: false,
           drawerBtnLoading: false,
-          detailData: { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate:'', endDate:'' },
-          startDateLimit:{
+          detailData: { originalUserList: [], userIds: [], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate: '', endDate: '', forceChangePassword: false },
+          startDateLimit: {
             disabledDate: date => {
               // 利用開始日は、1900/01/01～2222/12/31の範囲で入力してください。
               return date.valueOf() < -3600000 || date.valueOf() > 7983759600000
@@ -330,11 +336,11 @@
           else return false
         },
         userTypeTableData() {
-          if(this.useType === 'start') {
+          if (this.useType === 'start') {
             return this.detailData.originalUserList
           }
 
-          if(this.useType === 'end') {
+          if (this.useType === 'end') {
             return this.detailData.list
           }
 
@@ -347,6 +353,8 @@
           try {
             const { data } = await this.http.get('sys/tree/orgs?psSite=Admin')
             this.treeData = this.convertTreeData(data)
+            this.treeData[0].expand = true
+            this._treeData = Utils.deepClone(this.treeData)
           } catch (error) {
             return
           } finally {
@@ -365,7 +373,7 @@
         },
         getTableData: Debounce(async function () {
           if (this.opts.searchType === 7 && !this.opts.empId) {
-            return this.$Notice.warning({ title: '注意', desc: '氏名条件を入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '職員番号条件を入力ください。', duration: 6.5 })
           }
           if (this.opts.searchType === 8 && !this.opts.sectionId) {
             return this.$Notice.warning({ title: '注意', desc: '部署を選択してください。', duration: 6.5 })
@@ -399,24 +407,6 @@
             this.loading = false
           }
         }),
-        // async update() {
-        //   this.$Modal.confirm({
-        //     title: '注意',
-        //     content: '入力内容を保存します。よろしいですか？',
-        //     okText: 'OK',
-        //     cancelText: 'キャンセル',
-        //     onOk: async () => {
-        //       this.loading = true
-        //       this.isEditing = false,
-        //       console.log(this.updateValue)
-        //       const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
-        //       this.$Message.success('更新完了')
-        //       this.getTableData()
-        //       this.updateValue = {}
-        //       this.updateList = []
-        //     }
-        //   })
-        // },
         async getPasswordpolicy() {
           this.isShow = true
           this.passwordPolicyLoading = true
@@ -429,7 +419,6 @@
           }
         },
         async updatePasswordPolicy() {
-          console.log(this.passwordSetting)
           try {
             const { data } = await this.http.post('sys/usermanager/policy', this.passwordSetting)
             this.getPasswordpolicy()
@@ -443,6 +432,7 @@
           if (!e[0]) return
           this.deptName = e[0].sectionName
           this.opts.sectionId = e[0].sectionId
+          this.deptDrawShow = false
         },
         handlePasswordChange: Debounce(async function () {
           const list = this.$refs.table.getSelection().map(e => e.maCuserid)
@@ -450,7 +440,7 @@
             return this.$Notice.warning({ title: '注意', desc: 'パスワード変更処理をするユーザを選択してください。', duration: 6.5 })
           }
           // 初始化
-          this.detailData = { userList:[], userIds:[], passwordType: 1, repeatPassword: '', password: '' }
+          this.detailData = { userList: [], userIds: [], passwordType: 1, repeatPassword: '', password: '', forceChangePassword: false }
 
           this.useType = 'password'
           this.useDrawerShow = true
@@ -468,7 +458,7 @@
             return this.$Notice.warning({ title: '注意', desc: '利用開始処理をするユーザを選択してください。', duration: 6.5 })
           }
           // 初始化
-          this.detailData = { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate:'' }
+          this.detailData = { originalUserList: [], userIds: [], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate: '', forceChangePassword: false }
 
           this.useType = 'start'
           this.useDrawerShow = true
@@ -486,7 +476,7 @@
             return this.$Notice.warning({ title: '注意', desc: '利用終了処理をするユーザを選択してください。', duration: 6.5 })
           }
           // 初始化
-          this.detailData = { list: [], useRetireDate: false, endDate:'' }
+          this.detailData = { list: [], useRetireDate: false, endDate: '' }
 
           this.useType = 'end'
           this.useDrawerShow = true
@@ -536,7 +526,7 @@
           }
 
           if (this.useType === 'start' && !this.detailData.useEntranceDate && !this.detailData.startDate) {
-              return this.$Notice.warning({ title: '注意', desc: '利用開始日を入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '利用開始日を入力してください。', duration: 6.5 })
           }
 
           if (this.useType === 'end' && !this.detailData.useRetireDate && !this.detailData.endDate) {
@@ -552,15 +542,15 @@
             onOk: async () => {
               try {
                 this.drawerBtnLoading = true
-                if(this.useType === 'start') {
+                if (this.useType === 'start') {
                   const { data } = await this.http.post('sys/usermanager/change/startDate?psSite=Admin', this.detailData)
                 }
 
-                if(this.useType === 'end') {
+                if (this.useType === 'end') {
                   const { data } = await this.http.post('sys/usermanager/change/endDate?psSite=Admin', this.detailData)
                 }
 
-                if(this.useType === 'password') {
+                if (this.useType === 'password') {
                   const { data } = await this.http.post('sys/usermanager/change/password?psSite=Admin', this.detailData)
                 }
                 this.useDrawerShow = false
@@ -593,6 +583,28 @@
           } else {
             return 'select-col'
           }
+        },
+        handleSearchDept: Debounce(function () {
+          if(!this.searchDept) {
+            this.treeData = this._treeData
+            return
+          }
+
+          this.treeDataForSearch = []
+          this.sectionInTreeData(this._treeData)
+          this.treeData = this.treeDataForSearch
+          console.log(this.treeData)
+        }),
+        sectionInTreeData(data) {
+          const _this = this
+          data.forEach((e, i) => {
+            if (e.title.indexOf(_this.searchDept) > -1) {
+              _this.treeDataForSearch = _this.treeDataForSearch.concat({...e, children:[]})
+            }
+            if (e.children && e.children.length > 0) {
+              _this.sectionInTreeData(e.children);
+            }
+          })
         },
         convertTreeData(treeData, fristDisable) {
           if (!treeData) {

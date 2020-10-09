@@ -69,7 +69,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf($event,0)" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -94,7 +94,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -624,6 +624,7 @@
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                     [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
@@ -645,6 +646,9 @@
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
                     hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0', //組織タブー0：ツリ、1:検索
+                    hidSearchItems:'',
+                    hidSearchCondition :'',
+                    hidSearchData :'',
                     txtTmgReferListTreeViewAdminTargetSection:'',
                     txtTmgReferListTreeViewAdminTargetEmp:'',
                     EmployeeCode:'',
@@ -1683,7 +1687,6 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
@@ -1704,7 +1707,7 @@
                     this.emplistLoading = false
                 }
             },
-            async handleClickEmpLeaf(e) {
+            async handleClickEmpLeaf(e, tabType) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
@@ -1723,8 +1726,9 @@
                 //当前页面请求参数
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
-
-                 this.isSearchHistory = false
+                this.query.hidSelectTab = tabType
+                this.referListObject.hidSelectTab = tabType
+                this.isSearchHistory = false
 
                 //获取年月下拉列表
                 await this.selectScheduleDateList()
@@ -1830,6 +1834,7 @@
             //     } else if (name=="organisationSearch") {
             //         this.query.hidSelectTab='1'
             //     }
+            //     console.log("----------------------2----------------------"+this.query.hidSelectTab)
             // },
             async handleDeptViewTypeChange() {
                 await this.getOrgTree()

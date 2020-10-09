@@ -1969,9 +1969,10 @@ public class EvaluatorSettingBean {
                         memberRightVO.setRestConfirm(restConfirm);
                         // 休暇・休出承認権限を持っていれば決裁レベルを表示
                         if (restConfirm) {
-                            memberRightVO.setLevel(
-                                    Integer.parseInt(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_APPROVALLEVEL, i))
-                            );
+                            String level = psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_APPROVALLEVEL, i);
+                            if (StrUtil.isNotBlank(level) && !StrUtil.equalsIgnoreCase(level,"null")) {
+                                memberRightVO.setLevel(Integer.parseInt(level));
+                            }
                         }
                         memberRightVO.setValidStartDate(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_FROM, i));
                         memberRightVO.setValidEndDate(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_TO, i));
@@ -2055,6 +2056,34 @@ public class EvaluatorSettingBean {
                 }
             }
         }
+
+        // 删除最后得出的结果中name为null的员工
+        Map<Integer,List<EvaluatorMemberVO>> removeMap = MapUtil.newHashMap();
+        for (int i = 0; i < formatGroupList.size(); i++) {
+            EvaluatorGroupVO groupVo = formatGroupList.get(i);
+            groupVo.setId(i+1);
+            List<EvaluatorMemberVO> removeList = CollUtil.newArrayList();
+            for (int j = 0; j < groupVo.getMemberList().size(); j++) {
+                EvaluatorMemberVO memberVO = groupVo.getMemberList().get(j);
+                memberVO.setId(j+1);
+                if (StrUtil.equalsIgnoreCase("null",memberVO.getName())) {
+                    removeList.add(memberVO);
+                }
+            }
+            removeMap.put(i,removeList);
+        }
+
+        removeMap.forEach((key,value)-> {
+            EvaluatorGroupVO groupVo = formatGroupList.get(key);
+            groupVo.getMemberList().removeAll(value);
+        });
+        List<EvaluatorGroupVO> removeGroupList = CollUtil.newArrayList();
+        for (EvaluatorGroupVO groupVO : formatGroupList) {
+            if (CollUtil.isEmpty(groupVO.getMemberList())) {
+                removeGroupList.add(groupVO);
+            }
+        }
+        removeGroupList.forEach(formatGroupList::remove);
 
         result.put("bottomMessage",getEvasetMessage(psDBBean,params, EvaluatorSettingConst.TMG_EVASET_MESSAGE_DISPALERT));
         result.put("list",formatGroupList);

@@ -241,7 +241,7 @@
                 <form-item label="承認者" v-if="detailsData.tntfCboss">
                     <span class="input-like-span" style="border-radius: 5px; white-space: pre-line;">{{ `${detailsData.tntfCbossName}(${detailsData.tntfDboss})` }}</span>
                 </form-item>
-                <form-item label="申請事由等">
+                <form-item label="申請事由">
                     <span class="input-like-span" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
                 </form-item>
 
@@ -548,7 +548,7 @@
                                      placeholder="傷病名は50文字以内で入力してください。"/>
                         </form-item>
 
-                        <form-item label="申請事由等">
+                        <form-item label="申請事由">
                             <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }"
                                      :maxlength="100" class="tl"
                                      placeholder="文字の長さは100文字以内になっております。"></i-input>
@@ -770,6 +770,7 @@
                     txtTmgReferListTreeViewPermTargetGroup: '',
                     txtTmgReferListTreeViewPermTargetEmp: '',
                     txtTmgReferListTreeViewPermSelectedView: '',
+                    hidSelectTab: '0',
                     hidSearchData: '',
                     hidSearchItems: 'EMPLOYEEID',
                     hidSearchCondition: 'BROADMATCH',
@@ -843,7 +844,6 @@
                 }
                 console.log(this.referListObject)
                 await this.getOrgTree()
-                await this.getSearchCondition()
                 //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 if (targetPermSection) {
                     let getDeptCode = this.getDeptCode(this.treeData, targetPermSection)
@@ -1549,7 +1549,7 @@
                 }
                 if (this.selectedRestInfo.confirmComment != '0' && !this.restApply.owncomment) {
                     this.errorInfo = true
-                    this.errorMsg = '申請事由等を入力してください。'
+                    this.errorMsg = '申請事由を入力してください。'
                     return
                 }
                 if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length > 0) {

@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.usermanager.form;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ public class UserManagerEditStartForm {
 
   private String password;
   /**利用開始日*/
+  @JsonFormat(pattern="yyyy/MM/dd")
   private Date startDate;
   /**入社日利用*/
   private Boolean useEntranceDate;
