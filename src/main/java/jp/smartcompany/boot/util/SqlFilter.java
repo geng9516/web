@@ -33,7 +33,7 @@ public class SqlFilter {
         //判断是否包含非法字符
         for(String keyword : keywords){
             if(str.contains(keyword)){
-                throw new GlobalException("包含非法字符");
+                throw new GlobalException(StrUtil.format("入力内容【{}】に不正な文字が含まれている",keyword));
             }
         }
 

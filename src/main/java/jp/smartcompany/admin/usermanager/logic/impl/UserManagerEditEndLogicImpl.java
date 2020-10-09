@@ -66,8 +66,8 @@ public class UserManagerEditEndLogicImpl implements UserManagerEditEndLogic {
                     Date retirementDate = accountDTO.getMeDdateofretirement();
                     if (retirementDate == null) {
                         // 退職日がNULLのときはそのまま
-                        if (accountDTO.getMaDend() != null) {
-                            account.setMaDend(accountDTO.getMaDend());
+                        if (dto.getEndDate() != null) {
+                            account.setMaDend(SysUtil.getMaxDateObject());
                         } else {
                             // 入力値がなかったらシステム日付
                             account.setMaDend(date);

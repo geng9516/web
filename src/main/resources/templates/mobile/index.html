@@ -764,8 +764,8 @@
         }),
         //登録
         async updateDaily() {
-
-          if (!this.errorCheck(this.workingId)) {
+          const [check, msg] = this.errorCheck(this.workingId)
+          if (!check) {
             return
           }
           this.updateDailyLoading = true
@@ -802,38 +802,48 @@
               this.tmgResultsDto.hasAuthority = true
             }
           }
-          try {
-            const { msg } = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-            if (msg === '0') {
-              this.updateDailyLoading = false
-              this.isShow = false
-              this.getTitleData()
-              return
-            }
-            this.errMsg = JSON.parse(msg)
-            let errMsg20
-            let check = Object.keys(this.errMsg).some(e => {
-              if (e === 'ERRTYPE_10') {
-                this.$Notice.error({ desc: this.errMsg.ERRTYPE_10[0].ERRMSG })
-                return true
-              }
-              if (e === 'ERRTYPE_20') {
-                this.errMsg.ERRTYPE_20.forEach(e20 => {
-                  errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+          this.$Modal.confirm({
+            inDrawer: true,
+            title: '注意',
+            content: msg || 'この内容で登録します。よろしいですか？',
+            width: 450,
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              try {
+                this.updateDailyLoading = true
+                const { msg } = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                if (msg === '0') {
+                  this.updateDailyLoading = false
+                  this.isShow = false
+                  this.getTitleData()
+                  return
+                }
+                this.errMsg = JSON.parse(msg)
+                let errMsg20
+                let check = Object.keys(this.errMsg).some(e => {
+                  if (e === 'ERRTYPE_10') {
+                    this.$Notice.error({ desc: this.errMsg.ERRTYPE_10[0].ERRMSG })
+                    return true
+                  }
+                  if (e === 'ERRTYPE_20') {
+                    this.errMsg.ERRTYPE_20.forEach(e20 => {
+                      errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                    })
+                    this.$Notice.error({ desc: errMsg20 })
+                  }
+
                 })
-                this.$Notice.error({ desc: errMsg20 })
+                if (check) {
+                  return false
+                }
+              } catch (error) {
+                return
+              } finally {
+                this.updateDailyLoading = false
               }
-
-            })
-            if (check) {
-              return false
             }
-          } catch (error) {
-            return
-          } finally {
-            this.updateDailyLoading = false
-          }
-
+          })
         },
         // 就業区分の切り替え表示制御
         changeWorkingID(workingid) {
@@ -874,24 +884,24 @@
           let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
           // 出勤 or 休日出勤
           if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
-            return true;
+            return [true];
           }
           // 修正出社時刻形式
           if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
             this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-            return false;
+            return [false];
           }
 
           // 修正退社時刻形式
 
           if (this.workData[2].workEnd && !this.time_check(this.workData[2].workEnd)) {
             this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-            return false;
+            return [false];
           }
 
           if (this.dailyEdit.tdaCowncommentR !== null && this.getLengthB(this.dailyEdit.tdaCowncommentR) > 100) {
             this.$Notice.error({desc: "本人コメント考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
-            return false;
+            return [false];
           }
 
           //非勤務
@@ -910,7 +920,7 @@
               return true
             }
           })
-          if (checkNonDuty) return false
+          if (checkNonDuty) return [false]
           this.detailOverhoursVOListNormal= this.handleOvertime(this.detailOverhoursVOList,1)
           // 超過勤務
           const checkOverhour = this.detailOverhoursVOListNormal.some(e => {
@@ -920,7 +930,7 @@
               return true
             }
           })
-          if (checkOverhour) return false
+          if (checkOverhour) return [false]
           let nOverTimeTotal = 0;
           // 超過勤務命令の明細部配下を行単位で取得
           this.detailOverhoursVOListNormal.forEach(e => {
@@ -932,19 +942,14 @@
           // 超過勤務命令時間が入力されていて、超過勤務対象「無」の場合は警告メッセージを表示する
           if (nOverTimeTotal > 0 && this.targetForOverTime === "1") {
             // 警告メッセージの表示および、応答の確認
-
-            if(!confirm('超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？')){
-              return false
-            }
+            return [true, '超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？']
           }
           // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
           if (nOverTimeTotal > this.overHourLimit) {
             // 警告メッセージの表示および、応答の確認
-            if(!confirm('超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？')){
-              return false
-            }
+            return [true, '超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？']
           }
-          return true;
+          return [true];
         },
         toMinuteFromHHcMI60(pHHMM) {
           // 何もパラメータが渡されなかった場合、そのまま返す
