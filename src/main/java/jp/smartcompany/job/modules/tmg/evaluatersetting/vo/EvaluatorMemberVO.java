@@ -16,6 +16,7 @@ import java.util.List;
 @EqualsAndHashCode(of={"name","empId"})
 public class EvaluatorMemberVO {
 
+    private Integer id;
     private String empId;
     private String name;
     private String groupName;
