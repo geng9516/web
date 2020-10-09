@@ -302,7 +302,7 @@
           useType:'',
           updatePasswordPolicyLoading: false,
           drawerBtnLoading: false,
-          detailData: { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate:'', endDate:'' },
+          detailData: { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate:'', endDate:'',forceChangePassword:false },
           startDateLimit:{
             disabledDate: date => {
               // 利用開始日は、1900/01/01～2222/12/31の範囲で入力してください。
@@ -443,6 +443,7 @@
           if (!e[0]) return
           this.deptName = e[0].sectionName
           this.opts.sectionId = e[0].sectionId
+          this.deptDrawShow = false
         },
         handlePasswordChange: Debounce(async function () {
           const list = this.$refs.table.getSelection().map(e => e.maCuserid)
@@ -450,7 +451,7 @@
             return this.$Notice.warning({ title: '注意', desc: 'パスワード変更処理をするユーザを選択してください。', duration: 6.5 })
           }
           // 初始化
-          this.detailData = { userList:[], userIds:[], passwordType: 1, repeatPassword: '', password: '' }
+          this.detailData = { userList:[], userIds:[], passwordType: 1, repeatPassword: '', password: '',forceChangePassword:false }
 
           this.useType = 'password'
           this.useDrawerShow = true
@@ -468,7 +469,7 @@
             return this.$Notice.warning({ title: '注意', desc: '利用開始処理をするユーザを選択してください。', duration: 6.5 })
           }
           // 初始化
-          this.detailData = { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate:'' }
+          this.detailData = { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate:'',forceChangePassword:false }
 
           this.useType = 'start'
           this.useDrawerShow = true
