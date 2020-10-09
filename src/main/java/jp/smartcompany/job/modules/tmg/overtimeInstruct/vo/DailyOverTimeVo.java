@@ -33,4 +33,8 @@ public class DailyOverTimeVo {
     private List<ResultRest40tVo> restTimeList=new ArrayList<>();
     //備考
     private String message;
+    // 超勤権限有無フラグ
+    private boolean isOvertime;
+    // 表示対象日が「確定済」かどうかの状態
+    private boolean isStatus;
 }

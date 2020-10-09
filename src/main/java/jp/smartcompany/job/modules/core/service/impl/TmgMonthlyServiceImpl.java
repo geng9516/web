@@ -6,6 +6,7 @@ package jp.smartcompany.job.modules.core.service.impl;
         import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
         import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
         import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
+        import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.StatusDto;
         import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
         import jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo;
         import org.springframework.stereotype.Repository;
@@ -326,5 +327,19 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
     @Override
     public List<ListBoxVo> selectMonthDate(String custID, String compCode){
         return baseMapper.selectMonthDate(custID, compCode);
+    }
+
+    /**
+     * 対象職員(複数)・年月の勤怠締め有無、給与確定有無を返します。
+     * この検索結果は、一覧タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * 第3引数"all"がtrueであれば、指定された職員全員が勤怠締め完了（または給与確定完了）の場合に1を返します。
+     * falseであれば、指定された職員のうち1人でも勤怠締め完了（または給与確定完了）の場合に1を返します。
+     *
+     * なお、employeesにはps.c01.tmg.util.TmgReferList#buildSQLForSelectEmployees()の戻り値
+     * （または同等のレイアウトのサブクエリ）を指定する必要があります
+     */
+    @Override
+    public List<StatusDto> selectTmgStatus(String employees, String recordDate, String range){
+        return baseMapper.selectTmgStatus( employees,  recordDate, range);
     }
 }

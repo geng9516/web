@@ -105,7 +105,7 @@
                     <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
                 </i-select>
             </div>
-            <Alert class="primary-info">日付をクリックすると、命令画面を表示します。</Alert>
+            <Alert class="primary-info" >日付をクリックすると、命令画面を表示します。<span class="red" v-show="!isEditable">※確定済のため編集できません</span></Alert>
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
                 :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
@@ -139,7 +139,7 @@
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
                         <i-button type="primary" size="large" class="tr" @click="overTimeUpdate"
-                            :loading="updateBtnLoading" v-if="hasAuthority">命令/確認</i-button>
+                            :loading="updateBtnLoading" v-if="hasAuthority || this.query.hidSelectTab == '1'">命令/確認</i-button>
                     </i-col>
                 </Row>
                 <Row class="mb15">
@@ -216,19 +216,21 @@
 
                     <template slot-scope="{ row }" slot="startTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-if="hasAuthority"
+                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-if="value[row._index].status || !value[row._index].overtime" disabled></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-else
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)">
                             </i-input>
-                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-else disabled></i-input>
+
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-if="hasAuthority"
+                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-if="value[row._index].status || !value[row._index].overtime" disabled></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-else
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)">
                             </i-input>
-                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-else disabled></i-input>
+
                         </div>
                     </template>
 
@@ -236,14 +238,15 @@
                         <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i"
                             class="mb2">
                             <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
+                                <i-input :value="value[row._index].updateOverTimeDtoList[i].sCComment" class="tl"  v-if="value[row._index].status || !value[row._index].overtime" disabled></i-input>
                                 <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea" class="tl"
                                     :autosize="{ minRows: 2, maxRows: 5 }" :maxlength="100"
-                                         v-if="hasAuthority"
+                                         v-else
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
-                                <i-input :value="value[row._index].updateOverTimeDtoList[i].sCComment" class="tl" v-else disabled></i-input>
+
                             </i-col>
-                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
-                                <i-button ghost type="error" v-if="hasAuthority"
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1 && !(value[row._index].status || !value[row._index].overtime)">
+                                <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
                             </i-col>
@@ -256,10 +259,9 @@
                             <span
                                 v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
                                 class="confirm-sytle">命</span>
-
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)" v-if="hasAuthority"
+                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)" v-if="!(value[row._index].status || !value[row._index].overtime)"
                             v-show="value[row._index].updateOverTimeDtoList.length < 4">
                             +
                         </i-button>
@@ -362,6 +364,7 @@
             el: '.overtimeinstruchinfo-warp',
             data() {
                 return {
+                    isEditable:true,
                     showAverage: false,
                     showDayApply: false,
                     hasPassedTimeCheck: true,
@@ -670,8 +673,6 @@
                     }
                     const that = this
                     this.tableHead.forEach((e, i) => {
-                        console.log(7)
-                        console.log(e)
                         result = result.concat({
                             // title: e,
                             className: e.today ? 'gold' : e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
@@ -689,7 +690,9 @@
                                         },
                                         on: {
                                             click() {
-                                                that.handleClickHead(e)
+                                                if(that.isEditable){
+                                                    that.handleClickHead(e)
+                                                }
                                             },
                                         },
                                     }
@@ -756,7 +759,6 @@
                     //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
-                        console.log(getDeptCode)
                         if (getDeptCode) {
                             this.getDeptName(this.treeData, targetPermSection)
                             this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -951,6 +953,7 @@
                                 }
                             })
                             return {
+                                ...e,
                                 openN: e.openN,
                                 closeN: e.closeN,
                                 baseDay: this.query.baseDay,
@@ -984,6 +987,7 @@
                             this.query.action = "ACT_DISP_RMONTHLY"
                         }
                         this.getLimit()
+                        await this.getEditable()
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
                         if( this.treeData.length !== 0 && data.length === 0) {
@@ -994,6 +998,7 @@
                             content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
                             });
                         }
+
                     } catch (error) {
                         return
                     } finally {
@@ -1004,7 +1009,7 @@
                 },
                 async getLimit() {
                     try {
-                        this.permissionFlagLoading = true
+                        this.ise = true
                         const { data } = await this.http.get('sys/overtimeinstruct/limitDisp', this.query)
                         let result = []
                         Object.keys(this.permisssionFlagKeyValueHelper).forEach(e=>{
@@ -1022,7 +1027,18 @@
                     } finally {
                         this.permissionFlagLoading = false
                     }
-                },　
+                },
+
+                async getEditable() {
+                    try {
+                        this.isEditable = true
+                        const { data } = await this.http.get('sys/overtimeinstruct/isEditable', this.query)
+                        this.isEditable = data
+                    } catch (error) {
+                    } finally {
+                        console.log(this.isEditable)
+                    }
+                },
                 async getAvgTableData(e) {
                     this.averageTableLoading = true
                     this.query.empId = e
@@ -1130,7 +1146,6 @@
                                     item[key] = Utils.deepClone(PATTERN[key])
                                 } else {
                                     // 清空操作
-                                    console.log(8)
                                     if (key.indexOf('List') > -1) {
                                         item[key] = [{}]
                                     } else {

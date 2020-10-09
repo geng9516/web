@@ -53,6 +53,17 @@ public class OvertimeInstructController extends AbstractController {
         return overtimeInstructBean.actionExecuteDisp(baseMonth,psDBBean);
     }
 
+    /**
+     * 超過勤務命令の編集可否判定フラグ
+     *
+     */
+    @GetMapping("isEditable")
+    public boolean isEditable(@RequestParam("baseMonth")String baseMonth
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        return overtimeInstructBean.isEditable(baseMonth,psDBBean);
+    }
+
 
     /**
      * 表头
