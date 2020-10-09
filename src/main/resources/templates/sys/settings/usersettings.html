@@ -161,9 +161,9 @@
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用開始日</span>
           <span class="input-like-span tl" style="margin-bottom: 1px;">
-            <date-picker type="date" :value="detailData.startDate" class="datepicker-single mb10" placeholder="日付"
+            <date-picker type="date" :value="detailData.startDate" class="datepicker-single mb10" placeholder="日付" :disabled="detailData.disabledForStartDate"
               :options="startDateLimit" format="yyyy/MM/dd" @on-change="detailData.startDate = $event"></date-picker>
-            <Checkbox v-model="detailData.useEntranceDate" class="tl mt5">各ユーザの入社年月日に設定する</Checkbox>
+            <Checkbox v-model="detailData.useEntranceDate" class="tl mt5"  @on-change="resetUserDate($event, 'startDate', 'disabledForStartDate')">各ユーザの入社年月日に設定する</Checkbox>
           </span>
         </div>
 
@@ -172,9 +172,9 @@
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用終了日</span>
           <span class="input-like-span tl" style="margin-bottom: 1px;">
-            <date-picker type="date" :value="detailData.endDate" class="datepicker-single mb10" placeholder="日付"
+            <date-picker type="date" :value="detailData.endDate" class="datepicker-single mb10" placeholder="日付" :disabled="detailData.disabledForEndDate"
               :options="startDateLimit" format="yyyy/MM/dd" @on-change="detailData.endDate = $event"></date-picker>
-            <Checkbox v-model="detailData.useRetireDate" class="tl mt5">各ユーザの退職日に設定する</Checkbox>
+            <Checkbox v-model="detailData.useRetireDate" class="tl mt5" @on-change="resetUserDate($event, 'endDate', 'disabledForEndDate')">各ユーザの退職日に設定する</Checkbox>
           </span>
         </div>
 
@@ -609,6 +609,14 @@
               _this.sectionInTreeData(e.children);
             }
           })
+        },
+        resetUserDate(e, name, disableName) {
+          if(e) {
+            this.detailData[name] = ''
+            this.detailData[disableName] = true
+          } else {
+            this.detailData[disableName] = false
+          }
         },
         convertTreeData(treeData, fristDisable) {
           if (!treeData) {
