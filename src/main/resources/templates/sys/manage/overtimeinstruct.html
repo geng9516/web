@@ -997,12 +997,20 @@
                         await this.getEditable()
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
-                        if( this.treeData.length !== 0 && data.length === 0) {
+                        if( this.treeData.length !== 0 && data.length === 0 && this.query.hidSelectTab == '0' ) {
                             this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 6,
-                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                            content: '指定した年月の超勤データがありません或は選択した所属に存在している職員はありません。'
+                            });
+                        }
+                        if( this.treeData.length !== 0 && data.length === 0 && this.query.hidSelectTab == '1' ) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '指定した年月の超勤データがありません或は条件に一致する職員が見つかりませんでした。'
                             });
                         }
 
