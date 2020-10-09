@@ -925,6 +925,12 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data.dailyOverTimeVoList
+                        this.tableData3 = this.tableData3.map(e => {
+                            return {
+                                ...e,
+                                _disabled:  e.status || !e.overtime
+                            }
+                        })
                         this.hasAuthority = data.hasAuthority
                         if(this.hasAuthority){
                             this.columns3=this.columns3bak.concat(
@@ -968,6 +974,7 @@
                         return
                     } finally {
                         this.dailyTableLoading = false
+                        console.log(this.value)
                     }
                 },
                 async getTableData() {
