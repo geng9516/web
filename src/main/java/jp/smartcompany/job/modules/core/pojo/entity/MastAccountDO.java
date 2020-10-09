@@ -58,7 +58,7 @@ private static final long serialVersionUID=1L;
         /**
          * 有効期間終了日
          */
-    @TableField("ma_dend")
+    @TableField(value="ma_dend",updateStrategy = FieldStrategy.IGNORED)
         private Date maDend;
 
         /**
