@@ -552,6 +552,11 @@
 
                 if (this.useType === 'password') {
                   const { data } = await this.http.post('sys/usermanager/change/password?psSite=Admin', this.detailData)
+                  let msg = ''
+                  Object.keys(data).forEach(e=>{
+                    msg = msg.concat(`アカウント: ${e} パスワード: ${data[e]}\n`)
+                  })
+                  this.$Notice.success({ title:'パスワード変更結果',desc: msg, duration: 0 })
                 }
                 this.useDrawerShow = false
                 this.$Message.success('更新完了')
@@ -593,7 +598,6 @@
           this.treeDataForSearch = []
           this.sectionInTreeData(this._treeData)
           this.treeData = this.treeDataForSearch
-          console.log(this.treeData)
         }),
         sectionInTreeData(data) {
           const _this = this
