@@ -763,15 +763,15 @@
                 </foreach>
               </if>
               AND (
-                       ME_CKANANAME LIKE #{empName} || '%'
-                       OR  ME_CKANJINAME LIKE #{empName} || '%'
-                       OR  ME_CEMPLOYEENAMECH LIKE #{empName} || '%'
-                       OR  ME_CEMPLOYEENAME01 LIKE #{empName} || '%'
-                       OR  ME_CEMPLOYEENAME02 LIKE #{empName} || '%'
-                       OR  ME_CENGLISHNAME LIKE #{empName} || '%'
-                       OR  ME_COLDSURNAMEINKANJI LIKE #{empName} || '%'
-                       OR  ME_COLDSURNAMEKANA LIKE #{empName} || '%'
-                       OR  ME_COLDSURNAMEINENGLISH LIKE #{empName} || '%'
+                       ME_CKANANAME LIKE '%' || #{empName} || '%'
+                       OR  ME_CKANJINAME LIKE '%' || #{empName} || '%'
+                       OR  ME_CEMPLOYEENAMECH LIKE '%' || #{empName} || '%'
+                       OR  ME_CEMPLOYEENAME01 LIKE '%' || #{empName} || '%'
+                       OR  ME_CEMPLOYEENAME02 LIKE '%' || #{empName} || '%'
+                       OR  ME_CENGLISHNAME LIKE '%' || #{empName} || '%'
+                       OR  ME_COLDSURNAMEINKANJI LIKE '%' || #{empName} || '%'
+                       OR  ME_COLDSURNAMEKANA LIKE '%' || #{empName} || '%'
+                       OR  ME_COLDSURNAMEINENGLISH LIKE '%' || #{empName} || '%'
                   )
               AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
               AND main.ME_CUSERID = MA_CUSERID(+)
@@ -906,7 +906,7 @@
                         AND HD_CCOMPANYID_CK = ME_CCOMPANYID
                         AND HD_CEMPLOYEEID_CK = ME_CEMPLOYEEID_CK
                         AND HD_DENDDATE >= TRUNC(SYSDATE)
-                        AND HD_CEMPLOYEEID_CK LIKE #{empId} || '%'
+                        AND HD_CEMPLOYEEID_CK LIKE  '%' || #{empId} || '%'
         )
           AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
           AND main.ME_CUSERID = MA_CUSERID(+)
