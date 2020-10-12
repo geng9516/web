@@ -22,7 +22,7 @@ public class UserManagerEditPersonalForm {
     private String password;
     /**次回ログインパスワード変更フラグ*/
     private Boolean forceChangePassword;
-    private Date baseDate;
+
     /** 基準日(社員基本情報コンポーネント引渡し用) */
     private MastAccountDO account;
 
