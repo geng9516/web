@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.usermanager.logic.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
@@ -23,6 +24,7 @@ import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
@@ -81,9 +83,11 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
     }
 
     @Override
+    @Transactional(rollbackFor = GlobalException.class)
     public Map<String,Object> updatePersonal(UserManagerEditPersonalForm form) {
         passwordMaxLen = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN);
-        MastAccountDO accountDO = form.getAccount();
+        MastAccountDO accountDO = new MastAccountDO();
+        BeanUtil.copyProperties(form.getAccount(),accountDO);
         String userId = form.getUserId();
         String customerId =  "01";
         String language = "ja";

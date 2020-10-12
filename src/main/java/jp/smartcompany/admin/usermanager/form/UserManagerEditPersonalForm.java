@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.usermanager.form;
 
+import jp.smartcompany.admin.usermanager.dto.UpdatePersonalDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,6 @@ public class UserManagerEditPersonalForm {
     private Boolean forceChangePassword;
 
     /** 基準日(社員基本情報コンポーネント引渡し用) */
-    private MastAccountDO account;
+    private UpdatePersonalDTO account;
 
 }

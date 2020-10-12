@@ -73,7 +73,7 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
            QueryWrapper<MastAccountDO> qw = SysUtil.query();
            qw.eq("MA_CCUSTOMERID",customerId)
              .eq("MA_CACCOUNT",account)
-                   .lt(" MA_DEND", "TRUNC(SYSDATE)");
+                   .lt("MA_DEND", DateUtil.date());
            return list(qw).stream().map(accountDO -> {
              UserManagerDTO dto = new UserManagerDTO();
              dto.setMaCuserid(accountDO.getMaCuserid());
