@@ -782,7 +782,7 @@
                     console.log("this.tableData = a")
                     console.log(this.tableData)
 
-                } else if(data.length == 0){
+                } else if (data.length == 0 && this.query.hidSelectTab == '0' ){
                     this.tableData = data
                     this.dataLoading = false
                     this.$Message.error({
@@ -790,6 +790,15 @@
                         closable: true,
                         duration: 6,
                         content: '職員が存在している部署を選択してくだい。'
+                    });
+                } else if(data.length == 0 && this.query.hidSelectTab == '1' ){
+                    this.tableData = data
+                    this.dataLoading = false
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '条件に一致する職員が見つかりませんでした。'
                     });
                 }
                 this.isSearchHistory = false
