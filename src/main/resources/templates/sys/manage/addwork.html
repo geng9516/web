@@ -983,7 +983,7 @@
                 // 発令
                 async getHatuRei() {
                     try {
-                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.query)
+                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
                         if(data !=null){
                             this.hatuReiDisp=true
                             this.hatuReiName=data.name
