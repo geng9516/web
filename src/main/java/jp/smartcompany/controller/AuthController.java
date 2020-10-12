@@ -34,7 +34,7 @@ public class AuthController {
     @GetMapping("login")
     public String toLogin(@RequestAttribute("isMobile")Boolean isMobile) {
         if (SecurityUtil.isAuthenticated()) {
-            return "redirect:/sys";
+            return "redirect:/";
         }
         if (!isMobile) {
             return "login";
