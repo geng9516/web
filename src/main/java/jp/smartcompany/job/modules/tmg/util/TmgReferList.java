@@ -148,6 +148,8 @@ public class TmgReferList {
      */
     public static final int TREEVIEW_TYPE_EMP_WARD = 61;
 
+    //遷移元のサイトIDのキー(共通)
+    public static final String SESSION_KEY_SITE       = "psSite";
 
     // ツリービューを使用する際の、HTMLオブジェクトのIDなどに対する接頭辞
     public static final String TREEVIEW_OBJ_HEADER_ADMIN       = "TmgReferListTreeViewAdmin";
@@ -669,6 +671,15 @@ public class TmgReferList {
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, null);
         }
 
+        //サイト切り替えの場合、検索条件をクリアする
+        String from_psSite = (String)httpSession.getAttribute(SESSION_KEY_SITE);
+        if(!StrUtil.equals(psDBBean.getSiteId(),from_psSite)){
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, null);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION, null);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, null);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, 0);
+        }
+
         if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
 //            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION , String.valueOf(getSearchCondition()));
@@ -763,6 +774,8 @@ public class TmgReferList {
         session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
         session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
 
+        // 改めてセッションにサイトID登録する
+        session.setAttribute(SESSION_KEY_SITE, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
     }
 
     /**
@@ -861,6 +874,9 @@ public class TmgReferList {
         session.setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP, targetGroup_perm);
         session.setAttribute(TREEVIEW_KEY_PERM_TARGET_EMP, targetMember_perm);
         session.setAttribute(TREEVIEW_KEY_PERM_SELECTED_VIEW, selectedView_perm);
+
+        // 改めてセッションにサイトID登録する
+        session.setAttribute(SESSION_KEY_SITE, TmgUtil.Cs_SITE_ID_TMG_PERM);
 
         log.debug("勤怠承認サイトsectionId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION));
         log.debug("勤怠承認サイトempId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP));
