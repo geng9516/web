@@ -65,7 +65,7 @@
                                          placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
-                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf($event,0)" ref="tree"
                               empty-text="所属データなし"></Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -269,6 +269,7 @@
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
+                    hidSelectTab:'',
                     txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
@@ -545,13 +546,13 @@
                     this.loading = false
                 }
             },
-            async getEmpList() {
+            async getEmpList(e) {
                 try {
                     this.emplistLoading = true
                     //初期化及び前回データをクリアする
                     this.empTreeData = []
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
-                    if(!empList){
+                    if(!empList && e == '0'){
                         this.$Message.error({
                             background: true,
                             closable: true,
@@ -646,7 +647,7 @@
                 location.href = "./VacationTablePanel/vacationtablepanel.html";
             },
             handleSelector() { },
-            async handleClickLeaf(e) {
+            async handleClickLeaf(e,tabType) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
@@ -654,7 +655,7 @@
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
-                this.getEmpList()
+                this.getEmpList(tabType)
             },
             handleClickEmpLeaf(e, tabType) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
@@ -673,6 +674,7 @@
                 this.query.txtTmgReferListTreeViewAdminTargetGroup = e[0].groupid
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.hidSelectTab = tabType
+                this.referListObject.hidSelectTab = tabType
                 this.getData(true)
                 console.log(e[0])
             },
