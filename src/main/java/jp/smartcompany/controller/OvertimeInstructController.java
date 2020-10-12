@@ -4,16 +4,11 @@ import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
-import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.UpdateDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.UpdateListDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.*;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.TypeGroupVo;
-import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,7 +19,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("sys/overtimeinstruct")
-public class OvertimeInstructController extends AbstractController {
+public class OvertimeInstructController {
 
     @Autowired
     private OvertimeInstructBean overtimeInstructBean;
