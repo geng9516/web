@@ -3,8 +3,8 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastAccount.MastAccountMapper">
 
     <!--用户管理相关sql开始-->
+    <!-- 既存アカウントチェック-->
     <select id="selectStartCheckAccount" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerDTO">
-        -- 既存アカウントチェック
         SELECT
             MA_CACCOUNT
         FROM
