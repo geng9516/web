@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 @Getter
@@ -17,6 +18,7 @@ public class UserManagerEditPersonalForm {
     /**パスワード発行区分*/
     private Integer passwordType;
     /**パスワード*/
+    @Pattern(regexp = "^[a-z0-9A-Z_]+$",message = "パスワードに使用できる文字は英数字のみです。")
     private String password;
     /**次回ログインパスワード変更フラグ*/
     private Boolean forceChangePassword;

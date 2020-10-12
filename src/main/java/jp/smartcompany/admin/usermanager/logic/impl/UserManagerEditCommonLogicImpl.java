@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
@@ -159,7 +160,6 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
    * @return パスワード
    */
   public String createPassword(Integer sPassType, String sPassword) {
-
     String sRetPassword = sPassword;
     if (sPassType == null || (sPassType.equals(1) && sPassword == null)) {
       return sRetPassword;
@@ -170,36 +170,9 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
     } else {
       int maxLen = Integer.parseInt(cacheUtil.getSystemProperty(PROP_PW_MAX_LEN));
       //自動生成パスワード
-      sRetPassword = getRandomPassword(maxLen);
+      sRetPassword = RandomUtil.randomString(maxLen);
     }
     return sRetPassword;
-  }
-
-  /**
-   * ランダムパスワード作成.
-   * @param length パスワード長
-   * @return パスワード
-   */
-  private String getRandomPassword(int length) {
-    // 初期化
-    Random rnd = new Random();
-    int ran = rnd.nextInt(128);
-    // パスワード同一化を防ぐためメモリ使用量とランダム値も加算
-    long seed = System.currentTimeMillis() + Runtime.getRuntime().freeMemory() + ran;
-    Random rand = new Random(seed);
-
-    String text = "23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ_";
-    int roof = text.length();
-    char [] character = new char[roof];
-    for (int i = 0; i < roof; i++) {
-      character[i] = text.charAt(i);
-    }
-    StringBuilder pass = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      pass.append(character[rand.nextInt(roof)]);
-    }
-
-    return pass.toString();
   }
 
   /**

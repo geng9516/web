@@ -90,7 +90,7 @@ public class UserManagerController {
     }
 
     @PostMapping("personal")
-    public Map<String,Object> updatePersonal(@RequestBody UserManagerEditPersonalForm form) {
+    public Map<String,Object> updatePersonal(@Valid @RequestBody UserManagerEditPersonalForm form) {
         return userManagerEditPersonalLogic.updatePersonal(form);
     }
     /* ============ UserManagerEditPersonalAction 结束 ============= */
@@ -101,7 +101,7 @@ public class UserManagerController {
         return userManagerEditPasswordLogic.showChangePassword(changePasswordDTO);
     }
     @PostMapping("change/password")
-    public Map<String,Object> changePassword(@RequestBody UserManagerEditPasswordForm form) {
+    public Map<String,Object> changePassword(@Valid @RequestBody UserManagerEditPasswordForm form) {
         return userManagerEditPasswordLogic.changePassword(form);
     }
     /* ============ UserManagerEditPasswordAction 结束 ============= */
