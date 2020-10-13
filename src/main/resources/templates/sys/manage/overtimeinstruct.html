@@ -215,7 +215,7 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="startTime">
-                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
                             <i-input :value="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-if="value[row._index].status || !value[row._index].overtime" disabled></i-input>
                             <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-else
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)">
@@ -225,7 +225,7 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
                             <i-input :value="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-if="value[row._index].status || !value[row._index].overtime" disabled></i-input>
                             <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-else
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)">
