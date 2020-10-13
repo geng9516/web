@@ -173,7 +173,7 @@
 
           <div class="no-border-radius" style="display: flex; align-items: stretch;">
             <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">組織</span>
-            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.sectionName }}</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.isOut === '1' ? '退職' : detailData.sectionName }}</span>
           </div>
 
           <div class="no-border-radius mb5" style="display: flex; align-items: stretch;">
@@ -351,6 +351,8 @@
           treeDataForSearch: [],
           _treeData: [],
           passwordSetting: [{}, {}, {}, {}, {}],
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
           passwordPolicyLoading: false,
           useDrawerShow: false,
           useType: '',
@@ -399,10 +401,7 @@
         async getOrgTree() {
           this.empDeptLoading = true
           try {
-            const { data } = await this.http.get('sys/tree/orgs',{
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp')
-            })
+            const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
             this.treeData = this.convertTreeData(data)
             this.treeData[0].expand = true
             this._treeData = Utils.deepClone(this.treeData)
@@ -496,7 +495,7 @@
           this.useType = 'password'
           this.useDrawerShow = true
           this.useTitle = 'パスワード編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/password?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/password?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.userList = data.userList
           this.detailData.userIds = data.userList.map(e => e.maCuserid)
           this.detailData.min = data.passwordMinLen
@@ -514,7 +513,7 @@
           this.useType = 'start'
           this.useDrawerShow = true
           this.useTitle = '利用開始日編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/startDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/startDate?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.startDate = data.defaultStartDate
           this.detailData.min = data.PASSWORD_MIN_LEN
           this.detailData.max = data.PASSWORD_MAX_LEN
@@ -532,7 +531,7 @@
           this.useType = 'end'
           this.useDrawerShow = true
           this.useTitle = '利用終了日編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/endDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/endDate?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.endDate = Utils.formatDate(data.defaultEndDate, 'yyyy/mm/dd')
           this.detailData.list = data.list
         }),
@@ -605,19 +604,19 @@
               try {
                 this.drawerBtnLoading = true
                 if (this.useType === 'start') {
-                  const { data } = await this.http.post('sys/usermanager/change/startDate?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/startDate?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                 }
 
                 if (this.useType === 'end') {
-                  const { data } = await this.http.post('sys/usermanager/change/endDate?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/endDate?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                 }
 
                 if (this.useType === 'personal') {
-                  const { data } = await this.http.post('sys/usermanager/personal?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/personal?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                 }
 
                 if (this.useType === 'password') {
-                  const { data } = await this.http.post('sys/usermanager/change/password?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/password?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                   let msg = ''
                   Object.keys(data).forEach(e=>{
                     msg = msg.concat(`アカウント: ${e} パスワード: ${data[e]}\n`)
@@ -649,6 +648,7 @@
           this.detailData.kanaName = data.userInfo.kanaName
           this.detailData.kanjiName = data.userInfo.kanjiName
           this.detailData.sectionName = data.userInfo.sectionName
+          this.detailData.isOut = data.userInfo.isOut
           this.detailData.postName = data.userInfo.postName
           this.detailData.account = data.accountInfo
           this.detailData.account.maDstart = data.accountInfo.maDstart ? Utils.formatDate(data.accountInfo.maDstart, 'yyyy/mm/dd') : ''
