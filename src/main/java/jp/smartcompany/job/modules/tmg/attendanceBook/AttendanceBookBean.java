@@ -85,11 +85,10 @@ public class AttendanceBookBean {
      * @param psDBBean
      */
     public void setExecuteParameters(String year, String month, String employeeId, PsDBBean psDBBean) {
-
         this.psDBBean = psDBBean;
-
         this.setReferList();
         if (null != employeeId && !"".equals(employeeId) && (null == psDBBean.getTargetUser() || "".equals(psDBBean.getTargetUser()))) {
+            //目標対象
             psDBBean.setTargetUser(employeeId);
         }
     }
@@ -101,12 +100,17 @@ public class AttendanceBookBean {
      * @return
      */
     public AttendanceDateInfoDTO selectDateInfo(String employeeId) {
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
+        //言語
         String language = psDBBean.getLanguage();
+        //該当年月日
         String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
+        //該当年一日目
         String firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
-
+        // ディフォルト表示時間
         AttendanceDateInfoDTO result = iTmgAttendanceBookService.selectDateInfo(dyyyymmdd, firstDayOfYear, employeeId, compCode, custId, language);
         return result;
     }
@@ -124,22 +128,29 @@ public class AttendanceBookBean {
             logger.error("社員IDは空です");
             return null;
         }
+        //該当年月日
         String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
+        //該当年一日目
         String firstDayOfYear = "";
         if (null != year && !"".equals(year)) {
             firstDayOfYear = year + "/01/01";
         } else {
             firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
         }
+        //該当月
         if (null == month || "".equals(month)) {
             month = DateUtil.thisMonth() + "";
         }
         if (month.length() == 1) {
             month = "0" + month;
         }
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
+        //言語
         String language = psDBBean.getLanguage();
+        //表示時間
         AttendanceDateInfoDTO result = iTmgAttendanceBookService.selectTargetDateInfo(dyyyymmdd, month, firstDayOfYear, employeeId, compCode, custId, language);
 
         return result;
@@ -218,9 +229,11 @@ public class AttendanceBookBean {
             return false;
         }
 
-        //2020/12/31
+        //該当年最後の日
         String yearLastDay = year + "/12/31";
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
         iTmgAttendanceBookService.updateComment(employeeId, modifieruserId, yearLastDay, comment, compCode, custId);
         return true;
@@ -233,11 +246,11 @@ public class AttendanceBookBean {
      * @return
      */
     public boolean isEnableEditField(String year) {
+        //該当年最後の日
         String targetDate = "";
         if (null != year && !"".equals(year)) {
             targetDate = year + "/12/31";
         }
-
         /**
          * 入力サイト：　TMG_INP
          * 管理サイト：　TMG_ADMIN
@@ -258,7 +271,7 @@ public class AttendanceBookBean {
             } else if (0 <= stringToDate(targetDate).compareTo(new Date())) {
                 targetDate = sysDate;
             }
-
+            //権限チャック
             if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId)
                     && _referList.hasAuthorityAtEmployee(
                     targetDate, _referList.getTargetEmployee()
@@ -310,10 +323,12 @@ public class AttendanceBookBean {
      * @return
      */
     private AttendanceBookCommentDTO selectComment(String employeeId, String year, String yearLastDay, String compCode, String custId) {
-
+        //コメント
         AttendanceBookCommentDTO attendanceBookCommentDTO = iTmgAttendanceBookService.selectComment(employeeId, yearLastDay, compCode, custId);
         if (null != attendanceBookCommentDTO) {
+            //年次
             attendanceBookCommentDTO.setDyyyy(year);
+            //職員
             attendanceBookCommentDTO.setEmployeeId(employeeId);
         } else {
             logger.error("コメントが空です");
@@ -328,6 +343,7 @@ public class AttendanceBookBean {
      * @return
      */
     private List<String> selectTotalDataQueryList() {
+        //出勤簿月単位集計項目 データ部取得
         List<MastGenericDetailDTO> mastGenericDetailDTOList = iTmgAttendanceBookService.selectTotalDataQueryList(Cs_MGD_DISPATTENDANCEITEMS, DISP_LINE_5);
         List<String> result = new ArrayList<String>();
         for (int i = 0; i < mastGenericDetailDTOList.size(); i++) {
@@ -352,9 +368,11 @@ public class AttendanceBookBean {
             logger.error("社員IDは空です");
             return null;
         }
+        //該当年
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
             year = DateUtil.thisYear() + "";
         }
+        //該当月
         if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
             month = DateUtil.thisMonth() + "";
         }
@@ -362,14 +380,18 @@ public class AttendanceBookBean {
             month = "0" + month;
         }
 
-        //2020/05
+        //目標月　2020/05
         String queryMonth = year + "/" + month;
         String queryMonthDay = queryMonth + "/01";
         //2021/04/01
         String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
+        //出勤簿月単位集計項目 データ部
         List<String> results = this.selectTotalDataQueryList();
+        //出勤簿リスト
         List<AttendanceBookDTO> attendanceBookDTOList = iTmgAttendanceBookService.selectAttendanceBookList(employeeId, queryMonthDay, nextYearDay, compCode, custId, results);
 
         return attendanceBookDTOList;
@@ -385,13 +407,13 @@ public class AttendanceBookBean {
      * @return
      */
     public List<LinkedHashMap<String, String>> selectAttendanceBookList(String employeeId, String year, String month) {
-
+        //出勤簿リスト
         List<AttendanceBookDTO> attendanceBookDTOS = this.selectAttendanceBookDto(employeeId, year, month);
         List<LinkedHashMap<String, String>> resultListConverted = new ArrayList<LinkedHashMap<String, String>>();
 
         if (null == psDBBean) {
             logger.error("出勤簿リスト中で　psDBBean対象が空です！");
-            return  new ArrayList();
+            return new ArrayList();
         }
         //出勤簿が存在かとうかチャック
         /*if (this.selectExistsAttendanceBookCheck(psDBBean.getCompCode(), psDBBean.getCustID(), employeeId, year, month)) {
@@ -500,23 +522,31 @@ public class AttendanceBookBean {
             logger.error("社員IDは空です");
             return null;
         }
+        //該当年
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
             year = DateUtil.thisYear() + "";
         }
+        //該当月
         if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
             month = DateUtil.thisMonth() + "";
         }
         if (month.length() == 1) {
             month = "0" + month;
         }
-
+        //目標月　ｙｙｙｙｍｍ
         String queryMonth = year + "/" + month;
+        //目標月　yyyymmdd
         String queryMonthDay = queryMonth + "/01";
         String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
+        //出勤簿のヘッダ部情報（氏名、所属）等
         AttendanceBookEmpDTO attendanceBookEmpDTO = iTmgAttendanceBookService.selectEmployeesBasicInfo(employeeId, queryMonthDay, nextYearDay, compCode, custId);
+        //目標日
         attendanceBookEmpDTO.setDyyyymmdd(queryMonthDay);
+        //目標対象
         attendanceBookEmpDTO.setEmployeeId(employeeId);
         return attendanceBookEmpDTO;
     }
@@ -536,25 +566,30 @@ public class AttendanceBookBean {
             logger.error("社員IDは空です");
             return null;
         }
+        //該当年
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
             year = DateUtil.thisYear() + "";
         }
+        //該当月
         if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
             month = DateUtil.thisMonth() + "";
         }
         if (month.length() == 1) {
             month = "0" + month;
         }
+        //該当年月日
         String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
-        //2020/05
+        //目標月　ｙｙｙｙ/ｍｍ
         String queryMonth = year + "/" + month;
-        //2020/04/01
+        //前月一日目2020/04/01
         String preYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, -1), DYYYYMM) + "/01";
-        //2021/04/01
+        //翌月一日目2021/04/01
         String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
         //2020/12/31
         String yearLastDay = year + "/12/31";
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
 
         // 年次休暇付与日数, 年次休暇付与日
@@ -563,7 +598,9 @@ public class AttendanceBookBean {
         AttendanceBookCommentDTO attendanceBookCommentDTO = this.selectComment(employeeId, year, yearLastDay, compCode, custId);
         //変える
         AttendanceBookHolidayInfoVO attendanceBookHolidayInfoVO = new AttendanceBookHolidayInfoVO(attendanceEndueTimeInfoDTO, attendanceBookCommentDTO);
+        //データ時間
         attendanceBookHolidayInfoVO.setDataTime(queryMonth);
+        //目標対象
         attendanceBookHolidayInfoVO.setEmployeeId(employeeId);
         return attendanceBookHolidayInfoVO;
 
@@ -658,13 +695,17 @@ public class AttendanceBookBean {
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
             year = DateUtil.thisYear() + "";
         }
+        //目標時間
         targetDate = year + "/12/31";
+        //該当最後の日
         String currentYear = DateUtil.thisYear() + "/12/31";
-
+        //01
         String compCode = psDBBean.getCompCode();
+        //01
         String custId = psDBBean.getCustID();
-
+        //対象社員の出勤簿情報が存在する年度情報
         AttendanceExistsVO attendanceExistsVO = iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
+        //該当最後の日
         attendanceExistsVO.setCurrentYear(currentYear);
 
         return attendanceExistsVO;
@@ -685,6 +726,7 @@ public class AttendanceBookBean {
         if (month.length() == 1) {
             month = "0" + month;
         }
+        //基準日
         String baseDate = year + "/" + month + "/01";
         String flag = iTmgAttendanceBookService.selectExistsAttendanceBookCheck(baseDate, employeeId, compCode, custId);
         return "0".equals(flag);
@@ -723,12 +765,16 @@ public class AttendanceBookBean {
         }
         //sql を取得する
         String sqlStr = "";
+        //勤簿月単位集計項目 データ部取得
         List<MastGenericDetailDTO> mastGenericDetailDTOList = iTmgAttendanceBookService.selectTotalDataQueryList(Cs_MGD_DISPATTENDANCEITEMS, DISP_LINE_5);
         if (null != mastGenericDetailDTOList) {
             sqlStr = mastGenericDetailDTOList.get(0).getMgd_csparechar1();
         }
+        //該当年月の一日目
         String monthStartDate = DateUtil.format(new Date(), "yyyy/MM") + "/01";
+        //該当年月最後の日
         String monthEndDate = DateUtil.endOfMonth(new Date()).toString("yyyy/MM/dd");
+        //月間実働時間
         List<String> results = this.selectWorkTime(sqlStr, psDBBean.getUserCode(), monthStartDate, monthEndDate, psDBBean.getCompCode(), psDBBean.getCustID());
         StringBuffer sb = new StringBuffer();
         if (null != results) {
