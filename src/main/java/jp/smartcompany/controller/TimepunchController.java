@@ -43,6 +43,7 @@ public class TimepunchController {
                                        @RequestParam("compId") String compId,
                                        @RequestParam("psAction") String psAction,
                                        @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
         tmgTimePunchBean.setExecuteParameters(null, psDBBean);
         return tmgTimePunchBean.execTimePunch(employeeId, custId, compId, psAction);
     }

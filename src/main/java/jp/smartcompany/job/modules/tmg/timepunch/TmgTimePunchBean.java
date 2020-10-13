@@ -110,6 +110,7 @@ public class TmgTimePunchBean {
      */
     public void setExecuteParameters(String pBaseDate, PsDBBean psDBBean) {
         if (null == pBaseDate || "".equals(pBaseDate)) {
+            //パラメータが空いて場合、今の時間をセットする
             pBaseDate = DateUtil.format(new Date(), DATE_FORMAT);
         }
         this.psDBBean = psDBBean;
@@ -127,7 +128,9 @@ public class TmgTimePunchBean {
      */
     private void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
         log.info("打刻時に打刻データ(未反映)情報に登録する");
+        //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
+        //打刻タイプ　出勤および退勤
         String ctpTypeid = this.getTptType(psAction);
         iTmgTimepunchService.insertTmgTimePunch(custId, compCode, employeeId, minDate, maxDate, modifierprogramid, ctpTypeid);
     }
@@ -144,6 +147,7 @@ public class TmgTimePunchBean {
      */
     private void insertTmgTrgger(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
         log.info("TMG_TRIGGERへINSERTする");
+        //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
         iTmgTimepunchService.insertTmgTrgger(custId, compCode, employeeId, minDate, maxDate, modifierprogramid);
     }
@@ -159,6 +163,7 @@ public class TmgTimePunchBean {
      */
     private void deleteTmgTrgger(String custId, String compCode, String employeeId, String psAction) {
         log.info("TMG_TRIGGERへDELETEする");
+        //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
         iTmgTimepunchService.deleteTmgTrgger(custId, compCode, employeeId, modifierprogramid);
     }
@@ -174,9 +179,10 @@ public class TmgTimePunchBean {
         //lock thread safe
         try {
             synchronized (this) {
+                //打刻時に打刻データ(未反映)情報に登録する
                 this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+                //TMG_TRIGGERへINSERTする
                 this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-                //this.deleteTmgTrgger(custId, compId, employeeId, psAction);
                 result = true;
             }
         } catch (Exception e) {
@@ -234,10 +240,12 @@ public class TmgTimePunchBean {
         if (isPass) {
             //2、打刻をしますかとしないか
             String gsToday = this.getTimePunchday(custId, compId, employeeId);
+            //打刻かしないか
             boolean isVIP = this.isNotTimePunch(custId, compId, employeeId, gsToday);
             String clockTime = "";
             if (!isVIP) {
                 //3、打刻する
+                //打刻したか
                 boolean flag = this.clock(employeeId, custId, compId, psAction);
                 clockTime = DateUtil.format(new Date(), "HH:mm");
                 clockResultVO.setClockTime(clockTime);
@@ -271,11 +279,15 @@ public class TmgTimePunchBean {
                 resultMsg = "当社員が打刻しない";
             }
         }
-
+        //01
         clockResultVO.setCompanyId(compId);
+        //01
         clockResultVO.setCustomerId(custId);
+        //打刻ユーザー
         clockResultVO.setEmployeeId(employeeId);
+        //コード
         clockResultVO.setResultCode(resultCode);
+        //結果メッセージ
         clockResultVO.setResultMsg(resultMsg);
 
         log.info("打刻タスクが終わりました...");
@@ -294,6 +306,7 @@ public class TmgTimePunchBean {
             log.warn("打刻更新日が取得していない");
             return false;
         }
+        //打刻画面表示判断
         String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
         if (null == ret || "".equals(ret)) {
             return false;
@@ -313,6 +326,7 @@ public class TmgTimePunchBean {
             log.warn("打刻更新日が取得していない");
             return false;
         }
+        //打刻画面表示判断
         String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
         if (null == ret || "".equals(ret)) {
             return false;
@@ -332,9 +346,13 @@ public class TmgTimePunchBean {
        /* DutyAndRelaxDateDTO dutyAndRelaxDateDTO = (DutyAndRelaxDateDTO) lruCache.get(CACHE_DUTYANDRELAXTIME);
         if (null == dutyAndRelaxDateDTO) { */
         DutyAndRelaxDateDTO dutyAndRelaxDateDTO = new DutyAndRelaxDateDTO();
+        //01
         String custId = psDBBean.getCustID();
+        //01
         String compCode = psDBBean.getCompCode();
+        //ログインユーザー
         String employeeId = psDBBean.getUserCode();
+        //言語
         String language = psDBBean.getLanguage();
 
         // 月初
@@ -355,6 +373,7 @@ public class TmgTimePunchBean {
             //出勤日数
             if (null != result.get(DUTYDAYS_KEY)) {
                 String dutyDays = result.get(DUTYDAYS_KEY).toString() + "日";
+                //出勤日数
                 dutyAndRelaxDateDTO.setDutyDates(dutyDays);
             }
             //出勤時間
@@ -365,15 +384,19 @@ public class TmgTimePunchBean {
                 }
             }*/
         }
+        //月間実働時間
         String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
+        //出勤時間
         dutyAndRelaxDateDTO.setDutyHours(dutyHours);
 
         // 2.超過勤務時間
         String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);
+        //超過勤務時間
         dutyAndRelaxDateDTO.setOverTime(overTime);
 
         // 3.年次休暇
         String npaidRestDaysHour = this.getNpaidRestDaysHour(employeeId, startDate, compCode, custId);
+        //年次休暇
         dutyAndRelaxDateDTO.setNpaidRestDaysHour(npaidRestDaysHour);
         // lruCache.put(CACHE_DUTYANDRELAXTIME, dutyAndRelaxDateDTO);
         // logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache までロードする");
@@ -396,11 +419,17 @@ public class TmgTimePunchBean {
         if (null == targetDate || "".equals(targetDate)) {
             targetDate = DateUtil.format(new Date(), "yyyy/MM/dd");
         }
+        //01
         String custId = psDBBean.getCustID();
+        //01
         String compCode = psDBBean.getCompCode();
+        //ログインユーザー
         String employeeId = psDBBean.getUserCode();
+        //予定データ
         ScheduleInfoDTO scheduleInfoDTO = iTmgTimepunchService.selectScheduleInfo(custId, compCode, employeeId, targetDate);
+        //社員番号
         scheduleInfoDTO.setTda_cemployeeid(employeeId);
+        //休憩時間json str
         String timerRange = scheduleInfoDTO.getTimerange();
         List<HashMap<String, Object>> restList = new ArrayList<HashMap<String, Object>>();
         if (null != timerRange && !"".equals(timerRange) && JSONUtil.isJson(timerRange)) {
@@ -518,6 +547,7 @@ public class TmgTimePunchBean {
      * @return
      */
     private String getNpaidRestDaysHour(String employeeId, String targetDate, String compCode, String custId) {
+        //年次休暇残
         NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, targetDate, compCode, custId);
         String npaidRestDaysHour = "0日0時0分";
         if (null != npaidRestDTO) {
@@ -525,6 +555,7 @@ public class TmgTimePunchBean {
             npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0" : npaidRestDTO.getTmo_npaid_rest_days() + "日";
             int hour = 0;
             int min = 0;
+            //年次休暇残
             String hoursMins = npaidRestDTO.getTmo_npaid_rest_hours();
             if (null != hoursMins && !"".equals(hoursMins)) {
                 int hoursMins_int = Integer.parseInt(hoursMins);
@@ -557,6 +588,7 @@ public class TmgTimePunchBean {
      */
     private String selectOverTime(String custId, String compCode, String employeeId, String startDate, String endDate) {
         String result = "0時0分";
+        //超過勤務時間
         String overTime = iTmgTimepunchService.selectOverTime(custId, compCode, employeeId, startDate, endDate);
         if (null != overTime && !"".equals(overTime)) {
             if ("0".equals(overTime)) {
@@ -580,6 +612,7 @@ public class TmgTimePunchBean {
      * @return
      */
     private HashMap<String, Object> selectDutyDaysAndHours(String custId, String compCode, String employeeId, String language, String targetDate) {
+        //出勤日数と時間数を取得
         List<DutyDaysAndHoursDTO> dutyDaysAndHoursDTOS = iTmgTimepunchService.selectDutyDaysAndHoursSQL(custId, compCode, language);
         /**
          * COL0:  出勤日数
@@ -590,6 +623,7 @@ public class TmgTimePunchBean {
             DutyDaysAndHoursDTO dutyDaysAndHoursDTO = dutyDaysAndHoursDTOS.get(i);
             dutyDaysAndHoursDTO.setMgd_csql_alias(dutyDaysAndHoursDTO.getMgd_csql() + " as " + "COL" + i);
         }
+        //出勤日数と時間数を取得
         HashMap<String, Object> result = iTmgTimepunchService.selectDutyDaysAndHours(custId, compCode, employeeId, targetDate, dutyDaysAndHoursDTOS);
         return result;
     }
@@ -662,6 +696,7 @@ public class TmgTimePunchBean {
                 log.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました");
             }
         } else {
+            //打刻更新先となる日と今日の日付を取得するクエリ
             gsToday = iTmgTimepunchService.selectBaseTimesWithPattern(custId, compCode, employeeId);
         }
         return gsToday;
@@ -676,9 +711,11 @@ public class TmgTimePunchBean {
      * @return errMsg JSON 文字
      */
     private String getCheckMsg(String custId, String compCode, String employeeId) {
+        //打刻更新日
         String targetDate = this.getTimePunchday(custId, compCode, employeeId);
         String checkMsg = "";
         if (null != targetDate) {
+            //エラーメッセージ
             checkMsg = iTmgTimepunchService.selectErrMsg(employeeId, targetDate, this.Cn_PHASE_SET_TIMEPUNCH, custId, compCode);
         } else {
             log.warn("打刻更新日を取得しない");
@@ -717,6 +754,7 @@ public class TmgTimePunchBean {
      * @return
      */
     public String[] selectOverWorkTime(String custId, String compCode, String employeeId) {
+        //日別詳細情報（超過勤務）　複数データが存在です
         List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
         String[] overWorkTime = new String[detailOverhoursVOList.size()];
         String timeTmp = "";
@@ -740,6 +778,7 @@ public class TmgTimePunchBean {
         //単位：分
         int changeTime = 0;
         try {
+            //社員の勤務パターン
             changeTime = iTmgTimepunchService.selectEmpPattern(custId, compCode, employeeId);
         } catch (Exception e) {
             logger.error("社員の時間帯時間を取得することが失敗しました", e);
