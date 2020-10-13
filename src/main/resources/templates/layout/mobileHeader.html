@@ -163,6 +163,9 @@
           if (!this.password.repeatPassword) {
             return this.$Notice.warning({ title: '注意', desc: '変更後のパスワード(確認用)を入力してください。', duration: 6.5 })
           }
+          if(!/^[a-z0-9A-Z]+$/.test(this.password.newPassword) || !/^[a-z0-9A-Z]+$/.test(this.password.repeatPassword)) {
+            return this.$Notice.warning({ title: '注意', desc: 'パスワードに使用できる文字は英数字のみです。', duration: 6.5 })
+          }
           if (this.password.newPassword !== this.password.repeatPassword) {
             return this.$Notice.warning({ title: '注意', desc: '新パスワード(確認用)には、新パスワードと同じパスワードを入力してください。', duration: 6.5 })
           }

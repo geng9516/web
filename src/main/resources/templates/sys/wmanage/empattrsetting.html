@@ -105,7 +105,7 @@
                 <div>
                     <Alert class="primary-info tl" v-show="isEditable">※「管理対象者」「超過勤務対象者」が編集対象になります、編集するときチェックボックスをクリック又は一括チェックをご利用ください。</Alert>
                     <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
-                             :row-class-name="() => 'select-col'">
+                             :row-class-name="() => 'select-col'"  no-data-text="">
                         <template slot-scope="{ row }" slot="manageFlg">
                                 <span :class="row.manageFlg ? 'blue' : 'red'"
                                       v-show="!isEditable">{{ `${row.manageFlg ? '〇' : '除外'}` }}</span>
@@ -935,6 +935,27 @@
                     const {data} = await this.http.get('sys/userprofile/screenDisp', this.opts)
                     this.pageValue.amount = data.totalCount
                     this.tableData = data.list
+                    if (data.totalCount == 0 && this.opts.hidSelectTab == '0' ){
+                        if(this.treeData.length !== 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '選択した所属に存在している職員はありません。'
+                            })
+                        }
+                    }
+                    if (data.totalCount == 0 && this.opts.hidSelectTab == '1' ){
+                        if(this.treeData.length !== 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '条件に一致する職員が見つかりませんでした。'
+                            })
+                        }
+                    }
+
                     this.manageValue = Array(data.list.length).fill().map((e, index) => ({
                         "employeeId": data.list[index].meCemployeeidCk,
                         "initCheckType": data.list[index].manageFlg,

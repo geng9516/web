@@ -11,6 +11,11 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
 #  datasource:
 #    url: jdbc:oracle:thin:@192.168.20.160:1521/TMG
+#    username: SPWMTEST
+#    password: SPWMPASS
+#    driver-class-name: oracle.jdbc.OracleDriver
+#  datasource:
+#    url: jdbc:oracle:thin:@192.168.20.160:1521/TMG
 #    username: SPWMDEV
 #    password: SPWMPASS
 #    driver-class-name: oracle.jdbc.OracleDriver

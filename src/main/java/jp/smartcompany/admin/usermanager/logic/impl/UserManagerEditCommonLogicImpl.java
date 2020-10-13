@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
@@ -85,11 +86,13 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
     //履歴のインクリメント(3)-1
     //===================================================
     passwordService.updateHistoryNo(userIds);
+
     // メール送信モードの取得
 //    String sMailSendMode = cacheUtil.getSystemProperty(USER_MANAGER_MAIL_SEND_MODE);
     Map<String,Object> passwordMap = MapUtil.newHashMap();
 
     List<MastPasswordDO> updatePasswordList = CollUtil.newArrayList();
+    System.out.println(dtoParam);
     for (UserManagerUpdateParamDTO dto : dtoParam) {
       String account = dto.getMaCaccount();
       if (account != null) {
@@ -106,15 +109,14 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
 
         MastPasswordDO passwordDO = new MastPasswordDO();
         BeanUtil.copyProperties(dto,passwordDO);
-        passwordDO.setMapId(null);
         updatePasswordList.add(passwordDO);
         //===================================================
         //パスワード更新(4)
         //===================================================
 
         // Map設定時に暗号化
-        passwordMap.put(dto.getMapCuserid(), encrypt(dto.getOriginalPassword()));
-
+//        passwordMap.put(dto.getMapCuserid(), encrypt(dto.getOriginalPassword()));
+        passwordMap.put(dto.getMapCuserid(), dto.getOriginalPassword());
         // 暂时不要发送邮件
         //===================================================
         //パスワード変更メール送信(8)
@@ -130,7 +132,24 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
 
       }
     }
-    passwordService.saveBatch(updatePasswordList);
+    List<MastPasswordDO> updatePasswords = CollUtil.newArrayList();
+    List<MastPasswordDO> insertPasswords = CollUtil.newArrayList();
+    updatePasswordList.forEach(item -> {
+       List<MastPasswordDO> dbPasswords = passwordService.list(SysUtil.<MastPasswordDO>query().eq("MAP_DPWDDATE",SysUtil.transDateToString(now)).eq("MAP_CUSERID",item.getMapCuserid()));
+       if (CollUtil.isNotEmpty(dbPasswords)){
+         item.setMapId(dbPasswords.get(0).getMapId());
+         updatePasswords.add(item);
+       }else{
+         item.setMapId(null);
+         insertPasswords.add(item);
+       }
+    });
+    if (CollUtil.isNotEmpty(updatePasswords)){
+      passwordService.updateBatchById(updatePasswords);
+    }
+    if (CollUtil.isNotEmpty(insertPasswords)){
+      passwordService.saveBatch(insertPasswords);
+    }
     return passwordMap;
   }
 
@@ -141,95 +160,20 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
    * @return パスワード
    */
   public String createPassword(Integer sPassType, String sPassword) {
-
-    String sRetPassword = "";
+    String sRetPassword = sPassword;
     if (sPassType == null || (sPassType.equals(1) && sPassword == null)) {
       return sRetPassword;
     }
     if (sPassType.equals(1)) {
       //入力されたパスワード
-      sRetPassword = decrypt(sPassword);
+//      sRetPassword = decrypt(sPassword);
     } else {
       int maxLen = Integer.parseInt(cacheUtil.getSystemProperty(PROP_PW_MAX_LEN));
       //自動生成パスワード
-      sRetPassword = getRandomPassword(maxLen);
+      sRetPassword = RandomUtil.randomString(maxLen);
     }
     return sRetPassword;
   }
-
-  /**
-   * リクエスト渡し用復号化.
-   * @param str 暗号化文字列
-   * @return 復号結果
-   */
-  private String decrypt(String str) {
-    String decryptStr = "";
-
-    for (int i = 0; i < str.length(); i++) {
-      // コードをずらす
-      int cd = str.charAt(i) - 1;
-
-      if (cd <= 0x1f) {
-        cd = cd + 0x5f;
-      }
-      char charCd = (char) cd;
-      decryptStr = decryptStr + charCd;
-    }
-    decryptStr = (String) Rdn.unescapeValue(decryptStr);
-
-    return decryptStr;
-  }
-
-  /**
-   * ランダムパスワード作成.
-   * @param length パスワード長
-   * @return パスワード
-   */
-  private String getRandomPassword(int length) {
-    // 初期化
-    Random rnd = new Random();
-    int ran = rnd.nextInt(128);
-    // パスワード同一化を防ぐためメモリ使用量とランダム値も加算
-    long seed = System.currentTimeMillis() + Runtime.getRuntime().freeMemory() + ran;
-    Random rand = new Random(seed);
-
-    String text = "23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ_";
-    int roof = text.length();
-    char [] character = new char[roof];
-    for (int i = 0; i < roof; i++) {
-      character[i] = text.charAt(i);
-    }
-    StringBuilder pass = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      pass.append(character[rand.nextInt(roof)]);
-    }
-
-    return pass.toString();
-  }
-
-  /**
-   * リクエスト渡し用暗号化
-   * @param str 暗号化対照文字列
-   * @return 暗号結果
-   */
-  private String encrypt(String str) {
-    StringBuilder encryptStr = new StringBuilder();
-
-    // コード化
-    str = (String) Rdn.unescapeValue(str);
-    for (int i = 0; i < str.length(); i++) {
-      // コードをずらす
-      int cd = str.charAt(i) + 1;
-
-      if(cd >= 0x7f) {
-        cd = cd - 0x5f;
-      }
-      char charCd = (char) cd;
-      encryptStr.append(charCd);
-    }
-    return encryptStr.toString();
-  }
-
 
   /**
    * ステータス取得

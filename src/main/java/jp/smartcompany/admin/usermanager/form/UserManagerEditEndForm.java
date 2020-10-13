@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import java.util.List;
 @ToString
 public class UserManagerEditEndForm {
 
-    @NotNull
     @JsonFormat(pattern="yyyy/MM/dd")
     private Date endDate;
 

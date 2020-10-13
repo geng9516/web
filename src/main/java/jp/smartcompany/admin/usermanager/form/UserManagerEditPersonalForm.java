@@ -1,10 +1,12 @@
 package jp.smartcompany.admin.usermanager.form;
 
+import jp.smartcompany.admin.usermanager.dto.UpdatePersonalDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 @Getter
@@ -17,11 +19,12 @@ public class UserManagerEditPersonalForm {
     /**パスワード発行区分*/
     private Integer passwordType;
     /**パスワード*/
+    @Pattern(regexp = "^[a-z0-9A-Z_]+$",message = "パスワードに使用できる文字は英数字のみです。")
     private String password;
     /**次回ログインパスワード変更フラグ*/
     private Boolean forceChangePassword;
-    private Date baseDate;
+
     /** 基準日(社員基本情報コンポーネント引渡し用) */
-    private MastAccountDO account;
+    private UpdatePersonalDTO account;
 
 }

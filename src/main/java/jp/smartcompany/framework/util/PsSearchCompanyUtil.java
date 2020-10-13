@@ -38,7 +38,8 @@ public class PsSearchCompanyUtil {
      */
     public List<String> getCompList(Date searchDate) {
         // Exists句を取得した際に余計な識別子を削除します。
-        String sExists = psBuildTargetSql.getExistsQueryHdId("HIST_DESIGNATION.HD_CUSERID", "HIST_DESIGNATION.HD_ID");
+//        String sExists = psBuildTargetSql.getExistsQueryHdId("HIST_DESIGNATION.HD_CUSERID", "HIST_DESIGNATION.HD_ID");
+        String sExists = "";
         // 法人取得取得
         List<HistDesignationDO> lHistDesignationEntityList
                 = iMastCompanyService.selectTargetCompany(sExists, getPsSearchDate(

@@ -902,6 +902,7 @@
                     this.selectDisabled = true
                     if(this.referListObject.txtTmgReferListTreeViewRecordDate){
                         this.query.txtDYYYYMM=this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtTmgReferListTreeViewRecordDate=this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     await this.getWorkDateList()
                     if (!this.query.txtDYYYYMM){
@@ -983,7 +984,7 @@
                 // 発令
                 async getHatuRei() {
                     try {
-                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.query)
+                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
                         if(data !=null){
                             this.hatuReiDisp=true
                             this.hatuReiName=data.name

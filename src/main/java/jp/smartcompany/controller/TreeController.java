@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
@@ -16,6 +17,8 @@ import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
 import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
+import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +48,7 @@ public class TreeController {
 
     private final OrgTreeListLogic orgTreeListLogic;
     private final PostGenericLogic postGenericLogic;
+    private final IMastOrganisationService organisationService;
 
     @GetMapping
     public GlobalResponse tree(@RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -256,7 +261,7 @@ public class TreeController {
 //            @RequestParam(value="sectionCode",required = false) String sectionCode,
 //            @RequestParam(value="companyCode",required = false) String companyCode,
             @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
-            @RequestParam(value="searchRange",required = false) String searchRange, HttpServletRequest request) {
+            @RequestParam(value="searchRange",required = false) String searchRange) {
         String searchDate = SysUtil.transDateToString(DateUtil.date());
         PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         List<OrgTreeDTO> treeDTOList = orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
@@ -268,10 +273,12 @@ public class TreeController {
                 useSearchRange,
                 searchRange);
         List<OrgTreeVO> orgTreeVoList = CollUtil.newArrayList();
-        treeDTOList.forEach(item -> {
+        boolean hasRoot = false;
+        for (OrgTreeDTO item : treeDTOList) {
             if (StrUtil.equals(item.getMoClayeredsectionid(),",01,,|,000000,")) {
                 item.setMoClayeredsectionid("0");
                 item.setMoCparentid("0");
+                hasRoot = true;
             } else {
                 String tmpSectionLayerId = item.getMoClayeredsectionid()
                         .replaceAll(",01,,\\|,","0,");
@@ -282,7 +289,18 @@ public class TreeController {
             }
             OrgTreeVO vo = OrgTreeVO.build(item);
             orgTreeVoList.add(vo);
-        });
+        }
+        if (!hasRoot) {
+            Date now = DateUtil.date();
+            MastOrganisationDO orgDO = organisationService.list(SysUtil.<MastOrganisationDO>query().eq("mo_clayeredsectionid",",01,,|,000000,").le("MO_DSTART",now)
+            .ge("MO_DEND",now)).get(0);
+            OrgTreeDTO item  = new OrgTreeDTO();
+            BeanUtil.copyProperties(orgDO,item);
+            item.setMoClayeredsectionid("0");
+            item.setMoCparentid("0");
+            OrgTreeVO vo = OrgTreeVO.build(item);
+            orgTreeVoList.add(vo);
+        }
         return generateTreeList(orgTreeVoList,"0");
     }
 

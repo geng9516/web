@@ -101,6 +101,10 @@
       </div>
       <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''" :row-class-name="rowClassName"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="" ref="table">
+        <template slot-scope="{ row }" slot="meCname">
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editPersonal(row)">{{ row.meCname }}</span>
+        </template>
+
         <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
         </template>
 
@@ -113,7 +117,6 @@
         <Alert class="primary-info tl">
           <div>※最大リトライ回数・再利用禁止回数は、0～9999の範囲で入力してください。</div>
           <div class="mt2">※有効期間(日数)・最小文字数・最大文字数は、1～9999の範囲で入力してください。</div>
-          <div class="mt2">※設定内容を反映させるにはシステム設定再読込を行う必要があります。</div>
         </Alert>
         <i-form :label-width="200" :model="passwordSetting" class="tl" style="margin: 10px 10px 0;">
           <form-item label="有効期間（日数）">
@@ -151,6 +154,34 @@
 
       <!-- 利用開始, 终了, パスワード　通过useType区分 start-->
       <Drawer class="tc" placement="right" width="800" v-model="useDrawerShow" :title="useTitle">
+        <!-- 個別設定画面 -->
+        <span v-if="useType === 'personal'">
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">アカウント</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.userId }}</span>
+          </div>
+
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">カタカナ</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.kanaName }}</span>
+          </div>
+
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">漢字</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.kanjiName }}</span>
+          </div>
+
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">組織</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.isOut === '1' ? '退職' : detailData.sectionName }}</span>
+          </div>
+
+          <div class="no-border-radius mb5" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">役職</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;"> {{ detailData.postName }}</span>
+          </div>
+        </span>
+
         <div class="mb10 tr">
           <i-button type="primary" ghost @click="handleEvent" icon="md-create" :loading="drawerBtnLoading">
             登録
@@ -183,14 +214,31 @@
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 66px 10px 0 0;">パスワード</span>
           <radio-group class="tl input-like-span" v-model="detailData.passwordType" @on-change="handleRadio" vertical>
             <Radio :label="1">パスワードを入力する</Radio>
-            <i-input v-model="detailData.password" class="width75 mb2" :disabled="detailData.disabled"></i-input>
-            <i-input v-model="detailData.repeatPassword" class="width75" :disabled="detailData.disabled"></i-input>
+            <i-input v-model="detailData.password" class="width75 mb2" type="password" placeholder="新しいパスワード" :disabled="detailData.disabled"></i-input>
+            <i-input v-model="detailData.repeatPassword" class="width75" type="password" placeholder="新しいパスワード（確認用）" :disabled="detailData.disabled"></i-input>
             <Radio :label="2">ユーザ毎にランダムな文字列を発行する</Radio>
             <Checkbox style="display: block;margin-left: 0;" v-model="detailData.forceChangePassword" class="tl mt5">
               次回ログイン時にパスワードを変更させる</Checkbox>
           </radio-group>
         </div>
-        <i-table class="mt10" border :row-class-name="rowClassName" :columns="columnsforView" :disabled-hover="true"
+        <!-- 個別設定画面 -->
+        <span v-if="useType === 'personal'">
+          <div class="no-border-radius" style="display: flex; align-items: stretch;margin-top: -4px;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">有効期間</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;">
+              <date-picker :value="detailData.account.maDstart" @on-change="detailData.account.maDstart = $event" format="yyyy/MM/dd" type="date" transfer style="width:48.5%;padding: 5px 0;" :options="startDateLimit" placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker :value="detailData.account.maDend" @on-change="detailData.account.maDend = $event" format="yyyy/MM/dd" :options="startDateLimit" type="date" transfer style="width:48.5%;padding: 5px 0;" placement="bottom-end"></date-picker>
+            </span>
+          </div>
+
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">ロック</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;">
+              <Checkbox v-model="detailData.account.maNpasswordlock" :true-value="1" :false-value="0" class="tl">ロックする</Checkbox>
+            </span>
+          </div>
+        </span>
+
+        <i-table class="mt10" border :row-class-name="rowClassName" :columns="columnsforView" :disabled-hover="true" v-if="useType !== 'personal'"
           :data="userTypeTableData" :loading="loading" no-data-text="">
           <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
           </template>
@@ -241,7 +289,7 @@
             },
             {
               title: '氏名',
-              key: 'meCname',
+              slot: 'meCname',
               align: 'center'
             },
             {
@@ -303,12 +351,14 @@
           treeDataForSearch: [],
           _treeData: [],
           passwordSetting: [{}, {}, {}, {}, {}],
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
           passwordPolicyLoading: false,
           useDrawerShow: false,
           useType: '',
           updatePasswordPolicyLoading: false,
           drawerBtnLoading: false,
-          detailData: { originalUserList: [], userIds: [], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate: '', endDate: '', forceChangePassword: false },
+          detailData: { originalUserList: [], userIds: [], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate: '', endDate: '', forceChangePassword: false, userId:'',kanaName:'',kanjiName:'',sectionName:'',postName:'',account:{maNpasswordlock:0,maDstart:'',maDend:''}  },
           startDateLimit: {
             disabledDate: date => {
               // 利用開始日は、1900/01/01～2222/12/31の範囲で入力してください。
@@ -351,7 +401,7 @@
         async getOrgTree() {
           this.empDeptLoading = true
           try {
-            const { data } = await this.http.get('sys/tree/orgs?psSite=Admin')
+            const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
             this.treeData = this.convertTreeData(data)
             this.treeData[0].expand = true
             this._treeData = Utils.deepClone(this.treeData)
@@ -445,7 +495,7 @@
           this.useType = 'password'
           this.useDrawerShow = true
           this.useTitle = 'パスワード編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/password?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/password?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.userList = data.userList
           this.detailData.userIds = data.userList.map(e => e.maCuserid)
           this.detailData.min = data.passwordMinLen
@@ -463,7 +513,7 @@
           this.useType = 'start'
           this.useDrawerShow = true
           this.useTitle = '利用開始日編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/startDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/startDate?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.startDate = data.defaultStartDate
           this.detailData.min = data.PASSWORD_MIN_LEN
           this.detailData.max = data.PASSWORD_MAX_LEN
@@ -481,7 +531,7 @@
           this.useType = 'end'
           this.useDrawerShow = true
           this.useTitle = '利用終了日編集画面'
-          const { data } = await this.http.post('sys/usermanager/show/endDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          const { data } = await this.http.post(`sys/usermanager/show/endDate?psSite=${this.psSite}&psApp=${this.psApp}`, { userIds: list, searchType: this.opts.searchType })
           this.detailData.endDate = Utils.formatDate(data.defaultEndDate, 'yyyy/mm/dd')
           this.detailData.list = data.list
         }),
@@ -511,7 +561,9 @@
             if (!this.detailData.password) {
               return this.$Notice.warning({ title: '注意', desc: 'アカウントを発行する際は、パスワードを入力してください。', duration: 6.5 })
             }
-
+            if(!/^[a-z0-9A-Z]+$/.test(this.detailData.password) || !/^[a-z0-9A-Z]+$/.test(this.detailData.repeatPassword)) {
+              return this.$Notice.warning({ title: '注意', desc: 'パスワードに使用できる文字は英数字のみです。', duration: 6.5 })
+            }
             if (this.detailData.password !== this.detailData.repeatPassword) {
               return this.$Notice.warning({ title: '注意', desc: '新しいパスワードと確認入力が一致しません。', duration: 6.5 })
             }
@@ -525,6 +577,15 @@
             }
           }
 
+          if(this.useType === 'personal') {
+            if (!this.detailData.account.maDstart) {
+              return this.$Notice.warning({ title: '注意', desc: `開始日を入力してください。`, duration: 6.5 })
+            }
+            if (this.detailData.account.maDend && this.detailData.account.maDstart > this.detailData.account.maDend) {
+              return this.$Notice.warning({ title: '注意', desc: `開始日＜終了日となるようにしてください。`, duration: 6.5 })
+            }
+          }
+
           if (this.useType === 'start' && !this.detailData.useEntranceDate && !this.detailData.startDate) {
             return this.$Notice.warning({ title: '注意', desc: '利用開始日を入力してください。', duration: 6.5 })
           }
@@ -535,7 +596,7 @@
 
           this.$Modal.confirm({
             title: '注意',
-            content: `ページ下にある一覧のユーザに対し、${this.useType === 'start' ? 'アカウントの利用開始日等' : this.useType === 'end' ? 'アカウントの利用終了日' : 'パスワード'}を、入力内容に更新します。よろしいですか？`,
+            content: this.useType === 'personal' ? '入力内容を保存します。よろしいですか？' : `ページ下にある一覧のユーザに対し、${this.useType === 'start' ? 'アカウントの利用開始日等' : this.useType === 'end' ? 'アカウントの利用終了日' : 'パスワード'}を、入力内容に更新します。よろしいですか？`,
             okText: 'OK',
             inDrawer: true,
             cancelText: 'キャンセル',
@@ -543,15 +604,19 @@
               try {
                 this.drawerBtnLoading = true
                 if (this.useType === 'start') {
-                  const { data } = await this.http.post('sys/usermanager/change/startDate?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/startDate?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                 }
 
                 if (this.useType === 'end') {
-                  const { data } = await this.http.post('sys/usermanager/change/endDate?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/endDate?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
+                }
+
+                if (this.useType === 'personal') {
+                  const { data } = await this.http.post(`sys/usermanager/personal?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                 }
 
                 if (this.useType === 'password') {
-                  const { data } = await this.http.post('sys/usermanager/change/password?psSite=Admin', this.detailData)
+                  const { data } = await this.http.post(`sys/usermanager/change/password?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
                   let msg = ''
                   Object.keys(data).forEach(e=>{
                     msg = msg.concat(`アカウント: ${e} パスワード: ${data[e]}\n`)
@@ -567,6 +632,31 @@
               }
             }
           })
+        },
+        async editPersonal(row) {
+          // 初始化
+          this.detailData = { passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate: '', forceChangePassword: false, userId:'',kanaName:'',kanjiName:'',sectionName:'',postName:'',account:{maNpasswordlock:0,maDstart:'',maDend:''} }
+
+          this.useType = 'personal'
+          this.useDrawerShow = true
+          this.useTitle = '個別編集画面'
+          const { data } = await this.http.get(`sys/usermanager/personal/${row.meCuserid}`)
+          this.detailData.min = data.passwordMinLen
+          this.detailData.max = data.passwordMaxLen
+
+          this.detailData.userId = row.meCuserid
+          this.detailData.kanaName = data.userInfo.kanaName
+          this.detailData.kanjiName = data.userInfo.kanjiName
+          this.detailData.sectionName = data.userInfo.sectionName
+          this.detailData.isOut = data.userInfo.isOut
+          this.detailData.postName = data.userInfo.postName
+          this.detailData.account = data.accountInfo
+          this.detailData.account.maDstart = data.accountInfo.maDstart ? Utils.formatDate(data.accountInfo.maDstart, 'yyyy/mm/dd') : ''
+          this.detailData.account.maDend = data.accountInfo.maDend ? Utils.formatDate(data.accountInfo.maDend, 'yyyy/mm/dd') : ''
+
+
+          this.detailData.baseDate = data.baseDate
+          // this.detailData.originalUserList = data.list
         },
         handleRadio(e) {
           if (e === 2) {

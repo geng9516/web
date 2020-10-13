@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
@@ -137,6 +138,8 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
                                          List<String> companyList);
 
     UserManagerDTO selectPersonalName(String custId, String userId, String language,  List<String> companyList);
+
+    PersonalInfoDTO selectPersonalInfo(Date baseDate,String custId,String language,String userId);
     /**
      * ===================用户管理 搜索用户结束===============
      */

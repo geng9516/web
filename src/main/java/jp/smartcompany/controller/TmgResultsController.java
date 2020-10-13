@@ -166,7 +166,7 @@ public class TmgResultsController {
         tmgResultsBean.setToday(txtDYYYYMMDD);
         tmgResultsBean.setThisMonth(txtDYYYYMM);
         tmgResultsBean.setMonth(txtDYYYYMM);
-        tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
+        //tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化データ取得する
         return tmgResultsBean.dailyDetail(psDBBean, action);

@@ -1,10 +1,12 @@
 package jp.smartcompany.admin.usermanager.logic.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditPersonalForm;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditCommonLogic;
@@ -23,6 +25,7 @@ import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
@@ -45,14 +48,14 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
 
     @Override
     public Map<String,Object> display(String userId) {
-         LoginAccountBO accountDetails = accountService.getAccountInfo(userId);
+         Date baseDate = DateUtil.date();
+         PersonalInfoDTO accountDetails = employeesService.selectPersonalInfo(baseDate,"01","ja",userId);
          MastAccountDO account = accountService.getByUsername(userId);
          // 表示用：MAXDATEを空にする
          if (account.getMaDend() != null
                 && DateUtil.isSameDay(SysUtil.getMaxDateObject(),account.getMaDend())) {
             account.setMaDend(null);
          }
-         Date baseDate = DateUtil.date();
          passwordMinLen = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MIN_LEN);
          passwordMaxLen = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN);
          changeLimitCount = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_CHANGE_PW_LIMITATION_COUNT);
@@ -64,11 +67,12 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
          boolean isValid = count > 0;
 
          Map<String,Object> userInfoMap = MapUtil.newHashMap();
-         userInfoMap.put("sectionName",accountDetails.getMoCsectionname());
-         userInfoMap.put("postName",accountDetails.getMapCpostname());
-         userInfoMap.put("kanaName",accountDetails.getMeCkananame());
-         userInfoMap.put("empId",accountDetails.getHdCemployeeidCk());
-         userInfoMap.put("kanjiName",accountDetails.getMeCemployeename());
+         userInfoMap.put("sectionName",accountDetails.getSectionName());
+         userInfoMap.put("postName",accountDetails.getPostName());
+         userInfoMap.put("kanaName",accountDetails.getKanaName());
+         userInfoMap.put("empId",accountDetails.getEmployeeId());
+         userInfoMap.put("kanjiName",accountDetails.getKanjiName());
+         userInfoMap.put("isOut",accountDetails.getIsOut());
          //画面表示情報取得
          return MapUtil.<String,Object>builder().put("userInfo",userInfoMap)
                  .put("accountInfo",account)
@@ -81,9 +85,11 @@ public class UserManagerEditPersonalLogicImpl implements UserManagerEditPersonal
     }
 
     @Override
+    @Transactional(rollbackFor = GlobalException.class)
     public Map<String,Object> updatePersonal(UserManagerEditPersonalForm form) {
         passwordMaxLen = cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN);
-        MastAccountDO accountDO = form.getAccount();
+        MastAccountDO accountDO = new MastAccountDO();
+        BeanUtil.copyProperties(form.getAccount(),accountDO);
         String userId = form.getUserId();
         String customerId =  "01";
         String language = "ja";

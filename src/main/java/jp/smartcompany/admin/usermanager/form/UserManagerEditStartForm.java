@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @ToString
 public class UserManagerEditStartForm {
 
+  @Pattern(regexp = "^[a-z0-9A-Z_]+$",message = "パスワードに使用できる文字は英数字のみです。")
   private String password;
   /**利用開始日*/
   @JsonFormat(pattern="yyyy/MM/dd")
