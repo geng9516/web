@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.groupingBy;
  * 連携対象者マスタ設定
  * ps.c01.tmg.TmgIfSimulation.TmgIfSimulationBean
  *
- * @author Nie Wanqun
+ * @author 陳毅力
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -42,7 +42,6 @@ public class TmgIfSimulationBean {
     private final String MAXDATE = "2222/12/31";
     private final Logger logger = LoggerFactory.getLogger(TmgIfSimulationBean.class);
     private final ITmgStatusWorktypeSimService iTmgStatusWorktypeSimService;
-
 
     /**
      * マスタリスト
@@ -86,9 +85,11 @@ public class TmgIfSimulationBean {
             simulationDTO = new SimulationDTO();
             String startTime = key.substring(0, key.indexOf(TAG2));
             String endTime = key.substring(key.indexOf(TAG2) + 1, key.length());
+            //期間（開始時間）
             simulationDTO.setStartTime(startTime);
+            //期間（終了時間）
             simulationDTO.setEndTime(endTime);
-            //simulationDTO.setSimulationDataDTOList(collect.get(key));
+            //連携対象マスタ設定 条件
             simulationDTO.setSimulationDataDTOList(this.compareData(collect.get(key), conditionColDTOList));
             results.add(simulationDTO);
         }
@@ -115,8 +116,11 @@ public class TmgIfSimulationBean {
                 for (int i = 0; i < simulationDataDTOList.size(); i++) {
                     SimulationDataDTO simulationDataDTO = simulationDataDTOList.get(i);
                     conditionColDTO = new ConditionColDTO();
+                    //コラム標識
                     conditionColDTO.setMgd_excludecond_type(simulationDataDTO.getMgd_excludecond_type());
+                    //コラム名称
                     conditionColDTO.setMgd_excludecond_type_name(simulationDataDTO.getMgd_excludecond_type_name());
+                    //コラム値
                     conditionColDTO.setValue(simulationDataDTO.getExcludecond());
                     conditionColDTOList.add(conditionColDTO);
                 }
@@ -161,8 +165,11 @@ public class TmgIfSimulationBean {
             }
             //データを組み立てる
             SimulationDataDTO simulationDataDTO = userData.get(0);
+            //期間（開始時間）
             String startTime = simulationDataDTO.getStart_time();
+            //期間（終了時間）
             String endTime = simulationDataDTO.getEnd_time();
+            //期間
             String period = simulationDataDTO.getPeriod();
             SimulationDataDTO simulationDataDTO_bak = null;
             for (String key : userDataMap_add.keySet()) {
@@ -341,6 +348,7 @@ public class TmgIfSimulationBean {
     }
 
     /**
+     * インサートするデータリスト
      * @param simulationInsertJsonDTO
      * @return
      */
@@ -359,17 +367,28 @@ public class TmgIfSimulationBean {
                         String[] result = value_tmp.split(TAG1);
                         for (String item : result) {
                             simulationInsertDTO = new SimulationInsertDTO();
+                            //01
                             simulationInsertDTO.setPsCustId(simulationInsertJsonDTO.getCustId());
+                            //01
                             simulationInsertDTO.setPsCompId(simulationInsertJsonDTO.getCompCode());
+                            //グループ
                             simulationInsertDTO.setPsGroupCode(simulationInsertJsonDTO.getPsGroupId());
+                            //言語
                             simulationInsertDTO.setPsLanguage(simulationInsertJsonDTO.getLanguage());
+                            //データ開始日
                             simulationInsertDTO.setPsStartDate(simulationInsertJsonDTO.getPsStartDate());
+                            //データ終了日
                             simulationInsertDTO.setPsEndDate(simulationInsertJsonDTO.getPsEndDate());
+                            //更新者ID
                             simulationInsertDTO.setPsUpdateUser(simulationInsertJsonDTO.getEmployeId());
+                            //絞込み項目区分
                             simulationInsertDTO.setPsExuludecondType(conditionColDTO.getMgd_excludecond_type());
                             ramStr = this.getRandomStr();
+                            //明細データコード
                             simulationInsertDTO.setPsDetailId(ramStr);
+                            //マスタコード
                             simulationInsertDTO.setPsMasterCode(simulationInsertJsonDTO.getPsGroupId() + TAG3 + ramStr);
+                            //範囲(FROM)　　　範囲(TO)
                             if (item.indexOf(TAG2) > 0) {
                                 simulationInsertDTO.setPsExuludecondFrom(item.substring(0, item.indexOf(TAG2)));
                                 simulationInsertDTO.setPsExuludecondTo(item.substring(item.indexOf(TAG2) + 1, item.length()));
@@ -393,15 +412,19 @@ public class TmgIfSimulationBean {
 
     /**
      * マスタデータ処理
+     * @param simulationMerge
+     * @return
      */
     private SimulationInsertJsonDTO simulationJsonConvert(String simulationMerge) {
         JSONObject jsonObject = JSONUtil.parseObj(simulationMerge);
+        //マージデータjson対象
         if (null != JSONUtil.parseObj(simulationMerge)) {
             SimulationInsertJsonDTO simulationInsertJsonDTO = jsonObject.toBean(SimulationInsertJsonDTO.class);
             List<ConditionColDTO> conditionColDTOList = null;
             if (null != simulationInsertJsonDTO) {
                 if (null != jsonObject.get("masterList")) {
                     conditionColDTOList = JSONUtil.parseArray(jsonObject.get("masterList")).toList(ConditionColDTO.class);
+                    //データリスト
                     simulationInsertJsonDTO.setConditionColDTOList(conditionColDTOList);
                     return simulationInsertJsonDTO;
                 } else {
