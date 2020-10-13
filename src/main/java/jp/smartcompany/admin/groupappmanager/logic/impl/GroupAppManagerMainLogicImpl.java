@@ -308,7 +308,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     List<GroupAppManagerPermissionDTO> deleteAfterList = CollUtil.newArrayList();
 
     List<Long> deleteEffectiveIds = CollUtil.newArrayList();
-    List<MastGroupapppermissionDO> insertEffectivePermList = CollUtil.newArrayList();
+//    List<MastGroupapppermissionDO> insertEffectivePermList = CollUtil.newArrayList();
 
     List<MastGroupapppermissionDO> prepareInsertList = CollUtil.newArrayList();
 
@@ -386,7 +386,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
                   mastGroupapppermissionDO.setMgpCmodifieruserid(psSession.getLoginUser());
                   mastGroupapppermissionDO.setMgpDmodifieddate(DateUtil.date());
                   mastGroupapppermissionDO.setVersionno(1L);
-                  insertEffectivePermList.add(mastGroupapppermissionDO);
+//                  insertEffectivePermList.add(mastGroupapppermissionDO);
                 }
               }
             }
@@ -442,29 +442,29 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
       int deleteEffectiveCount = 0;
       for (Long effectiveId: deleteEffectiveIds) {
-        String sql = "DELETE FROM MAST_GROUPAPPPERMISSION WHERE MGP_ID = ?";
-        deleteEffectiveCount += SqlExecutor.execute(conn, sql, effectiveId);
+        String sql = "DELETE FROM MAST_GROUPAPPPERMISSION WHERE MGP_ID = "+effectiveId;
+        deleteEffectiveCount += SqlExecutor.execute(conn, sql);
       }
       log.debug("deleteEffective影响行数："+deleteEffectiveCount);
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
 
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
-      int insertEffectiveCount = 0;
-      for (MastGroupapppermissionDO item : insertEffectivePermList) {
-        String insertSql = "INSERT INTO MAST_GROUPAPPPERMISSION (" +
-                "MGP_ID, MGP_CCOMPANYID, MGP_CSYSTEMID, MGP_CGROUPID, MGP_COBJECTID, MGP_CSITE,MGP_CAPP, " +
-                "MGP_CSUBAPP, MGP_CBUTTON, MGP_CSCREEN, MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE, " +
-                "MGP_DENDDATE, MGP_CMODIFIERUSERID, MGP_DMODIFIEDDATE, VERSIONNO) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-         insertEffectiveCount += SqlExecutor.execute(conn,insertSql,
-                 item.getMgpId(),item.getMgpCcompanyid(),item.getMgpCsystemid(),item.getMgpCgroupid(),
-                 item.getMgpCobjectid(),item.getMgpCsite(),item.getMgpCapp(),item.getMgpCsubapp(),
-                 item.getMgpCbutton(),item.getMgpCscreen(),item.getMgpCpermission(),item.getMgpCreject(),
-                 SysUtil.transDateToString(item.getMgpDstartdate()),
-                 SysUtil.transDateToString(item.getMgpDenddate()),item.getMgpCmodifieruserid(),
-                 SysUtil.transDateToString(item.getMgpDmodifieddate()),item.getVersionno());
-      }
-      log.debug("insertEffectiveCount影响行数："+insertEffectiveCount);
+//      int insertEffectiveCount = 0;
+//      for (MastGroupapppermissionDO item : insertEffectivePermList) {
+//        String insertSql = "INSERT INTO MAST_GROUPAPPPERMISSION (" +
+//                "MGP_ID, MGP_CCOMPANYID, MGP_CSYSTEMID, MGP_CGROUPID, MGP_COBJECTID, MGP_CSITE,MGP_CAPP, " +
+//                "MGP_CSUBAPP, MGP_CBUTTON, MGP_CSCREEN, MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE, " +
+//                "MGP_DENDDATE, MGP_CMODIFIERUSERID, MGP_DMODIFIEDDATE, VERSIONNO) " +
+//                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+//         insertEffectiveCount += SqlExecutor.execute(conn,insertSql,
+//                 item.getMgpId(),item.getMgpCcompanyid(),item.getMgpCsystemid(),item.getMgpCgroupid(),
+//                 item.getMgpCobjectid(),item.getMgpCsite(),item.getMgpCapp(),item.getMgpCsubapp(),
+//                 item.getMgpCbutton(),item.getMgpCscreen(),item.getMgpCpermission(),item.getMgpCreject(),
+//                 SysUtil.transDateToString(item.getMgpDstartdate()),
+//                 SysUtil.transDateToString(item.getMgpDenddate()),item.getMgpCmodifieruserid(),
+//                 SysUtil.transDateToString(item.getMgpDmodifieddate()),item.getVersionno());
+//      }
+//      log.debug("insertEffectiveCount影响行数："+insertEffectiveCount);
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
 
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start

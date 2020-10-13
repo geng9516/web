@@ -612,7 +612,7 @@
                 agencyApplyShow: false,
                 columns: [
                     {
-                        title: '申請者',
+                        title: '氏名',
                         key: 'tntfCemployeeidName',
                         align: 'right',
                         minWidth: 100,
@@ -1630,6 +1630,7 @@
                     this.referListObject.hidSelectTab = '1'
                 }
             },
+
             async getSearchCondition() {
                 const {data} = await this.http.get('sys/tree/conditions', this.referListObject)
                 this.searchConditionsList = Object.keys(data.searchConditions).map(e => {

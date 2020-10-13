@@ -290,11 +290,11 @@
 
 
                           <!-- 承认者comment -->
-                        <div>
-                            <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bFixed">
-                            </i-input>
-                            <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isBSComment && bFixed">{{dailyEdit.tdaCbosscommentR}}</span>
-                        </div>
+
+                        <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bFixed">
+                        </i-input>
+                        <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isBSComment && bFixed">{{dailyEdit.tdaCbosscommentR}}</span>
+
                         <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                         <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
@@ -1284,7 +1284,7 @@
                 })
                 this.workData = this.workData.concat([
                     {
-                        workTime: '本人コメント	',
+                        workTime: '本人コメント',
                         isOwnComment: true,
                         cellClassName: {
                         workTime: 'like-title'
