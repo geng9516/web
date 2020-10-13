@@ -53,7 +53,7 @@
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                 <Tabs :animated="false" v-model="currentTab">
                 <tab-pane label="ツリー" name="organisationTree">
-                      <div class="titlenorm mt15">
+                      <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
@@ -297,7 +297,7 @@
 
                         <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
-                        <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
+                        <span v-if="!row.isInput">{{ row.workStart }}</span>
                     </template>
                     <template slot-scope="{ row, index }" slot="workEnd">
                         <div v-if="row.isInput && bFixed" >
@@ -307,7 +307,7 @@
                         <div v-if="row.isInput  && !bFixed" >
                             <i-input  class="tc" v-model="workData[index].workEnd" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                         </div>
-                        <span v-if="!row.isInput && !bFixed">{{ row.workEnd }}</span>
+                        <span v-if="!row.isInput">{{ row.workEnd }}</span>
                     </template>
                 </i-table>
             </div>
@@ -706,7 +706,6 @@
                 if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                     this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
-                console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                 await this.getOrgTree()
                 await this.getSearchCondition()
 
@@ -728,7 +727,6 @@
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                 if (targetAdminSection){
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = targetAdminSection
@@ -1270,6 +1268,8 @@
                             workTime: 'sub-title'
                         }
                     }]
+                console.log(this.workData)
+                console.log(this.workData0)
                 this.workData0.forEach(e => {
                     this.workData = this.workData.concat(
                         {
@@ -1282,6 +1282,7 @@
                         }
                     )
                 })
+                console.log(this.workData)
                 this.workData = this.workData.concat([
                     {
                         workTime: '本人コメント',

@@ -291,9 +291,7 @@
                               <!-- 承认者comment -->
                               <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment  && !bFixed">
                               </i-input>
-                              <span  style="border-radius: 5px; white-space: pre-line;" class="tl input-like-span" v-if="row.isBSComment  && bFixed">
-                                {{dailyEdit.tdaCbosscommentR}}
-                              </span>
+                              <span  style="border-radius: 5px; white-space: pre-line;" class="tl input-like-span" v-if="row.isBSComment  && bFixed">{{dailyEdit.tdaCbosscommentR}}</span>
 
                             <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
