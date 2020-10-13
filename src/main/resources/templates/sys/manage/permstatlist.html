@@ -139,7 +139,7 @@
                 <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle rest" v-if="row[item] === '確'">確</span>
             </template>
         </i-table>
-        <Drawer :title="title" v-model="showDayApply" width="97">
+        <Modal :title="title" v-model="showDayApply" :styles="{top: '0px'}" fullscreen>
             <Row :gutter="16" class="mb10">
                 <i-col class="tr" offset="11" span="13">
                     <i-button :disabled="!drawApproval" @click="handleSelectAll2(false)" class="mr5" ghost type="primary">
@@ -163,7 +163,7 @@
                     <span v-else>{{ row[item] | turnLine | whiteSpace}}</span>
                 </template>
             </i-table>
-        </Drawer>
+        </Modal>
 
         <!--日次就業実績-->
         <Drawer :mask-closable="false" :title="title" @on-close="handleClose()" v-model="isShow" width="850">
