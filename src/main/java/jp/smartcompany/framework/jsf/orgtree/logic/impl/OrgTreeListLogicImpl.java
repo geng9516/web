@@ -99,7 +99,6 @@ public class OrgTreeListLogicImpl implements OrgTreeListLogic {
         );
         // 検索結果から検索対象組織のリストを取得（IN句形式）
         String sSectionList = " AND " + getOrgListFromLayeredSection(lOrgTreeList);
-
         // 対象組織のリストをもとに組織を検索し直し
         return iMastOrganisationService.selectOrgList(
                customerId,

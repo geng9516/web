@@ -1335,4 +1335,49 @@
             </if>
     </select>
 
+    <select id="selectPersonalInfo" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO">
+        SELECT
+            ME_CCOMPANYID as company_id,
+            ME_CUSERID as user_id,
+            ME_CEMPLOYEEID_CK as employee_id,
+            HD_CSECTIONID_FK as section_code,
+            HD_CPOSTID_FK as post_code,
+            ME_CKANANAME kana_name,
+            PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,TO_DATE('${baseDate}'),'${language}') kanji_name,
+            PSMASTER.FUNC_GET_SECTION_NAME('${custId}',ME_CCOMPANYID,HD_CSECTIONID_FK,TO_DATE('${baseDate}'),'${language}') section_name,
+            PSMASTER.FUNC_GET_SECTION_NICK('${custId}',ME_CCOMPANYID,HD_CSECTIONID_FK,TO_DATE('${baseDate}'),'${language}') section_nick,
+            PSMASTER.FUNC_GET_POST_NAME('${custId}',ME_CCOMPANYID,HD_CPOSTID_FK,TO_DATE('${baseDate}'),'${language}') post_name,
+            PSMASTER.FUNC_GET_POST_NICK('${custId}',ME_CCOMPANYID,HD_CPOSTID_FK,TO_DATE('${baseDate}'),'${language}') post_nick,
+            PSMASTER.FUNC_GET_COMP_NAME('${custId}',ME_CCOMPANYID,TO_DATE('${baseDate}'),'${language}') company_name,
+            PSMASTER.FUNC_GET_COMP_NICK('${custId}',ME_CCOMPANYID,TO_DATE('${baseDate}'),'${language}') company_nick,
+            ME_CMAIL as YOBI1VALUE,
+            PSMASTER.FUNC_GET_GENERICDETAIL_DESC('${custId}',ME_CCOMPANYID,HJD_CJOBDESC,TO_DATE('${baseDate}'),'${language}') as yobi2_value,
+            PSMASTER.FUNC_GET_GENERICDETAIL_DESC('${custId}',ME_CCOMPANYID,HJG_CGRADE,TO_DATE('${baseDate}'),'${language}') as yobi3_value,
+            PSMASTER.FUNC_GET_GENERICDETAIL_DESC('${custId}',ME_CCOMPANYID,ME_CTYPEOFEMPLOYMENT,TO_DATE('${baseDate}'),'${language}') as yobi4_value,
+            ME_CIFSTILLEMPLOYEDID as is_out
+        FROM
+            MAST_EMPLOYEES,
+            HIST_DESIGNATION,
+            HIST_JOBDESC,
+            HIST_JOBGRADE
+        WHERE
+            ME_CCUSTOMERID_CK = #{custId}
+            AND ME_CUSERID = #{userId}
+            AND ME_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+            AND ME_DENDDATE >= #{baseDate}
+            AND HD_CCUSTOMERID_CK(+) = ME_CCUSTOMERID_CK
+            AND HD_CUSERID(+) = ME_CUSERID
+            AND HD_DSTARTDATE_CK(+) <![CDATA[<=]]> #{baseDate}
+            AND HD_DENDDATE(+) >= #{baseDate}
+            AND HD_CIFKEYORADDITIONALROLE(+) = '0'
+            AND HJD_CCUSTOMERID(+) = ME_CCUSTOMERID_CK
+            AND HJD_CUSERID(+) = ME_CUSERID
+            AND HJD_DSTARTDATE(+) <![CDATA[<=]]> #{baseDate}
+            AND HJD_DENDDATE(+) >= #{baseDate}
+            AND HJG_CCUSTOMERID(+) = ME_CCUSTOMERID_CK
+            AND HJG_CUSERID(+) = ME_CUSERID
+            AND HJG_DSTARTDATE(+) <![CDATA[<=]]> #{baseDate}
+            AND HJG_DENDDATE(+) >= #{baseDate}
+    </select>
+
 </mapper>

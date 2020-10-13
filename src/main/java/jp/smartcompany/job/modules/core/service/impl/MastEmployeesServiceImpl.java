@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
@@ -294,6 +295,12 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     @Override
     public UserManagerDTO selectPersonalName(String custId, String userId, String language,  List<String> companyList) {
          return baseMapper.selectPersonalName(custId,userId,language, companyList);
+    }
+
+    @Override
+    public PersonalInfoDTO selectPersonalInfo(Date baseDate, String custId, String language, String userId) {
+         String sBaseDate = SysUtil.transDateToString(baseDate);
+         return baseMapper.selectPersonalInfo(custId,userId,language,sBaseDate);
     }
     /*========================= 用户管理相关sql结束 ==================================*/
 }

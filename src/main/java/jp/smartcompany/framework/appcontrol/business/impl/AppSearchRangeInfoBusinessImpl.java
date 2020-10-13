@@ -367,14 +367,15 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
         }
 
         /* システムコード取得 */
-        String sSystemCode = "";
+        // 默认为01，不需要进行下面的系统code取得步骤
+        String sSystemCode = "01";
 
         if (sApplicationId == null) {
             /* システムコード取得 */
-            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId);
+//            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId);
         } else {
             /* システムコード取得 */
-            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId, sApplicationId);
+//            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId, sApplicationId);
         }
 
         // PsSessionパラメータチェック
@@ -383,7 +384,6 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
             /* グループ判定結果情報(HashMap)を取得 */
             Map<String, List<LoginGroupBO>>  maploginGroup
                     =  this.gPsSession.getLoginGroups();
-
             /* システム毎のグループ判定結果(List)を取得 */
             List<LoginGroupBO> listloginGroup = maploginGroup.get(sSystemCode);
 
@@ -411,102 +411,102 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
 
         StringBuilder sb = new StringBuilder();
 
-        for (Iterator<LoginGroupBO> iteloginGroup = pListloginGroup.iterator(); iteloginGroup.hasNext();) {
-            LoginGroupBO loginGroup   = iteloginGroup.next();    // ログイングループ
-            String sGroupID         = loginGroup.getGroupCode();       // グループコード
-            // 初期化
-            sb.delete(0, sb.length());
-            // key作成
-            if (psApplicationId != null){
-                sb.append(sCustomerID).append("_").append(psSystemId).append("_").append(sGroupID).append("_").append(psSiteID).append("_").append(psApplicationId);
-            } else {
-                sb.append(sCustomerID).append("_").append(psSystemId).append("_").append(sGroupID).append("_").append(psSiteID);
-            }
-            // 該当グループ毎の条件ID(必要・必須)を取得する
-            List<AppSearchRangeInfoDTO> appSearchRangeInfoEntityList = scCacheUtil.getAppSearchRange(sb.toString());
-            // null判定
-            if (appSearchRangeInfoEntityList == null){
-                continue;
-            }
-            // 登録済みの検索対象範囲情報(条件ID)分処理を繰り返す。
-            for (Iterator<AppSearchRangeInfoDTO> appSearchRangeInfoEntityIte
-                 = appSearchRangeInfoEntityList.iterator(); appSearchRangeInfoEntityIte.hasNext();) {
-                AppSearchRangeInfoDTO appSearchRangeInfoEntity = appSearchRangeInfoEntityIte.next();
-                String sCondWhere = null;
-                // 必要条件定義IDが定義されている場合
-                if (appSearchRangeInfoEntity.getHgpCpermnecessity() != null) {
-                    // 検索範囲情報(組織、役職)常駐変数より、条件式結合クエリを取得する
-                    String sPermissionID = appSearchRangeInfoEntity.getHgpCpermnecessity();
-                    String sPermissionQuery = this.getPermissionQuery(sPermissionID, sCustomerID, psDomainId);
-                    if (!this.isEmpty(sPermissionQuery)) {
-                        condWhereNecessity.add(sPermissionQuery);
-                    }
-                    bSetDefault = true;
-                    // 「すべて」フラグ
-                    if (sPermissionID.equals(CODE_0001)){
-                        bAllUsed = true;
-                    }
+        // ログイングループ
+        if (CollUtil.isNotEmpty(pListloginGroup)) {
+            for (LoginGroupBO loginGroup : pListloginGroup) {
+                String sGroupID = loginGroup.getGroupCode();       // グループコード
+                // 初期化
+                sb.delete(0, sb.length());
+                // key作成
+                if (psApplicationId != null) {
+                    sb.append(sCustomerID).append("_").append(psSystemId).append("_").append(sGroupID).append("_").append(psSiteID).append("_").append(psApplicationId);
+                } else {
+                    sb.append(sCustomerID).append("_").append(psSystemId).append("_").append(sGroupID).append("_").append(psSiteID);
                 }
-                // 必須条件定義IDが定義されている場合
-                if (appSearchRangeInfoEntity.getHgpCpermmust() != null) {
-                    // 検索範囲情報(組織、役職)常駐変数より、条件式結合クエリを取得する
-                    String sPermissionQuery = this.getPermissionQuery(appSearchRangeInfoEntity.getHgpCpermmust(), sCustomerID, psDomainId);
-                    if (!this.isEmpty(sPermissionQuery)) {
-                        condWhereMust.add(sPermissionQuery);
-                    }
-                    bSetDefault = true;
-                    // 「AND」フラグ
-                    bAnd = true;
+                // 該当グループ毎の条件ID(必要・必須)を取得する
+                List<AppSearchRangeInfoDTO> appSearchRangeInfoEntityList = scCacheUtil.getAppSearchRange(sb.toString());
+                // null判定
+                if (appSearchRangeInfoEntityList == null) {
+                    continue;
                 }
-
-                // 必要条件定義用基点組織フラグが"1"(有)の場合
-                if ((!this.isEmpty(appSearchRangeInfoEntity.getHgpCbasesectionFlagNeed()) &&
-                        appSearchRangeInfoEntity.getHgpCbasesectionFlagNeed().equals(BASE_SECTION_TRUE))) {
-
-                    // 条件式作成(基点組織) を条件Where句へ格納
-                    sCondWhere = this.createBaseSectionSQL(psSystemId, psDomainId, sGroupID);
-                    if (!this.isEmpty(sCondWhere)) {
-                        condWhereBase.add(sCondWhere);
-                        // 基点組織の場合には結合テーブルに異動歴を含める(組織ドメイン・法人ドメインの場合を除く)
-                        this.gConditionFromMap.put(
-                                TBL_MAST_ORGANISATION,
-                                TBL_MAST_ORGANISATION);
-                        if ((!psDomainId.equals(PsConst.DOMAIN_ORGANIZATION) && !psDomainId.equals(PsConst.DOMAIN_COMPANY)) || psMode.equals("1")) {
-                            this.gConditionFromMap.put(
-                                    TBL_HIST_DESIGNATION,
-                                    TBL_HIST_DESIGNATION);
+                // 登録済みの検索対象範囲情報(条件ID)分処理を繰り返す。
+                for (AppSearchRangeInfoDTO appSearchRangeInfoEntity : appSearchRangeInfoEntityList) {
+                    String sCondWhere = null;
+                    // 必要条件定義IDが定義されている場合
+                    if (appSearchRangeInfoEntity.getHgpCpermnecessity() != null) {
+                        // 検索範囲情報(組織、役職)常駐変数より、条件式結合クエリを取得する
+                        String sPermissionID = appSearchRangeInfoEntity.getHgpCpermnecessity();
+                        String sPermissionQuery = this.getPermissionQuery(sPermissionID, sCustomerID, psDomainId);
+                        if (!this.isEmpty(sPermissionQuery)) {
+                            condWhereNecessity.add(sPermissionQuery);
                         }
                         bSetDefault = true;
+                        // 「すべて」フラグ
+                        if (sPermissionID.equals(CODE_0001)) {
+                            bAllUsed = true;
+                        }
                     }
-                }
-                // 必須条件定義用基点組織フラグが"1"(有)の場合
-                if (!this.isEmpty(appSearchRangeInfoEntity.getHgpCbasesectionFlagMust()) &&
-                        appSearchRangeInfoEntity.getHgpCbasesectionFlagMust().equals(BASE_SECTION_TRUE)) {
-
-                    // 条件式作成(基点組織) を条件Where句へ格納
-                    sCondWhere = this.createBaseSectionSQL(psSystemId, psDomainId, sGroupID);
-                    if (!this.isEmpty(sCondWhere)) {
-                        condWhereBaseMust.add(sCondWhere);
-                        // 基点組織の場合には結合テーブルに異動歴を含める(組織ドメイン・法人ドメインの場合を除く)
-                        this.gConditionFromMap.put(
-                                TBL_MAST_ORGANISATION,
-                                TBL_MAST_ORGANISATION);
-                        if ((!psDomainId.equals(PsConst.DOMAIN_ORGANIZATION) && !psDomainId.equals(PsConst.DOMAIN_COMPANY)) || psMode.equals("1")) {
-                            this.gConditionFromMap.put(
-                                    TBL_HIST_DESIGNATION,
-                                    TBL_HIST_DESIGNATION);
+                    // 必須条件定義IDが定義されている場合
+                    if (appSearchRangeInfoEntity.getHgpCpermmust() != null) {
+                        // 検索範囲情報(組織、役職)常駐変数より、条件式結合クエリを取得する
+                        String sPermissionQuery = this.getPermissionQuery(appSearchRangeInfoEntity.getHgpCpermmust(), sCustomerID, psDomainId);
+                        if (!this.isEmpty(sPermissionQuery)) {
+                            condWhereMust.add(sPermissionQuery);
                         }
                         bSetDefault = true;
+                        // 「AND」フラグ
+                        bAnd = true;
                     }
-                }
-                // 退職者検索対象範囲
-                int nPermRetired = 0;
-                if (appSearchRangeInfoEntity.getHgpCpermRetired() != null) {
-                    nPermRetired = Integer.parseInt(appSearchRangeInfoEntity.getHgpCpermRetired());
-                }
-                // 大きい方を優先(0:参照しない < 1:自社のみ < 2:すべて)
-                if (nPermRetired > nMaxRitired) {
-                    nMaxRitired = nPermRetired;
+
+                    // 必要条件定義用基点組織フラグが"1"(有)の場合
+                    if ((!this.isEmpty(appSearchRangeInfoEntity.getHgpCbasesectionFlagNeed()) &&
+                            appSearchRangeInfoEntity.getHgpCbasesectionFlagNeed().equals(BASE_SECTION_TRUE))) {
+
+                        // 条件式作成(基点組織) を条件Where句へ格納
+                        sCondWhere = this.createBaseSectionSQL(psSystemId, psDomainId, sGroupID);
+                        if (!this.isEmpty(sCondWhere)) {
+                            condWhereBase.add(sCondWhere);
+                            // 基点組織の場合には結合テーブルに異動歴を含める(組織ドメイン・法人ドメインの場合を除く)
+                            this.gConditionFromMap.put(
+                                    TBL_MAST_ORGANISATION,
+                                    TBL_MAST_ORGANISATION);
+                            if ((!psDomainId.equals(PsConst.DOMAIN_ORGANIZATION) && !psDomainId.equals(PsConst.DOMAIN_COMPANY)) || psMode.equals("1")) {
+                                this.gConditionFromMap.put(
+                                        TBL_HIST_DESIGNATION,
+                                        TBL_HIST_DESIGNATION);
+                            }
+                            bSetDefault = true;
+                        }
+                    }
+                    // 必須条件定義用基点組織フラグが"1"(有)の場合
+                    if (!this.isEmpty(appSearchRangeInfoEntity.getHgpCbasesectionFlagMust()) &&
+                            appSearchRangeInfoEntity.getHgpCbasesectionFlagMust().equals(BASE_SECTION_TRUE)) {
+
+                        // 条件式作成(基点組織) を条件Where句へ格納
+                        sCondWhere = this.createBaseSectionSQL(psSystemId, psDomainId, sGroupID);
+                        if (!this.isEmpty(sCondWhere)) {
+                            condWhereBaseMust.add(sCondWhere);
+                            // 基点組織の場合には結合テーブルに異動歴を含める(組織ドメイン・法人ドメインの場合を除く)
+                            this.gConditionFromMap.put(
+                                    TBL_MAST_ORGANISATION,
+                                    TBL_MAST_ORGANISATION);
+                            if ((!psDomainId.equals(PsConst.DOMAIN_ORGANIZATION) && !psDomainId.equals(PsConst.DOMAIN_COMPANY)) || psMode.equals("1")) {
+                                this.gConditionFromMap.put(
+                                        TBL_HIST_DESIGNATION,
+                                        TBL_HIST_DESIGNATION);
+                            }
+                            bSetDefault = true;
+                        }
+                    }
+                    // 退職者検索対象範囲
+                    int nPermRetired = 0;
+                    if (appSearchRangeInfoEntity.getHgpCpermRetired() != null) {
+                        nPermRetired = Integer.parseInt(appSearchRangeInfoEntity.getHgpCpermRetired());
+                    }
+                    // 大きい方を優先(0:参照しない < 1:自社のみ < 2:すべて)
+                    if (nPermRetired > nMaxRitired) {
+                        nMaxRitired = nPermRetired;
+                    }
                 }
             }
         }
@@ -576,9 +576,8 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
             List<String> queryList = CollUtil.newLinkedList();
             // 戻り値用
             String sQuery = null;
-            for (Iterator<String> iterator = conditionFromList.iterator() ; iterator.hasNext();) {
+            for (String sConditionFrom : conditionFromList) {
 
-                String sConditionFrom = iterator.next();
                 // 組織・法人ドメインの場合はユーザIDを含めずに結合式を作成
                 if (sConditionFrom.equals(sDomainTable)) {
                     sQuery = psTableCombinationType.assemble(

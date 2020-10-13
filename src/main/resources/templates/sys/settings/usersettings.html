@@ -399,7 +399,10 @@
         async getOrgTree() {
           this.empDeptLoading = true
           try {
-            const { data } = await this.http.get('sys/tree/orgs?psSite=Admin')
+            const { data } = await this.http.get('sys/tree/orgs',{
+              psSite: Utils.getUrlParam(location.href, 'psSite'),
+              psApp: Utils.getUrlParam(location.href, 'psApp')
+            })
             this.treeData = this.convertTreeData(data)
             this.treeData[0].expand = true
             this._treeData = Utils.deepClone(this.treeData)
