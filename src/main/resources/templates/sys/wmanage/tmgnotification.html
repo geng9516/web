@@ -92,7 +92,7 @@
         </Row>
       </div>
       <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
-        :data="tableData" :loading="loading" ref="table" :row-class-name="() => 'select-col'">
+        :data="tableData" :loading="loading" ref="table" :row-class-name="() => 'select-col'" no-data-text="">
         <template slot-scope="{ row }" slot="dateList">
           <span>{{row.tntfDbegin === row.tntfDend ? row.tntfDbegin :  `${row.tntfDbegin} ～ ${row.tntfDend}`}}</span>
         </template>
@@ -815,7 +815,7 @@
               }
             })
             this.pageValue.amount = data.totalCount
-            if (!isInit) this.$Message.success('再表示完了')
+            // if (!isInit) this.$Message.success('再表示完了')
             this.amount = data.totalCount || 2
           } catch (error) {
             return
@@ -923,6 +923,14 @@
           try {
             const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
             this.empList = data
+            if (data.length == 0){
+              this.$Message.error({
+                background: true,
+                closable: true,
+                duration: 6,
+                content: '選択した所属に存在している職員はありません。'
+              })
+            }
             this.empTreeData = data.map(e => {
               return {
                 title: e.empname,
