@@ -91,8 +91,6 @@ public class ScheduleController {
             @RequestParam("custId") String custId,
             @RequestParam("compId") String compId,
             @RequestParam("language") String language) {
-        //初期化
-
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
     }
 
@@ -152,8 +150,6 @@ public class ScheduleController {
                                                @RequestParam("txtEndDate") String txtEndDate,
                                                @RequestParam("twp_nid") int twp_nid,
                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //初期化
-        //tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectCsvReference(twp_nid, psDBBean);
     }
 
@@ -168,7 +164,6 @@ public class ScheduleController {
     @ResponseBody
     public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("twp_nid") int twp_nid,
                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //   System.out.println("controller-->selectCsvReferenceList");
         return tmgScheduleBean.selectCsvReferenceList(twp_nid, psDBBean);
     }
 

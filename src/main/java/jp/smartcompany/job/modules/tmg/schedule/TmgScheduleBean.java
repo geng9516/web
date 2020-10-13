@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.tmg.schedule;
 
-import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -40,7 +39,7 @@ import java.util.*;
 public class TmgScheduleBean {
     private final Logger logger = LoggerFactory.getLogger(TmgScheduleBean.class);
 
-   // private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
+    // private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
 
     private final ITmgScheduleService iTmgScheduleService;
 
@@ -319,10 +318,10 @@ public class TmgScheduleBean {
      * @param baseDate
      */
     private void setVariationalWorkInfo(String baseDate) {
-        //logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
+        //基準日時点で４週間の変形労働制対象者か
         int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
+        //基準日の月に４週間の変形労働制の期間が存在するか
         int tmp2 = iTmgScheduleService.selectVariationalWorkDays(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
-
         if (tmp1 > 0) {
             _isVariationalWorkType = true;
         }
@@ -384,8 +383,6 @@ public class TmgScheduleBean {
      * @param txtBaseDate 2020/03/15
      * @param txtEndDate  2020/04/11
      */
-
-
     public void setExecuteParameters(String txtBaseDate, String txtEndDate, PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         //変数初期化
@@ -406,9 +403,10 @@ public class TmgScheduleBean {
         _targetCustCode = "";
         _preFirstDayOfSysDate = "";
 
-        logger.info("****");
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
+        //目標対象が画面から渡すのため、様々なパラメータセットパターンを適応する
         if (null != psDBBean.getEmployeeCode()) {
+            //一般的に、EmployeeCodeから
             _targetUserCode = psDBBean.getEmployeeCode();
         } else {
             _targetUserCode = psDBBean.getTargetUser();
@@ -426,6 +424,7 @@ public class TmgScheduleBean {
         } else {
             _endDateOf4Weeks = "";
         }
+        //画面から入力された実行条件を判定し設定します。
         this.setExecuteParameters();
     }
 
@@ -474,10 +473,10 @@ public class TmgScheduleBean {
         if (_baseDate == null || _baseDate.length() == 0) {
             _baseDate = getNextFirstDayOfSysDate();
         }
+        //汎用参照リンクオブジェクトを生成します
         setTmgReferListOfBeforeProcess();
-
+        //ユーザーの基本情報を設定します。
         this.setBasicUserInfo();
-
 
         // 社員が選択されている場合は基本労働制か変形労働制か判定する処理を実行する。
         if (isSelectedTargetUser()) {
@@ -504,7 +503,9 @@ public class TmgScheduleBean {
             }
             HashMap<String, Object> nextResult = this.selectLinkOfPreMonth(_baseDate, _targetUserCode);
             if (null != nextResult) {
+                //開始時間
                 nextStart = nextResult.get("PREMONTH").toString();
+                //終了時間
                 nextEnd = nextResult.get("PREMONTHLASTDAY").toString();
             }
         }
@@ -527,19 +528,24 @@ public class TmgScheduleBean {
             if (null != preMonthResult) {
                 // 検索結果が存在するなら、基準日の値を更新する
                 if (null != preMonthResult.get("PRE_START")) {
+                    //前月開始時間
                     preStart = preMonthResult.get("PRE_START").toString();
                 }
                 if (null != preMonthResult.get("PRE_END")) {
+                    //前月終了時間
                     preEnd = preMonthResult.get("PRE_END").toString();
                 }
             }
+            //4週間単位の変形労働制職員対応
             HashMap<String, Object> nextMonthResult = iTmgScheduleService.SelectBaseDateOf4WeeksAfterDay(_baseDate, detailPeriod, _targetCustCode, _targetCompCode, _targetUserCode);
             if (null != nextMonthResult) {
                 // 検索結果が存在するなら、基準日の値を更新する
                 if (null != nextMonthResult.get("NEXT_START")) {
+                    //翌日開始時間
                     nextStart = nextMonthResult.get("NEXT_START").toString();
                 }
                 if (null != nextMonthResult.get("NEXT_END")) {
+                    //翌日終了時間
                     nextEnd = nextMonthResult.get("NEXT_END").toString();
                 }
             }
@@ -889,39 +895,48 @@ public class TmgScheduleBean {
      * @return
      */
     public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate) {
-
+        //表示開始日
         if (null != startDispDate && !"".equals(startDispDate)) {
             _startDispDate = startDispDate;
         }
+        //終了日
         if (null != endDispDate && !"".equals(endDispDate)) {
             _endDispDate = endDispDate;
         }
 
+        //ファンクション
         String useFixedFunction = "";
         if (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
             useFixedFunction = "TMG_F_IS_FIXED_SALARY";
         } else {
             useFixedFunction = "TMG_F_IS_FIXED_MONTHLY";
         }
-
+        //目標対象
         String employeeId = _targetUserCode;
 
         ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
         PaidHolidayVO paidHolidayVO = new PaidHolidayVO();
-        System.out.println("*******" + _startDispDate + "~" + _endDispDate);
+        //System.out.println("*******" + _startDispDate + "~" + _endDispDate);
         //eg: 2020年3月15日～2020年4月11日
         String period = "";
         if (null != _startDispDate && !"".equals(_startDispDate)) {
+            //データ表示期間
             period = DateUtil.format(DateUtil.parse(_startDispDate), "yyyy年MM月dd日").toString();
             if (null != _endDispDate && !"".equals(_endDispDate)) {
                 period += "～" + DateUtil.format(DateUtil.parse(_endDispDate), "yyyy年MM月dd日").toString();
             }
         }
+        //前月終了時間
         scheduleInfoVO.setPreEnd(preEnd);
+        //前月開始時間
         scheduleInfoVO.setPreStart(preStart);
+        //翌月開始時間
         scheduleInfoVO.setNextStart(nextStart);
+        //翌月終了時間
         scheduleInfoVO.setNextEnd(nextEnd);
+        //勤務予定データ期間
         scheduleInfoVO.setPeriod(period);
+
         /*String cacheKey = "SCHEDULE_INFO_" + _startDispDate + _endDispDate + useFixedFunction + employeeId;
         ScheduleInfoVO result = (ScheduleInfoVO) lruCache.get(cacheKey);
         Object obj = lruCache.get(SCHEDULE_EDIT_FLAG);
@@ -931,6 +946,8 @@ public class TmgScheduleBean {
         } else {
             //編集フラッグをcacheから削除する
             lruCache.remove(SCHEDULE_EDIT_FLAG);*/
+
+        //[勤怠]日別情報より予定データを取得します
         List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         // Arrayにデータフォーマッを変える
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
@@ -942,6 +959,7 @@ public class TmgScheduleBean {
                 scheduleDataDTO.setJson_arr(JSONUtil.parseArray(scheduleDataDTO.getJson()).toArray());
             }
         }
+        //年次休暇残
         NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
 
         /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
@@ -949,6 +967,7 @@ public class TmgScheduleBean {
         int weekday = 0;
         int holiday = 0;
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
+            //休日フラグ
             String sHolFlg = scheduleDataDTOS.get(i).getHolflgCalendar();
             _TCA_CHOLFlgList.add(sHolFlg);
             // 休日、平日を集計
@@ -958,16 +977,19 @@ public class TmgScheduleBean {
                 holiday++;
             }
         }
+        //基準日日数
         if (weekday == 0) {
             paidHolidayVO.setDateOfRecordDays("0");
         } else {
             paidHolidayVO.setDateOfRecordDays(String.valueOf(weekday));
         }
+        //公休日数
         if (holiday == 0) {
             paidHolidayVO.setNationalHolidayDays("0");
         } else {
             paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
         }
+        //年次休暇残
         String npaidRestDaysHour = "0.0日 0時間 0分";
         if (null != npaidRestDTO) {
             //年次休暇残
@@ -988,15 +1010,16 @@ public class TmgScheduleBean {
             npaidRestDaysHour += hour + "時間 ";
             npaidRestDaysHour += min + "分";
         }
-
+        //年次休暇残
         paidHolidayVO.setNpaidRestDaysHour(npaidRestDaysHour);
-
         //基準時間
         String workingHours = iTmgScheduleService.selectWorkingHours(employeeId, _baseDate, _targetCustCode, _targetCompCode);
         String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
+        //基準時間
         paidHolidayVO.setDateOfRecord(dateOfRecord);
+        //基準平均勤務時間
         paidHolidayVO.setAvgWorkTime(workingHours);
-
+        //公休日数	基準日数	基準時間	年次休暇残
         scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
         scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
            /* lruCache.put(cacheKey, scheduleInfoVO);
@@ -1218,13 +1241,18 @@ public class TmgScheduleBean {
                     }
                 }
             }
+            //勤務時間
             plan.put("dutyArray", dutyArray);
+            //休憩時間
             plan.put("restArray", restArray);
             hashMap.put(planJSONKey, plan);
         }
         HashMap<String, Object> results = new HashMap<String, Object>();
+        //[区分]
         results.put("kubunnList", kubunnList);
+        //[出張]
         results.put("syuccyouList", syuccyouList);
+        //勤務パターン
         results.put("workPatternList", workPatternList);
             /*lruCache.put(cacheKey, results);
             logger.info("[区分  出張  勤務パターン] Cache までロードする");*/
@@ -1245,24 +1273,37 @@ public class TmgScheduleBean {
 
     /**
      * 予定作成更新処理を行います。
+     *
+     * @param content  登録内容　jsonフォマート
+     * @param psDBBean
      */
     public void executeEditMonthlyUSchedule(String content, PsDBBean psDBBean) {
         //lruCache.put(SCHEDULE_EDIT_FLAG, true);
         if (JSONUtil.isJsonObj(content)) {
+            //json文字を更新対象に変更する
             MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
             if (null != monthlyUScheduleEditParaDTO) {
                 List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = monthlyUScheduleEditParaDTO.getMonthlyScheduleEmpInfoDTOS();
                 for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
                     MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
+                    //始業
                     monthlyScheduleEmpInfoDTO.setNopen(monthlyScheduleEmpInfoDTO.getNopen() == null ? "" : monthlyScheduleEmpInfoDTO.getNopen());
+                    //終業
                     monthlyScheduleEmpInfoDTO.setNclose(monthlyScheduleEmpInfoDTO.getNclose() == null ? "" : monthlyScheduleEmpInfoDTO.getNclose());
+                    //コメント
                     monthlyScheduleEmpInfoDTO.setComment(monthlyScheduleEmpInfoDTO.getComment() == null ? "" : monthlyScheduleEmpInfoDTO.getComment());
+                    //出張
                     monthlyScheduleEmpInfoDTO.setBussinessTripid(monthlyScheduleEmpInfoDTO.getBussinessTripid() == null ? "" : monthlyScheduleEmpInfoDTO.getBussinessTripid());
+                    //区分
                     monthlyScheduleEmpInfoDTO.setWorkId(monthlyScheduleEmpInfoDTO.getWorkId() == null ? "" : monthlyScheduleEmpInfoDTO.getWorkId());
                 }
+                //勤務予定 リスト
                 monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
+                //実績クリアの可否を取得します
                 this.isClearResult();
+                //定作成更新処理を行います
                 this.executeEditMonthlyUSchedule(monthlyUScheduleEditParaDTO, psDBBean);
+                //前のタスクが終わったら、このタスクを実行するしかない
                 this.triggerOper(monthlyUScheduleEditParaDTO, psDBBean);
             } else {
                 logger.error("JSON対象がオブジェクトに変更することが失敗しました");
@@ -1360,7 +1401,7 @@ public class TmgScheduleBean {
             }
             for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
                 MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
-                logger.info("--->targetDate:" + monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+                //logger.info("--->targetDate:" + monthlyScheduleEmpInfoDTO.getDyyyymmdd());
                 iTmgScheduleService.insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getTargetUserId(), Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, monthlyScheduleEmpInfoDTO.getDyyyymmdd(), ACT_EDITMONTHLY_USCHEDULE);
                 iTmgScheduleService.deleteTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
                 iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), psDBBean.getCompCode(), psDBBean.getCustID(), monthlyScheduleEmpInfoDTO.getDyyyymmdd());
@@ -1467,6 +1508,7 @@ public class TmgScheduleBean {
      * 週勤務パターンを取得する
      *
      * @param twp_nid
+     * @param psDBBean
      * @return
      */
     public TmgWeekPatternVO selectCsvReference(int twp_nid, PsDBBean psDBBean) {
@@ -1487,6 +1529,8 @@ public class TmgScheduleBean {
     /**
      * 週勤務パターンを取得する
      *
+     * @param twp_nid
+     * @param psDBBean
      * @return
      */
     public List<TmgWeekPatternVO> selectCsvReferenceList(int twp_nid, PsDBBean psDBBean) {
@@ -1498,15 +1542,23 @@ public class TmgScheduleBean {
         return iTmgScheduleService.selectCsvReferenceList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage(), employeeId, twp_nid);
     }
 
+    /**
+     * @param divisionId
+     * @return
+     */
     private String workTypeConvert(String divisionId) {
         if (null != divisionId) {
             if ("TMG_WORK|000".equals(divisionId)) {
+                //出勤
                 return "0";
             } else if ("TMG_WORK|500".equals(divisionId)) {
+                //法定休
                 return "1";
             } else if ("TMG_WORK|570".equals(divisionId)) {
+                //所定休
                 return "3";
             } else if ("TMG_WORK|480".equals(divisionId)) {
+                //勤務を要しない日
                 return "0";
             } else {
                 return "";
@@ -1557,6 +1609,7 @@ public class TmgScheduleBean {
 
         try {
             /**
+             * 実行プログラム
              * eg:ACT_MakeWeekPattern_UWPtn
              */
             String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
@@ -1565,6 +1618,7 @@ public class TmgScheduleBean {
                 actionParam = "ACT_MakeWeekPattern_UWPtn";
             }
             /**
+             * 更新プログラム
              * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
              */
             modifierprogramid = "TmgSchedule_" + actionParam;
@@ -1628,6 +1682,7 @@ public class TmgScheduleBean {
      * @param twp_dstartdate
      * @param twp_denddate
      * @param twp_nid
+     * @param psDBBean
      * @return
      */
     @Transactional(rollbackFor = GlobalException.class)
@@ -1636,10 +1691,15 @@ public class TmgScheduleBean {
             logger.error("パラメータが不正です");
             return GlobalResponse.error("パラメータが不正です");
         }
+        //01
         String _targetCustCode = psDBBean.getCustID();
+        //01
         String _targetCompCode = psDBBean.getCompCode();
+        //目標対象
         String _targetUserCode = psDBBean.getEmployeeCode();
+        //操作対象
         String _loginUserCode = psDBBean.getUserCode();
+        //ja
         String _loginLanguageCode = psDBBean.getLanguage();
         //先ずは、週勤務パターンを取得する
         List<TmgWeekPatternVO> tmgWeekPatternVOList = iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, 0);
@@ -1651,28 +1711,50 @@ public class TmgScheduleBean {
                 tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
                 if (tmgWeekPatternVO.getTwp_nid().equals(twp_nid)) {
                     //update
+                    //データ開始時間
                     tmgWeekPatternCheckDTO.setTwp_dstartdate(twp_dstartdate);
+                    //データ終了時間
                     tmgWeekPatternCheckDTO.setTwp_denddate(twp_denddate);
                 } else {
+                    //データ開始時間
                     tmgWeekPatternCheckDTO.setTwp_dstartdate(tmgWeekPatternVO.getTwp_dstartdate());
+                    //データ終了時間
                     tmgWeekPatternCheckDTO.setTwp_denddate(tmgWeekPatternVO.getTwp_denddate());
                 }
+                //更新者
                 tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(_loginUserCode);
+                //時間期間
                 tmgWeekPatternCheckDTO.setPeriod(tmgWeekPatternCheckDTO.getTwp_dstartdate() + "-" + tmgWeekPatternCheckDTO.getTwp_denddate());
+                //更新フラグ
+                //  * TRUEの場合は登録
+                //  * FALSEの場合は削除
                 tmgWeekPatternCheckDTO.setCheckFlag(true);
+                //社員ID
                 tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
+                //01
                 tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
+                //01
                 tmgWeekPatternCheckDTO.setCustId(_targetCustCode);
+                //出勤時間01
                 tmgWeekPatternCheckDTO.setTwp_copen1(tmgWeekPatternVO.getTwp_copen1() == null ? "" : tmgWeekPatternVO.getTwp_copen1());
+                //退勤時間01
                 tmgWeekPatternCheckDTO.setTwp_cclose1(tmgWeekPatternVO.getTwp_cclose1() == null ? "" : tmgWeekPatternVO.getTwp_cclose1());
                 if (null != tmgWeekPatternVO.getRest1() && !"".equals(tmgWeekPatternVO.getRest1().trim())) {
                     String rest = tmgWeekPatternVO.getRest1().replaceAll(" ", "");
+                    //休憩開始時間01
                     tmgWeekPatternCheckDTO.setTwp_crestopen1(rest.split("-")[0]);
+                    //休憩終了時間01
                     tmgWeekPatternCheckDTO.setTwp_crestclose1(rest.split("-")[1]);
                 } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen1("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose1("");
                 }
+                /**
+                 * 就業区分
+                 * 1: 法定休
+                 * 0:　出勤
+                 * 3:　所定休
+                 */
                 tmgWeekPatternCheckDTO.setTwp_cholflg1(this.workTypeConvert2(tmgWeekPatternVO.getWorkname1()));
 
                 tmgWeekPatternCheckDTO.setTwp_copen2(tmgWeekPatternVO.getTwp_copen2() == null ? "" : tmgWeekPatternVO.getTwp_copen2());
@@ -1767,16 +1849,23 @@ public class TmgScheduleBean {
      * 週勤務パターン登録画面　登録処理
      *
      * @param content
+     * @param psDBBean
+     * @return
      */
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse executeMakeWeekPattern_UWPtn(String content, PsDBBean psDBBean) {
         boolean flag = true;
         GlobalResponse globalResponse = GlobalResponse.ok();
         List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
+        //01
         String _targetCustCode = psDBBean.getCustID();
+        //01
         String _targetCompCode = psDBBean.getCompCode();
+        //目標対象
         String _targetUserCode = psDBBean.getEmployeeCode();
+        //操作対象
         String _loginUserCode = psDBBean.getUserCode();
+        //ja
         String _loginLanguageCode = psDBBean.getLanguage();
         if (JSONUtil.isJsonObj(content)) {
             JSONObject jsonObject = JSONUtil.parseObj(content);
@@ -1785,55 +1874,85 @@ public class TmgScheduleBean {
                 List<WeekPatternFormDTO> weekPatternFormDTOList = null;
                 if (null != weekPatternInputDTO) {
                     TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
+                    //01
                     tmgWeekPatternCheckDTO.setCustId(_targetCustCode);
+                    //01
                     tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
+                    //目標対象
                     tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
+                    //操作対象
                     tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(_loginUserCode);
+                    //データ開始時間
                     tmgWeekPatternCheckDTO.setTwp_dstartdate(weekPatternInputDTO.getApplyStart());
+                    //データ終了時間
                     tmgWeekPatternCheckDTO.setTwp_denddate(weekPatternInputDTO.getApplyEnd());
+                    /**
+                     * 更新フラグ
+                     * TRUEの場合は登録
+                     * FALSEの場合は削除
+                     */
                     tmgWeekPatternCheckDTO.setCheckFlag(true);
+                    //時間期間
                     tmgWeekPatternCheckDTO.setPeriod(weekPatternInputDTO.getApplyStart() + "-" + weekPatternInputDTO.getApplyEnd());
                     if (null != jsonObject.get("applyList")) {
+                        //週勤務データ
                         weekPatternFormDTOList = JSONUtil.parseArray(jsonObject.get("applyList")).toList(WeekPatternFormDTO.class);
                         for (int i = 0; i < weekPatternFormDTOList.size(); i++) {
                             WeekPatternFormDTO weekPatternFormDTO = weekPatternFormDTOList.get(i);
                             if ("0".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //日曜日の場合
+                                //出勤時間
                                 tmgWeekPatternCheckDTO.setTwp_copen1(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
+                                //退勤時間
                                 tmgWeekPatternCheckDTO.setTwp_cclose1(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
+                                //休憩時間
                                 tmgWeekPatternCheckDTO.setTwp_crestopen1(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
+                                //休憩時間
                                 tmgWeekPatternCheckDTO.setTwp_crestclose1(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
+                                /**
+                                 * 就業区分
+                                 * 1: 法定休
+                                 * 0:　出勤
+                                 * 3:　所定休
+                                 */
                                 tmgWeekPatternCheckDTO.setTwp_cholflg1(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("1".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //月曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen2(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose2(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen2(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose2(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_cholflg2(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("2".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //火曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen3(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose3(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen3(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose3(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_cholflg3(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("3".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //水曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen4(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose4(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen4(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose4(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_cholflg4(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("4".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //木曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen5(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose5(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen5(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose5(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_cholflg5(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("5".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //金曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen6(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose6(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen6(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose6(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_cholflg6(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("6".equals(weekPatternFormDTO.getWorkFlag())) {
+                                //土曜日
                                 tmgWeekPatternCheckDTO.setTwp_copen7(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose7(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen7(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
@@ -1888,10 +2007,11 @@ public class TmgScheduleBean {
             logger.error("基準時間が空です");
             return null;
         }
-
+        //01
         String compCode = psDBBean.getCompCode();
+        //今ログインユーザー
         String _loginUserCode = psDBBean.getUserCode();
-
+        //TmgMonthlyの更新日取得
         String modifiedDate = iTmgScheduleService.selectMonthlyModifiedDate(_loginUserCode, compCode, _loginUserCode, baseDate);
         if (null != modifiedDate && !"".equals(modifiedDate)) {
             modifiedDate = DateUtil.format(DateUtil.parse(modifiedDate, Cs_FORMAT_DATE_TYPE1), Cs_FORMAT_DATE_TYPE3);
@@ -1913,8 +2033,9 @@ public class TmgScheduleBean {
             logger.error("基準時間が空です");
             return false;
         }
-
+        //01
         String compCode = psDBBean.getCompCode();
+        //今ログインユーザー
         String _loginUserCode = psDBBean.getUserCode();
 
         /**
@@ -1969,11 +2090,17 @@ public class TmgScheduleBean {
             return false;
         }
         if (null != twp_nid && !"".equals(twp_nid)) {
+            //01
             String _targetCustCode = psDBBean.getCustID();
+            //01
             String _targetCompCode = psDBBean.getCompCode();
+            //目標対象
             String _targetUserCode = psDBBean.getEmployeeCode();
+            //操作対象
             String _loginUserCode = psDBBean.getUserCode();
+            //ja
             String _loginLanguageCode = psDBBean.getLanguage();
+
             //先ずは、週勤務パターンを取得する
             List<TmgWeekPatternVO> tmgWeekPatternVOList = iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, Integer.parseInt(twp_nid));
             if (null != tmgWeekPatternVOList) {
@@ -1982,16 +2109,31 @@ public class TmgScheduleBean {
                 for (int i = 0; i < tmgWeekPatternVOList.size(); i++) {
                     TmgWeekPatternVO tmgWeekPatternVO = tmgWeekPatternVOList.get(i);
                     tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
+                    //データ開始時間
                     tmgWeekPatternCheckDTO.setTwp_dstartdate(tmgWeekPatternVO.getTwp_dstartdate());
+                    //データ終了時間
                     tmgWeekPatternCheckDTO.setTwp_denddate(tmgWeekPatternVO.getTwp_denddate());
+                    //時間期間
                     tmgWeekPatternCheckDTO.setPeriod(tmgWeekPatternVO.getTwp_dstartdate() + "-" + tmgWeekPatternVO.getTwp_denddate());
+                    //更新者
                     tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(_loginUserCode);
+                    /**
+                     * 更新フラグ
+                     * TRUEの場合は登録
+                     * FALSEの場合は削除
+                     */
                     tmgWeekPatternCheckDTO.setCheckFlag(true);
+                    //社員ID
                     tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
+                    //01
                     tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
+                    //01
                     tmgWeekPatternCheckDTO.setCustId(_targetCustCode);
+                    //出勤時間1
                     tmgWeekPatternCheckDTO.setTwp_copen1(tmgWeekPatternVO.getTwp_copen1() == null ? "" : tmgWeekPatternVO.getTwp_copen1());
+                    //退勤時間1
                     tmgWeekPatternCheckDTO.setTwp_cclose1(tmgWeekPatternVO.getTwp_cclose1() == null ? "" : tmgWeekPatternVO.getTwp_cclose1());
+                    //休憩時間　開始　　終了　
                     if (null != tmgWeekPatternVO.getRest1() && !"".equals(tmgWeekPatternVO.getRest1().trim())) {
                         String rest = tmgWeekPatternVO.getRest1().replaceAll(" ", "");
                         tmgWeekPatternCheckDTO.setTwp_crestopen1(rest.split("-")[0]);
@@ -2000,9 +2142,16 @@ public class TmgScheduleBean {
                         tmgWeekPatternCheckDTO.setTwp_crestopen1("");
                         tmgWeekPatternCheckDTO.setTwp_crestclose1("");
                     }
+                    /**
+                     * 就業区分
+                     * 1: 法定休
+                     * 0:　出勤
+                     * 3:　所定休
+                     */
                     tmgWeekPatternCheckDTO.setTwp_cholflg1(this.workTypeConvert2(tmgWeekPatternVO.getWorkname1()));
-
+                    //出勤時
                     tmgWeekPatternCheckDTO.setTwp_copen2(tmgWeekPatternVO.getTwp_copen2() == null ? "" : tmgWeekPatternVO.getTwp_copen2());
+                    //退勤時間
                     tmgWeekPatternCheckDTO.setTwp_cclose2(tmgWeekPatternVO.getTwp_cclose2() == null ? "" : tmgWeekPatternVO.getTwp_cclose2());
                     if (null != tmgWeekPatternVO.getRest2() && !"".equals(tmgWeekPatternVO.getRest2().trim())) {
                         String rest = tmgWeekPatternVO.getRest2().replaceAll(" ", "");
@@ -2096,11 +2245,15 @@ public class TmgScheduleBean {
      * @return boolean true：使用可、false：使用不可
      */
     public boolean isEditableSchedule(PsDBBean psDBBean) {
-
+        //01
         String _targetCustCode = psDBBean.getCustID();
+        //01
         String _targetCompCode = psDBBean.getCompCode();
+        //目標対象
         String _targetUserCode = psDBBean.getEmployeeCode();
+        //ja
         String _language = psDBBean.getLanguage();
+        //サイト
         String siteId = psDBBean.getSiteId();
 
         Boolean bEditableFlg = null;
@@ -2145,13 +2298,17 @@ public class TmgScheduleBean {
      * @return
      */
     public GlobalResponse isEditable(PsDBBean psDBBean, String baseDate) {
-
+        //01
         String _targetCustCode = psDBBean.getCustID();
+        //01
         String _targetCompCode = psDBBean.getCompCode();
+        //目標対象
         String _targetUserCode = psDBBean.getEmployeeCode();
+        //ja
         String _language = psDBBean.getLanguage();
+        //サイト
         String siteId = psDBBean.getSiteId();
-        System.out.println("******* isEditable baseDate：" + baseDate);
+
         if (null == psDBBean) {
             logger.error("編集権限を制御する依頼のPsDBBeanが空です");
             return GlobalResponse.error("システムエーラ");
@@ -2195,6 +2352,19 @@ public class TmgScheduleBean {
         return GlobalResponse.ok();
     }
 
+    /**
+     * 権限チャック用
+     *
+     * @param baseDate
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @param dyyyymmdd
+     * @param dstart
+     * @param dend
+     * @return
+     */
     private boolean isFixedSalary(String baseDate, String custId, String compCode, String employeeId, String language, String dyyyymmdd, String dstart, String dend) {
         Boolean isFixedSalary = false;
         TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, language, dyyyymmdd, dstart, dend, true);
@@ -2206,6 +2376,19 @@ public class TmgScheduleBean {
         return isFixedSalary;
     }
 
+    /**
+     * 権限チャック用
+     *
+     * @param baseDate
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @param dyyyymmdd
+     * @param dstart
+     * @param dend
+     * @return
+     */
     private boolean isFixedMonthly(String baseDate, String custId, String compCode, String employeeId, String language, String dyyyymmdd, String dstart, String dend) {
         Boolean isFixedMonthly = false;
         TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, language, dyyyymmdd, dstart, dend, true);
@@ -2217,6 +2400,20 @@ public class TmgScheduleBean {
         return isFixedMonthly;
     }
 
+    /**
+     * 権限チャック用
+     *
+     * @param baseDate
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @param dyyyymmdd
+     * @param dstart
+     * @param dend
+     * @param all
+     * @return
+     */
     private TmgStatusDTO getTmgStatus(String baseDate, String custId, String compCode, String employeeId, String language, String dyyyymmdd, String dstart, String dend, boolean all) {
         boolean _isVariationalWorkType = this.setVariationalWorkInfo(baseDate, custId, compCode, employeeId, language);
         TmgStatusDTO tmgStatusDTO = null;
@@ -2234,6 +2431,19 @@ public class TmgScheduleBean {
         return tmgStatusDTO;
     }
 
+    /**
+     * 権限チャック用
+     *
+     * @param baseDate
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @param dyyyymmdd
+     * @param dstart
+     * @param dend
+     * @return
+     */
     private String getMonthlyStatus(String baseDate, String custId, String compCode, String employeeId, String language, String dyyyymmdd, String dstart, String dend) {
         String monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
         TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, language, dstart, dend, true);
@@ -2243,18 +2453,18 @@ public class TmgScheduleBean {
         return monthlyStatus;
     }
 
-
     /**
      * 指定した社員についての勤怠承認権限フラグ
+     *
+     * @param baseDate
+     * @param targetUserCode
+     * @return
      */
-
     private boolean existsAuthorityAtEmpSchedule(String baseDate, String targetUserCode) {
         try {
-            System.out.println("existsAuthorityAtEmpSchedule baseDate:" + baseDate);
-
             return referList.hasAuthorityAtEmployee(baseDate, targetUserCode, TmgUtil.Cs_AUTHORITY_SCHEDULE);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("指定した社員についての勤怠承認権限フラグ", e);
             return false;
         }
     }
@@ -2266,6 +2476,7 @@ public class TmgScheduleBean {
      * @param custId
      * @param compCode
      * @param employeeId
+     * @param baseDate
      * @return
      */
     private List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String baseDate) {
@@ -2274,9 +2485,9 @@ public class TmgScheduleBean {
 
     /**
      * 勤務予定時間リスト
-     * psDBBean -->baseDate
      *
      * @param psDBBean
+     * @param baseDate
      * @return
      */
     public List<ScheduleDateListVO> selectScheduleDateList(PsDBBean psDBBean, String baseDate) {
