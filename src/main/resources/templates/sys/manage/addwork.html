@@ -902,6 +902,7 @@
                     this.selectDisabled = true
                     if(this.referListObject.txtTmgReferListTreeViewRecordDate){
                         this.query.txtDYYYYMM=this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtTmgReferListTreeViewRecordDate=this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     await this.getWorkDateList()
                     if (!this.query.txtDYYYYMM){
