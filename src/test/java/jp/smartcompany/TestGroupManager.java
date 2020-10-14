@@ -1,6 +1,7 @@
 package jp.smartcompany;
 
 import jp.smartcompany.base.AbstractMockMvc;
+import jp.smartcompany.base.MockResponseStatus;
 import jp.smartcompany.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +20,7 @@ public class TestGroupManager extends AbstractMockMvc {
 
   // 获取group详情
   @Test
-  void testGetGroupDetail() {
+  void testGetGroupDetail() throws Exception {
      MultiValueMap<String,String> params = new LinkedMultiValueMap<>();
      params.add("groupId","11");
      params.add("psSite","Admin");
@@ -30,7 +31,8 @@ public class TestGroupManager extends AbstractMockMvc {
                  .queryParams(params)
                  .session(TestUtil.mockLoginInfoSession())
              )
-//             .andExpect(matchJson("$"))
+             .andExpect(MockResponseStatus.STATUS_OK)
+             .andExpect(matchJson("$.data.groupInfo.gsBaseFlg").value("2"))
              .andReturn()
      );
   }
