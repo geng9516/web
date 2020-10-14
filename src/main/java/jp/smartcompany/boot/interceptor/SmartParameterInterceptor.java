@@ -22,8 +22,11 @@ public class SmartParameterInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) {
         String uaStr = req.getHeader("User-Agent");
         UserAgent ua = UserAgentUtil.parse(uaStr);
-        req.setAttribute("isMobile",ua.isMobile());
-
+        boolean isMobile = false;
+        if (ua!=null) {
+            isMobile = ua.isMobile();
+        }
+        req.setAttribute("isMobile",isMobile);
         String origin = req.getHeader("Origin");
         if(StrUtil.isBlank(origin)) {
             origin = req.getHeader("Referer");
