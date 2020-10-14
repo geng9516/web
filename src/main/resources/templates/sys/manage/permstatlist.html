@@ -1189,14 +1189,14 @@
 
                             const { code,msg } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.queryList)
 
-                            //日次一括承認Loading制御
-                            this.bulkApprovalLoading2 = false
-
                             //日次承認状況一覧検索処理
                             this.getReadTmgDaily()
 
                             //月次承認状況一覧検索処理
                             await this.getTableData()
+
+                            //日次一括承認Loading制御
+                            this.bulkApprovalLoading2 = false
 
                             if(code === 0){
                                 this.$Message.success({
