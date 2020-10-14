@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_ATTENDANCEBOOK_YEARLY_HEAD" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_ATTENDANCEBOOK_YEARLY_HEAD" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="0.9090909090909098"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -75,18 +75,6 @@
 			<rectangle>
 				<reportElement x="67" y="44" width="513" height="35"/>
 			</rectangle>
-			<rectangle>
-				<reportElement x="639" y="9" width="76" height="25"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="715" y="9" width="86" height="25"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="639" y="34" width="76" height="25"/>
-			</rectangle>
-			<rectangle>
-				<reportElement x="715" y="34" width="86" height="25"/>
-			</rectangle>
 			<staticText>
 				<reportElement x="0" y="0" width="48" height="15"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -121,24 +109,6 @@
 					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
 				</textElement>
 				<text><![CDATA[摘要]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="639" y="5" width="76" height="32"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None">
-					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<text><![CDATA[年次休暇
-付与日数]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="639" y="30" width="76" height="32"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None">
-					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<text><![CDATA[年次休暇
-付与日]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="48" y="0" width="229" height="15"/>
@@ -179,22 +149,6 @@
 					<paragraph leftIndent="3" spacingBefore="2"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{ATTENDANCE_COMMENT}.replace( "<br>", "\r\n" )]]></textFieldExpression>
-			</textField>
-			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="715" y="9" width="86" height="25"/>
-				<textElement textAlignment="Justified" verticalAlignment="Middle">
-					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
-					<paragraph leftIndent="3"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{PAID_ADD_DAYS_HOURS}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="715" y="34" width="86" height="25"/>
-				<textElement textAlignment="Justified" verticalAlignment="Middle">
-					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
-					<paragraph leftIndent="3"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{PAID_ADD_DATE}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
