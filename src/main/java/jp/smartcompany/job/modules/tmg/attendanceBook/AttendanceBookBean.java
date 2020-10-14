@@ -592,9 +592,12 @@ public class AttendanceBookBean {
         //01
         String custId = psDBBean.getCustID();
 
+        // 仕様変更で年次休暇付与日数, 年次休暇付与日が画面に表示されれないことにより、取得処理を行わない
         // 年次休暇付与日数, 年次休暇付与日
-        AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO = this.selectEndueTimeInfo(dyyyymmdd, employeeId, preYearDay, nextYearDay, compCode, custId);
-        //コメント
+        // AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO = this.selectEndueTimeInfo(dyyyymmdd, employeeId, preYearDay, nextYearDay, compCode, custId);
+        AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO = new AttendanceEndueTimeInfoDTO();
+
+                //コメント
         AttendanceBookCommentDTO attendanceBookCommentDTO = this.selectComment(employeeId, year, yearLastDay, compCode, custId);
         //変える
         AttendanceBookHolidayInfoVO attendanceBookHolidayInfoVO = new AttendanceBookHolidayInfoVO(attendanceEndueTimeInfoDTO, attendanceBookCommentDTO);

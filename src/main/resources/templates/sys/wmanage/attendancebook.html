@@ -143,17 +143,17 @@
         </div>
 
         <Row :gutter="10" class="mt5 mb15 tc">
-            <i-col span="4">
-                <div class="label spec">年次休暇付与日数</div>
-                <div class="month-sum">{{ endueDaysHours }}</div>
-            </i-col>
-            <i-col span="4">
-                <div class>
-                    <div class="label spec">年次休暇付与日</div>
-                    <div class="month-sum">{{ endueDate }}</div>
-                </div>
-            </i-col>
-            <i-col span="8" class="no-border-radius">
+<!--            <i-col span="4">-->
+<!--                <div class="label spec">年次休暇付与日数</div>-->
+<!--                <div class="month-sum">{{ endueDaysHours }}</div>-->
+<!--            </i-col>-->
+<!--            <i-col span="4">-->
+<!--                <div class>-->
+<!--                    <div class="label spec">年次休暇付与日</div>-->
+<!--                    <div class="month-sum">{{ endueDate }}</div>-->
+<!--                </div>-->
+<!--            </i-col>-->
+            <i-col span="12" class="no-border-radius">
                 <div class="label spec">摘要
                     <Poptip
                             v-if="remarksDisabled"
@@ -464,11 +464,11 @@
             async getqueryHolidayInfo() {
                 const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
                 this.queryHolidayInfo = data
-                // 年次休暇付与日数
-                this.endueDate = this.queryHolidayInfo.endueDate
-
-                // 年次休暇付与日
-                this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
+                // // 年次休暇付与日数
+                // this.endueDate = this.queryHolidayInfo.endueDate
+                //
+                // // 年次休暇付与日
+                // this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
 
                 // 摘要
                 this.query.comment = this.queryHolidayInfo.tmy_comment
