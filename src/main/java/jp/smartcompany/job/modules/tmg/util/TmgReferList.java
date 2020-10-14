@@ -680,7 +680,7 @@ public class TmgReferList {
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, 0);
         }
 
-        if (isSelectedSearchTab()) {
+        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
 //            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION , String.valueOf(getSearchCondition()));
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, String.valueOf(getSearchItems()));
