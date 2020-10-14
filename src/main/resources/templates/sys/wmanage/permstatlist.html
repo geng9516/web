@@ -139,7 +139,7 @@
                     :isShow="isShow"
                     @close="() => (this.isShow = false)"
             ></FormDrawer>
-            <Modal :title="title" v-model="showDayApply" :styles="{top: '0px'}" fullscreen>
+            <Modal :title="title" v-model="showDayApply" :styles="{top: '0px'}" fullscreen footer-hide>
                 <Row :gutter="16" class="mb10">
                     <i-col class="tr" offset="11" span="13">
                     <i-button type="primary" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(false)">
