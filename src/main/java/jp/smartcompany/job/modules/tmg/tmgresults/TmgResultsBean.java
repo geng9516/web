@@ -1614,6 +1614,9 @@ public class TmgResultsBean {
                     overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTdadNclose());
                     overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTdadCsparechar1());
                     overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTdadNsparenum1());
+                    if(!StrUtil.hasEmpty(overHours.getTdadCsparechar2())){
+                        overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR2(overHours.getTdadCsparechar2());
+                    }
                     overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTdadCcode01());
                     overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
                     overHoursDetailCheckDto.setSite(dto.getPsSite());

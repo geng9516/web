@@ -280,7 +280,7 @@
                 </when>
                 <when test='categoryCode == "TMG_CATEGORY|Overhours" and site != "TMG_INP"'>
                     <choose>
-                        <when test='"TMG_OVERHOUR_STATUS|0"== txtTDAD_CSPARECHAR2 and hasAuthority == "true"'>
+                        <when test='txtTDAD_CSPARECHAR2 == "TMG_OVERHOUR_STATUS|0" and hasAuthority == "true"'>
                             , 'TMG_OVERHOUR_STATUS|5'
                         </when>
                         <when test="txtTDAD_CSPARECHAR2 == null">
