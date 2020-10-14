@@ -69,10 +69,10 @@
                               empty-text="所属データなし"></Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
-                            社員
+                            職員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf($event,0)" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf($event,0)" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -96,10 +96,10 @@
                     <!--                              empty-text="所属データなし"></Tree>-->
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
-                            社員
+                            職員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                 </tab-pane>

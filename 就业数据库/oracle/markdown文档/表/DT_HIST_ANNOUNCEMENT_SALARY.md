@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |HAS_CCUSTOMERID|VARCHAR2||是|顧客コード|
 |HAS_CCOMPANYID|VARCHAR2||否|法人コード|
-|HAS_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|HAS_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |HAS_DSTARTDATE|DATE||是|開始日付|
 |HAS_DENDDATE|DATE||是|終了日付|
 |HAS_DMODIFIERUSERID|VARCHAR2||是|更新者|

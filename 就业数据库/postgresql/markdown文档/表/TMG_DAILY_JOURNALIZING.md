@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TDJ_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                                                                                    |
 |TDJ_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TDJ_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TDJ_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TDJ_DSTARTDATE|date||否|データ開始日                                                                                    |
 |TDJ_DENDDATE|date||否|データ終了日                                                                                    |
 |TDJ_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

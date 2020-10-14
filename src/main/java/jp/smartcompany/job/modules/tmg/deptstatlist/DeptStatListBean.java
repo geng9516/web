@@ -148,7 +148,7 @@ public class DeptStatListBean {
         // タイトルを保存する
         resultMap.put("dispItemsList", dispItemsList);
 
-        //対象部署に属する社員全ての合計値を取得
+        //対象部署に属する職員全ての合計値を取得
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), txtDYYYYMM);
         sectionMap.put("EMPNAME", "合計");
 
@@ -156,7 +156,7 @@ public class DeptStatListBean {
         resultMap.put("sectionMap", sectionMap);
 
         //ページ
-        //社員別のデータを取得
+        //職員別のデータを取得
         int startSeq = (page - 1) * LINE_PER_PAGE + 1;
         int endSeq = page * LINE_PER_PAGE;
 
@@ -437,7 +437,7 @@ public class DeptStatListBean {
 //                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
 //                // 翌月の権限があればリンク「>」を画面に表示する。
 //                // 権限が無い場合は「>」を表示しない。
-//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //                //   権限が無いのと同じ扱いとする。
 //                String sNextMonth = addMonthOfDateFromatString(baseDate, 1);
 //                if (getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
@@ -449,7 +449,7 @@ public class DeptStatListBean {
 //                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
 //                // 翌月の権限があればリンク「>」を画面に表示する。
 //                // 権限が無い場合は「>」を表示しない。
-//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //                //   権限が無いのと同じ扱いとする。
 //            } else if (!(sTargetSec == null || sTargetSec.length() == 0)) {
 //
@@ -466,7 +466,7 @@ public class DeptStatListBean {
 //                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
 //                // 翌月の権限があればリンク「>」を画面に表示する。
 //                // 権限が無い場合は「>」を表示しない。
-//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //                //   権限が無いのと同じ扱いとする。
 //                String sNextMonthSysdate = addMonthOfDateFromatString(baseDate, 1);
 //                if (getReferList().existsAnyone(sNextMonthSysdate) && getReferList().isThereSomeEmployees(sNextMonthSysdate)) {

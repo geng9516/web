@@ -92,11 +92,11 @@
                         </Row>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
-                            社員
+                            職員
                         </div>
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf($event,1)" ref="tree"
-                                  empty-text="社員データなし"></Tree>
+                                  empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                 </tab-pane>

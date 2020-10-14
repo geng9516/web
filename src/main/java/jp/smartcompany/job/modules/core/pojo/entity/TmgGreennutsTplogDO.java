@@ -45,7 +45,7 @@ private static final long serialVersionUID=1L;
         private String tgtlCiccardid;
 
         /**
-         * 社員コード                         打刻データ：17～26バイト
+         * 職員コード                         打刻データ：17～26バイト
          */
     @TableField("tgtl_cemployeeid")
         private String tgtlCemployeeid;

@@ -18,7 +18,7 @@ public class EmpAttrSettingDto {
     private String custId;
     /**法人コード*/
     private String compId;
-    /**社員番号*/
+    /**職員番号*/
     private String userCode;
     /**言語*/
     private String lang;
@@ -30,7 +30,7 @@ public class EmpAttrSettingDto {
      */
     private String baseDate;
     /**
-     * 社員の一覧
+     * 職員の一覧
      */
     private String empListsql;
 

@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TVCMT_CCUSTOMERID|VARCHAR2||否|[月次集計結果]顧客コード|
 |TVCMT_CCOMPANYID|VARCHAR2||否|[月次集計結果]法人コード|
-|TVCMT_CEMPLOYEEID|VARCHAR2||否|[月次集計結果]社員番号|
+|TVCMT_CEMPLOYEEID|VARCHAR2||否|[月次集計結果]職員番号|
 |TVCMT_CUSERID|VARCHAR2||否|[月次集計結果]ユーザーID|
 |TVCMT_DSTARTDATE|DATE||否|[月次集計結果]データ開始日|
 |TVCMT_DENDDATE|DATE||是|[月次集計結果]データ終了日|

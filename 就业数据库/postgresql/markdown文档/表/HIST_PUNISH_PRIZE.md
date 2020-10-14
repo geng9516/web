@@ -4,7 +4,7 @@
 |HPP_ID|numeric||否|IDカラム  |
 |HPP_CCUSTOMERID|varchar||否|顧客コード|
 |HPP_CCOMPANYID|varchar||否|法人コード|
-|HPP_CEMPLOYEEID|varchar||否|社員番号|
+|HPP_CEMPLOYEEID|varchar||否|職員番号|
 |HPP_CUSERID|varchar||否|ユーザID|
 |HPP_DSTARTDATE|date||否|データ開始日|
 |HPP_DENDDATE|date||否|データ終了日|

@@ -192,9 +192,9 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
 
     /**
      * <p>
-     * <b>下位組織</b>情報取得（社員指定）
+     * <b>下位組織</b>情報取得（職員指定）
      * </p>
-     * <div>指定した社員の下位組織情報を返却する。</div>
+     * <div>指定した職員の下位組織情報を返却する。</div>
      *
      * @author t-abe
      * @param userId ユーザID

@@ -21,13 +21,13 @@ public class SectionPostLogicImpl implements SectionPostLogic {
     public static final String FG_COMP_SEC         = "02";
     /** 処理区分(組織ごとの定義情報取得(法人＆組織＆役職リスト)) */
     public static final String FG_COMP_SEC_POST    = "03";
-    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆社員番号リスト)) */
+    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆職員番号リスト)) */
     public static final String FG_COMP_SEC_EMP     = "04";
     /** 処理区分(法人＆組織＆所属長リスト) */
     public static final String FG_COMP_SEC_BOSS    = "05";
     /** 処理区分(法人＆役職リスト) */
     public static final String FG_COMP_POST        = "06";
-    /** 処理区分(法人＆社員リスト) */
+    /** 処理区分(法人＆職員リスト) */
     public static final String FG_COMP_EMP         = "07";
 
     /** 所属長フラグ */
@@ -72,7 +72,7 @@ public class SectionPostLogicImpl implements SectionPostLogic {
     private static final String COL_HD_SECTIONID    = "HD_CSECTIONID_FK";
     /** 異動歴 役職コード */
     private static final String COL_HD_POSTID       = "HD_CPOSTID_FK";
-    /** 異動歴 社員番号 */
+    /** 異動歴 職員番号 */
     private static final String COL_HD_EMPLOYEEID   = "HD_CEMPLOYEEID_CK";
     /** 異動歴 開始日 */
     private static final String COL_HD_STARTDATE    = "HD_DSTARTDATE_CK";
@@ -91,7 +91,7 @@ public class SectionPostLogicImpl implements SectionPostLogic {
     private static final String COL_MG_SECTIONID    = "MAG_CSECTIONID";
     /** グループ定義条件マスタ（組織、役職） 役職コード */
     private static final String COL_MG_POSTID       = "MAG_CPOSTID";
-    /** グループ定義条件マスタ（組織、役職） 社員番号 */
+    /** グループ定義条件マスタ（組織、役職） 職員番号 */
     private static final String COL_MG_EMPLOYEEID   = "MAG_CEMPLOYEEID";
     /** グループ定義条件マスタ（組織、役職） 開始日 */
     private static final String COL_MG_STARTDATE    = "MAG_DSTARTDATE_CK";
@@ -180,7 +180,7 @@ public class SectionPostLogicImpl implements SectionPostLogic {
                 // グループ判定結果クエリ組み立て処理(法人＆組織＆役職)
                 int nPostListCnt = sectionPostRowListDTO.getPostList().size();
                 getQueryData(querySecPost, sectionPostRowListDTO.getPostList(), FG_COMP_SEC_POST,companyId);
-                // グループ判定結果クエリ組み立て処理(法人＆組織＆社員番号)
+                // グループ判定結果クエリ組み立て処理(法人＆組織＆職員番号)
                 int nEmpListCnt = sectionPostRowListDTO.getEmployList().size();
                 getQueryData(querySecPost, sectionPostRowListDTO.getEmployList(), FG_COMP_SEC_EMP,companyId);
                 // グループ判定結果クエリ組み立て処理(組織配下データ)
@@ -195,7 +195,7 @@ public class SectionPostLogicImpl implements SectionPostLogic {
         getQueryData(querySecPost,companyList.getBossSectionList(), FG_COMP_SEC_BOSS,companyId);
         // グループ判定結果クエリ組み立て処理(法人＆役職リスト)
         getQueryData(querySecPost,companyList.getPostList(), FG_COMP_POST,companyId);
-        // グループ判定結果クエリ組み立て処理(法人＆社員リスト)
+        // グループ判定結果クエリ組み立て処理(法人＆職員リスト)
         getQueryData(querySecPost,companyList.getEmployList(), FG_COMP_EMP,companyId);
         // 設定が未定義の場合
         if (querySecPost.length() == 0) {
@@ -350,10 +350,10 @@ public class SectionPostLogicImpl implements SectionPostLogic {
             sbQuery.append(PT_EQUAL);
             sbQuery.append(COL_HD_POSTID);
 
-            // 定義区分＝"04"(法人＆組織＆社員指定)
+            // 定義区分＝"04"(法人＆組織＆職員指定)
         } else if (psTypeId.equals(SectionPostLogicImpl.FG_COMP_SEC_EMP)) {
             // テーブル：グループ定義条件マスタ(組織、役職)，異動歴
-            // カラムID：法人コード，組織コード(所属コード)，社員番号
+            // カラムID：法人コード，組織コード(所属コード)，職員番号
             sbQuery.append(COL_MG_COMPANYID);
             sbQuery.append(PT_EQUAL);
             sbQuery.append(COL_HD_COMPANYID);
@@ -394,10 +394,10 @@ public class SectionPostLogicImpl implements SectionPostLogic {
             sbQuery.append(PT_EQUAL);
             sbQuery.append(COL_HD_POSTID);
 
-            // 定義区分＝"07"(法人＆社員指定)
+            // 定義区分＝"07"(法人＆職員指定)
         } else if (psTypeId.equals(SectionPostLogicImpl.FG_COMP_EMP)) {
             // テーブル：グループ定義条件マスタ(組織、役職)，異動歴
-            // カラムID：法人コード，社員番号
+            // カラムID：法人コード，職員番号
             sbQuery.append(COL_MG_COMPANYID);
             sbQuery.append(PT_EQUAL);
             sbQuery.append(COL_HD_COMPANYID);

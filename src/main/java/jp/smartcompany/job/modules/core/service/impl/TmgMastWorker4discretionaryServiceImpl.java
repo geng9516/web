@@ -22,7 +22,7 @@ public class TmgMastWorker4discretionaryServiceImpl extends ServiceImpl<TmgMastW
      *
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param baseDate     日付
      * @return
      */

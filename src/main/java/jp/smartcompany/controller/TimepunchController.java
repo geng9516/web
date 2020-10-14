@@ -180,7 +180,7 @@ public class TimepunchController {
     }
 
     /**
-     * 社員の時間帯時間を取得する
+     * 職員の時間帯時間を取得する
      *
      * @param psDBBean
      * @return

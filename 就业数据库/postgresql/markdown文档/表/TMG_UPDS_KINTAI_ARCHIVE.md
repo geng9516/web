@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TUK_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TUK_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TUK_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TUK_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TUK_DSTARTDATE|date||否|開始日                                                                                       |
 |TUK_DENDDATE|date||否|終了日                                                                                       |
 |TUK_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

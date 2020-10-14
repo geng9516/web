@@ -84,7 +84,7 @@ public class TmgMemberList {
 
     /**
      * 組織ツリータブ用
-     * 指定された条件で、参照可能な社員一覧を作成します。
+     * 指定された条件で、参照可能な職員一覧を作成します。
      * 検索結果は、二次元Vectorの形式で保持されます。
      * ※このメソッドは、セキュリティ判定無しの検索を行います。
      * @param baseDate
@@ -101,7 +101,7 @@ public class TmgMemberList {
 
     /**
      * 組織ツリー検索タブ用
-     * 指定された条件で、参照可能な社員一覧を作成します。
+     * 指定された条件で、参照可能な職員一覧を作成します。
      * 検索結果は、二次元Vectorの形式で保持されます。
      * ※このメソッドは、セキュリティ判定無しの検索を行います。
      * @param baseDate
@@ -126,7 +126,7 @@ public class TmgMemberList {
 
     /**
      * 組織ツリータブ用
-     * 指定された条件で、参照可能な社員一覧を作成します。
+     * 指定された条件で、参照可能な職員一覧を作成します。
      * 検索結果は、二次元Vectorの形式で保持されます。
      * ※このメソッドは、セキュリティ判定無しの検索を行います。
      * @param baseDate
@@ -167,7 +167,7 @@ public class TmgMemberList {
 
     /**
      * 組織ツリー検索タブ用
-     * 指定された条件で、参照可能な社員一覧を作成します。
+     * 指定された条件で、参照可能な職員一覧を作成します。
      * 検索結果は、二次元Vectorの形式で保持されます。
      * ※このメソッドは、セキュリティ判定無しの検索を行います。
      * @param baseDate
@@ -242,7 +242,7 @@ public class TmgMemberList {
     }
 
     /**
-     * 指定された条件で、DBから社員一覧を検索するSQLを構築して返します。
+     * 指定された条件で、DBから職員一覧を検索するSQLを構築して返します。
      * @param cust
      * @param comp
      * @param baseDate
@@ -418,7 +418,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号でdistinctをかけてから、JSON配列を生成する
+            // 職員番号でdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
             List distinctDataArray = JSONArrayGenerator.distinctDataArray(dataArray, distinctKeyArray);
 
@@ -439,7 +439,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号でdistinctをかけてから、JSON配列を生成する
+            // 職員番号でdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
             List distinctDataArray = JSONArrayGenerator.distinctDataArray(gvSearchDataArray, distinctKeyArray);
             return JSONArrayGenerator.getJSONArrayForTreeView(distinctDataArray,keyArray);
@@ -459,7 +459,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号と部署コードでdistinctをかけてから、JSON配列を生成する
+            // 職員番号と部署コードでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
                     DEFAULT_KEY_EMPID,
                     DEFAULT_KEY_SECID
@@ -486,7 +486,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号と部署コードでdistinctをかけてから、JSON配列を生成する
+            // 職員番号と部署コードでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
                     DEFAULT_KEY_EMPID,
                     DEFAULT_KEY_SECID
@@ -518,7 +518,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号とグループIDでdistinctをかけてから、JSON配列を生成する
+            // 職員番号とグループIDでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
                     DEFAULT_KEY_EMPID,
                     DEFAULT_KEY_GROUPID
@@ -544,7 +544,7 @@ public class TmgMemberList {
             return null;
         }
         try{
-            // 社員番号とグループIDでdistinctをかけてから、JSON配列を生成する
+            // 職員番号とグループIDでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
                     DEFAULT_KEY_EMPID,
                     DEFAULT_KEY_GROUPID
@@ -567,7 +567,7 @@ public class TmgMemberList {
 
     /**
      * dataArrayのデータから、
-     * 社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
+     * 職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
      * @return
      */
     public String buildSQLForSelectMemberListFromDualAll() throws Exception{
@@ -575,8 +575,8 @@ public class TmgMemberList {
     }
 
     /**
-     * dataArrayのデータから、指定した部署に所属している社員について、
-     * 社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
+     * dataArrayのデータから、指定した部署に所属している職員について、
+     * 職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
      * @return
      */
     public String buildSQLForSelectMemberListFromDualInSection(String[] targetSectionArray) throws Exception{
@@ -587,8 +587,8 @@ public class TmgMemberList {
     }
 
     /**
-     * dataArrayのデータから、指定した部署に所属している社員について、
-     * 社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
+     * dataArrayのデータから、指定した部署に所属している職員について、
+     * 職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
      * @return
      */
     public String buildSQLForSelectMemberListFromDualInGroup(String[] targetGroupArray) throws Exception{
@@ -600,12 +600,12 @@ public class TmgMemberList {
 
     // todo:targetDataArray ← この引数使用されてないみたいだが・・・
     /**
-     * dataArrayのデータから、社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します
+     * dataArrayのデータから、職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します
      * Oracleテーブルオブジェクトの作成版
      * @return
      */
     private String buildSQLForSelectMemberListFromDualByArray(List targetDataArray) throws Exception{
-        // 社員番号でdistinctをかける
+        // 職員番号でdistinctをかける
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
         List distinctDataArray = JSONArrayGenerator.distinctDataArray(targetDataArray, distinctKeyArray);
@@ -625,7 +625,7 @@ public class TmgMemberList {
 
     /**
      * searchDataArrayのデータから、
-     * 社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
+     * 職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します。
      * @return
      */
     public String buildearchDataArraySQLForSelectMemberListFromDual() throws Exception{
@@ -633,12 +633,12 @@ public class TmgMemberList {
     }
 
     /**
-     * searchDataArrayのデータから、社員番号・社員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します
+     * searchDataArrayのデータから、職員番号・職員氏名・ソート順を取得する擬似インラインビューのSQLを構築して返します
      * Oracleテーブルオブジェクトの作成版
      * @return
      */
     private String buildSearchDataArraySQLForSelectMemberListFromDualByArray() throws Exception{
-        // 社員番号でdistinctをかける
+        // 職員番号でdistinctをかける
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
         List distinctDataArray = JSONArrayGenerator.distinctDataArray(getSearchDataArray(), distinctKeyArray);
@@ -719,11 +719,11 @@ public class TmgMemberList {
     }
 
     /**
-     * 指定された社員の指定されたデータを返します
-     * dataArrayに指定された社員が存在しない場合、nullを返します
-     * @param targetMemberId 対象社員の社員番号
+     * 指定された職員の指定されたデータを返します
+     * dataArrayに指定された職員が存在しない場合、nullを返します
+     * @param targetMemberId 対象職員の職員番号
      * @param keyIndex 取得したいデータのカラム番号(TmgMemberList.DEFAULT_KEY_-を指定)
-     * @return String 社員のデータ(指定された社員が存在しない場合、NULL)
+     * @return String 職員のデータ(指定された職員が存在しない場合、NULL)
      */
     public String getTargetMemberData(String targetMemberId, int keyIndex){
         try{
@@ -740,10 +740,10 @@ public class TmgMemberList {
     }
 
     /**
-     * 指定された社員の氏名を返します
-     * dataArrayに指定された社員が存在しない場合、NULLを返します
-     * @param targetMemberId 対象社員の社員番号
-     * @return String 社員氏名(指定された社員が存在しない場合、NULL)
+     * 指定された職員の氏名を返します
+     * dataArrayに指定された職員が存在しない場合、NULLを返します
+     * @param targetMemberId 対象職員の職員番号
+     * @return String 職員氏名(指定された職員が存在しない場合、NULL)
      */
     public String getTargetMemberName(String targetMemberId){
         try{
@@ -755,10 +755,10 @@ public class TmgMemberList {
     }
 
     /**
-     * 指定された社員の勤怠種別IDを返します
-     * 指定された社員が存在しない場合、nullを返します
-     * @param targetMemberId 対象社員の社員番号
-     * @return String 勤怠種別ID(指定された社員が存在しない場合)
+     * 指定された職員の勤怠種別IDを返します
+     * 指定された職員が存在しない場合、nullを返します
+     * @param targetMemberId 対象職員の職員番号
+     * @return String 勤怠種別ID(指定された職員が存在しない場合)
      */
     public String getTargetMemberWorkerTypeId(String targetMemberId){
         try{
@@ -770,10 +770,10 @@ public class TmgMemberList {
     }
 
     /**
-     * 指定された社員の勤怠種別名称を返します
-     * 指定された社員が存在しない場合、nullを返します
-     * @param targetMemberId 対象社員の社員番号
-     * @return String 勤怠種別名称(指定された社員が存在しない場合)
+     * 指定された職員の勤怠種別名称を返します
+     * 指定された職員が存在しない場合、nullを返します
+     * @param targetMemberId 対象職員の職員番号
+     * @return String 勤怠種別名称(指定された職員が存在しない場合)
      */
     public String getTargetMemberWorkerTypeName(String targetMemberId){
         try{

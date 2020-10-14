@@ -56,7 +56,7 @@
     </select>
 
     <select id="selectLowEmp" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO">
-        -- 下位組織情報取得（社員指定）
+        -- 下位組織情報取得（職員指定）
         SELECT
         MO_CSECTIONID_CK
         FROM

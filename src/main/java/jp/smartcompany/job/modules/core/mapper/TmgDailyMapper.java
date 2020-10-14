@@ -32,7 +32,7 @@ import java.util.Map;
 public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
 
     /**
-     * 対象社員について対象月の未承認日数を集計する
+     * 対象職員について対象月の未承認日数を集計する
      *
      * @param map
      * @return 未承認日数

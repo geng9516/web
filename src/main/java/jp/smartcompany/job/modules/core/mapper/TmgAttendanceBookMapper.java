@@ -86,7 +86,7 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
     AttendanceBookEmpDTO selectEmployeesBasicInfo(HashMap<String, Object> params);
 
     /**
-     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * 対象職員の出勤簿情報が存在する年度情報を検索する
      *
      * @param params
      * @return

@@ -214,7 +214,7 @@ public class TmgTimePunchBean {
         logger.info("打刻ユーザー：" + employeeId);
         if (null == employeeId || "".equals(employeeId)) {
             isPass = false;
-            resultMsg = "社員番号が空です";
+            resultMsg = "職員番号が空です";
             log.warn(resultMsg);
         }
         if (null == custId || "".equals(custId)) {
@@ -276,7 +276,7 @@ public class TmgTimePunchBean {
 
             } else {
                 //打刻しない
-                resultMsg = "当社員が打刻しない";
+                resultMsg = "当職員が打刻しない";
             }
         }
         //01
@@ -427,7 +427,7 @@ public class TmgTimePunchBean {
         String employeeId = psDBBean.getUserCode();
         //予定データ
         ScheduleInfoDTO scheduleInfoDTO = iTmgTimepunchService.selectScheduleInfo(custId, compCode, employeeId, targetDate);
-        //社員番号
+        //職員番号
         scheduleInfoDTO.setTda_cemployeeid(employeeId);
         //休憩時間json str
         String timerRange = scheduleInfoDTO.getTimerange();
@@ -436,7 +436,7 @@ public class TmgTimePunchBean {
             //チェック
             scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
         } else {
-            log.warn("社員の休憩時間は取得してない");
+            log.warn("職員の休憩時間は取得してない");
         }
         // lruCache.put(CACHE_SCHEDULEINFO, scheduleInfoDTO);
         // logger.info("[予定時間] Cache までロードする");
@@ -767,7 +767,7 @@ public class TmgTimePunchBean {
     }
 
     /**
-     * 社員の時間帯時間を取得する
+     * 職員の時間帯時間を取得する
      *
      * @param custId
      * @param compCode
@@ -778,17 +778,17 @@ public class TmgTimePunchBean {
         //単位：分
         int changeTime = 0;
         try {
-            //社員の勤務パターン
+            //職員の勤務パターン
             changeTime = iTmgTimepunchService.selectEmpPattern(custId, compCode, employeeId);
         } catch (Exception e) {
-            logger.error("社員の時間帯時間を取得することが失敗しました", e);
+            logger.error("職員の時間帯時間を取得することが失敗しました", e);
             //失敗の場合、変更時間を初期化になる
             changeTime = 300;
         }
         if (changeTime == 0) {
             changeTime = 300;
         }
-        logger.info("社員「" + employeeId + "」の勤務変更時間は「" + changeTime + "」です");
+        logger.info("職員「" + employeeId + "」の勤務変更時間は「" + changeTime + "」です");
         int startTime = changeTime / 60;
         Integer[] schSection = new Integer[]{startTime, startTime + 24};
 

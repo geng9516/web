@@ -4,7 +4,7 @@
 |QU_ID|numeric||否|IDカラム  |
 |QU_CCUSTOMERID|varchar||否|顧客コード|
 |QU_CCOMPANYID|varchar||否|法人コード|
-|QU_CEMPLOYEEID|varchar||否|社員番号|
+|QU_CEMPLOYEEID|varchar||否|職員番号|
 |QU_CUSERID|varchar||否|ユーザID|
 |QU_DSTARTDATE|date||否|データ開始日|
 |QU_DENDDATE|date||否|データ終了日|

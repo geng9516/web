@@ -27,7 +27,7 @@
 |TUK_CDATA200|VARCHAR2||是|null|
 |TUK_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TUK_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TUK_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TUK_CEMPLOYEEID|VARCHAR2||否|職員番号                                                                                      |
 |TUK_DSTARTDATE|DATE||否|開始日                                                                                       |
 |TUK_DENDDATE|DATE||否|終了日                                                                                       |
 |TUK_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |

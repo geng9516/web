@@ -4,7 +4,7 @@
 |TDA_DCREATED|date||是|null|
 |TDAD_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TDAD_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TDAD_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TDAD_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TDAD_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01                                               |
 |TDAD_DENDDATE|date||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31                                               |
 |TDAD_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

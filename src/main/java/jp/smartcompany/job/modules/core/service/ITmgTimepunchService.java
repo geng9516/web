@@ -149,7 +149,7 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
     ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId);
 
     /**
-     * 社員の勤務パターンを取得する
+     * 職員の勤務パターンを取得する
      *
      * @param custId
      * @param compCode

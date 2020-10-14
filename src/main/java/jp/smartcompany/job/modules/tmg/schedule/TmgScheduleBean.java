@@ -360,7 +360,7 @@ public class TmgScheduleBean {
 
         String employeeId = psDBBean.getUserCode();
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
-            logger.error("社員IDは空です");
+            logger.error("職員IDは空です");
             return null;
         }
         TargetUserDetailDTO targetUserDetailDTO = iTmgScheduleService.selectTargetUserDetail(employeeId, _baseDate, psDBBean.getCustID(), psDBBean.getCompCode(), _startDispDate, psDBBean.getLanguage());
@@ -478,7 +478,7 @@ public class TmgScheduleBean {
         //ユーザーの基本情報を設定します。
         this.setBasicUserInfo();
 
-        // 社員が選択されている場合は基本労働制か変形労働制か判定する処理を実行する。
+        // 職員が選択されている場合は基本労働制か変形労働制か判定する処理を実行する。
         if (isSelectedTargetUser()) {
             setVariationalWorkInfo(_baseDate);
         }
@@ -490,7 +490,7 @@ public class TmgScheduleBean {
                 detailPeriod = DateUtil.format(DateUtil.parse(detailPeriod, Cs_FORMAT_DATE_TYPE2), Cs_FORMAT_DATE_TYPE1);
             }
             //検索対象年月日の開始日reset
-            //変形労働制社員の初めて検索すれば、有効開始時間を取得
+            //変形労働制職員の初めて検索すれば、有効開始時間を取得
             if (_baseDate.equals(getNextFirstDayOfSysDate())) {
                 _baseDate = iTmgScheduleService.selectBaseDateFor4Week(_targetCustCode, _targetCompCode, _targetUserCode, _thisMonthFirstDay, _thisMonthLastDay, PARAM_4WEEK_AFTER);
             }
@@ -741,7 +741,7 @@ public class TmgScheduleBean {
 
 
     /**
-     * 対象社員の勤務形態に対応する終了日を返します。
+     * 対象職員の勤務形態に対応する終了日を返します。
      *
      * @param isVariationalWorkType
      * @param baseDate
@@ -1729,7 +1729,7 @@ public class TmgScheduleBean {
                 //  * TRUEの場合は登録
                 //  * FALSEの場合は削除
                 tmgWeekPatternCheckDTO.setCheckFlag(true);
-                //社員ID
+                //職員ID
                 tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
                 //01
                 tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
@@ -2123,7 +2123,7 @@ public class TmgScheduleBean {
                      * FALSEの場合は削除
                      */
                     tmgWeekPatternCheckDTO.setCheckFlag(true);
-                    //社員ID
+                    //職員ID
                     tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
                     //01
                     tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
@@ -2454,7 +2454,7 @@ public class TmgScheduleBean {
     }
 
     /**
-     * 指定した社員についての勤怠承認権限フラグ
+     * 指定した職員についての勤怠承認権限フラグ
      *
      * @param baseDate
      * @param targetUserCode
@@ -2464,7 +2464,7 @@ public class TmgScheduleBean {
         try {
             return referList.hasAuthorityAtEmployee(baseDate, targetUserCode, TmgUtil.Cs_AUTHORITY_SCHEDULE);
         } catch (Exception e) {
-            logger.error("指定した社員についての勤怠承認権限フラグ", e);
+            logger.error("指定した職員についての勤怠承認権限フラグ", e);
             return false;
         }
     }

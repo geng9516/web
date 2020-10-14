@@ -14,7 +14,7 @@
 |TVCTCDD_NCALC15_HOUR|NUMBER||是|[日次集計情報]集計項目15：時間数|
 |TVCTCDD_NCALC17_DAY|NUMBER||是|[日次集計情報]集計項目17：日数|
 |TVCTCDD_NCALC29_HOUR|NUMBER||是|[日次集計情報]集計項目29：時間数|
-|TVCTCDD_CEMPLOYEEID|VARCHAR2||否|[日次集計情報]社員番号|
+|TVCTCDD_CEMPLOYEEID|VARCHAR2||否|[日次集計情報]職員番号|
 |TVCTCDD_NCALC16_DAY|NUMBER||是|[日次集計情報]集計項目16：日数|
 |TVCTCDD_NCALC16_HOUR|NUMBER||是|[日次集計情報]集計項目16：時間数|
 |TVCTCDD_NCALC23_DAY|NUMBER||是|[日次集計情報]集計項目23：日数|

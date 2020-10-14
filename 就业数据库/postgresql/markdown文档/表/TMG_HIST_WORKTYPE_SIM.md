@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |THWS_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |THWS_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|THWS_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|THWS_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |THWS_CUSERID|varchar||否|ユーザID                                                                                      |
 |THWS_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                                                                                   |
 |THWS_DENDDATE|date||否|ﾃﾞｰﾀ終了日                                                                                   |

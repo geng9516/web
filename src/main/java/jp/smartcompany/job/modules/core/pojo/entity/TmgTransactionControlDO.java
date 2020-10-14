@@ -26,7 +26,7 @@ public class TmgTransactionControlDO implements Serializable {
 private static final long serialVersionUID=1L;
 
         /**
-         * 社員番号
+         * 職員番号
          */
                 @TableId(value = "ttc_cemployeeid", type = IdType.AUTO)
                 private String ttcCemployeeid;

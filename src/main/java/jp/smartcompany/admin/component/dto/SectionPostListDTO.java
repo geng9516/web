@@ -21,7 +21,7 @@ public class SectionPostListDTO {
     private List<SectionPostRowListDTO> sectionList;
     /** 組織・役職条件選択情報 格納リスト 役職一覧(指定法人) */
     private List<SectionPostRowDTO> postList;
-    /** 組織・役職条件選択情報 格納リスト 社員一覧(指定法人) */
+    /** 組織・役職条件選択情報 格納リスト 職員一覧(指定法人) */
     private List<SectionPostRowDTO> employList;
     /** 組織・役職条件選択情報 格納リスト 所属長一覧(指定法人＆指定組織) */
     private List<SectionPostRowDTO> bossSectionList;
@@ -32,7 +32,7 @@ public class SectionPostListDTO {
 //    private int gnSelectedPostCompCnt = 0;
 //    /** 選択済みの役職一覧(法人＆所属長)の件数 */
 //    private int gnSelectedBossCompSecCnt = 0;
-//    /** 選択済みの役職一覧(法人＆社員)の件数 */
+//    /** 選択済みの役職一覧(法人＆職員)の件数 */
 //    private int gnSelectedEmpCompCnt = 0;
 //    /** 選択中の親情報 組織コード */
 //    private String gsSecParentId;
@@ -68,7 +68,7 @@ public class SectionPostListDTO {
 //    private String gsSectionid;
 //    /** 役職コード */
 //    private String gsPostid;
-//    /** 社員番号 */
+//    /** 職員番号 */
 //    private String gsEmployeeid;
 //    /** ID */
     private Long id;

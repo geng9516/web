@@ -523,9 +523,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      * リレーション情報を取得します
      * @param sCustomerID 顧客コード
      * @param sLoginCompanyID ログイン法人コード
-     * @param sLoginUserID ログイン社員番号
+     * @param sLoginUserID ログイン職員番号
      * @param sTargetCompanyID 検索対象法人コード
-     * @param sTargetUserID 検索対象社員番号
+     * @param sTargetUserID 検索対象職員番号
      * @param sDate 検索基準日
      * @param sReportLine レポートラインタイプ
      * @param httpSession セッション
@@ -612,11 +612,11 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     /**
-     * 指定社員の下位組織リストをSQL用のカンマ区切りで取得します
-     * 社員指定、仮想組織含むか
+     * 指定職員の下位組織リストをSQL用のカンマ区切りで取得します
+     * 職員指定、仮想組織含むか
      * @param sCustID 顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @param bIncludeVirtual 仮想組織含むか
      * @return String 組織コードリスト
@@ -641,11 +641,11 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     /**
-     * 指定社員の下位組織リストをSQL用のカンマ区切りで取得します
-     * 社員指定
+     * 指定職員の下位組織リストをSQL用のカンマ区切りで取得します
+     * 職員指定
      * @param sCustID 顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @return String 組織コードリスト
      */
@@ -738,7 +738,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             if (lSectionChief.size() > 0) {
                 DesignationBO designation = lSectionChief.get(0);
                 seCompid = designation.getCompanyCode(); // 評価者の法人コード
-                seUserid = designation.getEmployee();    // 評価者の社員番号
+                seUserid = designation.getEmployee();    // 評価者の職員番号
                 seDeptid = designation.getSection();     // 評価者の組織コード
             }
             if (!isEmptyString(seCompid)
@@ -813,10 +813,10 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     /**
-     * V3の顧客コード、法人コード、社員番号からユーザコードを取得します
+     * V3の顧客コード、法人コード、職員番号からユーザコードを取得します
      * @param sCustid 顧客コード（V3）
      * @param sCompid 法人コード（V3）
-     * @param sLoginUserId ログイン者の社員番号（V3）
+     * @param sLoginUserId ログイン者の職員番号（V3）
      * @param sDate 検索基準日
      * @return String ユーザコード
      * @throws Exception システム例外

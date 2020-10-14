@@ -27,12 +27,12 @@ import java.util.List;
 public interface ITmgDailyService extends IService<TmgDailyDO> {
 
     /**
-     * 対象社員について対象月の未承認日数を集計する
+     * 対象職員について対象月の未承認日数を集計する
      *
      * @param targetDate  対象日
      * @param compId      　対象法人コード
      * @param custId      　対象顧客コード
-     * @param empId       　対象社員
+     * @param empId       　対象職員
      * @param dataStatus9 　確定済
      * @param dataStatus5 　承認済
      * @return 未承認日数
@@ -99,7 +99,7 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
 
 
     /**
-     * [勤怠]日別集計情報より、表示対象社員の指定期間内の時間外労働時間、休日労働時間、超勤時間合計時間を集計して取得する
+     * [勤怠]日別集計情報より、表示対象職員の指定期間内の時間外労働時間、休日労働時間、超勤時間合計時間を集計して取得する
      * 引数には事前にescDBStringを使用しクエリにて使用出来る様にエスケープをかけて下さい。
      *
      * @param  custId      顧客ID

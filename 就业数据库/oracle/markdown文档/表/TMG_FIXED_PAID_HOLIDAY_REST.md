@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TFPH_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01|
 |TFPH_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TFPH_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TFPH_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TFPH_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                      固定：1900/01/01|
 |TFPH_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                      固定：2222/12/31|
 |TFPH_CMODIFIERUSERID|VARCHAR2||是|更新者|

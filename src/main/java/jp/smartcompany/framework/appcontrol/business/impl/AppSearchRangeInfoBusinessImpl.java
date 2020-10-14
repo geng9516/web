@@ -1573,7 +1573,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
                 sbCombWhereCol.append(sPostIdColumnName);
                 sbCombWhereCol.append(PT_EQUAL);
                 sbCombWhereCol.append(this.escDBString(sPostId));
-                // 07：カラムID：社員番号
+                // 07：カラムID：職員番号
             } else if (sTypeid.equals("07") && !this.isEmpty(sEmployeeIdColumnName) && !this.isEmpty(sEmployeeId)) {
                 sbCombWhereCol.append(PT_AND);
                 sbCombWhereCol.append(this.atBraceFolderDot(psTableID));
@@ -1594,7 +1594,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
                     sbCombWhereCol.append(sPostIdColumnName);
                     sbCombWhereCol.append(PT_EQUAL);
                     sbCombWhereCol.append(this.escDBString(sPostId));
-                    // 04：カラムID：社員番号
+                    // 04：カラムID：職員番号
                 } else if (sTypeid.equals("04") && !this.isEmpty(sEmployeeIdColumnName) && !this.isEmpty(sEmployeeId)) {
                     sbCombWhereCol.append(PT_AND);
                     sbCombWhereCol.append(this.atBraceFolderDot(psTableID));
@@ -1789,7 +1789,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
             sPreSetSQL = SysUtil.replaceStringIgnoreCase(sPreSetSQL, "##COMPANY##",  this.replaceList(hashMap.get(MAPKEY_COM)));
             // 組織コード
             sPreSetSQL = SysUtil.replaceStringIgnoreCase(sPreSetSQL, "##SECTION##",  this.replaceList(hashMap.get(MAPKEY_SEC)));
-            // 社員番号
+            // 職員番号
             sPreSetSQL = SysUtil.replaceStringIgnoreCase(sPreSetSQL, "##EMPLOYEE##", this.replaceList(hashMap.get(MAPKEY_EMP)));
             // ユーザID
             sPreSetSQL = SysUtil.replaceStringIgnoreCase(sPreSetSQL, "##USER##",     sUsr);
@@ -1819,7 +1819,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
             String sCus = this.gPsSession.getLoginCustomer();
             String sUsr = this.gPsSession.getLoginUser();
             List <HistDesignationDO> lHistDesignationList= this.getLoginUserInfoList();
-            // 異動暦情報取得(法人・組織・社員番号)
+            // 異動暦情報取得(法人・組織・職員番号)
             for (Iterator < HistDesignationDO> ite = lHistDesignationList.iterator(); ite.hasNext();) {
 
                 HistDesignationDO histDesignationEntity= ite.next();
@@ -1832,7 +1832,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
                 sTemp = SysUtil.replaceStringIgnoreCase(sTemp, "##COMPANY##",  histDesignationEntity.getHdCcompanyidCk());
                 // 組織コード
                 sTemp = SysUtil.replaceStringIgnoreCase(sTemp, "##SECTION##",  histDesignationEntity.getHdCsectionidFk());
-                // 社員番号
+                // 職員番号
                 sTemp = SysUtil.replaceStringIgnoreCase(sTemp, "##EMPLOYEE##", histDesignationEntity.getHdCemployeeidCk());
                 // ユーザID
                 sTemp = SysUtil.replaceStringIgnoreCase(sTemp, "##USER##", sUsr);
@@ -1995,7 +1995,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
 
         int nCnt = this.gPsSession.getLoginDesignation().size();
 
-        // 異動暦情報取得(法人・組織・社員番号・役職)
+        // 異動暦情報取得(法人・組織・職員番号・役職)
         for (int i = 0; i < nCnt; i++) {
             HistDesignationDO histDesignationEntity= new HistDesignationDO();
             histDesignationEntity.setHdCcompanyidCk(this.gPsSession.getLoginDesignation().get(i).getCompanyCode());

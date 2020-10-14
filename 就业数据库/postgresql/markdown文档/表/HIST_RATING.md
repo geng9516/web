@@ -4,7 +4,7 @@
 |HR_ID|numeric||否|IDカラム  |
 |HR_CCUSTOMERID|varchar||否|顧客コード|
 |HR_CCOMPANYID|varchar||否|法人コード|
-|HR_CEMPLOYEEID|varchar||否|社員番号|
+|HR_CEMPLOYEEID|varchar||否|職員番号|
 |HR_CUSERID|varchar||否|ユーザID|
 |HR_DSTARTDATE|date||否|データ開始日|
 |HR_DENDDATE|date||否|データ終了日|

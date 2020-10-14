@@ -81,7 +81,7 @@ public class GroupManagerController {
      *    "groupId":          group表的自定义id，更新和新增都需要，会进行groupId重复check
      *    "startDate":   有效期开始时间
      *    "endDate": 有效期结束时间
-     *    "baseFlag":   "2"为組織・役職による定義の情報取得 "1"为条件式による定義の情報取得 "0"为社員による定義の情報取得
+     *    "baseFlag":   "2"为組織・役職による定義の情報取得 "1"为条件式による定義の情報取得 "0"为職員による定義の情報取得
      *    "weightAge": group排序字段
      *    "groupName": group名称
      *    "peopleCount":  能够加入此group的最大人数

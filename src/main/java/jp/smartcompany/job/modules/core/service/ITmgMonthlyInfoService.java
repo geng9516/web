@@ -43,7 +43,7 @@ public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
 
 
         /**
-         * [勤怠]月単位日別情報より、表示対象社員の超過勤務命令・実績時間を取得。
+         * [勤怠]月単位日別情報より、表示対象職員の超過勤務命令・実績時間を取得。
          * @param  custId      顧客ID
          * @param  compId      法人ID
          * @param  sectionId   組織ID
@@ -58,7 +58,7 @@ public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
 
 
         /**
-         * [勤怠]月単位日別情報より、表示対象社員の超過勤務命令・実績時間を取得。
+         * [勤怠]月単位日別情報より、表示対象職員の超過勤務命令・実績時間を取得。
          * @param  custId      顧客ID
          * @param  compId      法人ID
          * @param  sBaseDate   基準日

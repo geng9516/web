@@ -16,11 +16,11 @@ import lombok.ToString;
 public class Acquired5DaysListVO {
 
     /**
-     * 社員番号
+     * 職員番号
      */
     private String cemployeeid0;
     /**
-     * 社員名
+     * 職員名
      */
     private String cemployeeName1;
     /**

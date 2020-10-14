@@ -74,10 +74,10 @@ public interface EvaluatorSettingConst {
 
 	String ACT_EDITMEMBER_UMEMBER = "ACT_EditMember_UMember"; // メンバー割付変更
 
-	String ACT_SEARCHEMP_REMPLIST = "ACT_SearchEmp_REmpList"; // 社員検索画面表示
+	String ACT_SEARCHEMP_REMPLIST = "ACT_SearchEmp_REmpList"; // 職員検索画面表示
 
 	// 2009/12/7 isolootsuki #阪大対応 メンバー割付画面に追加機能を追加のため アクション追加
-	String ACT_ADDEMP_REMPLIST = "ACT_AddEmp_REmpList"; // 社員追加画面表示
+	String ACT_ADDEMP_REMPLIST = "ACT_AddEmp_REmpList"; // 職員追加画面表示
 
 	String ACT_ADD_POST = "ACT_Add_Post";
 
@@ -117,7 +117,7 @@ public interface EvaluatorSettingConst {
 
 	 int COL_EVALLIST_GROUPNAME = 1; // グループ名
 
-	 int COL_EVALLIST_EMPLOYEEID = 2; // 社員番号
+	 int COL_EVALLIST_EMPLOYEEID = 2; // 職員番号
 
 	 int COL_EVALLIST_EMPLOYEENAME = 3; // 承認者氏名
 
@@ -209,7 +209,7 @@ public interface EvaluatorSettingConst {
 	int COL_ADD_GROUP_END = 2; // グループ終了日（権限設定・終了日用）
 
 	// メンバー情報(メンバー割付画面表示画面)
-	int COL_MEMBER_EMPLOYEEID = 0; // 社員番号
+	int COL_MEMBER_EMPLOYEEID = 0; // 職員番号
 
 	int COL_MEMBER_EMPLOYEENAME = 1;// 氏名
 

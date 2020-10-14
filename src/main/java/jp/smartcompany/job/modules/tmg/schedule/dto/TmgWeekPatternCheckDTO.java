@@ -16,7 +16,7 @@ import lombok.ToString;
 public class TmgWeekPatternCheckDTO {
 
     /**
-     * 週勤務社員ID
+     * 週勤務職員ID
      */
     private String custId;
     /**
@@ -24,7 +24,7 @@ public class TmgWeekPatternCheckDTO {
      */
     private String compCode;
     /**
-     * 社員ID
+     * 職員ID
      */
     private String employeeId;
 

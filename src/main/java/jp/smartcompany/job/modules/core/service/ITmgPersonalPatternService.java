@@ -21,7 +21,7 @@ public interface ITmgPersonalPatternService extends IService<TmgPersonalPatternD
          *
          * @param customerId    顧客コード
          * @param companyId     法人コード
-         * @param employeeId    社員番号
+         * @param employeeId    職員番号
          * @param yyyymmdd      基準日
          * @return int 週平均勤務時間
          */
@@ -35,7 +35,7 @@ public interface ITmgPersonalPatternService extends IService<TmgPersonalPatternD
          *
          * @param customerId    顧客コード
          * @param companyId     法人コード
-         * @param employeeId    社員番号
+         * @param employeeId    職員番号
          * @param yyyymmdd      基準日
          * @return TmgPersonalPatternRow 契約情報勤務パターン
          */

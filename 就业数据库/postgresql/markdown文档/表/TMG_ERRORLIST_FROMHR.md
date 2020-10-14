@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TEFH_CCUSTOMERID|varchar||否|顧客コード|
 |TEFH_CCOMPANYID|varchar||否|法人コード|
-|TEFH_CEMPLOYEEID|varchar||否|社員番号|
+|TEFH_CEMPLOYEEID|varchar||否|職員番号|
 |TEFH_CMODIFIERUSERID|varchar||是|最終更新者|
 |TEFH_DMODIFIEDDATE|date||是|最終更新日|
 |TEFH_CMODIFIERPROGRAMID|varchar||是|最終更新プログラムID|

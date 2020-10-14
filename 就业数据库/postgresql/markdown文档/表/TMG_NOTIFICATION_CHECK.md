@@ -3,16 +3,16 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TNTF_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01|
 |TNTF_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ|
-|TNTF_CEMPLOYEEID|varchar||否|社員番号|
+|TNTF_CEMPLOYEEID|varchar||否|職員番号|
 |TNTF_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01|
 |TNTF_DENDDATE|date||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31|
 |TNTF_CMODIFIERUSERID|varchar||是|更新者|
 |TNTF_DMODIFIEDDATE|date||是|更新日|
 |TNTF_CMODIFIERPROGRAMID|varchar||是|更新プログラムID|
 |TNTF_NSEQ|numeric||否|連番|
-|TNTF_CNTFNO|varchar||是|申請番号                          申請者社員番号|連番|
+|TNTF_CNTFNO|varchar||是|申請番号                          申請者職員番号|連番|
 |TNTF_CSTATUSFLG|varchar||否|ステータスフラグ               MGD:TMG_NTFSTATUS|
-|TNTF_CALTEREMPLOYEEID|varchar||否|申請者社員番号|
+|TNTF_CALTEREMPLOYEEID|varchar||否|申請者職員番号|
 |TNTF_DNOTIFICATION|date||是|申請日|
 |TNTF_DBEGIN|date||否|対象期間：開始日|
 |TNTF_DEND|date||是|対象期間：終了日|
@@ -32,10 +32,10 @@
 |TNTF_NDAYOFWEEK|numeric||是|対象曜日指定                        ビットフラグ|
 |TNTF_CTYPE|varchar||是|申請種類                                      MGD:TMG_NTFTYPE|
 |TNTF_COWNCOMMENT|varchar||是|申請事由|
-|TNTF_CBOSS|varchar||是|承認者社員番号|
+|TNTF_CBOSS|varchar||是|承認者職員番号|
 |TNTF_CBOSSCOMMENT|varchar||是|承認者コメント|
 |TNTF_DBOSS|date||是|承認日|
-|TNTF_CCANCEL|varchar||是|申請解除社員番号|
+|TNTF_CCANCEL|varchar||是|申請解除職員番号|
 |TNTF_CCANCELCOMMENT|varchar||是|申請解除者のコメント|
 |TNTF_DDAIKYU|date||是|代休日|
 |TNTF_CSICK_TYPE|varchar||是|特別休暇：傷病種類|

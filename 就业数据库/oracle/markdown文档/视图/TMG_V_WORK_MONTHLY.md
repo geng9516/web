@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TVWM_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
 |TVWM_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TVWM_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVWM_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TVWM_CUSERID|VARCHAR2||否|ユーザーID|
 |TVWM_DSTARTDATE|DATE||是|ﾃﾞｰﾀ開始日|
 |TVWM_DENDDATE|DATE||是|ﾃﾞｰﾀ終了日|

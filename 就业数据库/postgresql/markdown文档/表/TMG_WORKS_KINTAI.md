@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TXKW_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TXKW_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TXKW_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TXKW_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TXKW_DSTARTDATE|date||否|開始日                                                                                       |
 |TXKW_DENDDATE|date||否|終了日                                                                                       |
 |TXKW_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

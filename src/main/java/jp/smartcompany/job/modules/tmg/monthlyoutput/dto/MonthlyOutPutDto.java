@@ -19,7 +19,7 @@ public class MonthlyOutPutDto {
     private String custId;
     /**法人コード*/
     private String compId;
-    /**社員番号*/
+    /**職員番号*/
     private String userCode;
     /**言語*/
     private String lang;

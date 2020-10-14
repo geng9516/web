@@ -4,7 +4,7 @@
 |TVCWP_NID|NUMBER||否|[週次勤務パターン]ID|
 |TVCWP_CCUSTOMERID|VARCHAR2||否|[週次勤務パターン]顧客ｺｰﾄﾞ|
 |TVCWP_CCOMPANYID|VARCHAR2||否|[週次勤務パターン]法人ｺｰﾄﾞ|
-|TVCWP_CEMPLOYEEID|VARCHAR2||否|[週次勤務パターン]社員番号|
+|TVCWP_CEMPLOYEEID|VARCHAR2||否|[週次勤務パターン]職員番号|
 |TVCWP_CUSERID|VARCHAR2||否|[週次勤務パターン]ユーザーID|
 |TVCWP_DSTARTDATE|DATE||否|[週次勤務パターン]開始日|
 |TVCWP_DENDDATE|DATE||否|[週次勤務パターン]終了日|

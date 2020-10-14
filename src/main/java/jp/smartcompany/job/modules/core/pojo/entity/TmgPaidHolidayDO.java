@@ -40,7 +40,7 @@ private static final long serialVersionUID=1L;
         private String tphCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
                 @TableId
                 private String tphCemployeeid;

@@ -46,7 +46,7 @@ public class SectionPostRowDTO implements Serializable {
     private String sectionId;
     /** 役職コード */
     private String postId;
-    /** 社員番号 */
+    /** 職員番号 */
     private String employeeId;
     private Long id;
 

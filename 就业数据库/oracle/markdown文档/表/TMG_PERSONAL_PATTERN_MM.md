@@ -25,7 +25,7 @@
 |TPPM_NINFO31|NUMBER||是|日別勤務時間数：31日                                                                                  |
 |TPPM_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
 |TPPM_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TPPM_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TPPM_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TPPM_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日|
 |TPPM_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日|
 |TPPM_CMODIFIERUSERID|VARCHAR2||是|更新者|

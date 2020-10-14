@@ -441,7 +441,7 @@ public interface ITmgScheduleService extends IService<TmgPatternDO> {
     String selectBaseDateFor4Week(String custId, String compCode, String employeeId, String startDate, String endDate, int param4WeekAfter);
 
     /**
-     * 対象社員の勤怠日別情報の最小日と最大日を取得する
+     * 対象職員の勤怠日別情報の最小日と最大日を取得する
      *
      * @param custId
      * @param compCode

@@ -762,7 +762,7 @@
                     //まだ、打刻していない 何もしない
                 }
             },
-            // 社員勤務予定データを取得する
+            // 職員勤務予定データを取得する
             async getScheduleInfo() {
                 const {data} = await this.http.postForm('sys/timePunch/selectScheduleInfo', this.query_schedule)
                 this.requestFlag = true;
@@ -772,7 +772,7 @@
                     this.scheduleData = ['', '']
                 }
             },
-            //　社員有休等情報を取得する
+            //　職員有休等情報を取得する
             async getDutyAndRelaxDate() {
                 const {data} = await this.http.postForm('sys/timePunch/selectDutyAndRelaxDate', this.query_schedule)
 

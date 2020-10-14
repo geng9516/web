@@ -1845,7 +1845,7 @@ public class EvaluatorSettingBean {
             // 検索
             Vector <String> vQuery = new Vector <>();
             vQuery.add(buildSQLForSelectGroupAndEvaluater(params));  // 0 グループ一覧及び承認者一覧
-            vQuery.add(buildSQLForSelectEvaluaterNum(params));       // 1 グループごとに設定されている社員の人数
+            vQuery.add(buildSQLForSelectEvaluaterNum(params));       // 1 グループごとに設定されている職員の人数
             vQuery.add(buildSQLForTransitionDate(params));           // 2 画面遷移リンク用基準日取得(クエリ)
             vQuery.add(buildSQLForSelectEvaluaterEmpNum(params));    // 3 グループの承認者ごとに登録されている権限設定の歴数
             try {
@@ -2198,7 +2198,7 @@ public class EvaluatorSettingBean {
     }
 
     /**
-     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが職員リストでは出てはいけないため)
      * @return
      */
     public String getOrgTreeSearchRangeForTreeBuild(PsDBBean psDBBean) {

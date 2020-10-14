@@ -50,7 +50,7 @@ public class UserManagerCondDTO {
      */
     private String sectionId;
     /**
-     * 社員番号
+     * 職員番号
      */
     private String empId;
     /**

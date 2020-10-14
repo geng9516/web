@@ -6,7 +6,7 @@
 |MSW_CTABLEID|varchar||否|テーブルID|
 |MSW_CCOLUMNID|varchar||否|カラムID|
 |MSW_NSEQ|numeric||否|並び順|
-|MSW_CEMPLOYEE|varchar||否|社員情報フラグ|
+|MSW_CEMPLOYEE|varchar||否|職員情報フラグ|
 |MSW_CMODIFIERUSERID|varchar||是|最終更新者|
 |MSW_DMODIFIEDDATE|date||是|最終更新日|
 |VERSIONNO|numeric||否|バージョンNo|

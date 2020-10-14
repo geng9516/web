@@ -2071,7 +2071,7 @@ public class TmgUtil {
      * @param bean         PsDBBean
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return true:フレックス対象者
      */
@@ -2120,7 +2120,7 @@ public class TmgUtil {
      *
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return SELECT文
      */
@@ -2144,7 +2144,7 @@ public class TmgUtil {
      * @param bean         PsDBBean
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return int:時間数
      */
@@ -2248,7 +2248,7 @@ public class TmgUtil {
      *
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return SELECT文
      */
@@ -2272,7 +2272,7 @@ public class TmgUtil {
      *
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return SELECT文
      */
@@ -2297,7 +2297,7 @@ public class TmgUtil {
      * @param bean         PsDBBean
      * @param custId       顧客コード
      * @param compCode     法人コード
-     * @param employeeCode 社員番号
+     * @param employeeCode 職員番号
      * @param date         日付
      * @return true:裁量労働対象者
      */

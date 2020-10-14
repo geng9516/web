@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TPHA_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TPHA_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TPHA_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TPHA_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TPHA_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                                                                                   |
 |TPHA_DENDDATE|date||否|ﾃﾞｰﾀ終了日                                                                                   |
 |TPHA_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

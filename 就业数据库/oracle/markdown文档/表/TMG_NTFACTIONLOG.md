@@ -5,14 +5,14 @@
 |TNAL_CUPDATECCOMMENT|VARCHAR2||是|更新時コメント|
 |TNAL_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01|
 |TNAL_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TNAL_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TNAL_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TNAL_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01|
 |TNAL_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31|
 |TNAL_CMODIFIERUSERID|VARCHAR2||是|更新者|
 |TNAL_DMODIFIEDDATE|DATE||是|更新日|
 |TNAL_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
 |TNAL_CSITEID|VARCHAR2||是|更新サイト|
-|TNAL_CNTFNO|VARCHAR2||是|申請番号                          申請者社員番号|連番|
+|TNAL_CNTFNO|VARCHAR2||是|申請番号                          申請者職員番号|連番|
 |TNAL_CNTFACTION|VARCHAR2||是|操作種別|
 |TNAL_CPRE_STATUSFLG|VARCHAR2||是|更新前ステータスフラグ MGD:TMG_NTFSTATUS|
 |TNAL_CPRE_APPROVAL_LEVEL|VARCHAR2||是|更新前決裁レベル MGD:TMG_APPROVAL_LEVEL|

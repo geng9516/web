@@ -46,7 +46,7 @@ private static final long serialVersionUID=1L;
         private String meCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("me_cemployeeid_ck")
         private String meCemployeeidCk;
@@ -280,13 +280,13 @@ private static final long serialVersionUID=1L;
         private Date meDdateformanagerialposition;
 
         /**
-         * 社員区分
+         * 職員区分
          */
     @TableField("me_ctypeofemployment")
         private String meCtypeofemployment;
 
         /**
-         * 社員区分コード
+         * 職員区分コード
          */
     @TableField("me_ctypeofemploymentnm")
         private String meCtypeofemploymentnm;

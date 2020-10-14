@@ -35,7 +35,7 @@ public class GroupManagerEditDTO {
     private SectionPostListDTO sectionPostList;
     // 条件式定義コンポーネント用
     private List<QueryConditionRowDTO> queryConditionList;
-    // 該当条件編集 - 定義情報取得(法人＆社員リスト)
+    // 該当条件編集 - 定義情報取得(法人＆職員リスト)
     private List<SectionPostRowDTO> employList;
     // 該当条件編集画面(基点組織定義(行単位))用Dtoクラス
     private List<BaseSectionRowDTO> baseSectionList;
@@ -57,7 +57,7 @@ public class GroupManagerEditDTO {
 //    private List<SectionPostCompanyRowListDTO> sectionPostCompanyList;
 //    // 条件式定義コンポーネント用Dtoクラス
 //    private List<QueryConditionRowDTO> queryConditionList;
-//    // 該当条件編集 - 定義情報取得(法人＆社員リスト)
+//    // 該当条件編集 - 定義情報取得(法人＆職員リスト)
 //    private List<SectionPostRowDTO> selectingEmployeesList;
 //    // 該当条件編集画面(基点組織定義(行単位))用Dtoクラス
 //    private List<BaseSectionRowDTO> baseSectionList;

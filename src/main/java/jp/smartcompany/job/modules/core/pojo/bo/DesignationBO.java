@@ -37,7 +37,7 @@ public class DesignationBO {
     /** 法人名称 */
     private String companyName;
 
-    /** 社員番号 */
+    /** 職員番号 */
     private String employee;
 
     /** ユーザID */

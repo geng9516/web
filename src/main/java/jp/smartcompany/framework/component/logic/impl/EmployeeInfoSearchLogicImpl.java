@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * 社員情報検索コンポーネントのLogicクラス<br>
+ * 職員情報検索コンポーネントのLogicクラス<br>
  * @author Xiao Wenpeng
  *
  */
@@ -50,7 +50,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
     private static final String SYSTEM_PROPERTY_USE_POST_ABBREVIATION = "UsePostAbbreviation";
     private String sysPropertyCachePost;
 
-    // システムプロパティ：社員検索結果が１件の時自動選択するか
+    // システムプロパティ：職員検索結果が１件の時自動選択するか
     private static final String SYSTEM_PROPERTY_EMP_SEARCH_AUTO_SELECT = "EmpSearchAutoSelect";
     private String sysPropertyCacheEmpSearch;
 
@@ -169,7 +169,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         );
         // 发起查询
         List<EmployeeInfoSearchEntity> lEmpInfoUserID =CollUtil.newArrayList();
-        // 社員検索
+        // 職員検索
         if (type == 1) {
             lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDList(searchDTO);
         // 所属一覧検索(兼務を含む)
@@ -196,7 +196,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         if (sysPropertyCachePost.equalsIgnoreCase(EmployeeInfoSearchLogicImpl.STR_YES)){
             sPostNick = "yes";
         }
-        // 社員情報を取得
+        // 職員情報を取得
         List<EmployeeInfoSearchEntity> lEmpInfo = CollUtil.newArrayList();
         if (CollUtil.isNotEmpty(sEmpInfoUserIDList)) {
 
@@ -207,12 +207,12 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
                     session.getLoginUser(), PsConst.DEFAULT_SYSTEM);
 
         }
-        // 社員情報をMapに格納。キーはユーザID + "_" + 異動歴ID(退職者はnull)
+        // 職員情報をMapに格納。キーはユーザID + "_" + 異動歴ID(退職者はnull)
         Map<String, EmployeeInfoSearchEntity> mEmpInfo = MapUtil.newHashMap();
         for (EmployeeInfoSearchEntity ent : lEmpInfo) {
             mEmpInfo.put(ent.getMeCuserid() + "_" + ent.getHdId(), ent);
         }
-        // lEmpInfoUserIDに社員情報を当てはめ
+        // lEmpInfoUserIDに職員情報を当てはめ
         for (int i = 0; i < lEmpInfoUserID.size(); i++) {
             EmployeeInfoSearchEntity ent = lEmpInfoUserID.get(i);
             lEmpInfoUserID.set(i, mEmpInfo.get(ent.getMeCuserid() + "_" + ent.getHdId()));
@@ -230,11 +230,11 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         sysPropertyCacheSec = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_SECTION_ABBREVIATION);
         // 役職名称を略称にするか判断
         sysPropertyCachePost = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_POST_ABBREVIATION);
-        // 社員検索結果が１件の時自動選択するか判断
+        // 職員検索結果が１件の時自動選択するか判断
         sysPropertyCacheEmpSearch = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_EMP_SEARCH_AUTO_SELECT);
         // 在職・退職を表示するか判断(2009/10/26 K.Monden 追加)
         sysPropertyCacheDispIfStillEmployedId = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_DISP_IF_STILL_EMPLOYEDID);
-        // #2638社員検索ダイアログＲ２対応チケット▼▼▼
+        // #2638職員検索ダイアログＲ２対応チケット▼▼▼
         // システムプロパティ
         ignoreRetiredData = scCacheUtil.getSystemProperty("IgnoreRetiredData");
         if (StrUtil.isBlank(ignoreRetiredData)) {

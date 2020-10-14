@@ -12,7 +12,7 @@
 |SSTART|VARCHAR2||是|開始日（和暦）|
 |DEND|DATE||是|終了日|
 |SEND|VARCHAR2||是|終了日（和暦）|
-|CSHAINNO|VARCHAR2||否|社員番号|
+|CSHAINNO|VARCHAR2||否|職員番号|
 |CNAMEKNA|VARCHAR2||是|カナ氏名|
 |CNAMEKNJ|VARCHAR2||是|漢字氏名|
 |CNAMEEIJI|VARCHAR2||是|アルファベット氏名|

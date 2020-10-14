@@ -4,7 +4,7 @@
 |HSW_ID|numeric||否|IDカラム|
 |HSW_CCUSTOMERID_CK|varchar||是|顧客コード|
 |HSW_CCOMPANYID_CK|varchar||是|法人コード|
-|HSW_CEMPLOYEEID_CK|varchar||是|社員番号|
+|HSW_CEMPLOYEEID_CK|varchar||是|職員番号|
 |HSW_CFILENAME_CK|varchar||是|設定名称|
 |HSW_CIFPUBLIC|varchar||是|共有フラグ|
 |HSW_NSEQ|numeric||是|並び順|

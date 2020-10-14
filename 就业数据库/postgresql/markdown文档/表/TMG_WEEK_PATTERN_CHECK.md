@@ -4,7 +4,7 @@
 |TWP_NID|numeric||否|ID|
 |TWP_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ|
 |TWP_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ|
-|TWP_CEMPLOYEEID|varchar||否|社員番号|
+|TWP_CEMPLOYEEID|varchar||否|職員番号|
 |TWP_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日|
 |TWP_DENDDATE|date||否|ﾃﾞｰﾀ終了日|
 |TWP_CMODIFIERUSERID|varchar||是|更新者|

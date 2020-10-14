@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TCLL_CCUSTOMERID|varchar||否|顧客コード|
 |TCLL_CCOMPANYID|varchar||否|法人コード|
-|TCLL_CEMPLOYEEID|varchar||否|社員番号|
+|TCLL_CEMPLOYEEID|varchar||否|職員番号|
 |TCLL_DSTARTDATE|date||是|データ開始日 固定：1900/01/01|
 |TCLL_DENDDATE|date||是|データ終了日 固定：2222/12/31|
 |TCLL_CMODIFIERUSERID|varchar||是|更新者|

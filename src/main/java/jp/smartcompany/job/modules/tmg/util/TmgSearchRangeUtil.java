@@ -63,7 +63,7 @@ public class TmgSearchRangeUtil  {
         }
         // V4の処理
         else {
-            // パラメータの法人、社員番号カラムからユーザIDカラムを取得する
+            // パラメータの法人、職員番号カラムからユーザIDカラムを取得する
             String sUserIdColumn = getUserIdColumn(psDBBean,psEmployeeColumn);
             // 検索対象範囲APIを呼び出してEXISTS句を取得する
             String sExists = psBuildTargetSql.getExistsQuery(sUserIdColumn);
@@ -92,7 +92,7 @@ public class TmgSearchRangeUtil  {
         }
         // V4の処理
         else {
-            // パラメータの法人、社員番号カラムからユーザIDカラムを取得する
+            // パラメータの法人、職員番号カラムからユーザIDカラムを取得する
             //String sUserIdColumn = getUserIdColumn(psEmployeeColumn);
 
             // 検索対象範囲APIを呼び出してEXISTS句を取得する
@@ -245,7 +245,7 @@ public class TmgSearchRangeUtil  {
     }
 
     /**
-     * 社員リストデータのセッションキーを作成
+     * 職員リストデータのセッションキーを作成
      * @param psDate
      * @param psSection
      * @param pbEmployee

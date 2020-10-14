@@ -35,14 +35,14 @@ import java.util.*;
 /**
  *
  * @author Xiao Wenpeng
- * コンテンツ埋め込み型の組織ツリー＆社員リストを提供するクラスです。 -> 对应旧就业的ps.c01.tmg.util.TmgReferList
+ * コンテンツ埋め込み型の組織ツリー＆職員リストを提供するクラスです。 -> 对应旧就业的ps.c01.tmg.util.TmgReferList
  *
- * 勤怠承認サイトの場合は、現在日付-targetDateの範囲で参照可能なグループ/社員の一覧を作成します。
- * 勤怠管理サイトの場合は、現在日付時点の組織ツリーと、選択された部署に所属している社員の一覧を作成します。
+ * 勤怠承認サイトの場合は、現在日付-targetDateの範囲で参照可能なグループ/職員の一覧を作成します。
+ * 勤怠管理サイトの場合は、現在日付時点の組織ツリーと、選択された部署に所属している職員の一覧を作成します。
  *
  * 使用可能なツリービューのタイプは、以下の3種類があります
  * 個人系(個人を選択して表示するタイプ)
- * 一覧系(部署/グループを選択して、所属している社員を一覧表示するタイプ)
+ * 一覧系(部署/グループを選択して、所属している職員を一覧表示するタイプ)
  * 一覧系/部署(一覧系で、部署ごとに表示するタイプ)
  *
  * 引数を指定する際は、TmgReferListに定義されている以下の定数を使用します
@@ -50,10 +50,10 @@ import java.util.*;
  * TREEVIEW_TYPE_LIST
  * TREEVIEW_TYPE_LIST_SEC
  * 例）承認状況一覧は「一覧系」なので、treeViewTypeにTREEVIEW_TYPE_LISTを指定する
- * 勤怠管理サイトの場合、表示される社員一覧について、TMG_EMPLOYEESと結合するかどうか指定します。
+ * 勤怠管理サイトの場合、表示される職員一覧について、TMG_EMPLOYEESと結合するかどうか指定します。
  * この値は、常にtrueを指定してください。
  *
- * TmgReferListオブジェクトの各メソッドを使用することで、検索対象社員のデータを取得することができます。
+ * TmgReferListオブジェクトの各メソッドを使用することで、検索対象職員のデータを取得することができます。
  * 個人系：getTargetEmployee()
  * 一覧系：buildSQLForSelectEmployees()
  * ビュータイプで個人系を指定していた場合、getTargetEmployeeメソッドを使用することができます。
@@ -106,7 +106,7 @@ public class TmgReferList {
     private TmgOrgTree orgTree  = null;
     // 勤怠管理サイト用:部局ツリー
     private TmgDivisionTree  divTree    = null;
-    // 勤怠管理サイト用:社員一覧
+    // 勤怠管理サイト用:職員一覧
     private TmgEmpList  empList    = null;
 
     // 勤怠承認サイト用:グループ一覧
@@ -201,7 +201,7 @@ public class TmgReferList {
     // 勤怠管理サイト：病棟ツリー作成時の条件
     public static final String SESSION_KEY_WARDTREE_CONDITION = "TmgWardTreeConditionTargetSection";
 
-    // 勤怠管理サイト：社員一覧作成時の条件
+    // 勤怠管理サイト：職員一覧作成時の条件
     public static final String SESSION_KEY_EMPLIST_CONDITION = "TmgEmpListConditionTargetSection";
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
@@ -210,11 +210,11 @@ public class TmgReferList {
     public static final String GROUPID_DAYNIGHT_EDITOR	= "TMG_DAYNIGHT_EDITOR";	//宿日直割振編集担当者
     public static final String GROUPID_DUTYHOURS_EDITOR	= "TMG_DUTYHOURS_EDITOR";	//交替制勤務割振編集担当者
 
-    // 勤怠管理サイトにおいて、画面上で選択された部署・社員を保持する
+    // 勤怠管理サイトにおいて、画面上で選択された部署・職員を保持する
     private String targetSec_admin = null;
     private String targetEmp_admin = null;
 
-    // 勤怠承認サイトにおいて、画面上で選択された部署・グループ・社員・ビューを保持する
+    // 勤怠承認サイトにおいて、画面上で選択された部署・グループ・職員・ビューを保持する
     private String targetSec_perm = null;
     private String targetGroup_perm = null;
     private String targetMember_perm = null;
@@ -265,7 +265,7 @@ public class TmgReferList {
     public static final String SESSION_KEY_WARDTREE_RESULT    = "TmgWardTreeResult";
 
     /**
-     * 管理サイトにおいて、社員一覧の検索結果をセッションに登録する際のキーです。
+     * 管理サイトにおいて、職員一覧の検索結果をセッションに登録する際のキーです。
      */
     public static final String SESSION_KEY_EMPLIST_RESULT    = "TmgEmpListResult";
     /**
@@ -295,7 +295,7 @@ public class TmgReferList {
      */
     public static final String SESSION_KEY_PRE_YEAR_DATE = "TmgReferListPRE_YEAR_DATE";
     /**
-     *  管理サイトにおいて、社員一覧の検索に管理対象フラグを使用するかどうかをセッションに登録する際のキーです。
+     *  管理サイトにおいて、職員一覧の検索に管理対象フラグを使用するかどうかをセッションに登録する際のキーです。
      */
     public static final String SESSION_KEY_USEMANAGEFLG  = "UseManageFlg";
     /**
@@ -312,7 +312,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -337,7 +337,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -365,7 +365,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -396,7 +396,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -430,7 +430,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -461,7 +461,7 @@ public class TmgReferList {
 
     /**
      * 汎用参照リストクラスのオブジェクトを生成し、必要なデータを初期化します。<br>
-     * 現在日付-targetDateの範囲で、参照可能な社員の一覧を作成します。<br>
+     * 現在日付-targetDateの範囲で、参照可能な職員の一覧を作成します。<br>
      * @param bean 呼出元のBean
      * @param beanDesc 呼出元のBeanの名称
      * @param targetDate 基準日(YYYY/MM/DD形式)
@@ -726,7 +726,7 @@ public class TmgReferList {
 
         HttpSession session = ContextUtil.getSession();
 
-        // 対象社員の社員コードをリクエストパラメータから取得
+        // 対象職員の職員コードをリクエストパラメータから取得
         targetEmp_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_EMP);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetEmp_admin == null || targetEmp_admin.equals("")){
@@ -742,7 +742,7 @@ public class TmgReferList {
         // リクエストパラメータに存在しない場合、セッションから取得
         if(StrUtil.isBlank(targetSec_admin)){
             targetSec_admin = (String)session.getAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
-            // セッションにも存在しない場合、NULLをセット(対象社員もNULLにしておく)
+            // セッションにも存在しない場合、NULLをセット(対象職員もNULLにしておく)
             if(StrUtil.isBlank(targetSec_admin)){
                 targetSec_admin = null;
                 targetEmp_admin = null;
@@ -757,10 +757,10 @@ public class TmgReferList {
             createOrgTree();
         }
 
-        // 組織が選択されている場合、社員一覧を初期化
+        // 組織が選択されている場合、職員一覧を初期化
 //        if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
-            // 対象社員の値が存在しない場合、デフォルト値をセットする
+            // 対象職員の値が存在しない場合、デフォルト値をセットする
 //            if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
 //                if(CollUtil.isNotEmpty(empList.getDataArray())){
 //                    targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
@@ -808,14 +808,14 @@ public class TmgReferList {
             targetGroup_perm = (String)session.getAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP);
         }
 
-        // 対象社員の社員コードをリクエストパラメータから取得
+        // 対象職員の職員コードをリクエストパラメータから取得
         targetMember_perm = psDBBean.getReqParam(TREEVIEW_KEY_PERM_TARGET_EMP);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetMember_perm == null){
             targetMember_perm = (String)session.getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP);
         }
         // 2007/10/02 Shishido 2007/08/30の修正を元に戻します
-        // 承認サイトで社員の存在しない部署を選択しても、自動的に社員が存在する部署を対象になるため、
+        // 承認サイトで職員の存在しない部署を選択しても、自動的に職員が存在する部署を対象になるため、
         // 一見すると、部署選択のロジックがバグってるように見えてしまう→これを改善
         List dataList = memberList.getDataArray();
         // 対象組織の値が存在しない場合、デフォルト値をセットする
@@ -841,7 +841,7 @@ public class TmgReferList {
             targetMember_perm = null;
         }
 
-        // 対象社員の値が存在しない場合、デフォルト値をセットする
+        // 対象職員の値が存在しない場合、デフォルト値をセットする
         if(targetMember_perm == null || "".equals(targetMember_perm)|| !existsEmployee(targetDate, psDaseDate, targetMember_perm)){
             String[] keyData = {targetGroup_perm};
             dataList = JSONArrayGenerator.selectDataArray(dataList, TmgMemberList.DEFAULT_KEY_GROUPID, keyData);
@@ -1000,15 +1000,15 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠管理サイト用に、社員一覧を作成します。
-     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた社員の一覧を作成します。
+     * 勤怠管理サイト用に、職員一覧を作成します。
+     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた職員の一覧を作成します。
      * 勤怠承認サイトのメンバー一覧と異なり、リクエストの都度、検索処理を実行します。
      * @param targetSection
      * @param targetDate
      */
     private void createEmpList(String targetSection, String targetDate, int piHidSelectTab) throws Exception{
         HttpSession httpSession = ContextUtil.getSession();
-        // 勤怠管理サイトの場合、対象部署について、SYSDATE-targetDateの範囲で歴を持っている社員一覧を作成する
+        // 勤怠管理サイトの場合、対象部署について、SYSDATE-targetDateの範囲で歴を持っている職員一覧を作成する
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             empList = new TmgEmpList(psDBBean, beanDesc);
             SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
@@ -1017,7 +1017,7 @@ public class TmgReferList {
             String target;
 
             log.info("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
-            // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
+            // 前年度初日より以前の日付が指定された場合、新しい範囲について職員一覧の検索処理を実行します
             // ===== fix: 从数据库查出的gcPreYearDate在比当前年份仅小于一年时数量和查询出的员工数量不正确的问题
             if(SysDateUtil.isLess(date,gcPreYearDate) || ( DateUtil.date().year()-DateUtil.date(date).year()) == 1){
 //                if(SysDateUtil.isLess(date,gcPreYearDate)){
@@ -1070,7 +1070,7 @@ public class TmgReferList {
 
     /**
      * 勤怠管理サイト用に、組織ツリータブ情報を作成します。
-     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた社員の一覧を作成します。
+     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた職員の一覧を作成します。
      * 勤怠承認サイトのメンバー一覧と異なり、リクエストの都度、検索処理を実行します。
      * @param psBase
      * @param psTarget
@@ -1088,11 +1088,11 @@ public class TmgReferList {
             dataArray = (List)httpSession.getAttribute(SESSION_KEY_EMPLIST_RESULT);
         }
         log.info("【createEmpList4TreeView-before-dataArray:{}】",dataArray);
-        // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
+        // セッションに職員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
         if(dataArray != null  && getRecordDate().equals(gsSessionDate) && sessionSameCheck()){
             empList.setDataArray(dataArray);
         }
-        // そうでなければ「SYSDATE-前年度初日」の範囲で社員一覧を作成しておく
+        // そうでなければ「SYSDATE-前年度初日」の範囲で職員一覧を作成しておく
         else{
 
             empList.createEmpList(
@@ -1117,7 +1117,7 @@ public class TmgReferList {
 
     /**
      * 勤怠管理サイト用に、検索タブ情報を作成します。
-     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた社員の一覧を作成します。
+     * SYSDATE-targetDate(遡り基準日)の範囲で、指定した部署に所属していた職員の一覧を作成します。
      * 勤怠承認サイトのメンバー一覧と異なり、リクエストの都度、検索処理を実行します。
      * @param psBase
      * @param psTarget
@@ -1127,14 +1127,14 @@ public class TmgReferList {
     private void createEmpList4SearchView(String psBase, String psTarget, String psTargetSection,
                                           SimpleDateFormat pSdf) throws Exception{
         HttpSession httpSession = ContextUtil.getSession();
-        // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
+        // セッションに職員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
         if(httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
                 getRecordDate().equals(gsSessionDate) && isSession4SearchTabItem()
         ){
             empList.setSearchDataArray((List)httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
             empList.setDispLimit4Tree((String)httpSession.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
         }
-        // そうでなければ「SYSDATE-前年度初日」の範囲で社員一覧を作成しておく
+        // そうでなければ「SYSDATE-前年度初日」の範囲で職員一覧を作成しておく
         else{
             if (isSelectedSearchTab()){
                 empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
@@ -1206,7 +1206,7 @@ public class TmgReferList {
 
     /**
      * 勤怠承認サイト用に、メンバー(部下)一覧を作成します。
-     * 現在日付-targetDateの範囲で、参照可能なグループに所属していた社員の一覧を作成します。
+     * 現在日付-targetDateの範囲で、参照可能なグループに所属していた職員の一覧を作成します。
      * targetDateの書式が「YYYY/MM/DD」ではない場合、例外が発生します。
      * @param targetDate
      */
@@ -1236,7 +1236,7 @@ public class TmgReferList {
                 // todo：グループの絞込をする必要がないのでここには追加しない
             }
 
-            // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
+            // 前年度初日より以前の日付が指定された場合、新しい範囲について職員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 memberList.createMemberList(base, gbUseManageFLG);
                 if (isSelectedSearchTab()){
@@ -1319,18 +1319,18 @@ public class TmgReferList {
     }
 
     /**
-     * 選択されたビューに従って、リスト表示される社員の一覧を取得するSQLを構築して返します。<br>
+     * 選択されたビューに従って、リスト表示される職員の一覧を取得するSQLを構築して返します。<br>
      * 勤怠承認サイトおよび勤怠管理サイトにおいて、一覧系コンテンツの場合、
-     * SYSDATE-基準日の範囲で参照可能な社員のデータをつなげて、<br>
+     * SYSDATE-基準日の範囲で参照可能な職員のデータをつなげて、<br>
      *   SELECT ... FROM DUAL UNION ALL ...<br>
      * という形式の擬似クエリを構築して返します。<br>
      * この擬似クエリは、以下のカラムを持ちます。
      * <ul>
      *   <li>CUST    : 顧客コード
      *   <li>COMP    : 法人コード
-     *   <li>EMPID   : 社員番号
-     *   <li>EMPNAME : 社員氏名(漢字氏名)
-     *   <li>SEQ     : ソート順(異動歴のDEND降順、DSTART昇順、部署コード昇順、役職ウェイト昇順、社員番号昇順)
+     *   <li>EMPID   : 職員番号
+     *   <li>EMPNAME : 職員氏名(漢字氏名)
+     *   <li>SEQ     : ソート順(異動歴のDEND降順、DSTART昇順、部署コード昇順、役職ウェイト昇順、職員番号昇順)
      * </ul>
      * @return String SQL文(勤怠承認or管理サイトの一覧系コンテンツではない場合、NULLを返す)
      */
@@ -1361,19 +1361,19 @@ public class TmgReferList {
     }
 
     /**
-     * 選択されたビューに従って、リスト表示される社員の一覧を取得するSQLを構築して返します。<br>
+     * 選択されたビューに従って、リスト表示される職員の一覧を取得するSQLを構築して返します。<br>
      * Oracleテーブルオブジェクトの作成版
      * 勤怠承認サイトおよび勤怠管理サイトにおいて、一覧系コンテンツの場合、
-     * SYSDATE-基準日の範囲で参照可能な社員のデータをつなげて、<br>
+     * SYSDATE-基準日の範囲で参照可能な職員のデータをつなげて、<br>
      *   SELECT ... FROM DUAL UNION ALL ...<br>
      * という形式の擬似クエリを構築して返します。<br>
      * この擬似クエリは、以下のカラムを持ちます。
      * <ul>
      *   <li>CUST    : 顧客コード
      *   <li>COMP    : 法人コード
-     *   <li>EMPID   : 社員番号
-     *   <li>EMPNAME : 社員氏名(漢字氏名)
-     *   <li>SEQ     : ソート順(異動歴のDEND降順、DSTART昇順、部署コード昇順、役職ウェイト昇順、社員番号昇順)
+     *   <li>EMPID   : 職員番号
+     *   <li>EMPNAME : 職員氏名(漢字氏名)
+     *   <li>SEQ     : ソート順(異動歴のDEND降順、DSTART昇順、部署コード昇順、役職ウェイト昇順、職員番号昇順)
      * </ul>
      * @return String SQL文(勤怠承認or管理サイトの一覧系コンテンツではない場合、NULLを返す)
      */
@@ -1391,7 +1391,7 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠管理サイトにおいて、選択された部署に所属している社員の一覧を取得するSQLを構築して返します。<br>
+     * 勤怠管理サイトにおいて、選択された部署に所属している職員の一覧を取得するSQLを構築して返します。<br>
      * @return String SQL文
      */
     private String buildSQLForSelectEmpList(){
@@ -1410,7 +1410,7 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠管理サイトにおいて、検索された社員の一覧を取得するSQLを構築して返します。<br>
+     * 勤怠管理サイトにおいて、検索された職員の一覧を取得するSQLを構築して返します。<br>
      * @return String SQL文
      */
     private String buildSearchDataArraySQLForSelectEmpList(){
@@ -1430,7 +1430,7 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠管理サイトにおいて、選択された部署に所属している社員の一覧を取得するSQLを構築して返します。<br>
+     * 勤怠管理サイトにおいて、選択された部署に所属している職員の一覧を取得するSQLを構築して返します。<br>
      * Oracleテーブルオブジェクトの作成版
      * @return String SQL文
      */
@@ -1488,7 +1488,7 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠承認サイトにおいて、指定された部署に所属している社員のうち、参照可能なメンバーの一覧を取得するSQLを構築します。<br>
+     * 勤怠承認サイトにおいて、指定された部署に所属している職員のうち、参照可能なメンバーの一覧を取得するSQLを構築します。<br>
      * @param targetSection 対象部署コード（選択された部署コードを取得するgetTargetSecメソッドと併用する）
      * @return SQL文
      */
@@ -1511,7 +1511,7 @@ public class TmgReferList {
     }
 
     /**
-     * 勤怠承認サイトにおいて、指定されたグループに所属している社員のうち、参照可能なメンバーの一覧を取得するSQLを構築します。<br>
+     * 勤怠承認サイトにおいて、指定されたグループに所属している職員のうち、参照可能なメンバーの一覧を取得するSQLを構築します。<br>
      * @param targetGroup 対象グループID
      * @return
      */
@@ -1577,7 +1577,7 @@ public class TmgReferList {
     }
 
     /**
-     * 作成された社員一覧の内容に従って、ツリービュー作成用のJSON配列を生成して返します。<br>
+     * 作成された職員一覧の内容に従って、ツリービュー作成用のJSON配列を生成して返します。<br>
      * 勤怠管理サイトの個人系コンテンツで使用します。
      * @return String ツリービュー用のJSON配列
      */
@@ -1738,9 +1738,9 @@ public class TmgReferList {
     }
 
     /**
-     * 基準日時点において、指定した社員に対して指定した権限を持っているかどうかを判定します。
+     * 基準日時点において、指定した職員に対して指定した権限を持っているかどうかを判定します。
      * @param sDate 基準日
-     * @param sEmp 社員番号
+     * @param sEmp 職員番号
      * @param sAuthority 権限コード
      * @return	boolean	true:持っている false:持っていない
      */
@@ -1749,10 +1749,10 @@ public class TmgReferList {
     }
 
     /**
-     * 開始日-終了日の範囲において、指定した社員に対して指定した権限を持っているかどうかを判定します。
+     * 開始日-終了日の範囲において、指定した職員に対して指定した権限を持っているかどうかを判定します。
      * @param sStart 開始日
      * @param sEnd 終了日
-     * @param sEmp 社員番号
+     * @param sEmp 職員番号
      * @param sAuthority 権限コード
      * @return	boolean	true:持っている false:持っていない
      */
@@ -1773,7 +1773,7 @@ public class TmgReferList {
 
         // メンバーの取得
         List<List<String>> vMemberList = getMemberList(sEmp, sStart, sEnd);
-        if( vMemberList.size() <= 0 ) {	// 社員が見つからない
+        if( vMemberList.size() <= 0 ) {	// 職員が見つからない
             return false;
         }
         // グループの取得
@@ -1927,13 +1927,13 @@ public class TmgReferList {
 
     /**
      * 基準日時点において、指定した権限を持っているかどうかを判定します。<br>
-     * 勤怠承認サイトにおいて、画面上に表示されている社員のいずれかに対して、指定した権限を持っているかどうかを返します。<br>
-     * 個人系コンテンツでは、選択中の社員に対して、指定した権限を持っているかどうかを返します。<br>
+     * 勤怠承認サイトにおいて、画面上に表示されている職員のいずれかに対して、指定した権限を持っているかどうかを返します。<br>
+     * 個人系コンテンツでは、選択中の職員に対して、指定した権限を持っているかどうかを返します。<br>
      * 一覧系コンテンツでは、選択中のビューに応じて、指定した権限を持っているかどうかを返します。<br>
      * <ul>
-     * <li>グループ毎：選択中のグループに所属している社員のいずれかに対して権限を持っているかどうか
-     * <li>部署ごと：選択中の部署に所属している社員のいずれかに対して権限を持っているかどうか
-     * <li>全て：表示されている社員のいずれかに対して権限を持っているかどうか
+     * <li>グループ毎：選択中のグループに所属している職員のいずれかに対して権限を持っているかどうか
+     * <li>部署ごと：選択中の部署に所属している職員のいずれかに対して権限を持っているかどうか
+     * <li>全て：表示されている職員のいずれかに対して権限を持っているかどうか
      * </ul>
      * @param sDate 基準日
      * @param sAuthority 権限コード
@@ -1945,13 +1945,13 @@ public class TmgReferList {
 
     /**
      * 開始日-終了日の範囲において、指定した権限を持っているかどうかを判定します。<br>
-     * 勤怠承認サイトにおいて、画面上に表示されている社員のいずれかに対して、指定した権限を持っているかどうかを返します。<br>
-     * 個人系コンテンツでは、選択中の社員に対して、指定した権限を持っているかどうかを返します。<br>
+     * 勤怠承認サイトにおいて、画面上に表示されている職員のいずれかに対して、指定した権限を持っているかどうかを返します。<br>
+     * 個人系コンテンツでは、選択中の職員に対して、指定した権限を持っているかどうかを返します。<br>
      * 一覧系コンテンツでは、選択中のビューに応じて、指定した権限を持っているかどうかを返します。<br>
      * <ul>
-     * <li>グループ毎：選択中のグループに所属している社員のいずれかに対して権限を持っているかどうか
-     * <li>部署ごと：選択中の部署に所属している社員のいずれかに対して権限を持っているかどうか
-     * <li>全て：表示されている社員のいずれかに対して権限を持っているかどうか
+     * <li>グループ毎：選択中のグループに所属している職員のいずれかに対して権限を持っているかどうか
+     * <li>部署ごと：選択中の部署に所属している職員のいずれかに対して権限を持っているかどうか
+     * <li>全て：表示されている職員のいずれかに対して権限を持っているかどうか
      * </ul>
      * @param sStart 開始日
      * @param sEnd 終了日
@@ -1969,7 +1969,7 @@ public class TmgReferList {
             }
 
         if(treeViewType == TREEVIEW_TYPE_EMP){
-            // 個人系コンテンツであれば、選択中の社員に対して権限を持っているかどうかを判定
+            // 個人系コンテンツであれば、選択中の職員に対して権限を持っているかどうかを判定
             return hasAuthorityAtEmployee(sStart, sEnd, targetMember_perm, sAuthority);
         }else{
             if(PERM_SELECTEDVIEW_GROUP.equals(getSelectedView())){
@@ -2000,10 +2000,10 @@ public class TmgReferList {
     }
 
     /**
-     * 開始日-終了日の範囲において、指定した社員に対して何らかの権限を持っているかどうかを判定します。
+     * 開始日-終了日の範囲において、指定した職員に対して何らかの権限を持っているかどうかを判定します。
      * @param sStart 開始日
      * @param sEnd 終了日
-     * @param sEmp 社員番号
+     * @param sEmp 職員番号
      * @return	boolean	true:持っている false:持っていない
      */
     public boolean existsEmployee(String sStart, String sEnd, String sEmp) throws Exception {
@@ -2023,7 +2023,7 @@ public class TmgReferList {
 
         // メンバーの取得
         List<List<String>> vMemberList = getMemberList(sEmp, sStart, sEnd);
-        if( vMemberList.size() <= 0 ) {	// 社員が見つからない
+        if( vMemberList.size() <= 0 ) {	// 職員が見つからない
             return false;
         }
 
@@ -2099,7 +2099,7 @@ public class TmgReferList {
         // 2007.08.07  H.kawabata  TmgReferList内のメソッドに以下の処理を書き込むと現在正常に稼動している処理への影響があるので
         //                        「isThereSomeEmployees()」は各コンテンツで実装し、判断させるように変更します。
         // /* 2007.08.07  H.kawabata      */
-        // // 現在選択しているグループに、対象年月時点で1人も社員が存在していない場合はfalseを返す
+        // // 現在選択しているグループに、対象年月時点で1人も職員が存在していない場合はfalseを返す
         // if(!isThereSomeEmployees()) {
         //		return false;
         // }
@@ -2251,7 +2251,7 @@ public class TmgReferList {
         // 2007.08.07  H.kawabata  TmgReferList内のメソッドに以下の処理を書き込むと現在正常に稼動している処理への影響があるので
         //                         「isThereSomeEmployees()」は各コンテンツで実装し、判断させるように変更します。
         // /* 2007.08.07  H.kawabata */
-        // // 現在選択している部署に、対象年月時点で1人も社員が存在していない場合はfalseを返す
+        // // 現在選択している部署に、対象年月時点で1人も職員が存在していない場合はfalseを返す
         // if(!isThereSomeEmployees()) {
         // 		return false;
         // }
@@ -2267,8 +2267,8 @@ public class TmgReferList {
 
     /**
      * 指定した基準日時点において、何らかの権限を持っているかどうか(即ち、参照権限があるかどうか)を判定します。<br>
-     * 勤怠承認サイトにおいて、画面上に表示されている社員のいずれかに対して、参照権限を持っているかどうかを返します。<br>
-     * 個人系コンテンツでは、選択中の社員に対して、参照権限を持っているかどうかを返します。<br>
+     * 勤怠承認サイトにおいて、画面上に表示されている職員のいずれかに対して、参照権限を持っているかどうかを返します。<br>
+     * 個人系コンテンツでは、選択中の職員に対して、参照権限を持っているかどうかを返します。<br>
      * 一覧系コンテンツでは、選択中のビューに応じて、参照権限を持っているかどうかを返します。<br>
      * @param sDate 基準日
      * @return	boolean true:持っている false:持っていない
@@ -2282,13 +2282,13 @@ public class TmgReferList {
 
     /**
      * 開始日-終了日の範囲において、何らかの権限を持っているかどうか(即ち、参照権限があるかどうか)を判定します。<br>
-     * 勤怠承認サイトにおいて、画面上に表示されている社員のいずれかに対して、参照権限を持っているかどうかを返します。<br>
-     * 個人系コンテンツでは、選択中の社員に対して、参照権限を持っているかどうかを返します。<br>
+     * 勤怠承認サイトにおいて、画面上に表示されている職員のいずれかに対して、参照権限を持っているかどうかを返します。<br>
+     * 個人系コンテンツでは、選択中の職員に対して、参照権限を持っているかどうかを返します。<br>
      * 一覧系コンテンツでは、選択中のビューに応じて、参照権限を持っているかどうかを返します。<br>
      * <ul>
-     * <li>グループ毎：選択中のグループに所属している社員のいずれかに対して参照権限を持っているかどうか
-     * <li>部署ごと：選択中の部署に所属している社員のいずれかに対して権限を持っているかどうか
-     * <li>全て：表示されている社員のいずれかに対して権限を持っているかどうか
+     * <li>グループ毎：選択中のグループに所属している職員のいずれかに対して参照権限を持っているかどうか
+     * <li>部署ごと：選択中の部署に所属している職員のいずれかに対して権限を持っているかどうか
+     * <li>全て：表示されている職員のいずれかに対して権限を持っているかどうか
      * </ul>
      * @param sStart 開始日
      * @param sEnd 終了日
@@ -2305,7 +2305,7 @@ public class TmgReferList {
             }
 
         if(treeViewType == TREEVIEW_TYPE_EMP){
-            // 個人系コンテンツであれば、選択中の社員に対して参照権限を持っているかどうかを判定
+            // 個人系コンテンツであれば、選択中の職員に対して参照権限を持っているかどうかを判定
             return existsEmployee(sStart, sEnd, targetMember_perm);
         }else{
             if(memberList == null || groupList == null){
@@ -2327,7 +2327,7 @@ public class TmgReferList {
                 // 2007.08.07  H.kawabata  TmgReferList内のメソッドに以下の処理を書き込むと現在正常に稼動している処理への影響があるので
                 //                         「isThereSomeEmployees()」は各コンテンツで実装し、判断させるように変更します。
                 // /* 2007.08.07  H.kawabata */
-                // // 現在選択している部署(もしくはグループ)に、対象年月時点で1人も社員が存在していない場合はfalseを返す
+                // // 現在選択している部署(もしくはグループ)に、対象年月時点で1人も職員が存在していない場合はfalseを返す
                 // if(!isThereSomeEmployees()) {
                 // 		return false;
                 // }
@@ -2393,10 +2393,10 @@ public class TmgReferList {
 
 
     /**
-     * 基準日時点において、指定された権限を持っている社員番号の一覧を返します。
+     * 基準日時点において、指定された権限を持っている職員番号の一覧を返します。
      * @param sDate 基準日
      * @param sAuthority 権限コード
-     * @return	Vector 社員番号の一覧
+     * @return	Vector 職員番号の一覧
      */
     public List<String> getEmpArrayHasAuthority(String sDate, String sAuthority) throws Exception {
         List<String> vEmpID = CollUtil.newArrayList();
@@ -2411,7 +2411,7 @@ public class TmgReferList {
         // 日付の絞込
         List<List<String>> vMemberList = JSONArrayGenerator.selectDataArrayBetween(
                 memberList.getDataArray(), dDate, dDate, TmgMemberList.DEFAULT_KEY_DSTART, TmgMemberList.DEFAULT_KEY_DEND, sdf );
-        // 社員の絞込
+        // 職員の絞込
         for (List<String> vMember : vMemberList) {
             for (String s : vGroupID) {
                 if (StrUtil.equals(vMember.get(TmgMemberList.DEFAULT_KEY_GROUPID), s)) {
@@ -2557,8 +2557,8 @@ public class TmgReferList {
     }
 
     /**
-     * 指定した社員の一覧を返します。
-     * @param sEmp 社員番号
+     * 指定した職員の一覧を返します。
+     * @param sEmp 職員番号
      * @param sStart 開始日
      * @param sEnd 終了日
      * @return Vector memberListから抽出したもの
@@ -2571,10 +2571,10 @@ public class TmgReferList {
         // 日付の絞込
         List<List<String>> vMemberList = JSONArrayGenerator.selectDataArrayBetween(
                 memberList.getDataArray(), dStart, dEnd, TmgMemberList.DEFAULT_KEY_DSTART, TmgMemberList.DEFAULT_KEY_DEND, sdf );
-        // 社員の絞込
+        // 職員の絞込
         for (List<String> vMember : vMemberList) {
             if (StrUtil.equals(vMember.get(TmgMemberList.DEFAULT_KEY_EMPID), sEmp)) {
-                // 社員のデータ
+                // 職員のデータ
                 vData.add(vMember);
             }
         }
@@ -2667,10 +2667,10 @@ public class TmgReferList {
      * 検索対象ユーザの顧客コードを返します。<BR>
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の社員番号を返します。
+     * 選択された職員の職員番号を返します。
      * 勤怠管理サイトにおいて、部署が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
-     * @return String 社員番号
+     * @return String 職員番号
      */
     public String getTargetCust() {
         if( StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
@@ -2687,10 +2687,10 @@ public class TmgReferList {
      * 検索対象ユーザの法人コードを返します。<BR>
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の社員番号を返します。
+     * 選択された職員の職員番号を返します。
      * 勤怠管理サイトにおいて、部署が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
-     * @return String 社員番号
+     * @return String 職員番号
      */
     public String getTargetComp() {
         if( StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
@@ -2704,13 +2704,13 @@ public class TmgReferList {
     }
 
     /**
-     * 検索対象ユーザの社員番号を返します。<BR>
+     * 検索対象ユーザの職員番号を返します。<BR>
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の社員番号を返します。
-     * 勤怠管理サイトにおいて、社員が選択されていない状態の場合、nullを返します。
+     * 選択された職員の職員番号を返します。
+     * 勤怠管理サイトにおいて、職員が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
-     * @return String 社員番号
+     * @return String 職員番号
      */
     public String getTargetEmployee() {
         if( StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
@@ -2734,10 +2734,10 @@ public class TmgReferList {
     /**
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の氏名を返します。
-     * 勤怠管理サイトにおいて、社員が選択されていない状態の場合、nullを返します。
+     * 選択された職員の氏名を返します。
+     * 勤怠管理サイトにおいて、職員が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
-     * @return String 社員番号
+     * @return String 職員番号
      */
     public String getTargetEmployeeName() {
         if( StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
@@ -2753,8 +2753,8 @@ public class TmgReferList {
     /**
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の勤怠種別IDを返します。
-     * 勤怠管理サイトにおいて、社員が選択されていない状態の場合、nullを返します。
+     * 選択された職員の勤怠種別IDを返します。
+     * 勤怠管理サイトにおいて、職員が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
      * @return String 勤怠種別ID
      */
@@ -2780,8 +2780,8 @@ public class TmgReferList {
     /**
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、
      * 個人を表示するタイプのコンテンツの場合は、
-     * 選択された社員の勤怠種別IDを返します。
-     * 勤怠管理サイトにおいて、社員が選択されていない状態の場合、nullを返します。
+     * 選択された職員の勤怠種別IDを返します。
+     * 勤怠管理サイトにおいて、職員が選択されていない状態の場合、nullを返します。
      * それ以外の場合は、nullを返します。
      * @return String 勤怠種別ID
      */
@@ -2894,12 +2894,12 @@ public class TmgReferList {
     }
 
     /**
-     * 検索対象社員をセットします。<br>
-     * 画面を介さず強制的に検索対象社員を変更したい場合に使用します。<br>
+     * 検索対象職員をセットします。<br>
+     * 画面を介さず強制的に検索対象職員を変更したい場合に使用します。<br>
      * 実際には、一覧系コンテンツから個人系コンテンツへリダイレクトする際に使用します。<br>
-     * 引数で指定された社員について、所属する部署・グループIDも再セットされます。<br>
-     * なお、引数で指定された社員が存在しない場合、検索対象社員の変更は行われません。
-     * @param sEmp 検索対象社員の社員番号
+     * 引数で指定された職員について、所属する部署・グループIDも再セットされます。<br>
+     * なお、引数で指定された職員が存在しない場合、検索対象職員の変更は行われません。
+     * @param sEmp 検索対象職員の職員番号
      */
     public void setTargetEmployee(String sEmp){
         HttpSession httpSession = ContextUtil.getSession();
@@ -2927,14 +2927,14 @@ public class TmgReferList {
     }
 
     /**
-     * 対象組織(グループ)社員存在チェックメソッド<br>
+     * 対象組織(グループ)職員存在チェックメソッド<br>
      * 現在選択している組織(もしくはグループ)に、<Br>
-     * 引数で渡された年月日時点で社員が1人でも存在している場合trueを、<br>
+     * 引数で渡された年月日時点で職員が1人でも存在している場合trueを、<br>
      * 1人も存在していない場合はfalseを返す。<br>
      *
      * @author kawabata in 2007/08/06
      * @param  sDate     チェック対象年月
-     * @return boolean   社員が存在する:ture, 社員が存在しない:false
+     * @return boolean   職員が存在する:ture, 職員が存在しない:false
      * @throws Exception 何らかの予期せぬ例外が発生した場合
      */
     public boolean isThereSomeEmployees(String sDate) throws Exception {
@@ -3001,16 +3001,16 @@ public class TmgReferList {
     }
 
     /**
-     * 対象組織(グループ)社員存在チェックメソッド<br>
-     * 現在選択している組織(もしくはグループ)に社員が1人でも存在している場合<br>
+     * 対象組織(グループ)職員存在チェックメソッド<br>
+     * 現在選択している組織(もしくはグループ)に職員が1人でも存在している場合<br>
      * trueを、1人も存在していない場合はfalseを返す。<br>
      *
      * @author kawabata in 2007/08/06
-     * @return boolean   社員存在チェック結果 true:存在する,  false:存在しない
+     * @return boolean   職員存在チェック結果 true:存在する,  false:存在しない
      * @throws Exception 何らかの予期せぬ例外が発生した場合
      */
     public boolean isThereSomeEmployees() throws Exception {
-        // 基準日時点の対象組織(グループ)社員存在チェック結果を返します
+        // 基準日時点の対象組織(グループ)職員存在チェック結果を返します
         return isThereSomeEmployees(targetDate);
 
     }

@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TWEM_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ |
 |TWEM_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ |
-|TWEM_CEMPLOYEEID|VARCHAR2||否|社員番号 |
+|TWEM_CEMPLOYEEID|VARCHAR2||否|職員番号 |
 |TWEM_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日 |
 |TWEM_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日 |
 |TWEM_CMODIFIERUSERID|VARCHAR2||是|更新者 |

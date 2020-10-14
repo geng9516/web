@@ -13,7 +13,7 @@ public class EmployeeInfoSearchEntity implements Serializable {
 
     private static final long serialVersionUID = 7141438846326320517L;
 
-    /** 異動歴"HIST_DESIGNATION"社員番号 */
+    /** 異動歴"HIST_DESIGNATION"職員番号 */
     private String hdCemployeeidCk; // HD_CEMPLOYEEID_CK
 
     /** 異動歴"HIST_DESIGNATION"ユーザーID */
@@ -28,10 +28,10 @@ public class EmployeeInfoSearchEntity implements Serializable {
     /** 異動歴"HIST_DESIGNATION"役職コード */
     private String hdCpostidFk; // HD_CPOSTID_FK
 
-    /** FUNCTION 社員氏名 */
+    /** FUNCTION 職員氏名 */
     private String empName; // EMP_NAME
 
-    /** 社員氏名COLUMNアノテーション */
+    /** 職員氏名COLUMNアノテーション */
     public static final String empName_COLUMN = "ME_CKANJINAME";
 
     /** FUNCTION 組織名称 */
@@ -61,13 +61,13 @@ public class EmployeeInfoSearchEntity implements Serializable {
     /** 法人略称 */
     private String companyNick = "";
 
-    /** 社員基本情報 MAST_EMPLOYEES"カナ名称" */
+    /** 職員基本情報 MAST_EMPLOYEES"カナ名称" */
     private String meCkananame; // ME_CKANANAME
 
     /** リレーション */
     private String relation;
 
-    /** 基本情報"HIST_DESIGNATION"社員番号 */
+    /** 基本情報"HIST_DESIGNATION"職員番号 */
     private String meCemployeeidCk; // ME_CEMPLOYEEID_CK
 
     /** 基本情報"HIST_DESIGNATION"ユーザID */

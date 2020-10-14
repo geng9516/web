@@ -4,7 +4,7 @@
 
     <select id="buildSQLforList"
             resultType="jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.Acquired5DaysListVO">
-        select  TA.TPH_CEMPLOYEEID AS CEMPLOYEEID_0,  <!-- 社員番号-->
+        select  TA.TPH_CEMPLOYEEID AS CEMPLOYEEID_0,  <!-- 職員番号-->
         (SELECT
         E.me_ckanjiname
         FROM
@@ -23,7 +23,7 @@
         AND EE.ME_CCOMPANYID		= E.ME_CCOMPANYID
         AND EE.ME_CEMPLOYEEID_CK	= E.ME_CEMPLOYEEID_CK
         )
-        ) AS CEMPLOYEE_NAME_1,	<!--社員名-->
+        ) AS CEMPLOYEE_NAME_1,	<!--職員名-->
         (
         SELECT
         TMG_F_GET_MGD(E.TEM_CWORKTYPEID, TA.TPH_DYYYYMMDD,  TA.TPH_CCUSTOMERID, TA.TPH_CCOMPANYID, 'ja')

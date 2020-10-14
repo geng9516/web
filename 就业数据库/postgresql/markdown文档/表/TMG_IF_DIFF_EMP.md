@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TIDE_CCUSTOMERID|varchar||否|顧客コード|
 |TIDE_CCOMPANYID|varchar||否|法人コード|
-|TIDE_CEMPLOYEEID|varchar||否|社員番号|
+|TIDE_CEMPLOYEEID|varchar||否|職員番号|
 |TIDE_DMODIFIERUSERID|varchar||是|更新者|
 |TIDE_DMODIFIEDDATE|date||是|更新日時|
 |TIDE_CMODIFIERPROGRAMID|varchar||是|更新プログラムID|

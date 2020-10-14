@@ -190,7 +190,7 @@ public class PatternSettingBean {
     }
 
     /**
-     * 該当者毎に設定されている勤務パターンの情報を取得する（部署社員リスト）
+     * 該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
      *
      * @param baseDate --> 改訂日指定 画面から
      * @return
@@ -206,7 +206,7 @@ public class PatternSettingBean {
             targetEmployees = referList.buildSQLForSelectEmployees();
         }
         if (null == targetEmployees || "".equals(targetEmployees)) {
-            logger.warn("関する社員番号リストSQLが空です");
+            logger.warn("関する職員番号リストSQLが空です");
             return null;
         }
         return iPatternSettingService.selectTmgPatternApplies(baseDate, targetEmployees, psDBBean.getLanguage());

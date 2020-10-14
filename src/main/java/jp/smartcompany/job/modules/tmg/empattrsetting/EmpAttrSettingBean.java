@@ -160,7 +160,7 @@ public class EmpAttrSettingBean {
      */
     public EditDispVo actionScreenDispEditAvgWorktime(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
-        // 平均勤務時間編集：社員情報：SELECT
+        // 平均勤務時間編集：職員情報：SELECT
 //        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),
 //                psDBBean.getLanguage(),param.getTargetSectionId());
 
@@ -312,7 +312,7 @@ public class EmpAttrSettingBean {
     public BeginDateEditDispVo actionScreenDispEditBeginDate(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
 
-        // 平均勤務時間編集：社員情報：SELECT
+        // 平均勤務時間編集：職員情報：SELECT
 //        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),
 //                psDBBean.getLanguage(),param.getTargetSectionId());
 

@@ -201,7 +201,7 @@ public class TmgNotificationController {
     }
 
     /**
-     * 社員情報
+     * 職員情報
      *
      * @return　エラー
      */

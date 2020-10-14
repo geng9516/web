@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TEV_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TEV_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TEV_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TEV_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TEV_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                                                                                   |
 |TEV_DENDDATE|date||否|ﾃﾞｰﾀ終了日                                                                                   |
 |TEV_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

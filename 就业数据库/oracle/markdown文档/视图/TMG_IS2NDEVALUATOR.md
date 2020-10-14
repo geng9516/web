@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TI2E_CCUSTOMERID|VARCHAR2||否|顧客コード|
 |TI2E_CCOMPANYID|VARCHAR2||否|法人コード|
-|TI2E_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TI2E_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TI2E_CUSERID|VARCHAR2||否|ユーザーID|
 |TI2E_DSTARTDATE|DATE||是|開始年月日|
 |TI2E_DENDDATE|DATE||是|終了年月日|
