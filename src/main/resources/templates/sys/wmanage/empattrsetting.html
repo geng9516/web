@@ -185,7 +185,7 @@
                             勤務開始日設定状況
                         </div>
 
-                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="!forClear" 　key="forClear2"
+                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="!forClear" 　key="forClear2" :disabled-hover="true" :row-class-name="() => 'select-col'"
                                  class="mt2">
                             <template slot-scope="{ row }" slot="radio">
                                 <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
@@ -216,7 +216,7 @@
                             <Icon type="logo-buffer"></Icon>
                             [参考]発令上の勤務開始日
                         </div>
-                        <i-table border :columns="referSettingColums" :data="referSettingData" :loading="loading"
+                        <i-table border :columns="referSettingColums" :data="referSettingData" :loading="loading" :disabled-hover="true" :row-class-name="() => 'select-col'"
                                  class="mt2"></i-table>
                     </i-col>
                 </Row>
@@ -224,7 +224,7 @@
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
-                <i-table border :columns="historyColums" :data="historyData" :loading="loading" v-if="isBeginDateEdit">
+                <i-table border :columns="historyColums" :data="historyData" :loading="loading" v-if="isBeginDateEdit" :row-class-name="() => 'select-col'" :disabled-hover="true">
                 </i-table>
             </span>
 
@@ -248,7 +248,7 @@
                     平均勤務時間設定状況
                 </div>
 
-                <i-table border :columns="averageTimeColums" :data="averageTimeData" :loading="loading"></i-table>
+                <i-table border :columns="averageTimeColums" :data="averageTimeData" :loading="loading" :row-class-name="() => 'select-col'" :disabled-hover="true"></i-table>
             </span>
         <Spin size="large" fix v-if="empattrLoading"></Spin>
     </Modal>
