@@ -145,11 +145,11 @@ public class PsDBBean {
 //    /**
 //     *
 //     * 旧代码中以下两个方法都未做其他处理
-//     * 指定社員の下位組織リストをSQL用のカンマ区切りで取得します
-//     * 社員指定、仮想組織含むか
+//     * 指定職員の下位組織リストをSQL用のカンマ区切りで取得します
+//     * 職員指定、仮想組織含むか
 //     * @param psCustID 顧客コード
 //     * @param psCompID 法人コード
-//     * @param psEmployeeID 社員番号
+//     * @param psEmployeeID 職員番号
 //     * @param psCreterialDate 基準日
 //     * @param pbIncludeVirtual 仮想組織含むか
 //     * @return String 組織コードリスト
@@ -197,7 +197,7 @@ public class PsDBBean {
 //     * 基点組織以下の組織リストをSQL用のカンマ区切りで取得します
 //     * @param psCustID	顧客コード
 //     * @param psCompID 法人コード
-//     * @param psEmployeeID 社員番号
+//     * @param psEmployeeID 職員番号
 //     * @param psCreterialDate 基準日
 //     * @return String 基点組織またはそれ以下の組織のリスト（カンマ区切り）
 //     */
@@ -233,7 +233,7 @@ public class PsDBBean {
 //     * 基点組織以下の組織リストをSQL用のカンマ区切りで取得します（複数法人対応）
 //     * @param sCustID	顧客コード
 //     * @param sCompID 法人コード(未使用)
-//     * @param sEmployeeID 社員番号
+//     * @param sEmployeeID 職員番号
 //     * @param sCreterialDate 基準日
 //     * @return String 法人区分をキーに、基点組織またはそれ以下の組織のリスト（カンマ区切り）
 //     */
@@ -265,10 +265,10 @@ public class PsDBBean {
 
 
 //    /**
-//     * V3の顧客コード、法人コード、社員番号からユーザコードを取得します
+//     * V3の顧客コード、法人コード、職員番号からユーザコードを取得します
 //     * @param psCustid 顧客コード（V3）
 //     * @param psCompid 法人コード（V3）
-//     * @param psLoginUserId ログイン者の社員番号（V3）
+//     * @param psLoginUserId ログイン者の職員番号（V3）
 //     * @param psDate 検索基準日
 //     * @return String ユーザコード
 //     * @throws Exception システム例外

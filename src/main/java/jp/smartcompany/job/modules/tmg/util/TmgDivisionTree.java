@@ -261,11 +261,11 @@ public class TmgDivisionTree {
     }
 
     /**
-     * 指定された社員の指定されたデータを返します
-     * dataArrayに指定された社員が存在しない場合、nullを返します
-     * @param targetSectionId 対象社員の社員番号
+     * 指定された職員の指定されたデータを返します
+     * dataArrayに指定された職員が存在しない場合、nullを返します
+     * @param targetSectionId 対象職員の職員番号
      * @param keyIndex 取得したいデータのカラム番号(TmgMemberList.DEFAULT_KEY_～を指定)
-     * @return String 社員のデータ(指定された社員が存在しない場合、NULL)
+     * @return String 職員のデータ(指定された職員が存在しない場合、NULL)
      */
     public String getTargetSectionData(String targetSectionId,int keyIndex){
         try{
@@ -283,7 +283,7 @@ public class TmgDivisionTree {
     }
 
     /**
-     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが職員リストでは出てはいけないため)
      * @param pSession
      * @return
      */

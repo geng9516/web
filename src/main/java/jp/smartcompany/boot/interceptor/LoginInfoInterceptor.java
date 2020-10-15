@@ -421,7 +421,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
             // 法人名称
             designation.setCompanyName(accountInfo.getMacCcompanyname());
 
-            // 社員番号
+            // 職員番号
             designation.setEmployee(accountInfo.getHdCemployeeidCk());
 
             // ユーザID

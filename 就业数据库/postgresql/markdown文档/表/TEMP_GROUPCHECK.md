@@ -4,7 +4,7 @@
 |TGC_ID|numeric||否|IDカラム|
 |TGC_CCUSTOMERID|varchar||否|顧客コード|
 |TGC_CCOMPANYID|varchar||否|法人コード|
-|TGC_CEMPLOYEEID|varchar||否|社員番号|
+|TGC_CEMPLOYEEID|varchar||否|職員番号|
 |TGC_CUSERID|varchar||否|ユーザID|
 |TGC_CSYSTEMID|varchar||否|システムID|
 |TGC_DSTARTDATE|date||否|開始日|

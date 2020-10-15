@@ -73,7 +73,7 @@
                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
               </option-group>
             </i-select>
-            社員：
+            氏名：
             <i-select v-model="opts.serchEmpId" class="mr15 width20" @on-change="getTableData(false, true)"
               style="display: inline-block" transfer>
               <i-option value="全て" label="全て"></i-option>
@@ -280,10 +280,10 @@
             </div>
             <div class="titlenorm mt10 mb5">
               <Icon type="logo-buffer"></Icon>
-              社員
+              職員
             </div>
             <div style="position: relative;">
-              <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし">
+              <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="職員データなし">
               </Tree>
               <Spin size="large" fix v-if="emplistLoading"></Spin>
             </div>
@@ -291,7 +291,7 @@
           <tab-pane :label="tabPaneLabel" name="name2" :disabled="agencyApplyPanel">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
-              社員情報
+              職員情報
             </div>
             <div style="position: relative;">
               <Row :gutter="10">
@@ -1437,7 +1437,7 @@
           this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
         },
         handleClickEmpLeafTree(e) {
-          this.deptName = '職員により検索中'
+          this.deptName = '検索対象者一覧'
           this.referListObject.hidSelectTab = '1'
           this.deptDrawShow = false
 

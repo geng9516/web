@@ -30,7 +30,7 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
      *
      * @param customerId 顧客コード
      * @param companyId  法人コード
-     * @param employeeId 社員番号
+     * @param employeeId 職員番号
      * @param yyyymmdd   基準日
      * @return Date 就業管理対象外の最終日
      */
@@ -51,7 +51,7 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
      *
      * @param customerId 顧客コード
      * @param companyId  法人コード
-     * @param employeeId 社員番号
+     * @param employeeId 職員番号
      * @param yyyymmdd   基準日
      * @param endDate    　最終日
      * @return Date 就業管理対象の開始日
@@ -75,7 +75,7 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
      *
      * @param customerId 顧客コード
      * @param companyId  法人コード
-     * @param employeeId 社員番号
+     * @param employeeId 職員番号
      * @param yyyymmdd   基準日
      * @return String 勤怠種別
      */
@@ -101,7 +101,7 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
      *
      * @param custId 顧客コード
      * @param compId 法人コード
-     * @param empId 社員番号
+     * @param empId 職員番号
      * @param lang 言語
      * @param month　対象月
      * @return IsWorkHealthChkVO

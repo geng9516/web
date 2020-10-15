@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TAM_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TAM_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TAM_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TAM_CEMPLOYEEID|VARCHAR2||否|職員番号                                                                                      |
 |TAM_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                                                                                   |
 |TAM_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                                                                                   |
 |TAM_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |

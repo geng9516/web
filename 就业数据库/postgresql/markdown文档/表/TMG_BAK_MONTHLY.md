@@ -4,7 +4,7 @@
 |TMO_DCREATE|date||是|作成日|
 |TMO_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01|
 |TMO_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ|
-|TMO_CEMPLOYEEID|varchar||否|社員番号|
+|TMO_CEMPLOYEEID|varchar||否|職員番号|
 |TMO_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                      固定：1900/01/01|
 |TMO_DENDDATE|date||否|ﾃﾞｰﾀ終了日                      固定：2222/12/31|
 |TMO_CMODIFIERUSERID|varchar||是|更新者|

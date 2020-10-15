@@ -21,7 +21,7 @@ public class TmgWeekPatternVO {
     private String twp_nid;
 
     /**
-     * 週勤務社員ID
+     * 週勤務職員ID
      */
     private String twp_cemployeeid;
     /**

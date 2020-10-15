@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TVCDT_CCUSTOMERID|VARCHAR2||否|[日次集計結果]顧客コード|
 |TVCDT_CCOMPANYID|VARCHAR2||否|[日次集計結果]法人コード|
-|TVCDT_CEMPLOYEEID|VARCHAR2||否|[日次集計結果]社員番号|
+|TVCDT_CEMPLOYEEID|VARCHAR2||否|[日次集計結果]職員番号|
 |TVCDT_CUSERID|VARCHAR2||否|[日次集計結果]ユーザーID|
 |TVCDT_DSTARTDATE|DATE||否|[日次集計結果]データ開始日|
 |TVCDT_DENDDATE|DATE||否|[日次集計結果]データ終了日|

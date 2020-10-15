@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TVCAD_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
 |TVCAD_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TVCAD_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVCAD_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TVCAD_CUSERID|VARCHAR2||否|ユーザーID|
 |TVCAD_DSTARTDATE|DATE||是|ﾃﾞｰﾀ開始日|
 |TVCAD_DENDDATE|DATE||是|ﾃﾞｰﾀ終了日|

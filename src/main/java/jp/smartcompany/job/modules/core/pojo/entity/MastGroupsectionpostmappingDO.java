@@ -87,7 +87,7 @@ public class MastGroupsectionpostmappingDO implements Serializable {
         private String magCpostid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("mag_cemployeeid")
         private String magCemployeeid;

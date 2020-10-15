@@ -11,7 +11,7 @@
 |TEL_CERRDT_CCOMPANYID|varchar||是|データ判別用_法人コード|
 |TEL_DERRDT_DSTARTDATE|date||是|データ判別用_データ開始日|
 |TEL_DERRDT_DENDDATE|date||是|データ判別用_データ終了日|
-|TEL_CERRDT_CEMPLOYEEID_CK|varchar||是|データ判別用_社員番号|
+|TEL_CERRDT_CEMPLOYEEID_CK|varchar||是|データ判別用_職員番号|
 |TEL_CERRDT_CUSERID|varchar||是|データ判別用_ユーザID|
 |TEL_CERRDT_CSECTIONID_CK|varchar||是|データ判別用_組織コード|
 |TEL_CERRDT_CPOSTID_CK|varchar||是|データ判別用_役職コード|

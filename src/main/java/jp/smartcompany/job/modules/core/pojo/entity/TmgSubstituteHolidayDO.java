@@ -40,7 +40,7 @@ private static final long serialVersionUID=1L;
         private String tshCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
                 @TableId(value = "tsh_cemployeeid", type = IdType.AUTO)
                 private String tshCemployeeid;

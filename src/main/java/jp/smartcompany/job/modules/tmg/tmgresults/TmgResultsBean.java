@@ -1188,7 +1188,7 @@ public class TmgResultsBean {
 
         monthlyMap.put("workHealthChkVO", workHealthChkVO);
 
-        //16 対象社員について対象月の未承認日数
+        //16 対象職員について対象月の未承認日数
         String countNotApprovalDay = iTmgDailyService.buildSQLForSelectCountNotApprovalDay(
                 getMonth(),
                 psDBBean.getCompCode(),
@@ -1210,7 +1210,7 @@ public class TmgResultsBean {
     }
     /**
      * 承認権限(月次)があるかどうか
-     * @param   sEmp  社員番号
+     * @param   sEmp  職員番号
      *          String  日付
      * @return  boolean true:権限有り/false:なし
      * @throws
@@ -1937,7 +1937,7 @@ public class TmgResultsBean {
 //        );
 ////        modelMap.addAttribute("dispMonthlyVOList", dispMonthlyVOList);
 //
-//        // 勤怠承認・管理サイトは社員情報も
+//        // 勤怠承認・管理サイトは職員情報も
 //        if (!SITE_TI.equals(psDBBean.getSiteId())) {
 //
 //
@@ -1950,9 +1950,9 @@ public class TmgResultsBean {
 //            // 14 ダウンロード可能データ
 //            //modelMap.addAttribute("buildSQLForSelectCountDownLoadData", 1);
 //
-//            // vQuery.add(buildSQLForSelectEmployee());          // 15 社員情報
+//            // vQuery.add(buildSQLForSelectEmployee());          // 15 職員情報
 //
-//            //16 対象社員について対象月の未承認日数
+//            //16 対象職員について対象月の未承認日数
 //            String countNotApprovalDay = iTmgDailyService.buildSQLForSelectCountNotApprovalDay(
 //                    getMonth(),
 //                    psDBBean.getTargetComp(),
@@ -2165,7 +2165,7 @@ public class TmgResultsBean {
 //                false
 //        );
 ////        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
-//        // 社員情報
+//        // 職員情報
 //        //vQuery.add(buildSQLForSelectEmployee());
 //        // 就業区分マスタ
 //        List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
@@ -2559,14 +2559,14 @@ public class TmgResultsBean {
 //            //   参照権限がある場合は、問題なく勤怠登録承認を表示する。
 //            //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
 //            //   1ヶ月遡った月の参照権限があればその月の勤怠登録承認を表示し、
-//            //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+//            //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
 //            //   メッセージを画面へ表示する。
 //            // ■初期表示以外：
 //            //   選択した組織、(もしくはグループ)の対象年月時点での勤怠登録承認コンテンツの参照権限をチェックする。
 //            //   権限があれば問題なく勤怠登録承認を表示する。
-//            //   権限が無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+//            //   権限が無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
 //            //   メッセージを画面へ表示する。
-//            //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//            //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //            //     権限が無いのと同じ扱いとする。
 //            // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
 //            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
@@ -2614,7 +2614,7 @@ public class TmgResultsBean {
 //                    // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
 //                    // 翌月の権限があればリンク「>」を画面に表示する。
 //                    // 権限が無い場合は「>」を表示しない。
-//                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //                    //   権限が無いのと同じ扱いとする。
 //                    String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
 //                    if (getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
@@ -2641,7 +2641,7 @@ public class TmgResultsBean {
 //                    // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
 //                    // 翌月の権限があればリンク「>」を画面に表示する。
 //                    // 権限が無い場合は「>」を表示しない。
-//                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+//                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
 //                    //   権限が無いのと同じ扱いとする。
 //                    String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
 //                    if (getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {

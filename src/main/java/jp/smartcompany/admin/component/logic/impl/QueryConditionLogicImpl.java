@@ -24,7 +24,7 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
     private static final String COL_HD_CUSTOMERID   = "HD_CCUSTOMERID_CK";
     /** 異動歴 法人コード */
     private static final String COL_HD_COMPANYID    = "HD_CCOMPANYID_CK";
-    /** 異動歴 社員番号 */
+    /** 異動歴 職員番号 */
     private static final String COL_HD_EMPLOYEEID   = "HD_CEMPLOYEEID_CK";
     /** 異動歴 開始日 */
     private static final String COL_HD_STARTDATE    = "HD_DSTARTDATE_CK";

@@ -836,7 +836,7 @@
                     const { data } = await this.http.get('sys/permStatList/selectDayHead', this.queryList)
                     this.tableHead = data
                     if (this.queryList.hidSelectTab == '1'){
-                        this.deptName = '職員により検索中'
+                        this.deptName = '検索対象者一覧'
                         this.queryList.txtUserCode = null
                     }
                 },
@@ -844,7 +844,7 @@
                     this.listLoading  = true
 
                     if (this.queryList.hidSelectTab == '1'){
-                        this.deptName = '職員により検索中'
+                        this.deptName = '検索対象者一覧'
                         this.queryList.txtUserCode = null
                     }
 
@@ -1001,7 +1001,7 @@
                     this.queryList.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                     this.queryList.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.queryList.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                    // 部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                    // 部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、職員コードをnullで設定する
                     this.queryList.txtUserCode = null
                     console.log("------------1----------------"+this.deptName )
                     //年月リストの取得
@@ -1184,9 +1184,6 @@
                     this.queryList.txtAction = 'ACT_EDIT_DAIRY'
                     this.queryList.txtCallBeanAction = 'ACT_DISP_MONTHLY'
 
-                    //月次一括承認Loading制御
-                    this.bulkApprovalLoading2 = true
-
                     console.log("bulkApproval2")
                     console.log(this.empIds2)
                     console.log(this.empIds2.length)
@@ -1203,6 +1200,10 @@
                             okText: 'OK',
                             cancelText: 'キャンセル',
                             onOk: async () => {
+
+                                //日次一括承認Loading制御
+                                this.bulkApprovalLoading2 = true
+
                                 const { code,msg } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.queryList)
 
                                 //日次承認状況一覧検索処理
@@ -1214,7 +1215,7 @@
                                 //日次一括承認Loading制御
                                 this.bulkApprovalLoading2 = false
 
-                                if(code === 0){
+                                  if(code === 0){
                                     this.$Message.success({
                                         background: true,
                                         closable: true,

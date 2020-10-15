@@ -7,10 +7,10 @@
 |TNTF_NDAYOFWEEK|NUMBER||是|対象曜日指定                        ビットフラグ|
 |TNTF_CTYPE|VARCHAR2||是|申請種類                                      MGD:TMG_NTFTYPE|
 |TNTF_COWNCOMMENT|VARCHAR2||是|申請事由|
-|TNTF_CBOSS|VARCHAR2||是|承認者社員番号|
+|TNTF_CBOSS|VARCHAR2||是|承認者職員番号|
 |TNTF_CBOSSCOMMENT|VARCHAR2||是|承認者コメント|
 |TNTF_DBOSS|DATE||是|承認日|
-|TNTF_CCANCEL|VARCHAR2||是|申請解除社員番号|
+|TNTF_CCANCEL|VARCHAR2||是|申請解除職員番号|
 |TNTF_CCANCELCOMMENT|VARCHAR2||是|申請解除者のコメント|
 |TNTF_DDAIKYU|DATE||是|代休日|
 |TNTF_CSICK_TYPE|VARCHAR2||是|特別休暇：傷病種類|
@@ -33,16 +33,16 @@
 |TNTF_CNTFACTION|VARCHAR2||是|null|
 |TNTF_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01|
 |TNTF_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TNTF_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TNTF_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TNTF_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01|
 |TNTF_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31|
 |TNTF_CMODIFIERUSERID|VARCHAR2||是|更新者|
 |TNTF_DMODIFIEDDATE|DATE||是|更新日|
 |TNTF_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
 |TNTF_NSEQ|NUMBER||否|連番|
-|TNTF_CNTFNO|VARCHAR2||是|申請番号                          申請者社員番号|連番|
+|TNTF_CNTFNO|VARCHAR2||是|申請番号                          申請者職員番号|連番|
 |TNTF_CSTATUSFLG|VARCHAR2||否|ステータスフラグ               MGD:TMG_NTFSTATUS|
-|TNTF_CALTEREMPLOYEEID|VARCHAR2||否|申請者社員番号|
+|TNTF_CALTEREMPLOYEEID|VARCHAR2||否|申請者職員番号|
 |TNTF_DNOTIFICATION|DATE||是|申請日|
 |TNTF_DBEGIN|DATE||否|対象期間：開始日|
 |TNTF_DEND|DATE||是|対象期間：終了日|

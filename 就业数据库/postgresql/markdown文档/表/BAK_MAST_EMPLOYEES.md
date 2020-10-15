@@ -4,7 +4,7 @@
 |ME_ID|numeric||否|IDカラム|
 |ME_CCUSTOMERID_CK|varchar||否|顧客コード|
 |ME_CCOMPANYID|varchar||否|法人コード|
-|ME_CEMPLOYEEID_CK|varchar||否|社員番号|
+|ME_CEMPLOYEEID_CK|varchar||否|職員番号|
 |ME_CUSERID|varchar||否|ユーザID|
 |ME_DSTARTDATE|date||否|データ開始日|
 |ME_DENDDATE|date||否|データ終了日|
@@ -43,8 +43,8 @@
 |ME_CREMARKSOFRESIGNATION|varchar||是|退職理由備考|
 |ME_DDATEOFAGELIMIT|date||是|定年到達日|
 |ME_DDATEFORMANAGERIALPOSITION|date||是|役職定年日|
-|ME_CTYPEOFEMPLOYMENT|varchar||是|社員区分|
-|ME_CTYPEOFEMPLOYMENTNM|varchar||是|社員区分コード|
+|ME_CTYPEOFEMPLOYMENT|varchar||是|職員区分|
+|ME_CTYPEOFEMPLOYMENTNM|varchar||是|職員区分コード|
 |ME_CIFFRESHCANDIDATID|varchar||是|採用形態区分|
 |ME_CIFFRESHCANDIDATNM|varchar||是|採用形態区分コード|
 |ME_CMODEOFAPPOINTMENT|varchar||是|入社形態区分|

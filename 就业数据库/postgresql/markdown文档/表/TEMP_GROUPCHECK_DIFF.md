@@ -5,7 +5,7 @@
 |TGCD_CSYSTEMID|varchar||是|システムID|
 |TGCD_CCUSTOMERID|varchar||是|顧客コード|
 |TGCD_CCOMPANYID|varchar||是|法人コード|
-|TGCD_CEMPLOYEEID|varchar||是|社員番号|
+|TGCD_CEMPLOYEEID|varchar||是|職員番号|
 |TGCD_DBEFOREDATE|date||是|変更前日付|
 |TGCD_DAFTERDATE|date||是|変更後日付|
 |TGCD_CBEFOREGROUPID|varchar||是|変更前グループID|

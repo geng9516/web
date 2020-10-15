@@ -40,7 +40,7 @@ private static final long serialVersionUID=1L;
         private String tmtCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("tmt_cemployeeid")
         private String tmtCemployeeid;

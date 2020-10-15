@@ -52,7 +52,7 @@ private static final long serialVersionUID=1L;
         private Date tpaaDenddate;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("tpaa_cemployeeid")
         private String tpaaCemployeeid;

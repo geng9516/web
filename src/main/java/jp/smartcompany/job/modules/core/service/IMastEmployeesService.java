@@ -31,7 +31,7 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      *
      * @param customerId 顧客コード
      * @param companyId  法人コード
-     * @param employeeId 社員番号
+     * @param employeeId 職員番号
      * @param yyyymmdd   基準日
      * @return Date 採用日
      */

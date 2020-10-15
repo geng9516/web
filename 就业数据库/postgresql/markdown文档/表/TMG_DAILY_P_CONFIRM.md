@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TDC_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TDC_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TDC_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TDC_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TDC_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日|
 |TDC_DENDDATE|date||否|ﾃﾞｰﾀ終了日|
 |TDC_CMODIFIERUSERID|varchar||是|更新者|

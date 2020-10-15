@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TNAF_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                                                                                    |
 |TNAF_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TNAF_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TNAF_CEMPLOYEEID|VARCHAR2||否|職員番号                                                                                      |
 |TNAF_CNTFNO|VARCHAR2||否|申請番号                                                                                      |
 |TNAF_CFILENAME|VARCHAR2||否|ファイル名                                                                                     |
 |TNAF_NSEQ|NUMBER||否|表示順                                                                                       |

@@ -7,7 +7,7 @@
 |TVCTCMM_NCALC6_DAY|NUMBER||是|[月次集計情報]集計項目6：日数|
 |TVCTCMM_NCALC22_HOUR|NUMBER||是|[月次集計情報]集計項目22：時間数|
 |TVCTCMM_NCALC29_DAY|NUMBER||是|[月次集計情報]集計項目29：日数|
-|TVCTCMM_CEMPLOYEEID|VARCHAR2||否|[月次集計情報]社員番号|
+|TVCTCMM_CEMPLOYEEID|VARCHAR2||否|[月次集計情報]職員番号|
 |TVCTCMM_NCALC2_DAY|NUMBER||是|[月次集計情報]集計項目2：日数|
 |TVCTCMM_NCALC3_HOUR|NUMBER||是|[月次集計情報]集計項目3：時間数|
 |TVCTCMM_NCALC28_HOUR|NUMBER||是|[月次集計情報]集計項目28：時間数|

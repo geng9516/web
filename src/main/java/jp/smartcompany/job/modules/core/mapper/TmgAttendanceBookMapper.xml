@@ -111,7 +111,7 @@
         <result column="tmy_comment" property="tmy_comment" javaType="java.lang.String"/>
     </resultMap>
 
-    <!-- 操作社員情報 -->
+    <!-- 操作職員情報 -->
     <resultMap id="selectEmpInfoMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookEmpDTO">
         <result column="empname" property="empname" javaType="java.lang.String"/>
         <result column="secname" property="secname" javaType="java.lang.String"/>
@@ -119,7 +119,7 @@
         <result column="postname" property="postname" javaType="java.lang.String"/>
     </resultMap>
 
-    <!-- 対象社員の出勤簿情報が存在する年度情報を検索する -->
+    <!-- 対象職員の出勤簿情報が存在する年度情報を検索する -->
     <resultMap id="selectExistsAttendanceBookMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO">
         <result column="lastYear" property="lastYear"/>
         <result column="thisYear" property="thisYear"/>
@@ -421,7 +421,7 @@
         from table(tmg_empattr4ledger_table(tmg_f_get_empattr4ledger(#{custId}, #{compCode}, #{employeeId}, to_date(#{queryMonthDay}, 'yyyy/mm/dd'), to_date(#{nextYearDay}, 'yyyy/mm/dd'))))
     </select>
 
-    <!-- 対象社員の出勤簿情報が存在する年度情報を検索する -->
+    <!-- 対象職員の出勤簿情報が存在する年度情報を検索する -->
     <select id="selectExistsAttendanceBook" parameterType="java.util.HashMap" resultMap="selectExistsAttendanceBookMap">
         select (select decode(max(a1.tma_nyyyy), null, null, to_char(tmg_f_get_the_yearzone (max(a1.tma_nyyyy), '1',to_char(sysdate,'yyyy/MM/dd'), #{compCode}, #{custId}), 'yyyy/mm/dd')) from tmg_attendance_book a1
                     where a1.tma_cemployeeid = #{employeeId} and a1.tma_nyyyy <![CDATA[<]]> to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode}, #{custId}))

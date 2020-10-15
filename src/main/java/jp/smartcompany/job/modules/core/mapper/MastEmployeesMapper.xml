@@ -261,7 +261,7 @@
     <select id="selectEmployeeInfoUserIDList" parameterType="jp.smartcompany.framework.component.dto.EmployInfoSearchDTO" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">
         <if test="searchFlg == null or searchFlg == 0">
             SELECT
-                -- (社員検索ダイアログ)
+                -- (職員検索ダイアログ)
                 HD.HD_ID,
                 ME_CUSERID,
                 (

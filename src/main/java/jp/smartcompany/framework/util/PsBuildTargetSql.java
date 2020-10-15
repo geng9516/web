@@ -617,7 +617,7 @@ public class PsBuildTargetSql {
 
     /**
      * ========================业务相关方法================
-     * (社員検索用)検索対象範囲を適用するEXISTS句条件を返します。
+     * (職員検索用)検索対象範囲を適用するEXISTS句条件を返します。
      * 返却される文字列は「Where句の最後に付与する形(ANDスタート)」となります。
      * 呼び出し元が組織ドメインに属している場合は空文字が返ります。
      * @param psUserColName ユーザIDとして結合されるカラムID
@@ -774,7 +774,7 @@ public class PsBuildTargetSql {
     }
 
     /**
-     * (社員検索用)検索対象範囲を適用するEXISTS句条件を返します。
+     * (職員検索用)検索対象範囲を適用するEXISTS句条件を返します。
      * 返却される文字列は「Where句の最後に付与する形(ANDスタート)」となります。
      * 呼び出し元が組織ドメインに属している場合は空文字が返ります。
      * @param psUserColName ユーザIDとして結合されるカラムID
@@ -1064,7 +1064,7 @@ public class PsBuildTargetSql {
      * 返却される文字列は「Where句の最後に付与する形(ANDスタート)」となります。
      * 呼び出し元のドメインに依存なくEXISTS句を返却します。
      * @param psCompanyColName 法人コードとして結合されるカラムID
-     * @param psEmployeeColName 社員番号として結合されるカラムID
+     * @param psEmployeeColName 職員番号として結合されるカラムID
      * @return 検索対象範囲を適用するEXISTS句条件
      */
     public String getExistsQueryEmployee(String psCompanyColName, String psEmployeeColName) {
@@ -1103,7 +1103,7 @@ public class PsBuildTargetSql {
                     sbExistsQuery.append(" = ");
                     sbExistsQuery.append(psCompanyColName);
 
-                    // 社員番号
+                    // 職員番号
                     sbExistsQuery.append(AND);
                     sbExistsQuery.append(EXSISTB + ".");
                     sbExistsQuery.append("EX_");
@@ -1306,7 +1306,7 @@ public class PsBuildTargetSql {
     /**
      * 退職者検索対象範囲のクエリを生成します
      * @param psCompanyColName 法人カラム
-     * @param psEmployeeColName 社員番号カラム
+     * @param psEmployeeColName 職員番号カラム
      * @param nCondRetired 退職者検索対象範囲(0:参照しない/1:自社のみ/2:すべて)
      * @return クエリ "ユーザIDカラム in (退職者検索対象範囲)"
      * @exception
@@ -1394,7 +1394,7 @@ public class PsBuildTargetSql {
                     sb.append(sCompIdColumnName);
                     sb.append(",");
 
-                    // 社員番号
+                    // 職員番号
                     //sb.append(PsBuildTargetSqlLogicImpl.AND);
                     sb.append(PT_ID).append(nIndex).append(".");
                     sb.append(tableCombinationTypeDTO.getEmployeeIdColumnName());
@@ -1467,7 +1467,7 @@ public class PsBuildTargetSql {
     }
 
     /**
-     * (社員検索用)検索対象範囲で参照出来る異動歴を返します。
+     * (職員検索用)検索対象範囲で参照出来る異動歴を返します。
      * 返却される文字列は「( SELECT * FROM HIST_DESIGNATION WHERE ...)」となります。
      * 呼び出し元が組織ドメインに属している場合は「HIST_DESIGNATION」が返ります。
      * @return 検索対象範囲で参照出来る異動歴

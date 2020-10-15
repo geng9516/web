@@ -50,7 +50,7 @@
         <Radio :label="6">退職後未削除</Radio>
         <Radio :label="10">管理ツールユーザ</Radio>
         <br></br>
-        <Radio :label="7"><span class="pr5">社員番号検索</span>
+        <Radio :label="7"><span class="pr5">職員番号検索</span>
           <i-input v-model="opts.empId" style="width: 200px;"></i-input>
         </Radio>
         <Radio :label="9"><span class="pr5">氏名検索</span>
@@ -73,7 +73,7 @@
             </div>
             <Row class="tl mb5" :gutter="8">
               <i-col span="10">
-                <i-input class="mar mb5 like-select" placeholder="検索" v-model="searchDept"
+                <i-input class="mar like-select" placeholder="検索" v-model="searchDept"
                   @keyup.enter.native="handleSearchDept">
                 </i-input>
               </i-col>
@@ -283,7 +283,7 @@
               align: 'center'
             },
             {
-              title: '社員番号',
+              title: '職員番号',
               key: 'meCuserid',
               align: 'center'
             },
@@ -320,7 +320,7 @@
               align: 'center'
             },
             {
-              title: '社員番号',
+              title: '職員番号',
               key: 'meCuserid',
               align: 'center'
             },

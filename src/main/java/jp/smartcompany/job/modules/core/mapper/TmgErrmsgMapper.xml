@@ -90,7 +90,7 @@
             sysdate,
             #{programId},
             TMG_F_CHECK_DAILY(
-                #{targetUser} ,             <!--社員番号-->
+                #{targetUser} ,             <!--職員番号-->
                 #{day} ,                    <!--勤務日-->
                 '650',                      <!--チェックタイプ(勤怠承認時)-->
                 #{custID},                  <!--顧客コード-->

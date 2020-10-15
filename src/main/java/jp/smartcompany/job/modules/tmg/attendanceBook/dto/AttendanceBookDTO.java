@@ -28,7 +28,7 @@ public class AttendanceBookDTO {
     private String tmaCcompanyid;
 
     /**
-     * 社員番号
+     * 職員番号
      */
     private String tmaCemployeeid;
 

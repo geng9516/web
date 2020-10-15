@@ -22,7 +22,7 @@
                     </i-button>
                 </i-col>
                 <i-col span="24">
-                    <i-button class="addwork-btn" type="primary" ghost @click="showDay(null)" 　:disabled="discretionDisable" long>超勤申請</i-button>
+                    <i-button class="addwork-btn" type="primary" ghost @click="showDay(null)" 　:disabled="discretionDisable" long>超過勤務申請</i-button>
                 </i-col>
             </Row>
         </i-col>
@@ -39,7 +39,7 @@
                     <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[2]}}</span><span class="mr5 lp">分</span>
                 </i-col>
                 <i-col span="11" class="card">
-                    <div class="title">月間実働時間</div>
+                    <div class="title">月間実労働時間</div>
                     <span class="num">{{dutyAndRelaxData.dutyHours[0]}}</span><span class="mr5 lp">時</span>
                     <span class="num">{{dutyAndRelaxData.dutyHours[1]}}</span><span class="mr5 lp">分</span>
                 </i-col>
@@ -762,7 +762,7 @@
                     //まだ、打刻していない 何もしない
                 }
             },
-            // 社員勤務予定データを取得する
+            // 職員勤務予定データを取得する
             async getScheduleInfo() {
                 const {data} = await this.http.postForm('sys/timePunch/selectScheduleInfo', this.query_schedule)
                 this.requestFlag = true;
@@ -772,7 +772,7 @@
                     this.scheduleData = ['', '']
                 }
             },
-            //　社員有休等情報を取得する
+            //　職員有休等情報を取得する
             async getDutyAndRelaxDate() {
                 const {data} = await this.http.postForm('sys/timePunch/selectDutyAndRelaxDate', this.query_schedule)
 
@@ -781,7 +781,7 @@
                     if (data.dutyDates) {
                         this.dutyAndRelaxData.dutyDates = data.dutyDates.substring(0, data.dutyDates.indexOf("日"))
                     }
-                    //月間実働時間
+                    //月間実労働時間
                     if (data.dutyHours) {
                         this.dutyAndRelaxData.dutyHours[0] = data.dutyHours.substring(0, data.dutyHours.indexOf("時"))
                         this.dutyAndRelaxData.dutyHours[1] = data.dutyHours.substring(data.dutyHours.indexOf("時") + 1, data.dutyHours.length - 1)

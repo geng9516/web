@@ -4,7 +4,7 @@
 |TIDAE_ID|numeric||否|IDカラム|
 |TIDAE_CCUSTOMERID|varchar||否|顧客コード|
 |TIDAE_CCOMPANYID|varchar||否|法人コード|
-|TIDAE_CEMPLOYEEID|varchar||否|社員番号|
+|TIDAE_CEMPLOYEEID|varchar||否|職員番号|
 |TIDAE_DSTARTDATE|date||否|データ開始日|
 |TIDAE_DENDDATE|date||否|データ終了日|
 |TIDAE_CMODIFIERUSERID|varchar||是|更新者|

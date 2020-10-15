@@ -117,7 +117,7 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
     String buildSQLSelectLinkOfNextMonth(@Param("empsql")String empsql, @Param("baseDate")String baseDate);
 
     /**
-     * [勤怠]社員別のデータを取得
+     * [勤怠]職員別のデータを取得
      */
     List<Map> buildSQLSelectEmployyes(Map<String, Object> map);
 

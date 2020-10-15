@@ -123,16 +123,16 @@ public class PaidholidayBean {
     private String sDispUser ="";
 
     /**
-     * 検索する社員番号をセットする
-     * @param sValue 社員番号
+     * 検索する職員番号をセットする
+     * @param sValue 職員番号
      */
     private void setDispUserCode(String sValue){
         this.sDispUser= sValue;
     }
 
     /**
-     * 検索する社員番号を返す
-     * @return 社員番号
+     * 検索する職員番号を返す
+     * @return 職員番号
      */
 
     public String getDispUserCode(){

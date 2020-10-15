@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TVCST_CCUSTOMERID|VARCHAR2||否|[出納員情報]顧客コード|
 |TVCST_CCOMPANYID|VARCHAR2||否|[出納員情報]法人コード|
-|TVCST_CEMPLOYEEID|VARCHAR2||否|[出納員情報]社員番号|
+|TVCST_CEMPLOYEEID|VARCHAR2||否|[出納員情報]職員番号|
 |TVCST_CUSERID|VARCHAR2||否|[出納員情報]ユーザーID|
 |TVCST_DSTARTDATE|DATE||否|[出納員情報]データ開始日|
 |TVCST_DENDDATE|DATE||否|[出納員情報]データ終了日|

@@ -4,7 +4,7 @@
 |HSC_ID|numeric||否|IDカラム|
 |HSC_CCUSTOMERID|varchar||否|顧客コード|
 |HSC_CCOMPANYID|varchar||否|法人コード|
-|HSC_CEMPLOYEEID|varchar||否|社員番号|
+|HSC_CEMPLOYEEID|varchar||否|職員番号|
 |HSC_CUSERID|varchar||否|ユーザID|
 |HSC_DSTARTDATE|date||否|データ開始日|
 |HSC_DENDDATE|date||否|データ終了日|

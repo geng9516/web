@@ -178,14 +178,14 @@ public class OvertimeInstructBean {
         overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
         holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
 
-        // 2 表示対象社員の今月分の一日毎の超過勤務実績時間を取得
+        // 2 表示対象職員の今月分の一日毎の超過勤務実績時間を取得
         List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
                 sDBContentId, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
         // 3 前月リンクを取得
         //String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 1);
         // 4 翌月リンクを取得
         //String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 0);
-        // 5 表示対象社員の今年度分の合計超過実績時間と、月超過回数を取得
+        // 5 表示対象職員の今年度分の合計超過実績時間と、月超過回数を取得
         List<YearlyInfoVo> yearlyInfoVoList = iTmgMonthlyInfoService.selectYearlyInfo(psDBBean.getCustID(), psDBBean.getCompCode(), sDBContentId,
                 baseMonth, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
         // 6 36協定における月の超勤限度時間表示用名称取得

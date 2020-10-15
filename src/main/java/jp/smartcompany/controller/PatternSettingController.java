@@ -65,7 +65,7 @@ public class PatternSettingController {
     }
 
     /**
-     * 【表示】該当者毎に設定されている勤務パターンの情報を取得する（部署社員リスト）
+     * 【表示】該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
      * http://localhost:6879/sys/patternSetting/selectTmgPatternApplies?baseDate=2020/06/15
      *
      * @param baseDate

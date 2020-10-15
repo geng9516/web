@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author 陳毅力
- * @description 予定作成社員情報（更新）
+ * @description 予定作成職員情報（更新）
  * @objectSource
  * @date 2020/06/03
  **/

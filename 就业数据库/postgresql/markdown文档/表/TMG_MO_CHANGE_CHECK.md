@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TMCC_CCUSTOMERID|varchar||否|顧客コード     固定：01|
 |TMCC_CCOMPANYID|varchar||否|法人コード|
-|TMCC_CEMPLOYEEID|varchar||否|社員番号|
+|TMCC_CEMPLOYEEID|varchar||否|職員番号|
 |TMCC_DSTARTDATE|date||否|データ開始日|
 |TMCC_DENDDATE|date||否|データ終了日|
 |TMCC_CMODIFIERUSERID|varchar||是|更新者|

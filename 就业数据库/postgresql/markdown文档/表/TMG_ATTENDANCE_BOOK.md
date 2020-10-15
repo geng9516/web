@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TMA_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TMA_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
-|TMA_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TMA_CEMPLOYEEID|varchar||否|職員番号                                                                                      |
 |TMA_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01                                               |
 |TMA_DENDDATE|date||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31                                               |
 |TMA_CMODIFIERUSERID|varchar||是|更新者                                                                                       |

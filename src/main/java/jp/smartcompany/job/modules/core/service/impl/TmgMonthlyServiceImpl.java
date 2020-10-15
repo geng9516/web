@@ -152,7 +152,7 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
          * @param customerId    顧客コード
          * @param companyId     法人コード
          * @param yyyymmdd      基準日
-         * @param employeeId 　社員ID
+         * @param employeeId 　職員ID
          * @param params 　select sql
          * @return String パターン
          */
@@ -171,7 +171,7 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
          *
          * @param customerId    顧客コード
          * @param companyId     法人コード
-         * @param employeeId 　社員ID
+         * @param employeeId 　職員ID
          * @return List<paidHolidayThisMonthInfoVo> パターン
          */
 
@@ -293,7 +293,7 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
     }
 
     /**
-     * [勤怠]社員別のデータを取得
+     * [勤怠]職員別のデータを取得
      *
      * @param dispItemsDtoList
      * @param empsql           職員取得ｓｑｌ

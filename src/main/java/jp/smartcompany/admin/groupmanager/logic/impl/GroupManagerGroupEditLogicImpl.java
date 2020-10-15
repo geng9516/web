@@ -70,27 +70,27 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public static final String FG_COMP_SEC         = "02";
     /** 処理区分(組織ごとの定義情報取得(法人＆組織＆役職リスト)) */
     public static final String FG_COMP_SEC_POST    = "03";
-    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆社員番号リスト))(已弃用) */
+    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆職員番号リスト))(已弃用) */
     public static final String FG_COMP_SEC_EMP     = "04";
     /** 処理区分(法人＆組織＆所属長リスト) */
     public static final String FG_COMP_SEC_BOSS    = "05";
     /** 処理区分(法人＆役職リスト) */
     public static final String FG_COMP_POST        = "06";
-    /** 処理区分(法人＆社員リスト) */
+    /** 処理区分(法人＆職員リスト) */
     public static final String FG_COMP_EMP         = "07";
 
     /** グループ定義種別フラグ(組織・役職定義) */
     private static final String BASE_FLG_SECPOST = "2";
     /** グループ定義種別フラグ(条件式定義) */
     private static final String BASE_FLG_DEF = "1";
-    /* ▼2007/10/12 A.SUZUKI 社員選択による定義を追加 */
-    /** グループ定義種別フラグ(社員選択定義) */
+    /* ▼2007/10/12 A.SUZUKI 職員選択による定義を追加 */
+    /** グループ定義種別フラグ(職員選択定義) */
     private static final String BASE_FLG_EMPLOYEES = "0";
     /** 初期表示処理読み飛ばしフラグ */
     private static final String FLG_NO_INIT_ACTION = BASE_FLG_EMPLOYEES;
     /** 選択フラグ(特定法人のみの選択を有効) */
     private static final String FLG_CERTAIN_COMMANY = BASE_FLG_DEF;
-    /* ▲2007/10/12 A.SUZUKI 社員選択による定義を追加 */
+    /* ▲2007/10/12 A.SUZUKI 職員選択による定義を追加 */
 
 
     @Override
@@ -297,13 +297,13 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             glSectionList.get(i).setPostList(
                     iMastGroupsectionpostmappingService.selectWholeSectionInfo(psCustomerId, psCompanyId,
                             systemId, groupId, pdSearchDate, FG_COMP_SEC_POST, sSectionId, language));
-            // 組織ごとの定義情報取得(法人＆組織＆社員番号リスト)
+            // 組織ごとの定義情報取得(法人＆組織＆職員番号リスト)
             glSectionList.get(i).setEmployList(
             iMastGroupsectionpostmappingService.selectWholeSectionInfo(psCustomerId, psCompanyId,
                             systemId, groupId, pdSearchDate,FG_COMP_SEC_EMP, sSectionId, language));
             // 現在の保持している役職リスト(法人＆組織)の件数を保持する
             glSectionList.get(i).setSelectedPostCnt(glSectionList.get(i).getPostList().size());
-            // 現在の保持している社員番号リスト(法人＆組織)の件数を保持する
+            // 現在の保持している職員番号リスト(法人＆組織)の件数を保持する
             glSectionList.get(i).setSelectedEmpoyeesCompCnt(glSectionList.get(i).getEmployList().size());
         }
         // 該当条件編集 - 定義情報取得(法人＆組織＆所属長リスト)
@@ -315,7 +315,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 iMastGroupsectionpostmappingService.selectGroupSectionPost(psCustomerId, psCompanyId,
                         systemId, groupId, pdSearchDate, FG_COMP_POST,
                         language));
-        // 更新用のDtoを初期化しておく(法人＆社員リスト)
+        // 更新用のDtoを初期化しておく(法人＆職員リスト)
         company.setEmployList(CollUtil.newArrayList());
         // 組織・役職編集情報をJSONにセット
         sectionPostDTO.setDispFlg(0);
@@ -325,7 +325,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 
     public SelectEmployeesEditDTO getEmpList(String customerId,String companyId,String systemId,String groupId,Date searchDate,String language) {
         SelectEmployeesEditDTO employeesEditDTO = new SelectEmployeesEditDTO();
-        // 該当条件編集 - 定義情報取得(法人＆社員リスト)
+        // 該当条件編集 - 定義情報取得(法人＆職員リスト)
         List<SectionPostRowDTO> selectingEmployeesDtoList = iMastGroupsectionpostmappingService.selectGroupSectionPost(
                 customerId,
                 companyId,
@@ -337,7 +337,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         /* 2007/10/22 A.SUZUKI 法人の選択出来ないモードを仕様追加(特定法人のみの選択を有効とする) */
         employeesEditDTO.setGsPsSelectedComp(companyId);
         employeesEditDTO.setGsPsFixedComp(FLG_CERTAIN_COMMANY);
-        /* ▲2007/10/12 A.SUZUKI 社員選択による定義を追加 */
+        /* ▲2007/10/12 A.SUZUKI 職員選択による定義を追加 */
         employeesEditDTO.setEmpList(selectingEmployeesDtoList);
         return employeesEditDTO;
     }
@@ -359,7 +359,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             // IDとVersion番号も取得
             groupDTO.setMgpId(definition.getMgpId());
         } else {
-            // 定義情報が取得できなかった場合は、初期値(0:社員指定による定義)を設定
+            // 定義情報が取得できなかった場合は、初期値(0:職員指定による定義)を設定
             sResult = "0";
             groupDTO.setMgpId(null);
         }
@@ -430,7 +430,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (StrUtil.equals(baseFlag,BASE_FLG_DEF)) {
             assembleGroupDefinitions(queryConditionDTO,dto.getQueryConditionList());
         }
-        // 社員による定義の情報取得
+        // 職員による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_EMPLOYEES)) {
             assembleEmploy(sectionPostDTO,dto.getEmployList());
         }
@@ -471,7 +471,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 対象テーブル(MAST_GROUP)
         updateGroup(insertGroup(
                 customerId, systemId, startDate, endDate, dto));
-        // 組織・役職選択・社員選択情報を更新
+        // 組織・役職選択・職員選択情報を更新
         // 対象テーブル(MAST_GROUPSECTIONPOSTMAPPING)
         deleteGroupSectionPost(sectionPostDTO.getDeleteSectionPost());
         // 新規追加対象データをデータベースへ反映
@@ -696,7 +696,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     }
 
     /**
-     * DB削除処理(組織・役職選択・社員選択 または 条件式選択 全削除)<br>
+     * DB削除処理(組織・役職選択・職員選択 または 条件式選択 全削除)<br>
      * 定義情報をDBへ反映させる(物理更新)
      * 指定されたフラグとグループIDの情報を全削除します。
      *
@@ -727,7 +727,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 typeIdList.add(FG_COMP_SEC_EMP);
                 typeIdList.add(FG_COMP_SEC_BOSS);
                 typeIdList.add(FG_COMP_POST);
-                // 組織・役職選択 対象セット(社員番号以外）
+                // 組織・役職選択 対象セット(職員番号以外）
                 iMastGroupsectionpostmappingService.deleteSectionPostTypeList(
                         psCustomerId, psSystem, psGroup, typeIdList, ptStartDate);
             }
@@ -857,7 +857,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     }
 
     /**
-     * DB新規登録処理(組織・役職選択・社員選択)<br>
+     * DB新規登録処理(組織・役職選択・職員選択)<br>
      * 定義情報をDBへ反映させる(物理更新)
      *
      * @param psCustomerId  顧客コード
@@ -893,14 +893,14 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 FG_COMP_POST, psCustomerId, psSystem,
                 psGroup, ptStartDate, ptEndDate);
 
-        /** 定義情報取得(法人＆社員リスト(登録更新用))　*/
+        /** 定義情報取得(法人＆職員リスト(登録更新用))　*/
         insertSelectEmpList(companyRowListDTO.getEmployList(),
                 FG_COMP_EMP, psCustomerId, psSystem,
                 psGroup, ptStartDate, ptEndDate);
     }
 
     /**
-     * DB新規登録(更新)処理(社員選択)用のEntity作成処理(グループ条件定義マスタ(組織・役職))<br>
+     * DB新規登録(更新)処理(職員選択)用のEntity作成処理(グループ条件定義マスタ(組織・役職))<br>
      * 定義情報をDBへ反映させるためのEntityを作成する。
      *
      * @param poList        更新対象リスト
@@ -915,9 +915,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public void insertSelectEmpList(List<SectionPostRowDTO> poList, String psTypeId,
                                     String psCustomerId, String psSystem, String psGroup,
                                     Date ptStartDate, Date ptEndDate) {
-        // ▼#2869 「社員選択による定義」にて一旦データ登録後に削除すると、データが削除されていない
-        // 社員検索のときのみ、DELETE + INSERTにする
-        // DBに登録されている、社員選択情報を一旦クリアする
+        // ▼#2869 「職員選択による定義」にて一旦データ登録後に削除すると、データが削除されていない
+        // 職員検索のときのみ、DELETE + INSERTにする
+        // DBに登録されている、職員選択情報を一旦クリアする
         iMastGroupsectionpostmappingService.deleteSectionPostType(
                 psCustomerId, psSystem, psGroup, psTypeId, ptStartDate);
         List<MastGroupsectionpostmappingDO> saveList = CollUtil.newArrayList();

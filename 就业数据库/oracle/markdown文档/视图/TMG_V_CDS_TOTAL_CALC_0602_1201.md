@@ -58,7 +58,7 @@
 |TVCTC0602_NCALC4_HOUR|NUMBER||是|[期末勤勉算定用情報]病気休暇（私傷病・時間）：時間数|
 |TVCTC0602_NCALC27_HOUR|NUMBER||是|[期末勤勉算定用情報]集計項目27：時間数|
 |TVCTC0602_NCALC30_HOUR|NUMBER||是|[期末勤勉算定用情報]集計項目30：時間数|
-|TVCTC0602_CEMPLOYEEID|VARCHAR2||否|[期末勤勉算定用情報]社員番号|
+|TVCTC0602_CEMPLOYEEID|VARCHAR2||否|[期末勤勉算定用情報]職員番号|
 |TVCTC0602_NCALC32_DAY|NUMBER||是|[期末勤勉算定用情報]集計項目32：日数|
 |TVCTC0602_NCALC7_DAY|NUMBER||是|[期末勤勉算定用情報]大学院修学休業：日数|
 |TVCTC0602_NCALC7_HOUR|NUMBER||是|[期末勤勉算定用情報]集計項目7：時間数|

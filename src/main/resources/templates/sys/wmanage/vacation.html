@@ -617,7 +617,7 @@
         methods: {
             // 職員検索
             async getSearchTableData() {
-                this.deptName = '職員により検索中'
+                this.deptName = '検索対象者一覧'
                 //ツリー：0、検索：1
                 this.referListObject.hidSelectTab = '1'
                 this.query.hidSelectTab = '1'
@@ -627,7 +627,7 @@
             async getTableData() {
                 try {
                     if (this.query.hidSelectTab == '1') {
-                        this.deptName = '職員により検索中'
+                        this.deptName = '検索対象者一覧'
                     }
                     this.loading = true
                     const {data} = await this.http.get('sys/paidholiday/list', this.referListObject)
@@ -699,7 +699,7 @@
                 if (this.treeData.length !== 0) {
                     this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
                 }
-                //検索用社員情報を取得する基準日をセットする
+                //検索用職員情報を取得する基準日をセットする
                 this.query.txtTmgReferListTreeViewRecordDate = e
             },
             //ツリー検索

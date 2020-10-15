@@ -25,7 +25,7 @@ public interface ITmgPaidHolidayAttributeService extends IService<TmgPaidHoliday
          *
          * @param customerId    顧客コード
          * @param companyId     法人コード
-         * @param employeeId    社員番号
+         * @param employeeId    職員番号
          * @param yyyymmdd      基準日
          * @return int 週平均勤務時間
          */

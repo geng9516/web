@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TDJ_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                                                                                    |
 |TDJ_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TDJ_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TDJ_CEMPLOYEEID|VARCHAR2||否|職員番号                                                                                      |
 |TDJ_DSTARTDATE|DATE||否|データ開始日                                                                                    |
 |TDJ_DENDDATE|DATE||否|データ終了日                                                                                    |
 |TDJ_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |

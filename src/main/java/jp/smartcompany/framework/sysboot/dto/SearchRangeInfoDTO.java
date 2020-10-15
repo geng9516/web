@@ -37,7 +37,7 @@ public class SearchRangeInfoDTO implements Serializable {
     /** 役職コード */
     private String mdspCpostid;
 
-    /** 社員番号 */
+    /** 職員番号 */
     private String mdspCemployeeid;
 
     // 検索対象範囲条件定義マスタ(条件式)

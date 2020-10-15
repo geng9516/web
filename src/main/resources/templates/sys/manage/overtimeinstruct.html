@@ -733,7 +733,7 @@
             methods: {
                 // 職員検索
                 async getSearchTableData() {
-                    this.deptName = '職員により検索中'
+                    this.deptName = '検索対象者一覧'
                     console.log(this.query.baseDay)
                     //ツリー：0、検索：1
                     this.query.hidSelectTab = '1'
@@ -980,7 +980,7 @@
                 async getTableData() {
                     this.loading = true
                     if (this.query.hidSelectTab == '1') {
-                        this.deptName = '職員により検索中'
+                        this.deptName = '検索対象者一覧'
                     }
                     let url = 'sys/overtimeinstruct/monthlyResult'
                     try {

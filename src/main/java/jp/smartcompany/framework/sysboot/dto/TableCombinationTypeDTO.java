@@ -23,7 +23,7 @@ public class TableCombinationTypeDTO {
     private String companyIdColumnName;
     /** ユーザIDカラム */
     private String userIdColumnName;
-    /** 社員番号カラム */
+    /** 職員番号カラム */
     private String employeeIdColumnName;
     /** 所属コードカラム */
     private String sectionIdColumnName;

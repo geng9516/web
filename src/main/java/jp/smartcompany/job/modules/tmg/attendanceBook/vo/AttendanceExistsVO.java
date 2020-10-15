@@ -6,7 +6,7 @@ import lombok.ToString;
 
 /**
  * @author 陳毅力
- * @description 対象社員の出勤簿情報が存在する年度情報
+ * @description 対象職員の出勤簿情報が存在する年度情報
  * @objectSource
  * @date 2020/06/12
  **/

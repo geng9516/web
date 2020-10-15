@@ -71,7 +71,7 @@
 |TVCTC0101_NCALC9_DAY|NUMBER||是|[昇給用勤務日数情報]病気休職：日数|
 |TVCTC0101_NCALC18_DAY|NUMBER||是|[昇給用勤務日数情報]集計項目18：日数|
 |TVCTC0101_NCALC27_DAY|NUMBER||是|[昇給用勤務日数情報]集計項目27：日数|
-|TVCTC0101_CEMPLOYEEID|VARCHAR2||否|[昇給用勤務日数情報]社員番号|
+|TVCTC0101_CEMPLOYEEID|VARCHAR2||否|[昇給用勤務日数情報]職員番号|
 |TVCTC0101_NCALC5_DAY|NUMBER||是|[昇給用勤務日数情報]育児休業：日数|
 |TVCTC0101_NCALC21_HOUR|NUMBER||是|[昇給用勤務日数情報]集計項目21：時間数|
 |TVCTC0101_NCALC38_DAY|NUMBER||是|[昇給用勤務日数情報]集計項目38：日数|

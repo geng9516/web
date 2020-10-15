@@ -40,7 +40,7 @@ private static final long serialVersionUID=1L;
         private String tntfCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("tntf_cemployeeid")
         private String tntfCemployeeid;
@@ -82,7 +82,7 @@ private static final long serialVersionUID=1L;
         private Long tntfNseq;
 
         /**
-         * 申請番号                          申請者社員番号|連番
+         * 申請番号                          申請者職員番号|連番
          */
     @TableField("tntf_cntfno")
         private String tntfCntfno;
@@ -94,7 +94,7 @@ private static final long serialVersionUID=1L;
         private String tntfCstatusflg;
 
         /**
-         * 申請者社員番号
+         * 申請者職員番号
          */
     @TableField("tntf_calteremployeeid")
         private String tntfCalteremployeeid;
@@ -214,7 +214,7 @@ private static final long serialVersionUID=1L;
         private String tntfCowncomment;
 
         /**
-         * 承認者社員番号
+         * 承認者職員番号
          */
     @TableField("tntf_cboss")
         private String tntfCboss;
@@ -232,7 +232,7 @@ private static final long serialVersionUID=1L;
         private Date tntfDboss;
 
         /**
-         * 申請解除社員番号
+         * 申請解除職員番号
          */
     @TableField("tntf_ccancel")
         private String tntfCcancel;

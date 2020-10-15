@@ -12,7 +12,7 @@
             MAC_NSEQ AS companyOrder, -- 法人並び順
             PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
             HD_CUSERID AS userid, -- ユーザID
-            HD_CEMPLOYEEID_CK AS employee, -- 社員番号
+            HD_CEMPLOYEEID_CK AS employee, -- 職員番号
             PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
             ME_CKANANAME AS nameKana, -- 氏名カナ
             HD_CSECTIONID_FK AS section, -- 組織コード

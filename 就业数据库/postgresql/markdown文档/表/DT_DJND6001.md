@@ -6,7 +6,7 @@
 |SSTART|varchar||是|開始日（和暦）|
 |DEND|date||是|終了日|
 |SEND|varchar||是|終了日（和暦）|
-|CSHAINNO|varchar||否|社員番号|
+|CSHAINNO|varchar||否|職員番号|
 |CNAMEKNA|varchar||是|カナ氏名|
 |CNAMEKNJ|varchar||是|漢字氏名|
 |CNAMEEIJI|varchar||是|アルファベット氏名|

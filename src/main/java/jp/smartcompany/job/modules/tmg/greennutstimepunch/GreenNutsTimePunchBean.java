@@ -47,7 +47,7 @@ public class GreenNutsTimePunchBean {
                 tplog.setTgtlCtimepunchdata(tpdata);
                 // IC カード ID 16 バイト
                 tplog.setTgtlCiccardid(tpdata.substring(0, 16));
-                //社員コード 10 バイト
+                //職員コード 10 バイト
                 tplog.setTgtlCemployeeid(tpdata.substring(16, 26));
                 // 出退勤区分 2 バイト
                 tplog.setTgtlCtptypeid(tpdata.substring(26, 28));

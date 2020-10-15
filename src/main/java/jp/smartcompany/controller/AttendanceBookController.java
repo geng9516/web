@@ -134,7 +134,7 @@ public class AttendanceBookController {
 
 
     /**
-     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * 対象職員の出勤簿情報が存在する年度情報を検索する
      * http://localhost:6879/sys/attendanceBook/selectExistsAttendanceBook?employeeId=46402406&year=2019
      *
      * @param employeeId targetUser

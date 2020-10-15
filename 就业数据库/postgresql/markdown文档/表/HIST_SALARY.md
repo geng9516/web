@@ -4,7 +4,7 @@
 |HSL_ID|numeric||否|IDカラム  |
 |HSL_CCUSTOMERID|varchar||否|顧客コード|
 |HSL_CCOMPANYID|varchar||否|法人コード|
-|HSL_CEMPLOYEEID|varchar||否|社員番号|
+|HSL_CEMPLOYEEID|varchar||否|職員番号|
 |HSL_CUSERID|varchar||否|ユーザID|
 |HSL_DSTARTDATE|date||否|データ開始日|
 |HSL_DENDDATE|date||否|データ終了日|

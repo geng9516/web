@@ -42,7 +42,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      *
      * @param customerId    顧客コード
      * @param companyId     法人コード
-     * @param employeeId    社員番号
+     * @param employeeId    職員番号
      * @param yyyymmdd      基準日
      * @param beginDateWork 　開始日
      * @return int 年休ルール

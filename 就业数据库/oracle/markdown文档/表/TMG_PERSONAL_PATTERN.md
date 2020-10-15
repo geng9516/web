@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TPPA_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01|
 |TPPA_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
-|TPPA_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TPPA_CEMPLOYEEID|VARCHAR2||否|職員番号|
 |TPPA_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日|
 |TPPA_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日|
 |TPPA_CMODIFIERUSERID|VARCHAR2||是|更新者|

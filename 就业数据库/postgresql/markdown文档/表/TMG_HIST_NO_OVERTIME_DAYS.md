@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |THNOD_CCUSTOMERID|varchar||否|顧客コードﾞ     固定：01|
 |THNOD_CCOMPANYID|varchar||否|法人コード|
-|THNOD_CEMPLOYEEID|varchar||否|社員番号|
+|THNOD_CEMPLOYEEID|varchar||否|職員番号|
 |THNOD_DSTARTDATE|date||否|データ開始日|
 |THNOD_DENDDATE|date||否|データ終了日|
 |THNOD_CMODIFIERUSERID|varchar||是|更新者|

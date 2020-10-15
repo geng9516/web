@@ -4,7 +4,7 @@
 |HBN_ID|numeric||否|IDカラム  |
 |HBN_CCUSTOMERID|varchar||否|顧客コード|
 |HBN_CCOMPANYID|varchar||否|法人コード|
-|HBN_CEMPLOYEEID|varchar||否|社員番号|
+|HBN_CEMPLOYEEID|varchar||否|職員番号|
 |HBN_CUSERID|varchar||否|ユーザID|
 |HBN_DSTARTDATE|date||否|データ開始日|
 |HBN_DENDDATE|date||否|データ終了日|

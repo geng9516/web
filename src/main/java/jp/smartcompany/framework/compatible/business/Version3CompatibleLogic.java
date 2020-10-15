@@ -340,9 +340,9 @@ public interface Version3CompatibleLogic {
      * リレーションを取得します
      * @param sCustomerID 顧客コード
      * @param sLoginCompanyID ログイン法人コード
-     * @param sLoginUserID ログイン社員番号
+     * @param sLoginUserID ログイン職員番号
      * @param sTargetCompanyID 検索対象法人コード
-     * @param sTargetUserID 検索対象社員番号
+     * @param sTargetUserID 検索対象職員番号
      * @param sDate 判定基準日
      * @return リレーションID
      * @throws Exception システム例外
@@ -353,9 +353,9 @@ public interface Version3CompatibleLogic {
      * リレーション情報を取得します
      * @param sCustomerID 顧客コード
      * @param sLoginCompanyID ログイン法人コード
-     * @param sLoginUserID ログイン社員番号
+     * @param sLoginUserID ログイン職員番号
      * @param sTargetCompanyID 検索対象法人コード
-     * @param sTargetUserID 検索対象社員番号
+     * @param sTargetUserID 検索対象職員番号
      * @param sDate 検索基準日
      * @param sReportLine レポートラインタイプ
      * @param httpSession セッション
@@ -382,7 +382,7 @@ public interface Version3CompatibleLogic {
      * 被評価者情報リストを取得します
      * @param sCustomerID 顧客コード
      * @param sLoginCompanyID ログイン者の法人コード
-     * @param sLoginUserID ログイン者の社員番号
+     * @param sLoginUserID ログイン者の職員番号
      * @param sCreterialDate 検索基準日
      * @param nEvaluationLevel 評価レベル
      * @param sReportLine レポートラインタイプ
@@ -392,7 +392,7 @@ public interface Version3CompatibleLogic {
      * @param sLanguage 言語区分
      * @return 被評価者ユーザ情報配列
      *          顧客コード、法人コード、英語法人名、
-     *          日本語法人名、所属コード、役職名、社員番号、
+     *          日本語法人名、所属コード、役職名、職員番号、
      *          漢字氏名を含むVector×n 対象者なし時はNULL
      * @throws Exception システム例外
      */
@@ -448,9 +448,9 @@ public interface Version3CompatibleLogic {
      * 指定評価レベルの評価者情報を取得します。
      * @param sCustomerID 顧客コード
      * @param sLoginCompanyID ログイン法人コード
-     * @param sLoginUserID ログインユーザ社員番号
+     * @param sLoginUserID ログインユーザ職員番号
      * @param sTargetCompanyID 検索対象ユーザ法人コード
-     * @param sTargetUserID 検索対象ユーザ社員番号
+     * @param sTargetUserID 検索対象ユーザ職員番号
      * @param sCreterialDate 検索基準日
      * @param nEvaluationLevel 評価レベル
      * @param sReportLine レポートラインタイプ
@@ -474,7 +474,7 @@ public interface Version3CompatibleLogic {
      * 基点組織以下の組織リストをSQL用のカンマ区切りで取得します
      * @param sCustID	顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @return String 基点組織またはそれ以下の組織のリスト（カンマ区切り）
      */
@@ -486,7 +486,7 @@ public interface Version3CompatibleLogic {
      * 基点組織以下の組織リストをSQL用のカンマ区切りで取得します（複数法人対応）
      * @param sCustID	顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @return String 法人区分をキーに、基点組織またはそれ以下の組織のリスト（カンマ区切り）
      */
@@ -495,11 +495,11 @@ public interface Version3CompatibleLogic {
              String sEmployeeID,  String sCreterialDate);
 
     /**
-     * 指定社員の下位組織リストをSQL用のカンマ区切りで取得します
-     * 社員指定、仮想組織含むか
+     * 指定職員の下位組織リストをSQL用のカンマ区切りで取得します
+     * 職員指定、仮想組織含むか
      * @param sCustID 顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @param bIncludeVirtual 仮想組織含むか
      * @return String 組織コードリスト
@@ -510,11 +510,11 @@ public interface Version3CompatibleLogic {
             boolean bIncludeVirtual);
 
     /**
-     * 指定社員の下位組織リストをSQL用のカンマ区切りで取得します
-     * 社員指定
+     * 指定職員の下位組織リストをSQL用のカンマ区切りで取得します
+     * 職員指定
      * @param sCustID 顧客コード
      * @param sCompID 法人コード
-     * @param sEmployeeID 社員番号
+     * @param sEmployeeID 職員番号
      * @param sCreterialDate 基準日
      * @return String 組織コードリスト
      */
@@ -582,7 +582,7 @@ public interface Version3CompatibleLogic {
 
 
     /**
-     * V3の顧客コード、法人コード、社員番号からユーザコードを取得します
+     * V3の顧客コード、法人コード、職員番号からユーザコードを取得します
      * @param sCustid
      * @param sCompid
      * @param sLoginUserId

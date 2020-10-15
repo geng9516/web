@@ -4,7 +4,7 @@
 |HE_ID|numeric||否|IDカラム|
 |HE_CCUSTOMERID_CK|varchar||否|顧客コード|
 |HE_CCOMPANYID_CK|varchar||否|法人コード|
-|HE_CEMPLOYEEID_CK|varchar||否|社員番号|
+|HE_CEMPLOYEEID_CK|varchar||否|職員番号|
 |HE_CUSERID|varchar||否|ユーザID|
 |HE_CSYSTEMID_CK|varchar||否|システムコード|
 |HE_DSTARTDATE_CK|date||否|開始日|

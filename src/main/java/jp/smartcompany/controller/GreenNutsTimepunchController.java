@@ -96,7 +96,7 @@ public class GreenNutsTimepunchController {
     }
 
     /**
-     * ICカード対応タイムレコーダー『Green Nuts』用 社員マスタアクション
+     * ICカード対応タイムレコーダー『Green Nuts』用 職員マスタアクション
      * 対応ページ名：McSrvs04
      *
      * @return
@@ -104,7 +104,7 @@ public class GreenNutsTimepunchController {
     @PostMapping(value = "McSrvs04", produces = MediaType.TEXT_PLAIN_VALUE)
     @IgnoreResponseSerializable
     public String greenNutsMastemployees() {
-        //errCode エラーコード 1 異常 7 固定 42  サーバに社員マスタファイルがない
+        //errCode エラーコード 1 異常 7 固定 42  サーバに職員マスタファイルがない
         String errCode = "1742";
         StringBuilder content = new StringBuilder();
         String[] args = {errCode};

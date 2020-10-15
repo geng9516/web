@@ -19,7 +19,7 @@ import lombok.ToString;
 public class AttendanceBookHolidayInfoVO {
 
     /**
-     * 社員ID
+     * 職員ID
      */
     private String employeeId;
 

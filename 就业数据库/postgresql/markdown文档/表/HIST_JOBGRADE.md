@@ -4,7 +4,7 @@
 |HJG_ID|numeric||否|IDカラム|
 |HJG_CCUSTOMERID|varchar||否|顧客コード|
 |HJG_CCOMPANYID|varchar||否|法人コード|
-|HJG_CEMPLOYEEID|varchar||否|社員番号|
+|HJG_CEMPLOYEEID|varchar||否|職員番号|
 |HJG_CUSERID|varchar||否|ユーザID|
 |HJG_DSTARTDATE|date||否|データ開始日|
 |HJG_DENDDATE|date||否|データ終了日|

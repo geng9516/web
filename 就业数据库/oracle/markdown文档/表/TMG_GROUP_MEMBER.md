@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TGRM_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TGRM_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TGRM_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TGRM_CEMPLOYEEID|VARCHAR2||否|職員番号                                                                                      |
 |TGRM_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                                                                                   |
 |TGRM_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                                                                                   |
 |TGRM_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |

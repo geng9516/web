@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TWHW_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ  |
 |TWHW_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ |
-|TWHW_CEMPLOYEEID|varchar||否|社員番号  |
+|TWHW_CEMPLOYEEID|varchar||否|職員番号  |
 |TWHW_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日 |
 |TWHW_DENDDATE|date||否|ﾃﾞｰﾀ終了日  |
 |TWHW_CMODIFIERUSERID|varchar||是|更新者   |

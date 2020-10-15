@@ -6,7 +6,7 @@
 |TTR_DPARAMETER5|DATE||是|日付型パラメータ５                                                                                 |
 |TTR_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
 |TTR_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
-|TTR_CEMPLOYEEID|VARCHAR2||是|社員番号                                                                                      |
+|TTR_CEMPLOYEEID|VARCHAR2||是|職員番号                                                                                      |
 |TTR_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日                       固定：1900/01/01                                               |
 |TTR_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日                       固定：2222/12/31                                               |
 |TTR_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |

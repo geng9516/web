@@ -125,7 +125,7 @@ public class AttendanceBookBean {
     public AttendanceDateInfoDTO selectDateInfo(String employeeId, String year, String month) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
-            logger.error("社員IDは空です");
+            logger.error("職員IDは空です");
             return null;
         }
         //該当年月日
@@ -214,7 +214,7 @@ public class AttendanceBookBean {
         }
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId) || ObjectUtil.isNull(modifieruserId) || ObjectUtil.isEmpty(modifieruserId)) {
-            logger.error("社員IDまたは更新者IDは空です");
+            logger.error("職員IDまたは更新者IDは空です");
             return false;
         }
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
@@ -365,7 +365,7 @@ public class AttendanceBookBean {
      */
     private List<AttendanceBookDTO> selectAttendanceBookDto(String employeeId, String year, String month) {
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
-            logger.error("社員IDは空です");
+            logger.error("職員IDは空です");
             return null;
         }
         //該当年
@@ -519,7 +519,7 @@ public class AttendanceBookBean {
      */
     public AttendanceBookEmpDTO selectEmployeesBasicInfo(String employeeId, String year, String month) {
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
-            logger.error("社員IDは空です");
+            logger.error("職員IDは空です");
             return null;
         }
         //該当年
@@ -563,7 +563,7 @@ public class AttendanceBookBean {
     public AttendanceBookHolidayInfoVO queryHolidayInfo(String employeeId, String year, String month) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
-            logger.error("社員IDは空です");
+            logger.error("職員IDは空です");
             return null;
         }
         //該当年
@@ -680,7 +680,7 @@ public class AttendanceBookBean {
     }
 
     /**
-     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * 対象職員の出勤簿情報が存在する年度情報を検索する
      *
      * @param employeeId
      * @param year
@@ -691,7 +691,7 @@ public class AttendanceBookBean {
         String targetDate = "";
 
         if (null == employeeId || "".equals(employeeId)) {
-            logger.warn("社員番号が空です");
+            logger.warn("職員番号が空です");
             return null;
         }
 
@@ -706,7 +706,7 @@ public class AttendanceBookBean {
         String compCode = psDBBean.getCompCode();
         //01
         String custId = psDBBean.getCustID();
-        //対象社員の出勤簿情報が存在する年度情報
+        //対象職員の出勤簿情報が存在する年度情報
         AttendanceExistsVO attendanceExistsVO = iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
         //該当最後の日
         attendanceExistsVO.setCurrentYear(currentYear);

@@ -64,7 +64,7 @@ private static final long serialVersionUID=1L;
         private String mdspCpostid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("mdsp_cemployeeid")
         private String mdspCemployeeid;

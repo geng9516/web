@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TWEM_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ |
 |TWEM_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ |
-|TWEM_CEMPLOYEEID|varchar||否|社員番号 |
+|TWEM_CEMPLOYEEID|varchar||否|職員番号 |
 |TWEM_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日 |
 |TWEM_DENDDATE|date||否|ﾃﾞｰﾀ終了日 |
 |TWEM_CMODIFIERUSERID|varchar||是|更新者 |

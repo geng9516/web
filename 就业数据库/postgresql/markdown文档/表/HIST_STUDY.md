@@ -4,7 +4,7 @@
 |STD_ID|numeric||否|IDカラム  |
 |STD_CCUSTOMERID|varchar||否|顧客コード|
 |STD_CCOMPANYID|varchar||否|法人コード|
-|STD_CEMPLOYEEID|varchar||否|社員番号|
+|STD_CEMPLOYEEID|varchar||否|職員番号|
 |STD_CUSERID|varchar||否|ユーザID|
 |STD_DSTARTDATE|date||否|データ開始日|
 |STD_DENDDATE|date||否|データ終了日|

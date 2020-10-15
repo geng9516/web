@@ -595,7 +595,7 @@
                 //リストの取得
                 await this.getTmgPatternList()
 
-                //部署社員リスト
+                //部署職員リスト
                 await　this.selectTmgPatternApplies()
 
                 //新規ボタンを有効にする
@@ -1133,7 +1133,7 @@
                 const {data} = await this.http.get('sys/patternSetting/selectEditPeriodDate', null)
                 this.periodDate = data.periodDate
             },
-            //該当者毎に設定されている勤務パターンの情報を取得する（部署社員リスト）
+            //該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
             async selectTmgPatternApplies() {
                 this.empDrawShow = true
                 this.empTableLoading = true

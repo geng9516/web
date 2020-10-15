@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TPPM_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ|
 |TPPM_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ|
-|TPPM_CEMPLOYEEID|varchar||否|社員番号|
+|TPPM_CEMPLOYEEID|varchar||否|職員番号|
 |TPPM_DSTARTDATE|date||否|ﾃﾞｰﾀ開始日|
 |TPPM_DENDDATE|date||否|ﾃﾞｰﾀ終了日|
 |TPPM_CMODIFIERUSERID|varchar||是|更新者|

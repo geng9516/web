@@ -38,7 +38,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
          *
          * @param customerId 　顧客コード
          * @param companyId  　法人コード
-         * @param employeeId  　社員番号
+         * @param employeeId  　職員番号
          * @param yyyymmdd 　勤務日
          * @return
          */

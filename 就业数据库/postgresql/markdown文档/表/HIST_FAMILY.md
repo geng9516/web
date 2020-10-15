@@ -4,7 +4,7 @@
 |HF_ID|numeric||否|IDカラム|
 |HF_CCUSTOMERID|varchar||否|顧客コード|
 |HF_CCOMPANYID|varchar||否|法人コード|
-|HF_CEMPLOYEEID|varchar||否|社員番号|
+|HF_CEMPLOYEEID|varchar||否|職員番号|
 |HF_CUSERID|varchar||否|ユーザID|
 |HF_DSTARTDATE|date||否|データ開始日|
 |HF_DENDDATE|date||否|データ終了日|

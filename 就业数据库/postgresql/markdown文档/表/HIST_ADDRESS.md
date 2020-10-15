@@ -4,7 +4,7 @@
 |HA_ID|numeric||否|IDカラム|
 |HA_CCUSTOMERID|varchar||否|顧客コード|
 |HA_CCOMPANYID|varchar||否|法人コード|
-|HA_CEMPLOYEEID|varchar||否|社員番号|
+|HA_CEMPLOYEEID|varchar||否|職員番号|
 |HA_CUSERID|varchar||否|ユーザID|
 |HA_DSTARTDATE|date||否|データ開始日|
 |HA_DENDDATE|date||否|データ終了日|

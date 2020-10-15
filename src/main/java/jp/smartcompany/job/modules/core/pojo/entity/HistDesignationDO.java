@@ -44,7 +44,7 @@ private static final long serialVersionUID=1L;
         private String hdCcompanyidCk;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("hd_cemployeeid_ck")
         private String hdCemployeeidCk;

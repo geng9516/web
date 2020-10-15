@@ -16,7 +16,7 @@ import lombok.ToString;
 public class ClockResultVO {
 
     /**
-     * 社員番号
+     * 職員番号
      */
     private String employeeId;
 

@@ -123,7 +123,7 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
 
 
     /**
-     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * 対象職員の出勤簿情報が存在する年度情報を検索する
      *
      * @param baseDate
      * @param employeeId

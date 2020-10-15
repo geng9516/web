@@ -17,7 +17,7 @@
 |TPH_NCONFIRM_EDIT|NUMBER||是|認定出勤日数(編集)                                           |
 |TPH_CCUSTOMERID|VARCHAR2||是|顧客ｺｰﾄﾞ                                               |
 |TPH_CCOMPANYID|VARCHAR2||是|法人ｺｰﾄﾞ                                               |
-|TPH_CEMPLOYEEID|VARCHAR2||是|社員番号                                                 |
+|TPH_CEMPLOYEEID|VARCHAR2||是|職員番号                                                 |
 |TPH_DSTARTDATE|DATE||是|ﾃﾞｰﾀ開始日                                              |
 |TPH_DENDDATE|DATE||是|ﾃﾞｰﾀ終了日                                              |
 |TPH_CMODIFIERUSERID|VARCHAR2||是|更新者                                                  |

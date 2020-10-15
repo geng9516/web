@@ -20,7 +20,7 @@ public class ParamOvertimeInstructDto {
     private String custId;
     /**法人コード*/
     private String compId;
-    /**社員番号*/
+    /**職員番号*/
     private String userCode;
     /**today
      * yyyy/mm/dd
@@ -32,7 +32,7 @@ public class ParamOvertimeInstructDto {
     private String lang;
     /**  アクション識別子*/
     private String action;
-    /**対象社員*/
+    /**対象職員*/
     private String targetUser;
 
     private String siteId;

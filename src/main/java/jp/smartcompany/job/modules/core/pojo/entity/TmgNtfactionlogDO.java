@@ -40,7 +40,7 @@ private static final long serialVersionUID=1L;
         private String tnalCcompanyid;
 
         /**
-         * 社員番号
+         * 職員番号
          */
     @TableField("tnal_cemployeeid")
         private String tnalCemployeeid;
@@ -82,7 +82,7 @@ private static final long serialVersionUID=1L;
         private String tnalCsiteid;
 
         /**
-         * 申請番号                          申請者社員番号|連番
+         * 申請番号                          申請者職員番号|連番
          */
     @TableField("tnal_cntfno")
         private String tnalCntfno;

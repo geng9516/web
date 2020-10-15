@@ -3,7 +3,7 @@
 | ---- | ---- | ---- | ---- | ---- |
 |TPH_CCUSTOMERID|varchar||是|顧客ｺｰﾄﾞ                                               |
 |TPH_CCOMPANYID|varchar||是|法人ｺｰﾄﾞ                                               |
-|TPH_CEMPLOYEEID|varchar||是|社員番号                                                 |
+|TPH_CEMPLOYEEID|varchar||是|職員番号                                                 |
 |TPH_DSTARTDATE|date||是|ﾃﾞｰﾀ開始日                                              |
 |TPH_DENDDATE|date||是|ﾃﾞｰﾀ終了日                                              |
 |TPH_CMODIFIERUSERID|varchar||是|更新者                                                  |

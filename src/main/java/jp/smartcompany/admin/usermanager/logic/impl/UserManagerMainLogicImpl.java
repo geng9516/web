@@ -88,7 +88,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
                  pageResult = mastEmployeesService.selectMainAfterRetireList(pageQuery,custId,language,companyId,companyList);
                  break;
              // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=7&companyId=01&empId=4640
-             case 7: // 社員番号
+             case 7: // 職員番号
                  pageResult = mastEmployeesService.selectMainEmpIdList(pageQuery,custId,language,companyId,companyList,empId);
                  break;
              // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=8&sectionCompanyId=01&sectionId=201000000000

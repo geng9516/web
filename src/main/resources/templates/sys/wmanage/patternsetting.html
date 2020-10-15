@@ -62,7 +62,7 @@
                     </Drawer>
                 </span>
             <!--<span style="padding-left: 8px; padding-right: 8px;">
-                 選択された所属にいる社員：
+                 選択された所属にいる職員：
                 <i-button type="button" class="ivu-btn ivu-btn-default" disabled v-if="btn_sk_show===false"><span>照会</span></i-button>
                 <i-button type="button" class="ivu-btn ivu-btn-default" @click="selectTmgPatternApplies" v-else><span>照会</span></i-button>
                 <Drawer class="tc" :title="deptName" placement="right" width="700" :closable="true" :mask-closable="!isSearchHistory" v-model="empDrawShow">
@@ -604,7 +604,7 @@
                 //リストの取得
                 await this.getTmgPatternList()
 
-                //部署社員リスト
+                //部署職員リスト
                 await this.selectTmgPatternApplies()
 
                 //新規ボタンを有効にする
@@ -1138,7 +1138,7 @@
                 const {data} = await this.http.get('sys/patternSetting/selectEditPeriodDate', null)
                 this.periodDate = data.periodDate
             },
-            //該当者毎に設定されている勤務パターンの情報を取得する（部署社員リスト）
+            //該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
             async selectTmgPatternApplies() {
                 this.empDrawShow = true
                 this.empTableLoading = true

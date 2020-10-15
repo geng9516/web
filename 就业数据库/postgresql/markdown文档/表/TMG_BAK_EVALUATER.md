@@ -4,7 +4,7 @@
 |TEV_DCREATE|date||是|作成日|
 |TEV_CCUSTOMERID|varchar||否|顧客コード 固定：01|
 |TEV_CCOMPANYID|varchar||否|法人コード|
-|TEV_CEMPLOYEEID|varchar||否|社員番号|
+|TEV_CEMPLOYEEID|varchar||否|職員番号|
 |TEV_DSTARTDATE|date||否|データ開始日|
 |TEV_DENDDATE|date||否|データ終了日|
 |TEV_CMODIFIERUSERID|varchar||是|更新者|

@@ -11,7 +11,7 @@
 |MAG_CCOMPANYID|varchar||否|法人コード|
 |MAG_CSECTIONID|varchar||是|組織コード|
 |MAG_CPOSTID|varchar||是|役職コード|
-|MAG_CEMPLOYEEID|varchar||是|社員番号|
+|MAG_CEMPLOYEEID|varchar||是|職員番号|
 |MAG_CMODIFIERUSERID|varchar||是|最終更新者|
 |MAG_DMODIFIEDDATE|date||是|最終更新日|
 |VERSIONNO|numeric||否|バージョンNo|

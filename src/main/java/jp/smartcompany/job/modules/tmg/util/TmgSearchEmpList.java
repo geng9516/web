@@ -19,7 +19,7 @@ public class TmgSearchEmpList {
     // TmgSearchEmpListオブジェクトをリクエストパラメータへ一時退避する際のキー
     public static final String REQUEST_KEY_TMG_SEARCH_EMP_LIST_OBJECT = "TmgSearchEmpListObject";
     /**
-     *  管理サイトにおいて、社員一覧の検索に管理対象フラグを使用するかどうかをセッションに登録する際のキーです。
+     *  管理サイトにおいて、職員一覧の検索に管理対象フラグを使用するかどうかをセッションに登録する際のキーです。
      */
     public static final String SESSION_KEY_USEMANAGEFLG  = "UseManageFlg";
 
@@ -136,7 +136,7 @@ public class TmgSearchEmpList {
         if (pbViewAll) {
             createOrgTree(psDate, bWithTarget);
         }
-        // 社員一覧を初期化
+        // 職員一覧を初期化
         if(targetSection != null && !targetSection.equals("")){
             createEmpList(psDate, bWithTarget, useManageFLG);
         }
@@ -165,9 +165,9 @@ public class TmgSearchEmpList {
     }
 
     /**
-     * 対象部署について社員一覧を作成します。
-     * SYSDATE時点で、指定した部署に所属している社員の一覧を作成します。
-     * なお、作成される社員一覧には、兼務の社員も含まれます。
+     * 対象部署について職員一覧を作成します。
+     * SYSDATE時点で、指定した部署に所属している職員の一覧を作成します。
+     * なお、作成される職員一覧には、兼務の職員も含まれます。
      * @param psDate	基準日
      * @param pbWithTarget	true: 検索対象範囲設定を使用、false: 全学から選択
      * @param useManageFLG 管理対象外職員を表示するかの判定フラグ（true：含める、false：含めない）
@@ -197,7 +197,7 @@ public class TmgSearchEmpList {
     }
 
     /**
-     * 作成された社員一覧の内容に従って、ツリービュー作成用のJSON配列を生成して返します。
+     * 作成された職員一覧の内容に従って、ツリービュー作成用のJSON配列を生成して返します。
      * 勤怠管理サイトの個人データを表示するタイプのコンテンツで使用します。
      */
     public String getJSONArrayForEmpList(){

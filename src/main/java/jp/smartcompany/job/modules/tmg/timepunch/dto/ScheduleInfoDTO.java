@@ -19,7 +19,7 @@ import java.util.List;
 public class ScheduleInfoDTO {
 
     /**
-     * 　社員番号
+     * 　職員番号
      */
     private String tda_cemployeeid;
 

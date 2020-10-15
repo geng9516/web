@@ -133,7 +133,7 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.addEvalHandler(bean,dto);
     }
 
-    // 社員検索画面表示
+    // 職員検索画面表示
     @GetMapping("searchemp")
     // http://localhost:6879/sys/evaluatorsetting/searchemp?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
     public Map<String,Object> showSearchEmp(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam(value="sectionId",required = false) String sectionId) {

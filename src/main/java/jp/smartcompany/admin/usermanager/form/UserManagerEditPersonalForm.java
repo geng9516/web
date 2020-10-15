@@ -24,7 +24,7 @@ public class UserManagerEditPersonalForm {
     /**次回ログインパスワード変更フラグ*/
     private Boolean forceChangePassword;
 
-    /** 基準日(社員基本情報コンポーネント引渡し用) */
+    /** 基準日(職員基本情報コンポーネント引渡し用) */
     private UpdatePersonalDTO account;
 
 }

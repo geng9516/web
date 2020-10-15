@@ -22,7 +22,7 @@ import java.util.List;
  *  * システム情報取得インターフェースです。
  *  * </p>
  *  * <div> ・所属長取得<br>
- *  * ・組織情報取得-下位組織（社員指定）<br>
+ *  * ・組織情報取得-下位組織（職員指定）<br>
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.SECTION_CHIEF)
@@ -77,7 +77,7 @@ public class SectionChiefBusiness {
 
             if (CollUtil.isNotEmpty(evaluatorForMyChiefList)) {
                 // 複数件の所属長情報が返却された場合は1件目をその組織の所属長とする
-                // ・並び順はその異動暦の開始日付および社員番号の昇順
+                // ・並び順はその異動暦の開始日付および職員番号の昇順
                 // ・複数の異動暦がある場合にはその異動暦毎の所属長を返却
                 EvaluatorBO evaluatorForMyChief = evaluatorForMyChiefList.get(0);
 

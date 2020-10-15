@@ -4,7 +4,7 @@
 |HPJ_ID|numeric||否|IDカラム|
 |HPJ_CCUSTOMERID|varchar||否|顧客コード|
 |HPJ_CCOMPANYID|varchar||否|法人コード|
-|HPJ_CEMPLOYEEID|varchar||否|社員番号|
+|HPJ_CEMPLOYEEID|varchar||否|職員番号|
 |HPJ_CUSERID|varchar||否|ユーザID|
 |HPJ_DSTARTDATE|date||否|データ開始日|
 |HPJ_DENDDATE|date||否|データ終了日|

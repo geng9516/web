@@ -677,7 +677,7 @@
                 this.tableData = []
 
                 if (this.query.hidSelectTab == '1'){
-                    this.deptName = '職員により検索中'
+                    this.deptName = '検索対象者一覧'
                     this.query.txtUserCode = null
                 }
 
@@ -893,7 +893,7 @@
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、職員コードをnullで設定する
                 this.query.txtUserCode = null
 
                 //初期
@@ -932,7 +932,7 @@
                             this.forRest = !this.forRest
                             //年5日時季指定取得確認画面を閉じる
                             this.isShow = false
-                            //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                            //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、職員コードをnullで設定する
                             if (this.query.hidSelectTab=='0'){
                                 this.query.txtUserCode = null
                             }
@@ -968,7 +968,7 @@
 
                         //年5日時季指定取得確認画面を閉じる
                         this.isShow = false
-                        //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                        //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、職員コードをnullで設定する
                         if (this.query.hidSelectTab=='0'){
                             this.query.txtUserCode = null
                         }

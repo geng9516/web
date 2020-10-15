@@ -19,9 +19,9 @@ public class SectionPostRowListDTO {
     private List<SectionPostRowDTO> postList;
     /** 選択済みの役職一覧(指定法人＆指定組織)の件数 */
     private int selectedPostCnt = 0;
-    /** 組織・役職条件選択情報 格納リスト 社員一覧(指定法人＆指定組織) */
+    /** 組織・役職条件選択情報 格納リスト 職員一覧(指定法人＆指定組織) */
     private List<SectionPostRowDTO> employList;
-    /** 選択済みの社員一覧(指定法人＆指定組織)の件数 */
+    /** 選択済みの職員一覧(指定法人＆指定組織)の件数 */
     private int selectedEmpoyeesCompCnt = 0;
     /** 顧客名称 */
     private String customerName;
@@ -53,7 +53,7 @@ public class SectionPostRowListDTO {
     private String sectionId;
     /** 役職コード */
     private String postId;
-    /** 社員番号 */
+    /** 職員番号 */
     private String employeeId;
     /** ID */
     private Long id;

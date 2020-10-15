@@ -294,7 +294,7 @@ public interface TmgScheduleMapper extends BaseMapper<TmgPatternDO> {
     String selectBaseDateFor4Week(HashMap<String, Object> params);
 
     /**
-     * 対象社員の勤怠日別情報の最小日と最大日を取得する
+     * 対象職員の勤怠日別情報の最小日と最大日を取得する
      *
      * @param params
      * @return
