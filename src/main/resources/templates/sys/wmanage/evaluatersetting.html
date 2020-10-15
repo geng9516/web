@@ -1295,6 +1295,7 @@
                     this.$Message.success('削除完了')
                     this.getTableData()
                 } catch (error) {
+                    this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
                     this.solvingLoading  = false
                 } finally {
                     this.delGruopNameLoading = false

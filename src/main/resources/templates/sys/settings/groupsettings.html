@@ -6,8 +6,8 @@
 
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
-<!-- 菜单导航栏 -->
-<div th:replace="layout/sider"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
   <main class="content groupsettings-warp">
     <div class="content_head">
       <div class="header">
@@ -20,8 +20,8 @@
         <div class="btnbox">
           <span style="flex:1"></span>
           今回改定日：
-          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5"
-            format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
+          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5" format="yyyy/MM/dd"
+            @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
           </date-picker>
           <i-button type="success" icon="md-add" @click="add" :loading="editLoading">新規</i-button>
         </div>
@@ -49,17 +49,21 @@
         <Icon type="logo-buffer"></Icon>
         有効なグループ
       </div>
-      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading" :row-class-name="() => 'select-col'">
+      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading"
+        :row-class-name="() => 'select-col'">
         <template slot-scope="{ row }" slot="date">
-          <span class="ml30">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
+          <span
+            class="ml15">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="mgCgroupidPk">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="edit(row.mgCgroupidPk)">{{ row.mgCgroupidPk }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+            @click="edit(row.mgCgroupidPk)">{{ row.mgCgroupidPk }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="mgCgroupdescription">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="edit(row.mgCgroupidPk)">{{ row.mgCgroupdescription }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+            @click="edit(row.mgCgroupidPk)">{{ row.mgCgroupdescription }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="del">
@@ -81,7 +85,7 @@
         現在使われていないグループ
       </div>
       <!-- 該当条件編集画面 start-->
-      <Drawer class="tc" placement="right" width="800" v-model="isShow" title="該当条件編集画面">
+      <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面">
         <div class="mb10 tr">
           <i-button type="primary" ghost @click="handleEvent" icon="md-create" :loading="drawerBtnLoading">
             登録
@@ -89,95 +93,181 @@
         </div>
         <div class="mt10 mb10">
           <Row :gutter="10">
-              <i-col span="12">
-                  <div class="label pl10">法人</div>
-                  <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].companyName }}</div>
-              </i-col>
-              <i-col span="12">
-                  <div class="label pl10">備考</div>
-                  <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].mgCtext }}</div>
-              </i-col>
+            <i-col span="12">
+              <div class="label pl10">法人</div>
+              <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].companyName }}</div>
+            </i-col>
+            <i-col span="12">
+              <div class="label pl10">備考</div>
+              <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].mgCtext }}</div>
+            </i-col>
           </Row>
-        <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="groupInfoColumns" :disabled-hover="true"
-          :data="groupInfoData" :loading="loading" no-data-text="">
-          <template slot-scope="{ row }" slot="date">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
-          </template>
+          <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="groupInfoColumns"
+            :disabled-hover="true" :data="groupInfoData" :loading="loading" no-data-text="">
+            <template slot-scope="{ row }"
+              slot="date">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
+            </template>
 
-          <template slot-scope="{ row }" slot="name">
-            <i-input class="tl" v-model="row.mgCgroupdescription"><span slot="prepend">日本語</span></i-input>
-          </template>
+            <template slot-scope="{ row }" slot="name">
+              <i-input class="tl" v-model="row.mgCgroupdescription"><span slot="prepend">日本語</span></i-input>
+            </template>
 
-          <template slot-scope="{ row }" slot="count">
-            <i-input class="tr" v-model="row.mgNpartinentnumber"><span slot="append">人</span></i-input>
-          </template>
-        </i-table>
-        <!-- <div class="tl mt10">
+            <template slot-scope="{ row }" slot="count">
+              <i-input class="tr" v-model="row.mgNpartinentnumber"><span slot="append">人</span></i-input>
+            </template>
+          </i-table>
+          <!-- <div class="tl mt10">
           <radio-group class="tl" v-model="updateValue.baseFlag">
             <Radio label="0">社員選択による定義</Radio>
             <Radio label="1">条件式による定義</Radio>
             <Radio label="2">組織・役職選択による定義</Radio>
           </radio-group>
         </div> -->
-        <Tabs class="mt10" :animated="false" v-model="updateValue.baseFlag">
-          <!-- 社員選択による定義 -->
-          <tab-pane label="社員選択による定義 " name="0">
-            <Row class="tl mb5" :gutter="8">
-              <i-col span="10">
-                <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
-                  @keyup.enter.native="handleSearchEmpt">
-                </i-input>
-              </i-col>
-              <i-col span="6" class="no-border-radius">
-                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt">社員検索
-                </i-button>
-              </i-col>
-              <i-col span="6" class="no-border-radius">
-                <i-button long type="primary" icon="md-search" ghost :loading="loading">所属一覧検索
-                </i-button>
-              </i-col>
-            </Row>
+          <Tabs class="mt10" :animated="false" v-model="updateValue.baseFlag" @on-click="poptipStyle.display = 'none'">
+            <!-- 社員選択による定義 -->
+            <tab-pane label="社員選択による定義 " name="0">
+              <Row class="tl mb5" :gutter="8">
+                <i-col span="10">
+                  <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
+                    @keyup.enter.native="handleSearchEmpt">
+                  </i-input>
+                </i-col>
+                <i-col span="6" class="no-border-radius">
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt">社員検索
+                  </i-button>
+                </i-col>
+                <i-col span="6" class="no-border-radius">
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading">所属一覧検索
+                  </i-button>
+                </i-col>
+              </Row>
 
-            <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="emptColumns" :disabled-hover="true"
-              :data="emptData" :loading="loading" no-data-text="">
-              <template slot-scope="{ row }" slot="action">
-                <Poptip v-model="lightDelBtnVisible2[row._index]" placement="left" transfer>
-                  <div class="operateBtn" slot="content">
-                    <a @click="cancelEmpt(row._index)">いいえ</a>
-                    <a @click="removeEmpt(row, row._index)">はい</a>
-                  </div>
-                  <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除</i-button>
-                </Poptip>
-              </template>
-            </i-table>
-          </tab-pane>
-          <!-- 条件式による定義 -->
-          <tab-pane label="条件式による定義" name="1">
-          </tab-pane>
-          <!-- 組織・役職選択による定義 -->
-          <tab-pane label="組織・役職選択による定義" name="2">
-          </tab-pane>
-         </Tabs>
-        <div class="titlenorm">
-          <Icon type="logo-buffer"></Icon>
-          基点組織
-        </div>
-        <div class="no-border-radius" style="display: flex; align-items: stretch;">
-          <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">追加した組織</span>
-          <span class="input-like-span tl" style="margin-bottom: 1px;">
-            <radio-group class="tl" v-model="updateValue.belowSingle">
-              <Radio label="0">以下</Radio>
-              <Radio label="1">のみ を範囲とする</Radio>
-            </radio-group>
-          </span>
-        </div>
+              <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="emptColumns"
+                :disabled-hover="true" :data="emptData" :loading="loading" no-data-text="">
+                <template slot-scope="{ row }" slot="action">
+                  <Poptip v-model="lightDelBtnVisible2[row._index]" placement="left" transfer>
+                    <div class="operateBtn" slot="content">
+                      <a @click="cancelEmpt(row._index)">いいえ</a>
+                      <a @click="removeEmpt(row, row._index)">はい</a>
+                    </div>
+                    <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除
+                    </i-button>
+                  </Poptip>
+                </template>
+              </i-table>
+            </tab-pane>
+            <!-- 条件式による定義 -->
+            <tab-pane label="条件式による定義" name="1">
+              <i-table class="mt5" border :row-class-name="()=>'select-col'" :columns="queryColumns" @on-cell-click="handleCellClickForAction"
+                :disabled-hover="true" :data="queryData" no-data-text="">
+                <template slot-scope="{ row }" slot="andor">{{ queryData[row._index].andor }}</template>
 
-        <!-- 那颗树 -->
-        <div class="tl tree mt5">
-          <Tree :data="baseTreeData" :render="renderTree" @on-select-change="" empty-text="" check-directly show-checkbox></Tree>
+                <template slot-scope="{ row }" slot="openedparenthsis">{{ queryData[row._index].openedparenthsis }}</template>
+
+                <template slot-scope="{ row }" slot="columnname">{{ queryData[row._index].columnname }}</template>
+
+                <template slot-scope="{ row }" slot="displayoperator">{{ queryData[row._index].operator }}</template>
+
+                <template slot-scope="{ row }" slot="displayvalue">{{ queryData[row._index].displayvalue }}</template>
+
+                <template slot-scope="{ row }" slot="closedparenthsis">{{ queryData[row._index].closedparenthsis }}</template>
+                <template slot-scope="{ row }" slot="action">
+                  <!-- <Poptip v-model="lightDelBtnVisible2[row._index]" placement="left" transfer>
+                    <div class="operateBtn" slot="content">
+                      <a @click="cancelEmpt(row._index)">いいえ</a>
+                      <a @click="removeEmpt(row, row._index)">はい</a>
+                    </div>
+                    <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除
+                    </i-button>
+                  </Poptip> -->
+                </template>
+              </i-table>
+            </tab-pane>
+            <!-- 組織・役職選択による定義 -->
+            <tab-pane label="組織・役職選択による定義" name="2">
+            </tab-pane>
+          </Tabs>
+          <div class="titlenorm mb5">
+            <Icon type="logo-buffer"></Icon>
+            基点組織
+          </div>
+          <div class="no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr"
+              style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">追加した組織</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;">
+              <radio-group class="tl" v-model="updateValue.belowSingle">
+                <Radio label="0">以下</Radio>
+                <Radio label="1">のみ を範囲とする</Radio>
+              </radio-group>
+            </span>
+          </div>
+
+          <!-- <div class="tr mt5 mb10"><i-button type="error" ghost size="small">選択行を削除</i-button></div> -->
+          <!-- 那颗树 -->
+          <div class="tl tree mt5">
+            <span class="row-label-primary pl10 pr10 mt5 ml5 cursor">＋ このグループに該当する法人を追加</span>
+            <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
+              size="small">選択行を削除</i-button>
+            <Tree :data="baseTreeData" :render="renderTree" @on-select-change="" empty-text="" check-directly
+              show-checkbox></Tree>
+          </div>
         </div>
-      </div>
       </Drawer>
       <!-- 該当条件編集画面 end-->
+    </div>
+    <div class="ivu-pop-popper" :style="poptipStyle" x-placement="right-start">
+      <div class="ivu-poptip-content">
+        <div class="ivu-poptip-arrow"></div>
+        <div class="ivu-poptip-inner">
+          <!-- <div class="ivu-poptip-title">
+            <div class="ivu-poptip-title-inner">権限編集</div>
+          </div> -->
+          <div class="ivu-poptip-body">
+            <div class="ivu-poptip-body-content">
+              <div class="ivu-poptip-body-content-inner">
+                <!-- ＡＮＤ/ＯＲ -->
+                <span v-show="poptipType === 'andor'">
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>AND</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>OR</i-button>
+                </span>
+
+                <!-- （ -->
+                <span v-show="poptipType === 'openedparenthsis'">
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>(</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>((</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>(((</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>OR</i-button>
+                </span>
+
+                <!-- 項目 -->
+                <span v-show="poptipType === 'columnname'">
+                  <i-button v-for="(item,i) of queryconditionsList" :key="i" type="primary" ghost style="display:block;" size="small" class="mb5 tl" long>{{ item.nameInfo }}</i-button>
+                </span>
+
+                <!-- 比較 -->
+                <span v-show="poptipType === 'displayoperator'">
+                  <i-button v-for="(item,i) of displayoperatorList" type="primary" ghost style="display:block" size="small" class="mb5" long>{{ item }}</i-button>
+                </span>
+
+                <!-- 値 -->
+                <span v-show="poptipType === 'displayvalue'">
+                </span>
+
+                <!-- ） -->
+                <span v-show="poptipType === 'closedparenthsis'">
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>)</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>))</i-button>
+                  <i-button type="primary" ghost style="display:block" size="small" class="mb5" long>)))</i-button>
+                </span>
+                  <i-button @click="poptipStyle.display = 'none'" style="display:block" size="small" class="mb5" long>キャンセル</i-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
   <div th:replace="layout/head::header"></div>
@@ -188,11 +278,11 @@
         return {
           loading: true,
           editLoading: false,
-          isShow:false,
-          drawerBtnLoading:false,
-          currentTab:'',
+          isShow: false,
+          drawerBtnLoading: false,
+          currentTab: '',
           lightDelBtnVisible: [],
-          baseTreeData:[],
+          baseTreeData: [],
           lightDelBtnVisible2: [],
           beforeDate: '',
           searchEmpt: '',
@@ -203,36 +293,45 @@
             systemId: '01',
             date: ''
           },
+          poptipStyle: {
+            display: 'none',
+            position: 'absolute',
+            'will-change': 'top, left',
+            'z-index': '1001',
+            left: '0',
+            top: '0'
+          },
+          poptipType:'',
           columns: [
-          {
-            title: '期間',
-            slot: 'date'
-          },
-          {
-            title: 'ID',
-            slot: 'mgCgroupidPk',
-            width: 150,
-          },
-          {
-            title: '名称',
-            slot: 'mgCgroupdescription',
-          },
-          {
-            title: '法人',
-            key: 'companyName'
-          },
-          {
-            title: '削除',
-            slot: 'del',
-            align: 'center',
-            width: 80,
-          },
-          {
-            title: '順序',
-            slot: 'order',
-            align: 'center',
-            width: 100,
-          }
+            {
+              title: '期間',
+              slot: 'date'
+            },
+            {
+              title: 'ID',
+              slot: 'mgCgroupidPk',
+              width: 150,
+            },
+            {
+              title: '名称',
+              slot: 'mgCgroupdescription',
+            },
+            {
+              title: '法人',
+              key: 'companyName'
+            },
+            {
+              title: '削除',
+              slot: 'del',
+              align: 'center',
+              width: 80,
+            },
+            {
+              title: '順序',
+              slot: 'order',
+              align: 'center',
+              width: 100,
+            }
           ],
           groupInfoColumns: [
             {
@@ -241,7 +340,7 @@
             },
             {
               title: 'ID',
-              width:70,
+              width: 70,
               key: 'mgCgroupidPk',
               align: 'center'
             },
@@ -252,11 +351,11 @@
             {
               title: '適正人数',
               slot: 'count',
-              width:120,
+              width: 120,
             },
           ],
-          groupInfoData:[],
-          emptColumns:[
+          groupInfoData: [],
+          emptColumns: [
             {
               title: '法人',
               key: 'companyName',
@@ -283,9 +382,42 @@
               width: 80
             }
           ],
-          emptData:[],
+          emptData: [],
+          queryColumns:[
+            {
+              title: 'ＡＮＤ/ＯＲ',
+              slot: 'andor',
+            },
+            {
+              title: '（',
+              slot: 'openedparenthsis',
+            },
+            {
+              title: '項目',
+              slot: 'columnname',
+            },
+            {
+              title: '比較',
+              slot: 'displayoperator',
+            },
+            {
+              title: '値',
+              slot: 'displayvalue',
+            },
+            {
+              title: '）',
+              slot: 'closedparenthsis',
+            },
+            {
+              title: ' ',
+              slot: 'action',
+            },
+          ],
+          displayoperatorList:['＝', '≠', '以上', '以下', 'より上', 'より下', '空白のみ', '空白以外'],
+          queryData:[],
           tableData: [{}],
-          updateValue:{},
+          queryconditionsList:[],
+          updateValue: {},
           limitDate: '',
           rangeOptions: {
             disabledDate: date => {
@@ -296,6 +428,13 @@
       },
       async created() {
         this.getData()
+        this.getqueryconditions()
+      },
+      watch: {
+        isShow(newValue) {
+          // 关闭浮层需要将小浮窗一起关闭
+          if(!newValue) this.poptipStyle.display = 'none'
+        }
       },
       computed: {
       },
@@ -303,7 +442,7 @@
         async getData() {
           const OPTS = { ...this.opts }
           OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
+          OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
           this.loading = true
           try {
             const { data } = await this.http.get('sys/groupmanager/groups', OPTS)
@@ -317,6 +456,10 @@
             this.loading = false
           }
         },
+        async getqueryconditions() {
+          const { data } = await this.http.get('sys/groupmanager/queryconditions')
+          this.queryconditionsList = data
+        },
         async add() {
           // this.loading = true
           // let OPTS = { permList: [...new Set(this.updateValue)] }
@@ -328,10 +471,10 @@
           // this.updateValue = []
         },
         handleEvent() {
-          
+
         },
         handleSearchEmpt() {
-              // http://localhost:6879/sys/groupmanager/empsearch?searchWord=464&psSite=Admin
+          // http://localhost:6879/sys/groupmanager/empsearch?searchWord=464&psSite=Admin
           // sys/groupmanager/empsearch
         },
         handleSystemChange() {
@@ -364,14 +507,22 @@
           this.groupInfoData = [data.groupInfo]
           this.emptData = data.empList.empList
           this.updateValue.belowSingle = data.belowSingle
+          this.updateValue.baseFlag = data.groupInfo.gsBaseFlg
+          // 条件式による定義
+          this.queryData = data.queryConditions.rowList.length > 1 ? data.queryConditions.rowList :[{}]
           // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
           // 所以这里直接取第一个法人的全部
-          this.baseTreeData = [{title:`【${data.companyId}】 ${data.companyName}`, children:data.baseSectionList[0].sectionList.map(e=>{
-            return {
-              ...e,
-              title:`【${e.mgbsCsectionid}】 ${e.sectionName}`
-            }
-          }), expand: true}]
+          this.baseTreeData = [{
+            title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
+              return {
+                ...e,
+                isGroup: true,
+                isLastGroup: data.baseSectionList[0] && data.baseSectionList[0].sectionList.length - 1 === i,
+                title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
+              }
+            }), expand: true
+          }]
+
         },
         remove(i) {
           this.$set(this.lightDelBtnVisible, i, false)
@@ -379,14 +530,27 @@
         cancel(i) {
           this.$set(this.lightDelBtnVisible, i, false)
         },
-        removeEmpt(row,i) {
+        removeEmpt(row, i) {
           this.emptData = this.emptData.filter(e => e.id !== row.id)
           this.$set(this.lightDelBtnVisible2, i, false)
         },
         cancelEmpt(i) {
           this.$set(this.lightDelBtnVisible2, i, false)
         },
+        handleCellClickForAction(row, column, data, event) {
+          if (column.slot === 'action') {
+            return
+          }
+          this.poptipType = column.slot
+          const elemLocation = event.target.offsetParent.getBoundingClientRect()
+          this.poptipStyle.display = 'block'
+          this.poptipStyle.left = `${elemLocation.x}px`
+          this.poptipStyle.top = `${elemLocation.y}px`
+        },
         renderTree(h, { root, node, data }) {
+          // 第一个法人时需要显示可以追加組織
+          // 如果是組織・役職選択による定義， 则还可以追加所属长和役職
+          // 最后一个组织的下方加入所属长追加，最后一个所属长的下方，加入役職追加
           if (data.expand) {
             return h('span', {
               style: {
@@ -394,43 +558,77 @@
                 width: '100%'
               }
             }, [
-              h('span', [
-                h('Icon', {
-                  props: {
-                    type: 'ios-paper-outline'
+              h('span', data.title),
+              h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    marginRight: '8px'
-                  }
-                }),
-                h('span', data.title)
-              ]),
-              h('a', {
-                style: {
-                  display: 'block',
-                }
-              }, 'このグループに該当する組織を追加')
-            ])
-          } else {
-            return h('span', {
-              style: {
-                display: 'inline-block',
-                width: '100%'
-              }
-            }, [
-              h('span', [
-                h('Icon', {
-                  props: {
-                    type: 'ios-paper-outline'
+                    margin: '6px 0 0 -1px'
                   },
-                  style: {
-                    marginRight: '8px'
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
                   }
-                }),
-                h('span', data.title)
+                }, '＋ このグループに該当する組織を追加')
               ])
             ])
           }
+          if (data.isGroup) {
+            if (data.isLastGroup) {
+              return h('span', {
+                style: {
+                  display: 'inline-block',
+                  width: '100%'
+                }
+              }, [
+                h('span', data.title),
+                h('div', [
+                  h('span', {
+                    domProps: {
+                      className: 'row-label-primary pl10 pr10'
+                    },
+                    style: {
+                      margin: '6px 0 0 -28px'
+                    },
+                    on: {
+                      click(e) {
+                        e.stopPropagation()
+                      },
+                    }
+                  }, '＋ このグループに該当する所属長を追加')
+                ])
+              ])
+            }
+            if (!data.isLastGroup) {
+              return h('span', {
+                style: {
+                  display: 'inline-block',
+                  width: '100%'
+                }
+              }, [
+                h('span', data.title),
+                h('div', [
+                  h('span', {
+                    domProps: {
+                      className: 'row-label-primary pl10 pr10'
+                    },
+                    style: {
+                      margin: '6px 0 0 0'
+                    },
+                    on: {
+                      click(e) {
+                        e.stopPropagation()
+                      },
+                    }
+                  }, '＋ このグループに該当する役職を追加')
+                ])
+              ])
+            }
+          }
+          return h('span', data.title)
         }
       }
     })
