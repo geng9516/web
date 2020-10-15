@@ -24,7 +24,7 @@ axios.interceptors.response.use(
   },
   error => {
     if (error.response.status === 408 || error.response.status === 403) {
-      location.href = '/login'
+      location.href = BASE_PATH
       return
     }
     Vue.prototype.$Notice.error({

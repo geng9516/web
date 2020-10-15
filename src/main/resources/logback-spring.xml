@@ -21,17 +21,17 @@
     <!-- 生产环境-->
     <springProfile name="prod">
 
-        <property name="LOG_FILE" value="office-next.log"/>
+        <property name="LOG_FILE" value="web-work.log"/>
         <property name="LOG_FILE_MAX_HISTORY" value="60"/>
         <property name="LOG_FILE_MAX_SIZE" value="10GB"/>
         <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 
-        <logger name="jp.smartcompany" level="INFO" additivity="false">
+        <logger name="jp.smartcompany" level="ERROR" additivity="false">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
         </logger>
 
-        <root level="WARN" additivity="false">
+        <root level="ERROR" additivity="false">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
         </root>

@@ -266,7 +266,7 @@
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.post('/login', this.login)
-                        location.href = '/'
+                        location.href = BASE_PATH
                     } catch (error) {
                         this.loading = false
                         this.clockDisable = false

@@ -13,12 +13,31 @@
     var SYS_DATE = [[${ session.TmgReferListCurrentDate }]] || new Date()
     var protocol = location.protocol
     var hostname = location.hostname
+    var pathname = location.pathname
     var port = location.port
     var BASE_URL
+    var BASE_PATH = '/'
     if (parseInt(port) !== 80) {
       BASE_URL = protocol + '//' + hostname + ':' + port
     } else {
       BASE_URL = protocol + '//' + hostname
+    }
+    if (pathname) {
+      var urlStr = BASE_URL + pathname
+      if (urlStr.indexOf('?')>-1) {
+        urlStr = urlStr.split('?')[0]
+      }
+      console.log(urlStr)
+      var urlArr = urlStr.split('/')
+      var url
+      if (urlArr.length>3) {
+        BASE_PATH = '/' + urlArr[3]
+        url = urlArr[2] + BASE_PATH
+      } else {
+        url = urlArr[2]
+      }
+      BASE_URL = protocol + '//' + url
+      console.log('当前baseUrl:'+BASE_URL)
     }
   </script>
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
