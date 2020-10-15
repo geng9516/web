@@ -29,7 +29,7 @@
       }
       var urlArr = urlStr.split('/')
       var url
-      if (urlArr.length>5 || urlArr[4] === '') {
+      if (urlArr.length>5 || urlArr[4] === '' || urlArr[4] === 'login') {
         BASE_PATH = '/' + urlArr[3]
         url = urlArr[2] + BASE_PATH
       } else {

@@ -18,9 +18,6 @@ server:
       - image/gif
       - application/octet-stream
   servlet:
-    session:
-      # session过期时间默认为600秒，即10分钟,小于60秒会被当作60秒处理
-      timeout: 600
     encoding:
       charset: utf-8
       force: on

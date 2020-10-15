@@ -95,7 +95,7 @@
         logout: Debounce(async function () {
           try {
             await this.http.post('/logout', {})
-            location.href = BASE_PATH + '/login'
+            location.href = BASE_PATH
           } catch (error) {
           }
         }),
@@ -121,7 +121,7 @@
             this.$Message.success('更新完了')
             setTimeout(() => {
               this.http.post('/logout', {}).then(function() {
-                location.href = BASE_PATH+'/login'
+                location.href = BASE_PATH
               })
             }, 1000);
           } catch (error) {
