@@ -13,10 +13,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of={"id"})
+@EqualsAndHashCode(of={"group","groupId"})
 public class EvaluatorGroupVO {
 
-    private Integer id;
     private String group;
     private String groupId;
     private Boolean main;
