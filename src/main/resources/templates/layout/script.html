@@ -27,9 +27,13 @@
       if (urlStr.indexOf('?')>-1) {
         urlStr = urlStr.split('?')[0]
       }
+      // console.log(urlStr)
       var urlArr = urlStr.split('/')
       var url
-      if (urlArr.length>5 || urlArr[4] === '' || urlArr[4] === 'login') {
+      // console.log(urlArr)
+      var secondPathName = urlArr[4]
+      var isWhiteUrl = secondPathName === 'login' || secondPathName === '404' || secondPathName === '500' || secondPathName === '403'
+      if (urlArr.length>5 || urlArr[4] === '' || isWhiteUrl) {
         BASE_PATH = '/' + urlArr[3]
         url = urlArr[2] + BASE_PATH
       } else {
@@ -37,6 +41,7 @@
       }
       BASE_URL = protocol + '//' + url
     }
+    console.log(BASE_PATH)
   </script>
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
   <script th:src="${baseUrl + '/static/js/theme.js?t='+ new java.util.Date().getTime()}"></script>
