@@ -51,7 +51,7 @@
       </div>
       <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading" :row-class-name="() => 'select-col'">
         <template slot-scope="{ row }" slot="date">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editDate">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
+          <span class="ml30">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="mgCgroupidPk">
@@ -80,6 +80,104 @@
         <Icon type="logo-buffer"></Icon>
         現在使われていないグループ
       </div>
+      <!-- 該当条件編集画面 start-->
+      <Drawer class="tc" placement="right" width="800" v-model="isShow" title="該当条件編集画面">
+        <div class="mb10 tr">
+          <i-button type="primary" ghost @click="handleEvent" icon="md-create" :loading="drawerBtnLoading">
+            登録
+          </i-button>
+        </div>
+        <div class="mt10 mb10">
+          <Row :gutter="10">
+              <i-col span="12">
+                  <div class="label pl10">法人</div>
+                  <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].companyName }}</div>
+              </i-col>
+              <i-col span="12">
+                  <div class="label pl10">備考</div>
+                  <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].mgCtext }}</div>
+              </i-col>
+          </Row>
+        <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="groupInfoColumns" :disabled-hover="true"
+          :data="groupInfoData" :loading="loading" no-data-text="">
+          <template slot-scope="{ row }" slot="date">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
+          </template>
+
+          <template slot-scope="{ row }" slot="name">
+            <i-input class="tl" v-model="row.mgCgroupdescription"><span slot="prepend">日本語</span></i-input>
+          </template>
+
+          <template slot-scope="{ row }" slot="count">
+            <i-input class="tr" v-model="row.mgNpartinentnumber"><span slot="append">人</span></i-input>
+          </template>
+        </i-table>
+        <!-- <div class="tl mt10">
+          <radio-group class="tl" v-model="updateValue.baseFlag">
+            <Radio label="0">社員選択による定義</Radio>
+            <Radio label="1">条件式による定義</Radio>
+            <Radio label="2">組織・役職選択による定義</Radio>
+          </radio-group>
+        </div> -->
+        <Tabs class="mt10" :animated="false" v-model="updateValue.baseFlag">
+          <!-- 社員選択による定義 -->
+          <tab-pane label="社員選択による定義 " name="0">
+            <Row class="tl mb5" :gutter="8">
+              <i-col span="10">
+                <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
+                  @keyup.enter.native="handleSearchEmpt">
+                </i-input>
+              </i-col>
+              <i-col span="6" class="no-border-radius">
+                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt">社員検索
+                </i-button>
+              </i-col>
+              <i-col span="6" class="no-border-radius">
+                <i-button long type="primary" icon="md-search" ghost :loading="loading">所属一覧検索
+                </i-button>
+              </i-col>
+            </Row>
+
+            <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="emptColumns" :disabled-hover="true"
+              :data="emptData" :loading="loading" no-data-text="">
+              <template slot-scope="{ row }" slot="action">
+                <Poptip v-model="lightDelBtnVisible2[row._index]" placement="left" transfer>
+                  <div class="operateBtn" slot="content">
+                    <a @click="cancelEmpt(row._index)">いいえ</a>
+                    <a @click="removeEmpt(row, row._index)">はい</a>
+                  </div>
+                  <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除</i-button>
+                </Poptip>
+              </template>
+            </i-table>
+          </tab-pane>
+          <!-- 条件式による定義 -->
+          <tab-pane label="条件式による定義" name="1">
+          </tab-pane>
+          <!-- 組織・役職選択による定義 -->
+          <tab-pane label="組織・役職選択による定義" name="2">
+          </tab-pane>
+         </Tabs>
+        <div class="titlenorm">
+          <Icon type="logo-buffer"></Icon>
+          基点組織
+        </div>
+        <div class="no-border-radius" style="display: flex; align-items: stretch;">
+          <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">追加した組織</span>
+          <span class="input-like-span tl" style="margin-bottom: 1px;">
+            <radio-group class="tl" v-model="updateValue.belowSingle">
+              <Radio label="0">以下</Radio>
+              <Radio label="1">のみ を範囲とする</Radio>
+            </radio-group>
+          </span>
+        </div>
+
+        <!-- 那颗树 -->
+        <div class="tl tree mt5">
+          <Tree :data="baseTreeData" :render="renderTree" @on-select-change="" empty-text="" check-directly show-checkbox></Tree>
+        </div>
+      </div>
+      </Drawer>
+      <!-- 該当条件編集画面 end-->
     </div>
   </main>
   <div th:replace="layout/head::header"></div>
@@ -90,8 +188,14 @@
         return {
           loading: true,
           editLoading: false,
+          isShow:false,
+          drawerBtnLoading:false,
+          currentTab:'',
           lightDelBtnVisible: [],
+          baseTreeData:[],
+          lightDelBtnVisible2: [],
           beforeDate: '',
+          searchEmpt: '',
           updateValue: [],
           systemList: [],
           curDate: new Date(),
@@ -102,7 +206,7 @@
           columns: [
           {
             title: '期間',
-            slot: 'date',
+            slot: 'date'
           },
           {
             title: 'ID',
@@ -130,7 +234,58 @@
             width: 100,
           }
           ],
+          groupInfoColumns: [
+            {
+              title: '期間',
+              slot: 'date',
+            },
+            {
+              title: 'ID',
+              width:70,
+              key: 'mgCgroupidPk',
+              align: 'center'
+            },
+            {
+              title: '名称',
+              slot: 'name',
+            },
+            {
+              title: '適正人数',
+              slot: 'count',
+              width:120,
+            },
+          ],
+          groupInfoData:[],
+          emptColumns:[
+            {
+              title: '法人',
+              key: 'companyName',
+            },
+            {
+              title: '所属',
+              key: 'sectionName',
+            },
+            {
+              title: '役職',
+              key: 'postName',
+            },
+            {
+              title: '社員番号',
+              key: 'employeeId',
+            },
+            {
+              title: '社員氏名',
+              key: 'kanJiName',
+            },
+            {
+              title: '削除',
+              slot: 'action',
+              width: 80
+            }
+          ],
+          emptData:[],
           tableData: [{}],
+          updateValue:{},
           limitDate: '',
           rangeOptions: {
             disabledDate: date => {
@@ -172,6 +327,13 @@
           // this.getTableData()
           // this.updateValue = []
         },
+        handleEvent() {
+          
+        },
+        handleSearchEmpt() {
+              // http://localhost:6879/sys/groupmanager/empsearch?searchWord=464&psSite=Admin
+          // sys/groupmanager/empsearch
+        },
         handleSystemChange() {
           this.getSiteList()
         },
@@ -195,15 +357,80 @@
         },
         async edit(e) {
           const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
           OPTS.groupId = e
+          this.isShow = true
           const { data } = await this.http.get('sys/groupmanager/detail', OPTS)
+          this.groupInfoData = [data.groupInfo]
+          this.emptData = data.empList.empList
+          this.updateValue.belowSingle = data.belowSingle
+          // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
+          // 所以这里直接取第一个法人的全部
+          this.baseTreeData = [{title:`【${data.companyId}】 ${data.companyName}`, children:data.baseSectionList[0].sectionList.map(e=>{
+            return {
+              ...e,
+              title:`【${e.mgbsCsectionid}】 ${e.sectionName}`
+            }
+          }), expand: true}]
         },
-        editDate() {},
         remove(i) {
           this.$set(this.lightDelBtnVisible, i, false)
         },
         cancel(i) {
           this.$set(this.lightDelBtnVisible, i, false)
+        },
+        removeEmpt(row,i) {
+          this.emptData = this.emptData.filter(e => e.id !== row.id)
+          this.$set(this.lightDelBtnVisible2, i, false)
+        },
+        cancelEmpt(i) {
+          this.$set(this.lightDelBtnVisible2, i, false)
+        },
+        renderTree(h, { root, node, data }) {
+          if (data.expand) {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-paper-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', data.title)
+              ]),
+              h('a', {
+                style: {
+                  display: 'block',
+                }
+              }, 'このグループに該当する組織を追加')
+            ])
+          } else {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', [
+                h('Icon', {
+                  props: {
+                    type: 'ios-paper-outline'
+                  },
+                  style: {
+                    marginRight: '8px'
+                  }
+                }),
+                h('span', data.title)
+              ])
+            ])
+          }
         }
       }
     })
