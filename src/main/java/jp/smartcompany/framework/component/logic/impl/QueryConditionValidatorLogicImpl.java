@@ -2,7 +2,6 @@ package jp.smartcompany.framework.component.logic.impl;
 
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.component.logic.QueryConditionValidatorLogic;
 import org.springframework.stereotype.Service;
