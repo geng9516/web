@@ -1069,7 +1069,7 @@
                         this.handleCickGroup({ enableEditGroup: true, groupId: this.groupIdForUpdatePermissionFlag })
                         this.$Message.success('更新完了')
                     } catch (error) {
-
+                        this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
                     } finally {
                         this.updatePermissionFlagLoading = false
                     }
@@ -1249,6 +1249,7 @@
                         this.$Message.success('更新完了')
                         this.getTableData()
                     } catch (error) {
+                        this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 }) 
                         this.solvingLoading = false
                     } finally {
                         this.updateGruopNameLoading = false
@@ -1273,6 +1274,7 @@
                         this.$Message.success('追加完了')
                         this.getTableData()
                     } catch (error) {
+                        this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
                         this.solvingLoading = false
                     } finally {
                         this.addGruopNameLoading = false
@@ -1294,6 +1296,7 @@
                         this.$Message.success('削除完了')
                         this.getTableData()
                     } catch (error) {
+                        this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 }) 
                         this.solvingLoading  = false
                     } finally {
                         this.delGruopNameLoading = false
@@ -1344,6 +1347,7 @@
                             this.$Message.success('変更完了')
                             this.handleClickEditMember()
                         } catch (error) {
+                            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 }) 
                         } finally {
                             this.permissionAdminAddModal = false
                             this.updatePermissionFlagLoading = false
