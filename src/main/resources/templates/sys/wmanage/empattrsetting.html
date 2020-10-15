@@ -480,7 +480,7 @@
         methods: {
             // 職員検索
             async getSearchTableData() {
-                this.deptName = '職員により検索中'
+                this.deptName = '検索対象者一覧'
                 //ツリー：0、検索：1
                 this.referListObject.hidSelectTab = '1'
                 this.query.hidSelectTab = '1'
@@ -929,7 +929,7 @@
                 this.loading = true
                 try {
                     if (this.query.hidSelectTab == '1') {
-                        this.deptName = '職員により検索中'
+                        this.deptName = '検索対象者一覧'
                     }
                     //console.log("getTableData" + JSON.stringify(this.opts))
                     const {data} = await this.http.get('sys/userprofile/screenDisp', this.opts)

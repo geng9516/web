@@ -829,14 +829,14 @@
                 const { data } = await this.http.get('sys/permStatList/selectDayHead', this.queryList)
                 this.tableHead = data
                 if (this.queryList.hidSelectTab == '1'){
-                    this.deptName = '職員により検索中'
+                    this.deptName = '検索対象者一覧'
                     this.queryList.txtUserCode = null
                 }
             },
             async getTableData() {
                 this.listLoading  = true
                 if (this.queryList.hidSelectTab == '1'){
-                    this.deptName = '職員により検索中'
+                    this.deptName = '検索対象者一覧'
                     this.queryList.txtUserCode = null
                 }
                 const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.queryList)
