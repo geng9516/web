@@ -26,7 +26,7 @@ server:
       force: on
 spring:
   profiles:
-    active: prod
+    active: test
   servlet:
     multipart:
       max-file-size: 10MB
