@@ -70,6 +70,8 @@ management:
       show-details: always
 security:
   csrfWhiteList:
+    - /login
+    - /logout
     - /McSrvs01
     - /McSrvs01
     - /McSrvs02
@@ -115,7 +117,7 @@ security:
   # 退出成功后的转向url
   logoutSuccessUrl: /login
   # 登录成功后的转向url
-  loginSuccessUrl: /sys
+  loginSuccessUrl: /
   # 登陆失败后的转向url
   loginFailureUrl: /login
   # 授权失败的转向url
