@@ -2082,7 +2082,6 @@ public class EvaluatorSettingBean {
         Map<Integer,List<EvaluatorMemberVO>> removeMap = MapUtil.newHashMap();
         for (int i = 0; i < formatGroupList.size(); i++) {
             EvaluatorGroupVO groupVo = formatGroupList.get(i);
-            groupVo.setId(i+1);
             List<EvaluatorMemberVO> removeList = CollUtil.newArrayList();
             for (int j = 0; j < groupVo.getMemberList().size(); j++) {
                 EvaluatorMemberVO memberVO = groupVo.getMemberList().get(j);
@@ -2098,13 +2097,6 @@ public class EvaluatorSettingBean {
             EvaluatorGroupVO groupVo = formatGroupList.get(key);
             groupVo.getMemberList().removeAll(value);
         });
-        List<EvaluatorGroupVO> removeGroupList = CollUtil.newArrayList();
-        for (EvaluatorGroupVO groupVO : formatGroupList) {
-            if (CollUtil.isEmpty(groupVO.getMemberList())) {
-                removeGroupList.add(groupVO);
-            }
-        }
-        removeGroupList.forEach(formatGroupList::remove);
 
         result.put("bottomMessage",getEvasetMessage(psDBBean,params, EvaluatorSettingConst.TMG_EVASET_MESSAGE_DISPALERT));
         result.put("list",formatGroupList);
