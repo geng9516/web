@@ -99,7 +99,7 @@
         <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
                  :loading="loading" no-data-text="">
             <template slot-scope="{ row }" slot="name">
-                <span>{{ row.empname }}</span>
+                <span class="ml5">{{ row.empname }}</span>
             </template>
             <template slot-scope="{ row }" slot="overtime" v-if="row.overtime">
                 <span :class="showRed(row.overtime)">{{ row.overtime.split('@')[0] }}</span>
@@ -412,7 +412,7 @@
                         title: '氏名',
                         slot: 'name',
                         minWidth: 100,
-                        align: 'right'
+                        align: 'left'
                     },
                     {
                         title: '区分',
@@ -597,7 +597,7 @@
                             title: '氏名',
                             slot: 'name',
                             minWidth: 100,
-                            align: 'right'
+                            align: 'left'
                         },
                         {
                             title: '合計',
@@ -612,7 +612,7 @@
                             title: '氏名',
                             slot: 'name',
                             minWidth: 100,
-                            align: 'right'
+                            align: 'left'
                         },
                         {
                             title: '超過勤務',

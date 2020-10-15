@@ -66,7 +66,7 @@
         </div>
         <div >
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" :row-class-name="() => 'select-col'" :show-header="tableHead2.length > 0" border no-data-text="" ref="selection">
-                <template slot-scope="{ row }" slot="EMPNAME" v-if="tableHead2.length > 0"><span>{{ row.EMPNAME }}</span></template>
+                <template slot-scope="{ row }" slot="EMPNAME" v-if="tableHead2.length > 0"><span class="ml5">{{ row.EMPNAME }}</span></template>
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item" v-if="tableHead2.length > 0"><span>{{ row[item] }}</span></template>
             </i-table>
         </div>
@@ -77,7 +77,7 @@
         <div v-show="tableData2.length > 0">
           <i-table :columns="columns2" :data="tableData2"  :disabled-hover="true" :loading="loading" :row-class-name="() => 'select-col'" :show-header="false"
                    border class="long-table" no-data-text="教職員が存在している所属を選択して下さい。" ref="selection">
-            <template slot-scope="{ row }" slot="EMPNAME"><span>{{row.EMPNAME}}</span></template>
+            <template slot-scope="{ row }" slot="EMPNAME"><span class="ml5">{{row.EMPNAME}}</span></template>
             <template v-for="item of slotList2" slot-scope="{ row }" :slot="item"><span>{{row[item]}}</span></template>
           </i-table>
         </div>
@@ -179,7 +179,7 @@
                         title: this.fullName,
                         slot: 'EMPNAME',
                         minWidth: 100,
-                        align: 'center'
+                        align: 'left'
                     }
                 ]
                 const that = this

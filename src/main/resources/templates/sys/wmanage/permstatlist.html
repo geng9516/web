@@ -119,7 +119,7 @@
             <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
                 :disabled-hover="true" :loading="listLoading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
-                    <span>{{ row.empname }}</span>
+                    <span class="ml5">{{ row.empname }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="statusName">
                     <span>{{ row.statusName }}</span>
@@ -700,7 +700,7 @@
                             title: '氏名',
                             slot: 'name',
                             minWidth: 100,
-                            align: 'right'
+                            align: 'left'
                         },
                         {
                             title: '月次\n承認',
