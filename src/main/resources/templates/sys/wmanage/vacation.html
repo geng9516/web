@@ -186,7 +186,7 @@
                             </i-col>
                         </Row>
 
-                        <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2" :disabled-hover="true">
+                        <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2" :disabled-hover="true" no-data-text="">
                             <template slot-scope="{ row ,index }" slot="days">
                                 <i-input v-model="paidNowData[index].days" v-if="row.isEditable" class=" tc"></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
@@ -260,8 +260,12 @@
                 <Icon type="logo-buffer"></Icon>
                 年次休暇付与状況
             </div>
-            <i-table @on-row-click="showDayList(arguments)" :row-class-name="() => 'select-col'"
+            <i-table @on-row-click="showDayList(arguments)" :row-class-name="() => 'select-col cursor'" :disabled-hover="true" no-data-text=""
                      border :columns="paidDetailsColumns" :data="paidDetailsData" :loading="paidNowLoading">
+                <template slot-scope="{ row }" slot="dyyyymmdd">
+                    <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100">{{ row.dyyyymmdd }}</span>
+                </template>
+
                 <template slot-scope="{ row }" slot="ninvest">
                     <span>{{ row.ninvest | addNumDeci(true) }}</span>
                 </template>
@@ -394,12 +398,14 @@
                 paidDetailsColumns: [
                     {
                         title: '年次休暇付与日',
-                        key: 'dyyyymmdd',
+                        slot: 'dyyyymmdd',
+                        width: 120,
                         align: 'center'
                     },
                     {
                         title: '今期付与日数',
                         slot: 'ninvest',
+                        width: 120,
                         align: 'center'
                     },
                     {
