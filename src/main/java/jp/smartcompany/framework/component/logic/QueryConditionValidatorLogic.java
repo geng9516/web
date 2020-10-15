@@ -17,7 +17,7 @@ public interface QueryConditionValidatorLogic {
      * @param queryConditionList 現在、定義されている条件定義情報を取得する
      * @return  int チェック結果
      */
-    public int checkQueryCondition(List<QueryConditionRowDTO> queryConditionList);
+    int checkQueryCondition(List<QueryConditionRowDTO> queryConditionList);
 
     /**
      * 名称マスタコード取得処理<br>
@@ -26,7 +26,7 @@ public interface QueryConditionValidatorLogic {
      * @param psValue   値(マスタコード)
      * @return  String  名称マスタコード
      */
-    public String getMaseterId(String psValue);
+    String getMaseterId(String psValue);
 
     /**
      * 表示比較演算子取得処理<br>
@@ -36,7 +36,7 @@ public interface QueryConditionValidatorLogic {
      * @param psOperator    設定済の比較演算子
      * @return  String  表示用比較演算子
      */
-    public String getDispOperator(String psMaseterId, String psOperator);
+    String getDispOperator(String psMaseterId, String psOperator);
 
     /**
      * 条件式定義コンポーネント用Validatorを生成する
@@ -47,19 +47,7 @@ public interface QueryConditionValidatorLogic {
      */
 //    public Validator createValidator(String psCustId, int nBaseFlg);
 
-    /**
-     * resourceBundle 設定する。
-     *
-     * @param resourceBundle を設定
-     */
-    public void setResourceBundle(ResourceBundle resourceBundle);
 
-    /**
-     * 条件式定義コンポーネント用Dtoの自動インジェクション
-     *
-     * @param queryConditionDto を設定
-     */
-    public void setQueryConditionDto(QueryConditionDTO queryConditionDto);
 
 
 }

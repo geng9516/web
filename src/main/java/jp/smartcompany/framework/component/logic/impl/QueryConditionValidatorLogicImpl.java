@@ -1,5 +1,6 @@
 package jp.smartcompany.framework.component.logic.impl;
 
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
@@ -7,6 +8,7 @@ import jp.smartcompany.framework.component.logic.QueryConditionValidatorLogic;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -125,47 +127,37 @@ public class QueryConditionValidatorLogicImpl implements QueryConditionValidator
     public String getDispOperator(String psMaseterId, String psOperator) {
         String sMaseterId = SysUtil.transNull(psMaseterId);
         String sOperator  = SysUtil.transNull(psOperator);
-        ResourceBundle goResourceBundle = ResourceBundle.getBundle("jp/smartcompany/framework/component/QueryCondition",
-                Locale.JAPAN);
         // 組織・役職が選択されていた場合
-        if (sMaseterId.equals("QSECTION") || sMaseterId.equals("QPOST") || sMaseterId.equals("QPOSTNUM")) {
-
+        if (StrUtil.equalsAny(sMaseterId,"QSECTION","QPOST","QPOSTNUM")) {
             // 設定済の比較演算子と比較
             switch (psOperator) {
                 case ">=":
                     // より上
-                    goResourceBundle.getString("WRD_PT_GREATER_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_GREATER_LANG");
                     break;
                 case "<=":
                     // より下
-                    goResourceBundle.getString("WRD_PT_LESSER_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_LESSER_LANG");
                     break;
                 case ">":
                     // 以上
-                    goResourceBundle.getString("WRD_PT_GREAT_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_GREAT_LANG");
                     break;
                 case "<":
                     // 以下
-                    goResourceBundle.getString("WRD_PT_LESS_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_LESS_LANG");
                     break;
                 case "ISNULL":
                     // 空白のみ
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_NULL_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_NULL_LANG");
                     break;
                 case "ISNOTNULL":
                     // 空白以外
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_NOT_NULL_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_NOT_NULL_LANG");
                     break;
                 default:
                     // それ以外は、設定済の比較演算子をそのまま返却する
                     sOperator = psOperator;
-
                     break;
             }
         } else {
@@ -173,48 +165,39 @@ public class QueryConditionValidatorLogicImpl implements QueryConditionValidator
             switch (psOperator) {
                 case ">=":
                     // より上
-                    sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_GREATER_SIGN");
-
+                    sOperator = getResourceAsString("WRD_PT_DOUBLET_GREATER_SIGN");
                     break;
                 case "<=":
                     // より下
-                    sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_LESSER_SIGN");
-
+                    sOperator = getResourceAsString("WRD_PT_DOUBLET_LESSER_SIGN");
                     break;
                 case ">":
                     // 以上
-                    sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_GREAT_SIGN");
-
+                    sOperator = getResourceAsString("WRD_PT_DOUBLET_GREAT_SIGN");
                     break;
                 case "<":
                     // 以下
-                    sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_LESS_SIGN");
-
+                    sOperator = getResourceAsString("WRD_PT_DOUBLET_LESS_SIGN");
                     break;
                 case "ISNULL":
                     // 空白のみ
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_NULL_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_NULL_LANG");
                     break;
                 case "ISNOTNULL":
                     // 空白以外
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_NOT_NULL_LANG");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_NOT_NULL_LANG");
                     break;
                 case "CONTAINS":
                     // 次が含まれる
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_CONTAINS");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_CONTAINS");
                     break;
                 case "STARTS_WITH":
                     // 次で始まる
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_STARTS_WITH");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_STARTS_WITH");
                     break;
                 case "ENDS_WITH":
                     // 次で始まる
-                    sOperator = goResourceBundle.getString("WRD_PT_IS_ENDS_WITH");
-
+                    sOperator = getResourceAsString("WRD_PT_IS_ENDS_WITH");
                     break;
                 default:
                     // それ以外は、設定済の比較演算子をそのまま返却する
@@ -225,25 +208,19 @@ public class QueryConditionValidatorLogicImpl implements QueryConditionValidator
         }
 
         // 共通
-        if (psOperator.equals("=")) {
+        if (StrUtil.equals(psOperator,"=")) {
             // 等号
-            sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_EQUAL");
-
-        } else if (psOperator.equals("<>")) {
+            sOperator = getResourceAsString("WRD_PT_DOUBLET_EQUAL");
+        } else if (StrUtil.equals(psOperator,"<>")) {
             // 不等号
-            sOperator = goResourceBundle.getString("WRD_PT_DOUBLET_NOT_EQUAL");
+            sOperator = getResourceAsString("WRD_PT_DOUBLET_NOT_EQUAL");
         }
 
         return sOperator;
     }
 
-    @Override
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-
+    private String getResourceAsString(String key) {
+        return new String(goResourceBundle.getString(key).getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
     }
 
-    @Override
-    public void setQueryConditionDto(QueryConditionDTO queryConditionDto) {
-
-    }
 }
