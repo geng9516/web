@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -30,5 +31,5 @@ public interface MastApptreeMapper extends BaseMapper<MastApptreeDO> {
                                                 @Param("type") String psType,
                                                 @Param("siteId") String psSiteId);
 
-
+  List<MastAppTreeDTO> selectMastAppTree();
 }
