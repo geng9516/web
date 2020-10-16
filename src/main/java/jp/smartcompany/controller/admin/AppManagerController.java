@@ -25,7 +25,7 @@ public class AppManagerController {
   }
 
   // http://localhost:6879/sys/appmanager/templates
-    @GetMapping("templates")
+  @GetMapping("templates")
   public List<MastTemplateDTO> getTemplateList() {
      return appManagerMainLogic.getTemplateList();
   }
