@@ -151,6 +151,9 @@ public class TmgReferList {
     //遷移元のサイトIDのキー(共通)
     public static final String SESSION_KEY_SITE       = "psSite";
 
+    //遷移元のアプリケーションIDのキー(共通)
+    public static final String SESSION_KEY_APP      = "psApp";
+
     // ツリービューを使用する際の、HTMLオブジェクトのIDなどに対する接頭辞
     public static final String TREEVIEW_OBJ_HEADER_ADMIN       = "TmgReferListTreeViewAdmin";
     public static final String TREEVIEW_OBJ_HEADER_PERM        = "TmgReferListTreeViewPerm";
@@ -680,11 +683,20 @@ public class TmgReferList {
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, 0);
         }
 
-        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
+        if (isSelectedSearchTab() ) {
+            String from_psApp = (String)httpSession.getAttribute(SESSION_KEY_APP);
+            String curent_psApp = (String)psDBBean.getAppId();
+            String searchData =  "";
+            if(StrUtil.isBlank(getSearchData()) && !StrUtil.isBlank(curent_psApp) && !StrUtil.equals(curent_psApp,from_psApp)) {
+                searchData = (String)ContextUtil.getSession().getAttribute(TREEVIEW_OBJ_HIDSEARCHDATA);
+            }else if(StrUtil.isNotBlank(getSearchData())) {
+                searchData = getSearchData();
+            }
+
 //            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION , String.valueOf(getSearchCondition()));
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, String.valueOf(getSearchItems()));
-            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, String.valueOf(getSearchData()));
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, searchData);
 //            httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
         }
 //        switch(piParam){
@@ -776,6 +788,7 @@ public class TmgReferList {
 
         // 改めてセッションにサイトID登録する
         session.setAttribute(SESSION_KEY_SITE, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        session.setAttribute(SESSION_KEY_APP, psDBBean.getReqParam("AppId"));
     }
 
     /**
@@ -877,6 +890,7 @@ public class TmgReferList {
 
         // 改めてセッションにサイトID登録する
         session.setAttribute(SESSION_KEY_SITE, TmgUtil.Cs_SITE_ID_TMG_PERM);
+        session.setAttribute(SESSION_KEY_APP, psDBBean.getReqParam("AppId"));
 
         log.debug("勤怠承認サイトsectionId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION));
         log.debug("勤怠承認サイトempId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP));
@@ -3196,9 +3210,9 @@ public class TmgReferList {
             searchData = "";
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA) != null){
                 searchData =psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA);
-            } else if (ContextUtil.getSession().getAttribute(SESSION_KEY_SEARCHDATA) != null){
+            } else if (ContextUtil.getSession().getAttribute(TREEVIEW_OBJ_HIDSEARCHDATA) != null){
                 // fix：接口化后不再需要后端负责判断使用session还是前端传过来的参数，全部交由前端控制
-//                searchData = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
+//                searchData = (String) ContextUtil.getSession().getAttribute(TREEVIEW_OBJ_HIDSEARCHDATA);
             }
 //        }
         return searchData;
