@@ -499,7 +499,7 @@ public class MonthlyOutputBean {
     /**
      * 集計時の問題(アラート)ダイアログの表示プロセスを実行します。
      */
-    private AlertVo executeNotAppList_RAlertList(String baseDate, String sPage, PsDBBean psDBBean, TmgReferList referList) {
+    public NotAppSectionListVo executeNotAppList_RAlertList(String baseDate, String sPage, PsDBBean psDBBean, TmgReferList referList) {
         if (sPage == null || sPage.length() == 0) {
             sPage = "1"; // default select Page
         } else {
@@ -507,10 +507,21 @@ public class MonthlyOutputBean {
         int pageInfo[] = getPageOfSearchNumber(sPage);
 
 
-        AlertVo alertVo=iTmgAlertmsgService.selectAlert(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec(),baseDate,
+        List<AlertVo> alertVo=iTmgAlertmsgService.selectAlert(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec(),baseDate,
                 psDBBean.getLanguage(),pageInfo[0],pageInfo[1]);
 
-        return alertVo;
+        NotAppSectionListVo vo =new NotAppSectionListVo();
+        if (alertVo.size() > 0) {
+            vo.setTotalCount(Integer.parseInt(alertVo.get(0).getAlertCount()));
+            vo.setCurrPage(Integer.valueOf(sPage));
+            vo.setPageSize(50);
+            vo.setTotalPage(Integer.valueOf(vo.getTotalCount())/50+1);
+            vo.setList2(alertVo);
+        }else{
+            return null;
+        }
+
+        return vo;
     }
 
     /**
