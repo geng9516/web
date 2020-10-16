@@ -41,7 +41,8 @@
                         </span>
                     </template>
                     <template slot-scope="{ row }" slot="tbnNcount">
-                        <span> {{ `${row.tbnNcount}人` }}</span>
+                        <span v-if="row.tbnNcount"> {{ `${row.tbnNcount}人` }}</span>
+                        <span v-else>集計中</span>
                     </template>
                     <template slot-scope="{ row }" slot="cntFinish">
                         <span> {{ `${row.cntFinish}人` }}</span>
