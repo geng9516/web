@@ -8,6 +8,7 @@ import cn.hutool.core.map.multi.ListValueMap;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -306,6 +307,7 @@ public class TreeController {
 
     // http://localhost:6879/sys/tree/posts?psSite=Admin
     @GetMapping("posts")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Map<String,Object> postTree(
         @RequestParam(value = "useSearchRange",defaultValue = "true",required = false) Boolean useSearchRange,
         @RequestParam(value="companyCode",defaultValue = "01",required = false) String companyCode) throws ParseException {
