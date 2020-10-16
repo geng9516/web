@@ -687,15 +687,25 @@ public class TmgReferList {
             String from_psApp = (String)httpSession.getAttribute(SESSION_KEY_APP);
             String curent_psApp = (String)psDBBean.getAppId();
             String searchData =  "";
+            String searchItems =  "";
+            String searchCondition =  "";
+
             if(StrUtil.isBlank(getSearchData()) && !StrUtil.isBlank(curent_psApp) && !StrUtil.equals(curent_psApp,from_psApp)) {
                 searchData = (String)ContextUtil.getSession().getAttribute(TREEVIEW_OBJ_HIDSEARCHDATA);
             }else if(StrUtil.isNotBlank(getSearchData())) {
                 searchData = getSearchData();
             }
+            if(!StrUtil.isBlank(curent_psApp) && !StrUtil.equals(curent_psApp,from_psApp)){
+                searchItems = (String)httpSession.getAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES);
+                searchCondition  = (String)httpSession.getAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION);
+            } else{
+                searchItems = String.valueOf(getSearchItems());
+                searchCondition = String.valueOf(getSearchCondition());
+            }
 
 //            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
-            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION , String.valueOf(getSearchCondition()));
-            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, String.valueOf(getSearchItems()));
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHCONDITION , searchCondition);
+            httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES, searchItems);
             httpSession.setAttribute(TREEVIEW_OBJ_HIDSEARCHDATA, searchData);
 //            httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
         }
@@ -3170,8 +3180,8 @@ public class TmgReferList {
             searchItems = TmgUtil.Cs_TREE_VIEW_ITEMS_KANANAME;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
                 searchItems = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES);
-            } else if (httpSession.getAttribute(SESSION_KEY_SEARCHITEMS) != null){
-//                searchItems = (String)httpSession.getAttribute(SESSION_KEY_SEARCHITEMS);
+            } else if (httpSession.getAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
+//                searchItems = (String)httpSession.getAttribute(TREEVIEW_OBJ_HIDSEARCHITEMES);
             }
 //        }
         return searchItems;
