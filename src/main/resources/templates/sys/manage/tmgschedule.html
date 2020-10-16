@@ -440,8 +440,13 @@
                 return this.workPatternList.find(e => e.CPATTERNID === this.workPatternSelected)
             },
             tableHeadFixed() {
-                if (this.contentScrollTop > 300) return true
-                else return false
+                if(this.isEditable) {
+                    if (this.contentScrollTop > 459) return true
+                    else return false
+                } else {
+                    if (this.contentScrollTop > 236) return true
+                    else return false
+                }
             },
             columns() {
                 let result= [
