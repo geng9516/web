@@ -41,7 +41,8 @@
                         </span>
                     </template>
                     <template slot-scope="{ row }" slot="tbnNcount">
-                        <span> {{ `${row.tbnNcount}人` }}</span>
+                        <span v-if="row.tbnNcount"> {{ `${row.tbnNcount}人` }}</span>
+                        <span v-else>集計中</span>
                     </template>
                     <template slot-scope="{ row }" slot="cntFinish">
                         <span> {{ `${row.cntFinish}人` }}</span>
@@ -349,14 +350,14 @@
                         let errMsg20
                         let check = Object.keys(this.errMsg).some(e => {
                             if (e === 'ERRTYPE_10') {
-                                this.$Notice.error({ desc: this.errMsg.ERRTYPE_10[0].ERRMSG })
+                                this.$Notice.error({ title: 'Error!',desc: this.errMsg.ERRTYPE_10[0].ERRMSG, duration: this.errMsg.ERRTYPE_10[0].ERRMSG.length > 20 ? 0 : 6.5 })
                                 return true
                             }
                             if (e === 'ERRTYPE_20') {
                                 this.errMsg.ERRTYPE_20.forEach(e20 => {
                                     errMsg20 = errMsg20 + e20.ERRMSG + '/n'
                                 })
-                                this.$Notice.error({ desc: errMsg20 })
+                                this.$Notice.error({ title: 'Error!', desc: errMsg20, duration: errMsg20.length > 20 ? 0 : 6.5 })
                             }
 
                         })
