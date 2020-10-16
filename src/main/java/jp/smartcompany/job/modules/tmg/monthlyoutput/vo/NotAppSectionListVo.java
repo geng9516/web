@@ -17,4 +17,5 @@ public class NotAppSectionListVo {
     private int totalPage;
     private int currPage;
     private List<NotFixedDeptListVo> list;
+    private List<AlertVo> list2;
 }

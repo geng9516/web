@@ -101,7 +101,7 @@
         </div>
 
 
-        <Drawer title="未承認者状況" class="tc" width="37" v-model="notAprEmp">
+        <Drawer title="未承認者状況" class="tc" width="45" v-model="notAprEmp">
             <Alert class="primary-info lb tl">月次承認が行われていない職員が存在します。
                 月次締めを実行するには、全職員の月次承認を行ってください</Alert>
             <div class="tr mb10">
@@ -116,17 +116,27 @@
             </i-table>
         </Drawer>
 
-        <Drawer title="締め未完了部局" class="tc" width="37" v-model="notAppSec">
+        <Drawer title="締め未完了部局" class="tc" width="45" v-model="notAppSec">
             <Alert class="primary-info lb tl">月次締めが行われていない部局が存在します。</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
-                :page-size="pageValueSec.curSize"   ref="Page" simple/>
+                :page-size="pageValueSec.curSize" @on-change="pageChange1"  ref="Page" simple/>
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
                 {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}締め未完了部局
             </div>
             <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC" :disabled-hover="true">
+            </i-table>
+        </Drawer>
+
+        <Drawer title="集計時の問題" class="tc" width="45" v-model="notApp">
+            <Alert class="primary-info lb tl">集計処理中に問題が発生した職員が{{pageValueSec.amount}}名存在します。</Alert>
+            <div class="tr mb10">
+                <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
+                      :page-size="pageValueSec.curSize" @on-change="pageChange2"  ref="Page" simple/>
+            </div>
+            <i-table border :columns="notAprCol" :data="notAprData" :loading="loadingSEC" :disabled-hover="true">
             </i-table>
         </Drawer>
 
@@ -173,6 +183,7 @@
                     totalLink:false, //集計処理
                     downloadLink:false, //データダウンロード
                     notAppSec:false, //締め未完了部局一覧
+                    notApp:false,//集計時の問題
                     notAprEmp:false, //未承認者一覧
                     preDisabled: true,   //年度選択制御
                     nextDisabled: true,  //年度選択制御
@@ -310,7 +321,31 @@
                             align: 'left'
                         },
                     ],
+                    notAprCol:[
+                        {
+                            title: '所属',
+                            key: 'sectionNick',
+                            align: 'center'
+                        },
+                        {
+                            title: '氏名',
+                            key: 'empName',
+                            align: 'center'
+                        },
+                        {
+                            title: '日付',
+                            key: 'yyyymmdd',
+                            align: 'center'
+                        },
+                        {
+                            title: 'メッセージ',
+                            width: '350',
+                            key: 'tamMessage',
+                            align: 'center'
+                        },
+                    ],
                     notAprSecData:[],
+                    notAprData:[],
                 }
             },
             async mounted() {
@@ -452,6 +487,16 @@
                     this.pageValueEmp.curPage = e
                     this.notApprovalList()
                 },
+                pageChange1(e) {
+                    this.opts.sPage = e
+                    this.pageValueSec.curPage = e
+                    this.notAprSec()
+                },
+                pageChange2(e) {
+                    this.opts.sPage = e
+                    this.pageValueSec.curPage = e
+                    this.totalError()
+                },
                 monthlyFix(e){
                     this.opts.baseDate = e.concat('/01')
                     this.$Modal.confirm({
@@ -571,9 +616,24 @@
                         }
                     })
                 },
-                totalError(e) {
-                    this.opts.baseDate = e.concat('/01')
-                    //this.downloadLink=true;
+                async totalError(e) {
+                    if (e != null) {
+                        this.opts.baseDate = e.concat('/01')
+                    }
+                    try {
+                        this.notApp = true
+                        this.loadingSEC = true
+                        const {data} = await this.http.get('sys/sumdate/executeNotAppList_RAlertList', this.opts)
+                        this.notAprData = data.list2
+                        this.pageValueSec.amount = data.totalCount
+                        this.pageValueSec.curPage = data.currPage
+                        this.pageValueSec.curSize = data.pageSize
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    } finally {
+                        this.loadingSEC = false
+                    }
                 },
 
                 async download(e,f) {

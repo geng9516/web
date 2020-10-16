@@ -59,6 +59,18 @@ public class MonthlyOutputController {
         return  monthlyOutputBean.actionExecuteNotAppListRNotAppSectionList( baseDate, sPage, psDBBean, referList);
     }
 
+    /**
+     * 集計時の問題(アラート)ダイアログの表示プロセス
+     *
+     */
+    @GetMapping("executeNotAppList_RAlertList")
+    public NotAppSectionListVo actionExecuteNotAppList_RAlertList(@RequestParam("baseDate")String baseDate,
+                                                                         @RequestParam("sPage")String sPage
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.executeNotAppList_RAlertList( baseDate, sPage, psDBBean, referList);
+    }
+
 
     /**
      * 締め処理

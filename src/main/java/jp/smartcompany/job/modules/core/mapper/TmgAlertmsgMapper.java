@@ -6,6 +6,8 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.AlertVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * [勤怠]アラートメッセージ格納テーブル Mapper 接口
@@ -18,11 +20,11 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TmgAlertmsgMapper extends BaseMapper<TmgAlertmsgDO> {
 
-    AlertVo selectAlert(@Param("cust") String cust,
-                        @Param("comp")String comp,
-                        @Param("secid")String secid,
-                        @Param("dyyyymm")String dyyyymm,
-                        @Param("lang")String lang,
-                        @Param("numStart")int numStart,
-                        @Param("numEnd")int numEnd);
+    List<AlertVo> selectAlert(@Param("cust") String cust,
+                              @Param("comp")String comp,
+                              @Param("secid")String secid,
+                              @Param("dyyyymm")String dyyyymm,
+                              @Param("lang")String lang,
+                              @Param("numStart")int numStart,
+                              @Param("numEnd")int numEnd);
 }

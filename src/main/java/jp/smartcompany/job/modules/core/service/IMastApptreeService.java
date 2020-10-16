@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -24,5 +25,7 @@ public interface IMastApptreeService extends IService<MastApptreeDO> {
                                                       String psLanguage,
                                                       String psType,
                                                       String psSiteId);
+
+        List<MastAppTreeDTO> selectMastAppTree();
 
 }
