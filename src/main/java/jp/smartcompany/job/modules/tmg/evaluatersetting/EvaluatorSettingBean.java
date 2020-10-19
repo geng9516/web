@@ -608,6 +608,7 @@ public class EvaluatorSettingBean {
         params.setGroup(groupId);
         params.setCustomerID(bean.getCustID());
         params.setCompanyId(bean.getCompCode());
+        params.setRootGroup(sectionId + '|' + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
 
         Vector<String> vQuery = new Vector<>();
         vQuery.add(buildSQLForDeleteGroup(params));        // グループテーブルから、対象グループ削除
