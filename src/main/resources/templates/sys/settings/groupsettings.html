@@ -133,11 +133,11 @@
                   </i-input>
                 </i-col>
                 <i-col span="6" class="no-border-radius">
-                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt">社員検索
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">社員検索
                   </i-button>
                 </i-col>
                 <i-col span="6" class="no-border-radius">
-                  <i-button long type="primary" icon="md-search" ghost :loading="loading">所属一覧検索
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt(true)">所属一覧検索
                   </i-button>
                 </i-col>
               </Row>
@@ -225,7 +225,7 @@
       <!-- 該当条件編集画面 end-->
 
       <!--  条件式による定義 选择group和 役職 start-->
-      <Drawer class="tc" placement="right" width="700" v-model="showGroupOrPositionDrawer" :closable="false">
+      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" v-model="showGroupOrPositionDrawer">
         <span v-show="curdisplayPanel === 'QPOST'">
           <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
@@ -248,7 +248,7 @@
             </template>
           </i-table>
         </span>
-        <span v-show="curdisplayPanel === 'QSECTION'">
+        <!-- <span v-show="curdisplayPanel === 'QSECTION'">
           <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
             所属
@@ -266,7 +266,81 @@
           </Row>
           <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf"
           empty-text="所属データなし"></Tree>
-        </span>
+        </span> -->
+        <Row :gutter="8">
+          <i-col :span="curdisplayPanel === 'QSECTION' ? 24 : 8"
+            v-show="curdisplayPanel === 'QSECTION' || curdisplayPanel === 'searchDept'">
+            <div class="titlenorm mb5">
+              <Icon type="logo-buffer"></Icon>
+              所属
+            </div>
+            <Row class="tl mb5" :gutter="8">
+              <i-col span="10">
+                <i-input class="mar like-select" placeholder="検索" v-model="searchDept"
+                  @keyup.enter.native="handleSearchDept">
+                </i-input>
+              </i-col>
+              <i-col span="8" class="no-border-radius">
+                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchDept">検索
+                </i-button>
+              </i-col>
+            </Row>
+            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" empty-text="所属データなし"></Tree>
+          </i-col>
+          <i-col :span="curdisplayPanel === 'searchEmp' ? 24 : 16"
+            v-show="curdisplayPanel === 'searchEmp' || curdisplayPanel === 'searchDept'">
+            <div class="titlenorm mb5">
+              <Icon type="logo-buffer"></Icon>
+              社員検索
+            </div>
+            <Alert class="primary-info tl" style="margin-bottom: 5px;">
+              <div>※ カナ氏名、漢字氏名、社員番号のいずれかの先頭数文字を入力し、「検索」ボタンをクリックしてください。</div>
+            </Alert>
+            <div class="tr mb5">
+              <i-button type="primary" ghost @click="addSearchEmp">決定</i-button>
+            </div>
+            <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="searchEmpColumns"
+              :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
+              <template slot-scope="{ row }" slot="mapCpostidCk">
+                <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+                  @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
+              </template>
+
+              <template slot-scope="{ row }" slot="mapCpostname">
+                <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+                  @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
+              </template>
+            </i-table>
+          </i-col>
+        </Row>
+        <!-- 社員選択による搜索 -->
+          <!-- 搜社员 -->
+        <!-- <span v-show="curdisplayPanel === 'searchEmp'">
+          <div class="titlenorm mb5">
+            <Icon type="logo-buffer"></Icon>
+            社員検索
+          </div>
+          <Alert class="primary-info tl" style="margin-bottom: 5px;">
+            <div>※ カナ氏名、漢字氏名、社員番号のいずれかの先頭数文字を入力し、「検索」ボタンをクリックしてください。</div>
+          </Alert>
+          <div class="tr mb5">
+            <i-button type="primary" ghost @click="addSearchEmp">決定</i-button>
+          </div>
+          <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="searchEmpColumns"
+            :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
+            <template slot-scope="{ row }" slot="mapCpostidCk">
+              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+              @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="mapCpostname">
+              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+              @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
+            </template>
+          </i-table>
+        </span> -->
+          <!-- 用所属搜社员 -->
+        <!-- <span v-show="curdisplayPanel === 'searchDept'"></span> -->
       </Drawer>
       <!--  条件式による定義 选择group和 役職 end-->
     </div>
@@ -515,8 +589,35 @@
               slot: 'mapCpostname',
             },
           ],
-          clickedCell: {},
           positonData:[],
+          searchEmpColumns:[
+            {
+              title: '社員番号',
+              width:120,
+              key: 'meCuserid',
+            },
+            {
+              title: '氏名',
+              key: 'empName',
+            },
+            {
+              title: '所属',
+              key: 'sectionName',
+            },
+            {
+              title: '役職',
+              key: 'postName',
+            },
+            {
+              type: 'selection',
+              width: 60,
+              align: 'center'
+            },
+          ],
+          searchEmpData:[],
+          searchDeptColumns:[],
+          searchDeptData:[],
+          clickedCell: {},
           tableData: [{}],
           _treeData: [],
           treeDataForSearch: [],
@@ -617,9 +718,49 @@
         handleEvent() {
 
         },
-        handleSearchEmpt() {
-          // http://localhost:6879/sys/groupmanager/empsearch?searchWord=464&psSite=Admin
-          // sys/groupmanager/empsearch
+        async handleSearchEmpt(isByDept) {
+          // searchWord
+          // targetDept
+          if(!isByDept && !this.searchEmpt.trim()) {
+            return this.$Notice.warning({ title: '注意', desc: '検索文字列を入力してください。', duration: 6.5 })
+          }
+          if(isByDept) {
+            this.curdisplayPanel = 'searchDept'
+            this.showGroupOrPositionDrawer = true
+              const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
+              this.treeData = this.convertTreeData(data)
+              this.treeData[0].expand = true
+              this._treeData = Utils.deepClone(this.treeData)
+
+          }else {
+            this.curdisplayPanel = 'searchEmp'
+          this.showGroupOrPositionDrawer = true
+          const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt})
+          this.searchEmpData = data.map(e=> {
+            // 点开后将默认勾选勾上
+            if(this.emptData.find(t=> t.employeeId === e.meCuserid)) {
+              return {...e, _checked: true}
+            } else {
+              return e
+            }
+          })
+          }
+        },
+        // 将选择中的社员加到社員を指定表格里
+        addSearchEmp() {
+          console.log(this.$refs.empTable.getSelection())
+          let emptData = []
+          this.$refs.empTable.getSelection().forEach(e=>{
+            if(!this.emptData.some(t=> t.employeeId === e.meCuserid)) {
+              emptData = emptData.concat({
+                ...e,
+                companyName: e.compName,
+                employeeId: e.meCuserid,
+                kanJiName: e.empName
+              })
+            }
+          })
+          if(emptData.length > 0) this.emptData = this.emptData.concat(emptData)
         },
         handleSystemChange() {
           this.getSiteList()
@@ -653,7 +794,7 @@
           this.updateValue.belowSingle = data.belowSingle
           this.updateValue.baseFlag = data.groupInfo.gsBaseFlg
           // 条件式による定義
-          this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList :[{}]
+          this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList :[{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' }]
           // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
           // 所以这里直接取第一个法人的全部
           this.baseTreeData = [{
@@ -675,7 +816,8 @@
           this.$set(this.lightDelBtnVisible, i, false)
         },
         removeEmpt(row, i) {
-          this.emptData = this.emptData.filter(e => e.id !== row.id)
+          // 由于自己选择新增的不存在id, 所以使用社员番号来删除
+          this.emptData = this.emptData.filter(e => e.employeeId !== row.employeeId)
           this.$set(this.lightDelBtnVisible2, i, false)
         },
         cancelEmpt(i) {
@@ -684,7 +826,6 @@
         // 点击表格的格子
         async handleCellClickForAction(row, column, data, event) {
           this.poptipStyle.display = 'none'
-          // console.log(row)
           if (column.slot === 'action') {
             return
           }
@@ -742,10 +883,22 @@
           }
           this.poptipStyle.display = 'none'
         },
-        handleClickLeaf(e) {
+        async handleClickLeaf(e) {
           if (!e[0]) return
-          this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
-          this.showGroupOrPositionDrawer = false
+          if(this.curdisplayPanel === 'searchDept') {
+            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, targetDept:e[0].sectionId})
+          this.searchEmpData = data.map(e=> {
+            // 点开后将默认勾选勾上
+            if(this.emptData.find(t=> t.employeeId === e.meCuserid)) {
+              return {...e, _checked: true}
+            } else {
+              return e
+            }
+          })
+          } else {
+            this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
+            this.showGroupOrPositionDrawer = false
+          }
         },
         conditionDeleteAll() {
           this.$Modal.confirm({
@@ -790,6 +943,7 @@
         }),
         sectionInTreeData(data) {
           const _this = this
+          // todo: 这里还是应该存路径解
           data.forEach((e, i) => {
             if (e.title.indexOf(_this.searchDept) > -1) {
               _this.treeDataForSearch = _this.treeDataForSearch.concat({...e, children:[]})
