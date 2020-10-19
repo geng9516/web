@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='清算期間設定',cssPaths='/pages/content.min.css,' + '/pages/tmgliquidationperiod.min.css')">
+</head>
+
+<body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
+<main class="content tmgliquidationperiod-warp" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{  '清算期間設定' }}
+                </h1>
+            </div>
+        </div>
+        <!--todo:button-->
+    </div>
+    <div class="searchwrap">
+        <!-- 共通組織図画面 start-->
+
+             <i-select v-model="optsSearch.type" class="ml15" style="width: 100px;">
+                  <i-option value="0" label="氏名"></i-option>
+                  <i-option value="1" label="カタカナ"></i-option>
+                  <i-option value="2" label="番号"></i-option>
+             </i-select>
+            <i-input v-model="optsSearch.searchText" style="width: 200px;" enter-button placeholder="検索" search class="mr30"></i-input>
+
+        <span style="display:flex;width: calc(15% + 150px);">
+            <span class="label">種別</span>
+    <!--        <i-select v-model="workTypeName" class="mr30" @on-change="handlSelectWorkType($event)"-->
+    <!--                  placeholder="選択ください">-->
+    <!--            <option-group v-for="(item, i) of dispWorkTypeList" :key="i" :label="item.workTypeName" :value="item.workTypeGroupId">-->
+    <!--                <i-option v-for="(e, i) of item.list" :value="e.worktypeid" :key="i" :label="e.worktypeName">-->
+    <!--                </i-option>-->
+    <!--            </option-group>-->
+    <!--        </i-select>-->
+            <i-button v-on:click.native="workTypeDrawShow = true" class="input-like-span dept-select">
+                <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{workTypeName}}
+                    <div slot="content">{{workTypeName}}</div>
+                </Tooltip>
+            </i-button>
+            <Drawer class="tc" placement="right" width="500" :closable="false"
+                  v-model="workTypeDrawShow">
+                <div class="titlenorm mb5">
+                    <Icon type="logo-buffer"></Icon>
+                    種別
+                </div>
+                <div style="position: relative;">
+                    <Tree class="tree mt2" :data="dispWorkTypeList" v-on:on-select-change="handleClickLeaf"
+                          empty-text="種別データなし"></Tree>
+                    <Spin size="large" fix v-if="workTypeLoading"></Spin>
+                </div>
+            </Drawer>
+
+
+
+        </span>
+    </div>
+    <div class="content_body">
+        <div class="titlenorm mb10 ">
+            <Icon type="logo-buffer"></Icon>
+            精算期間一覧
+        </div>
+        <Alert class="primary-info mt10">123</Alert>
+        <i-table class="long-table" :disabled-hover="true"
+                 border :row-class-name="() => 'select-col'"
+                :data="tableData" :loading="loading" :columns="columns"
+                 no-data-text="123">
+            <template slot-scope="{ row }" slot="detail">
+                <i-button class="width100" size="small" v-if="row.newflag" @click="showDetails(row)">編集</i-button>
+                <i-button class="width100" size="small" v-else @click="showDetails(row)">新規</i-button>
+            </template>
+        </i-table>
+
+
+
+        <Drawer class="tc" title="精算期間詳細" placement="right" width="700" :closable="false" v-model="editFlag">
+
+            <div class="tr">
+                <i-button type="error" class="mr15 mb10" ghost @click="" v-if="0===0">登録</i-button>
+                <i-button type="primary" class="mb10" ghost @click="" v-if="0===0">削除</i-button>
+            </div>
+            <div class="titlenorm mb10 mt10" style="font-size:15px">
+              <Icon type="logo-buffer"></Icon>
+                精算期間一覧
+            </div>
+            <i-table border :columns="editColumns" :disabled-hover="true"
+                     :data="autoEditDate">
+            </i-table>
+            <i-table border :columns="totalColumns" :disabled-hover="true"
+                     :data="autoTotalDate">
+            </i-table>
+        </Drawer>
+    </div>
+</main>
+d
+<div th:replace="layout/head::header"></div>
+<script type="text/babel" th:inline="javascript">
+    const FIVE_DAYS_HOLIDAY = new Vue({
+        el: '.tmgliquidationperiod-warp',
+        data() {
+            return {
+                workTypeDrawShow:false,
+                loading:false,
+                workTypeLoading:false,
+                workTypeName:'',
+                dispWorkTypeList:[],
+                columns: [
+                    {
+                        title: '氏名',
+                        key: 'employeename',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: '種別',
+                        minWidth: 36,
+                        key: 'worktypename',
+                        align: 'center'
+                    },
+                    {
+                        title: '適用開始日',
+                        key: 'startdate',
+                        align: 'center'
+                    },
+                    {
+                        title: '適用終了日',
+                        key: 'enddate',
+                        align: 'center'
+                    },
+                    {
+                        title: '更新者',
+                        minWidth: 70,
+                        key: 'modifieduser',
+                        align: 'center'
+                    },
+                    {
+                        title: '更新日付',
+                        minWidth: 70,
+                        key: 'modifieddate',
+                        align: 'center'
+                    },
+                    {
+                        title: '登録内容',
+                        Width: 70,
+                        slot: 'detail',
+                        align: 'center'
+                    },
+                ],
+                tableData:[],
+                optsSearch:{
+                    workType:'',
+                    type:'0',
+                    searchText:'',
+                },
+                optsEmp:{
+                    tlpId:'',
+                    startDate:'',
+                    endDate:'',
+                },
+                editFlag:false,
+                editColumns:[
+                    {
+                        title: '年月',
+                        key: 'yyyymm',
+                        align: 'left'
+                    },
+                    {
+                        title: '標準時間',
+                        key: 'standard',
+                        align: 'center'
+                    },
+                    {
+                        title: '調整時間',
+                        key: 'result',
+                        align: 'center'
+                    },
+                    {
+                        title: '調整数値',
+                        key: 'adjust',
+                        align: 'center'
+                    },
+                ],
+                editDate:[],
+                totalColumns:[
+                    {
+                        title: '期間',
+                        key: 'yyyymm',
+                        align: 'range'
+                    },
+                    {
+                        title: '総標準時間',
+                        key: 'totalStandard',
+                        align: 'center'
+                    },
+                    {
+                        title: '総調整時間',
+                        key: 'totalResult',
+                        align: 'center'
+                    },
+                    {
+                        title: '結果',
+                        key: 'totalAdjust',
+                        align: 'center'
+                    },
+                ],
+                totalDate:[],
+            }
+        },
+        async mounted() {
+            this.getWorkTypeList()
+        },
+
+        computed: {
+            autoEditDate(){
+                let result=[]
+                    editDate.forEach(e => {
+                        result=result.concat({
+                            yyyymm:e.yyyymm,
+                            standard:e.standard,
+                            result:e.result,
+                            adjust:(+e.standard) - (+e.result)
+                        })
+                    })
+                return result
+            },
+            autoTotalDate(){
+                let result=[]
+                editDate.forEach(e => {
+                    result=result.concat({
+                        yyyymm:e.yyyymm,
+                        standard:e.standard,
+                        result:e.result,
+                        adjust:(+e.standard) - (+e.result)
+                    })
+                })
+                return result
+            },
+        },
+        methods: {
+            async getWorkTypeList() {
+                try {
+                    this.loading=true
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/WorkTypeList', this.referListObject)
+                    const convertedTreeData = this.convertTreeData(data)
+                    this.dispWorkTypeList=[{worktypeid:'all',title:'全て',expand:true,children:convertedTreeData}]
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading=false
+                }
+            },
+            /**
+             * 通用转化所属选择器data
+             * @param treeData 标准树形数据
+             * @param fristDisable 是否禁用第一项
+             *
+             */
+            convertTreeData(treeData) {
+                if(!treeData) {
+                    Vue.prototype.$Message.error({
+                        background:true,
+                        closable: true,
+                        duration: 6.5,
+                        content: '参照できる種別が存在しません。'
+                    });
+                    return []
+                }
+                return treeData.map((e) => {
+                    const children = e.child
+                    if (children) {
+                        return {
+
+                                    ...e.worktypeid,
+                                    title: e.worktypename,
+                                    // 前两层级默认展开方便查看
+                                    expand: true,
+                                    children: this.convertTreeData(children)
+
+                        }
+                    } else {
+                        return {
+                            ...e.worktypeid,
+                            expand: true,
+                            title: e.worktypename
+                        }
+                    }
+                })
+            },
+
+            async handleClickLeaf(e) {
+                console.log(e)
+                if (!e[0]) return
+                try {
+                    this.loading=true
+                    this.optsSearch.workType=e[0].worktypeid
+                    this.optsSearch.searchText= ''
+                    this.optsSearch.type = '0'
+                    console.log(this.optsSearch)
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/Disp', this.optsSearch)
+                    this.tableData = data.liquidationPeriodList
+                    this.workTypeDrawShow=false
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading=false
+                }
+
+            },
+            async showDetails(e) {
+                try {
+                    this.optsEmp.tlpId = e.newflag
+                    this.optsEmp.startDate = e.startDate
+                    this.optsEmp.endDate = e.endDate
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
+                    this.editDate = data
+                } catch (error) {
+                    return
+                } finally {
+                }
+                this.editFlag = true;
+            }
+        }
+    })
+</script>
+</body>
+
+</html>

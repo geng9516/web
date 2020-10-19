@@ -22,6 +22,7 @@ import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
@@ -885,5 +886,15 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public  List<NewBulkdropDownVo> selectBulkdropDown(String custID, String compCode, String baseDate){
         return baseMapper.selectBulkdropDown( custID, compCode, baseDate);
+    }
+
+    @Override
+    public  List<WorkTypeDto> selectWorkerType4Variational(String custID, String compCode, String baseDate){
+        return baseMapper.selectWorkerType4Variational( custID, compCode, baseDate);
+    }
+
+    @Override
+    public  List<WorkTypeDto> selectWorkerType4Flex(String custID, String compCode, String baseDate){
+        return baseMapper.selectWorkerType4Flex( custID, compCode, baseDate);
     }
 }
