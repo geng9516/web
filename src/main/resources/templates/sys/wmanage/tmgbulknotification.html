@@ -281,6 +281,7 @@
                     isShow: false,
                     deptDrawShow: false,  //対象部署選択画面制御
                     treeData: [],                //組織ツリー用
+                    treeDataBackUp: [],                //組織ツリーbackup用
                     isSearchHistory: false,
                     cancelBotton: false,
                     opts: {
@@ -410,9 +411,9 @@
                 newBulkNtf() {
                     this.ntfType = ''
                     this.deptNameList = []
+                    this.treeData = Utils.deepClone(this.treeDataBackUp)
                     this.fromDate = ''
                     this.toDate = ''
-                    this.getOrgTree()
                     if (this.newOrDisp) {
                         this.newOrDisp = false
                     } else {
@@ -432,6 +433,7 @@
                         const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
                         this.treeData = Utils.convertTreeData(orgList)
+                        this.treeDataBackUp = Utils.convertTreeData(orgList)
                         this.treeChangeExpand(this.treeData)
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
