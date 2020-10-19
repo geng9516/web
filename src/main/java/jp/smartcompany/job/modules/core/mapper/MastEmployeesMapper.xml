@@ -402,21 +402,23 @@
             AND ME_CUSERID = HD_CUSERID
             AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}
             AND ME_DENDDATE >= #{searchDate}
-            AND (
-                <if test="searchWord!=null">
-                  ME_CEMPLOYEEID_CK LIKE #{searchWord}
-                  OR ME_CKANJINAME LIKE #{searchWord}
-                  OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
-                  OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
-                  OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
-                </if>
-                <if test="searchWordEnglish">
-                    OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
-                </if>
-                <if test="searchWordConve">
-                    OR ME_CKANANAME LIKEC #{searchWordConve}
-                </if>
-            )
+            <if test="searchWord neq null or searchWordEnglish neq null or searchWordConve neq null">
+                AND (
+                    <if test="searchWord neq null">
+                        ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                        OR ME_CKANJINAME LIKE #{searchWord}
+                        OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                        OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                        OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
+                    </if>
+                    <if test="searchWordEnglish neq null">
+                        OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+                    </if>
+                    <if test="searchWordConve neq null">
+                        OR ME_CKANANAME LIKEC #{searchWordConve}
+                    </if>
+                )
+            </if>
             <if test='propValue == "yes" and searchFlg != 1'>
                 AND	ME_CIFSTILLEMPLOYEDID = 0
             </if>

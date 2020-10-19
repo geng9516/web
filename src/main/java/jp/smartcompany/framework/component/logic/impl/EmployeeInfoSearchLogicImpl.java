@@ -93,7 +93,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
                               String targetDept,
                               Integer type) {
         configSearchEnvs();
-        if (StrUtil.isAllBlank(searchWord,searchWordConve,searchWordEnglish)){
+        if (type == 1 && StrUtil.isAllBlank(searchWord,searchWordConve,searchWordEnglish)){
             throw new GlobalException(
                     resourceBundle.getString("MSG_SEARCH_WORD_BLANK")
             );

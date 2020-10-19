@@ -29,16 +29,19 @@ public class MailUtil {
     private JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
 
+    private String from;
+
     @PostConstruct
     public void getSender() {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        javaMailSenderImpl.setUsername("progresssite@scientia.co.jp");
-//        javaMailSenderImpl.setPassword("heqyeveoaekibhif");
-        javaMailSenderImpl.setPort(25);
-        javaMailSenderImpl.setHost("smtp.scientia.co.jp");
+        from = "yin.tianxiang@nisshin-sci.co.jp";
+        javaMailSenderImpl.setUsername(from);
+        javaMailSenderImpl.setPassword("password0");
+        javaMailSenderImpl.setPort(587);
+        javaMailSenderImpl.setHost("smtp.nisshin-sci.co.jp");
         Properties props = new Properties();
         props.setProperty("mail.smtp.timeout","0");
-        props.setProperty("mail.smtp.auth","false");
+        props.setProperty("mail.smtp.auth","true");
         props.setProperty("mail.smtp.starttls.enable","true");
         props.setProperty("mail.smtp.starttls.required","true");
         javaMailSenderImpl.setJavaMailProperties(props);
@@ -56,7 +59,7 @@ public class MailUtil {
     public void sendText(String to,String title,String content) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setFrom("353907887@qq.com");
+        message.setFrom(from);
         message.setSubject(title);
         message.setText(content);
         javaMailSender.send(message);
@@ -81,7 +84,7 @@ public class MailUtil {
                     helper = new MimeMessageHelper(message, true,"UTF-8");
                     helper.setTo(toItem);
                     helper.setSubject(title);
-                    helper.setFrom("353907887@qq.com");
+                    helper.setFrom(from);
                     helper.setText(emailContent, true);
                 } catch (MessagingException e) {
                     throw new GlobalException(e.getMessage());
