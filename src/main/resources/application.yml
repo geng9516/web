@@ -24,6 +24,8 @@ server:
 spring:
   profiles:
     active: test
+  application:
+    name: SmartPublic-WM
   servlet:
     multipart:
       max-file-size: 10MB
