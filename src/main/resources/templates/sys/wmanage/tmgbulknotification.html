@@ -85,7 +85,7 @@
                             <h2>一括登録区分</h2>
                         </i-col>
                         <i-col span="9" offset="1">
-                            <i-select class="mb20 non-border-input" placeholder="一括登録区分" style="width: 450px"
+                            <i-select class="mb20 non-border-input" placeholder="一括登録区分選択" style="width: 450px"
                                 v-model="ntfType">
                                 <i-option v-for="(item,index) of ntfTypeList" :key="index" :value="item.id"
                                     :label="item.name"></i-option>
@@ -408,6 +408,10 @@
                     }
                 },
                 newBulkNtf() {
+                    this.ntfType = ''
+                    this.deptNameList = []
+                    this.fromDate = ''
+                    this.toDate = ''
                     if (this.newOrDisp) {
                         this.newOrDisp = false
                     } else {
