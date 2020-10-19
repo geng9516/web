@@ -371,7 +371,7 @@
                                 align: 'center'
                             },
                             {
-                                title: '修正\n期間チェック',
+                                title: '修正\nチェック期間',
                                 className: 'checkin',
                                 slot: 'editCheckPeriod',
                                 align: 'center'
@@ -616,7 +616,7 @@
                             editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
                             editTakenDays:e.fixSumSyutokudays16,    //編集画面用_取得日数
                             adjustTakenDays:e.tpfNusedaysAjdust13==null ? e.tpfNusedaysAjdust13:addNumDeci(e.tpfNusedaysAjdust13,true),  //編集画面用_調整取得日数
-                            editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
+                            editCheckPeriod:e.tpfDkikanbiFix12,     //修正チェック期間
                             editMustDays:e.tpfNmustdaysFix14==null ? e.tpfNmustdaysFix14:addNumDeci(e.tpfNmustdaysFix14,true),       //修正必要日数
                             isChecked:false,
 
@@ -1041,11 +1041,11 @@
                 let index=this.radioCheckedIndex
                 this.paidData[index].editBasedDay = e
             },
-            //修正期間チェック
+            //修正チェック期間
             handleChangeCheckPeriod(e) {
                 this.updateAcquired5DaysVO.dkikanbiFix = e
 
-                //修正期間チェックを一旦残る
+                //修正チェック期間を一旦残る
                 let index=this.radioCheckedIndex
                 this.paidData[index].editCheckPeriod = e
             },
@@ -1079,7 +1079,7 @@
                         return
                     }
                 }
-                // 修正チェック期間チェック ※2019/04/01(法改日)以降
+                // 修正チェック期間 ※2019/04/01(法改日)以降
                 if (date1 != "" &&  date1 != null) {
                     if (date1.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
@@ -1129,14 +1129,14 @@
                         return
                     }
                 }
-                // 修正期間チェック・当レコードの基準日との比較
+                // 修正チェック期間・当レコードの基準日との比較
                 if (date1 != "" &&  date1 != null) {
                     if (date1.split("/").join("") - this.paidData[index].taKijyunbi5.split("/").join("") < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 6,
-                            content: '修正期間チェックは'+this.paidData[index].taKijyunbi5+'以降の日付を入力してください。'
+                            content: '修正チェック期間は'+this.paidData[index].taKijyunbi5+'以降の日付を入力してください。'
                         });
                         return
                     }
@@ -1157,14 +1157,14 @@
                         }
                     }
 
-                    // 修正期間チェックの関連チェック
+                    // 修正チェック期間の関連チェック
                     if (date1 != "" &&  date1 != null) {
                          if (date1.split("/").join("") - this.paidData[index+1].taKikanbi6.split("/").join("") > 0) {
                              this.$Message.error({
                                     background: true,
                                     closable: true,
                                     duration: 6,
-                                    content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。'
+                                    content: '修正チェック期間は'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。'
                              });
                              return
                          }
@@ -1190,7 +1190,7 @@
                             return
                         }
                     }
-                    // 修正期間チェックの関連チェック
+                    // 修正チェック期間の関連チェック
                     if (date1 != "" &&  date1 != null) {
                         console.log("最後1")
                         console.log(index == this.paidData[index].taRowpan10-1)
@@ -1202,7 +1202,7 @@
                                 background: true,
                                 closable: true,
                                 duration: 6,
-                                content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。'
+                                content: '修正チェック期間は'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。'
                             });
                             return
                         }
@@ -1250,7 +1250,7 @@
                                     background: true,
                                     closable: true,
                                     duration: 6,
-                                    content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。'
+                                    content: '修正チェック期間は'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。'
                                 });
                                 return
                             }
@@ -1259,7 +1259,7 @@
                                     background: true,
                                     closable: true,
                                     duration: 6,
-                                    content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。'
+                                    content: '修正チェック期間は'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。'
                                 });
                                 return
                             }
