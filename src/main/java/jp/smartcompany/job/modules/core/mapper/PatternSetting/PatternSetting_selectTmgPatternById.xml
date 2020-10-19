@@ -36,7 +36,7 @@
         ,tmg_f_conv_min2hhmi(ndate_change_time, 0) as tpa_ndate_change_time
         ,c2caldays as tpa_c2caldays
         ,cnextptn as tpa_cnextptn
-        from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if>, null, trunc(sysdate)))
+        from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, null, null, trunc(sysdate)))
         where cpatternid=#{patternId}
     </select>
 
