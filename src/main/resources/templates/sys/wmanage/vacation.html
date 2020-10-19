@@ -186,7 +186,7 @@
                             </i-col>
                         </Row>
 
-                        <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2" :disabled-hover="true" no-data-text="">
+                        <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2" :disabled-hover="true" :loading="updateLoading" no-data-text="">
                             <template slot-scope="{ row ,index }" slot="days">
                                 <i-input v-model="paidNowData[index].days" v-if="row.isEditable" class=" tc"></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
@@ -420,6 +420,7 @@
             },
             // 年次休暇管理のレコードを選択する
             showDay(e) {
+                this.paidDetailsLoadingFlg = 1
                 this.dataDetail = ''
                 this.paidDetailsData = []
 
@@ -447,7 +448,9 @@
             },
             // 年次休暇管理
             async getDetailList(tphDyyyymmdd, tphCemployeeid) {
-                this.paidDetailsLoading = true
+                if(this.paidDetailsLoadingFlg == 1){
+                    this.paidDetailsLoading = true
+                }
 
                 //选择职员保存、初期化使用。
                 this.param.txtTmgReferListTreeViewAdminTargetEmp = tphCemployeeid
@@ -471,7 +474,9 @@
                 } catch (error) {
                     return
                 } finally {
-                    this.paidDetailsLoading = false
+                    if(this.paidDetailsLoadingFlg == 1){
+                        this.paidDetailsLoading = false
+                    }
                 }
             },
             // async showDayList(e) {
@@ -503,7 +508,7 @@
 
             },
             //登録ボタン押下
-            exeUpdate: Debounce(function () {
+            exeUpdate: Debounce(async function () {
                 if (this.calculation()) {
                     this.paramters.cemployeeid = this.cemployeeid
                     this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
@@ -518,11 +523,15 @@
                     this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
                     this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
                     this.paramters.ccomment = this.dataDetail.ccomment
-
-                    this.http.get('sys/paidholiday/execUpdate', this.paramters)
-                    this.paidHolidayInitRList = false
-                    this.getTableData()
-
+                    this.paidDetailsLoadingFlg = 0
+                    this.updateLoading = true
+                    this.paidNowLoading = true
+                    await this.http.get('sys/paidholiday/execUpdate', this.paramters)
+                    await this.getTableData()
+                    await this.getDetailList(this.paramters.dyyyymmdd, this.paramters.cemployeeid)
+                    this.updateLoading = false
+                    this.paidNowLoading = false
+                    // this.paidHolidayInitRList = false
                 }
             }),
             // 計算ボタン押下
@@ -1519,6 +1528,7 @@
                     }
                 ],
                 paidDetailsLoading: false,
+                paidDetailsLoadingFlg: 0,
                 columns3: [
                     {
                         title: ' ',
@@ -1544,6 +1554,7 @@
                 ],
                 data: [],
                 loading: false,
+                updateLoading: false,
                 referListObject: {
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
