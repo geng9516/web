@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper;
@@ -181,6 +182,12 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                 map.put("headerList", headerList);
                 map.put("empsql", empsql);
                 return baseMapper.buildSQLForSelectCSVOutputImage(map);
+        }
+
+        @Override
+        public List<SectionPostRowListDTO> selectBossComSectionList(List<String> sectionList) {
+                String searchDate = SysUtil.transDateToString(DateUtil.date());
+                return baseMapper.selectBossComSectionList(searchDate,sectionList);
         }
 
 }

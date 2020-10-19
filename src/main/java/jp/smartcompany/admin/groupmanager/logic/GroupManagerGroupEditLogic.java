@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupmanager.logic;
 
+import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 
@@ -15,5 +16,7 @@ public interface GroupManagerGroupEditLogic {
     void update(GroupManagerEditDTO dto);
 
     List<QueryConditionSelectDTO> queryConditionList(String tableId);
+
+    List<SectionPostRowListDTO> getBossCompSectionList(List<String> sectionList);
 
 }

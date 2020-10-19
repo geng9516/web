@@ -2,6 +2,7 @@ package jp.smartcompany.controller.admin;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
@@ -211,6 +212,12 @@ public class GroupManagerController {
     @GetMapping("queryconditions")
     public List<QueryConditionSelectDTO> queryConditionList(@RequestParam(value="tableId",required = false) String tableId) {
         return groupManagerGroupEditLogic.queryConditionList(tableId);
+    }
+
+    // http://localhost:6879/sys/groupmanager/bosslist?sectionId=201000000000&sectionId=201000201010
+    @GetMapping("bosslist")
+    public List<SectionPostRowListDTO> getBossCompSectionList(@Valid @NotEmpty @RequestParam List<String> sectionId) {
+        return groupManagerGroupEditLogic.getBossCompSectionList(sectionId);
     }
 
 

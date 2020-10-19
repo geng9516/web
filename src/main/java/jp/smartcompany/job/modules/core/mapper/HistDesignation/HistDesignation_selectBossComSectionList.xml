@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.HistDesignation.HistDesignationMapper">
+
+    <select id="selectBossComSectionList" parameterType="map" resultType="jp.smartcompany.admin.component.dto.SectionPostRowListDTO">
+        SELECT
+            DISTINCT HD_CSECTIONID_FK  AS SECTIONID,
+            ME_CEMPLOYEEID_CK AS EMPLOYEEID,
+            PSMASTER.FUNC_GET_EMP_NAME(
+              ME_CCUSTOMERID_CK,
+              ME_CCOMPANYID,
+              ME_CEMPLOYEEID_CK,
+              '${searchDate}',
+              'ja') AS KANJINAME
+        FROM
+          MAST_EMPLOYEES,HIST_DESIGNATION
+        WHERE
+            HD_CCUSTOMERID_CK   = ME_CCUSTOMERID_CK AND
+            HD_CCOMPANYID_CK    = ME_CCOMPANYID AND
+            HD_CEMPLOYEEID_CK   = ME_CEMPLOYEEID_CK  AND
+            HD_CCUSTOMERID_CK   = '01'       AND
+            HD_CCOMPANYID_CK    = '01'
+            <if test="sectionList neq null and sectionList.size() gt 0">
+                AND HD_CSECTIONID_FK IN
+                <foreach collection="sectionList" index="index" item="sectionId" separator="," open="(" close=")">
+                    #{sectionId}
+                </foreach>
+            </if>
+            AND HD_DSTARTDATE_CK   <![CDATA[<=]]> #{searchDate}  AND
+            HD_DENDDATE        >= #{searchDate}  AND
+            ME_DSTARTDATE      <![CDATA[<=]]> #{searchDate}  AND
+            ME_DENDDATE        >= #{searchDate}  AND
+            HD_CBOSSORNOT       = 1
+            ORDER BY HD_CSECTIONID_FK, ME_CEMPLOYEEID_CK
+    </select>
+
+</mapper>

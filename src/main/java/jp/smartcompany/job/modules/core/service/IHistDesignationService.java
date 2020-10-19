@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -99,4 +100,6 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
          * @return List<Map>
          */
         List<Map> buildSQLForSelectCSVOutputImage(String targetDate, List<ItemVO> headerList, String empsql);
+
+        List<SectionPostRowListDTO> selectBossComSectionList(List<String> sectionList);
 }

@@ -49,6 +49,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final IMastGroupdefinitionsService iMastGroupdefinitionsService;
     private final IHistGroupdefinitionsService iHistGroupdefinitionsService;
     private final IMastDatadictionaryService mastDatadictionaryService;
+    private final IHistDesignationService histDesignationService;
 
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
@@ -693,6 +694,11 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             fieldList = mastDatadictionaryService.selectColumnInfo("01", "ja", tableId, null);
         }
         return fieldList;
+    }
+
+    @Override
+    public List<SectionPostRowListDTO> getBossCompSectionList(List<String> sectionList) {
+        return histDesignationService.selectBossComSectionList(sectionList);
     }
 
     /**

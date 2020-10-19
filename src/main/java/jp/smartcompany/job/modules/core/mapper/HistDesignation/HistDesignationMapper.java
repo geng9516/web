@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper.HistDesignation;
 
+import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -83,5 +84,6 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
         List<Map> buildSQLForSelectCSVOutputImage(Map<String, Object> map);
 
 
+        List<SectionPostRowListDTO> selectBossComSectionList(@Param("searchDate") String searchDate,@Param("sectionList") List<String> sectionList);
 
 }
