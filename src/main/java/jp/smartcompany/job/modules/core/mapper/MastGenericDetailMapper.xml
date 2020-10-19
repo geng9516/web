@@ -927,4 +927,46 @@
         AND A.MGD_DEND >= TO_DATE(#{baseDate})
         ORDER BY A.MGD_NSPARENUM1
     </select>
+    <select id="selectWorkerType4Variational"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto">
+        SELECT
+            MGD.MGD_CMASTERCODE AS worktypeid,
+            MGD.MGD_CGENERICDETAILDESC AS worktypeName
+        FROM
+            MAST_GENERIC_DETAIL MGD
+        WHERE
+            EXISTS (
+            SELECT
+                1
+            FROM
+                TMG_MAST_WORKER4VARIATIONAL TMWV
+            WHERE
+                TMWV.TMWV_CWORKTYPEID = MGD.MGD_CMASTERCODE
+            )
+        AND MGD.MGD_CCUSTOMERID = #{custID}
+        AND MGD.MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND MGD.MGD_DSTART_CK <![CDATA[<=]]> TO_DATE(#{baseDate})
+        AND MGD.MGD_DEND >= TO_DATE(#{baseDate})
+    </select>
+    <select id="selectWorkerType4Flex"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto">
+        SELECT
+            MGD.MGD_CMASTERCODE AS worktypeid,
+            MGD.MGD_CGENERICDETAILDESC AS worktypeName
+        FROM
+            MAST_GENERIC_DETAIL MGD
+        WHERE
+            EXISTS (
+            SELECT
+                1
+            FROM
+                TMG_MAST_WORKER4FLEX TMWF
+            WHERE
+                TMWF.TMWF_CWORKTYPEID = MGD.MGD_CMASTERCODE
+            )
+        AND MGD.MGD_CCUSTOMERID = #{custID}
+        AND MGD.MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND MGD.MGD_DSTART_CK <![CDATA[<=]]> TO_DATE(#{baseDate})
+        AND MGD.MGD_DEND >= TO_DATE(#{baseDate})
+    </select>
 </mapper>

@@ -297,6 +297,8 @@
   }
   ul li {
     margin: 0;
+    // 超长时应换行
+    white-space: normal;
     padding-top: 8px;
   }
   .ivu-tree-title ~ ul li:before {

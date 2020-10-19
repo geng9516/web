@@ -16,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
@@ -497,4 +498,8 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     String selectBulkTimeRange(String custID, String compCode, String baseDate);
 
     List<NewBulkdropDownVo> selectBulkdropDown(String custID, String compCode, String baseDate);
+
+    List<WorkTypeDto> selectWorkerType4Variational(String custID, String compCode, String baseDate);
+
+    List<WorkTypeDto> selectWorkerType4Flex(String custID, String compCode, String baseDate);
 }

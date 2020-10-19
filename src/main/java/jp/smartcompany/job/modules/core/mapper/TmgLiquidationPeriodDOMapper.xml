@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationPeriodMapper">
+
+    <select id="getLiquidationDispFromType"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationPeriodListDto">
+
+    </select>
+
+    <select id="getLiquidationDispFromWorkType"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationPeriodListDto">
+        SELECT
+            te.TEM_CEMPLOYEEID AS EMPLOYEEID,
+            TMG_F_GET_ME_NAME (
+                te.TEM_CEMPLOYEEID,
+                SYSDATE,
+                0,
+                te.TEM_CCOMPANYID,
+                te.TEM_CCUSTOMERID
+            ) AS EMPLOYEENAME,
+            TMG_F_GET_MGD (
+                te.TEM_CWORKTYPEID,
+                SYSDATE,
+                te.TEM_CCOMPANYID,
+                te.TEM_CCUSTOMERID,
+                'ja'
+            ) AS WORKTYPENAME,
+            NVL( tlp.TLP_DSTARTDATE, '' ) AS startdate,
+            NVL( tlp.TLP_DENDDATE, '' ) AS enddate,
+            NVL( tlp.TLP_CMODIFIERUSERID, '' ) AS modifieduser,
+            NVL( to_char(tlp.TLP_DMODIFIEDDATE,'yyyy/mm/dd'), '' ) AS modifieddate,
+            DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG
+        FROM
+            TMG_EMPLOYEES te
+            LEFT JOIN TMG_LIQUIDATION_PERIOD tlp
+            ON tlp.TLP_CEMPLOYEEID = te.TEM_CEMPLOYEEID
+            AND sysdate BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
+            AND tlp.TLP_CCOMPANYID = te.TEM_CCOMPANYID
+            AND tlp.TLP_CCUSTOMERID = te.TEM_CCUSTOMERID
+        WHERE
+            te.TEM_CCOMPANYID = #{custId}
+            AND te.TEM_CCUSTOMERID = #{compId}
+            AND SYSDATE BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
+        <choose>
+            <when test='workType == "flex"'>
+                AND EXISTS (
+                SELECT
+                *
+                FROM
+                TMG_MAST_WORKER4FLEX tmwf
+                WHERE
+                tmwf.TMWF_CWORKTYPEID = te.TEM_CWORKTYPEID
+                )
+            </when>
+            <when test='workType == "variational"'>
+                AND EXISTS (
+                SELECT
+                *
+                FROM
+                TMG_MAST_WORKER4VARIATIONAL tmwv
+                WHERE
+                tmwv.TMWV_CWORKTYPEID = te.TEM_CWORKTYPEID
+                )
+            </when>
+            <when test='workType == "all"'>
+                AND EXISTS (
+                    SELECT
+                    *
+                    FROM
+                    TMG_MAST_WORKER4VARIATIONAL tmwv
+                    WHERE
+                    tmwv.TMWV_CWORKTYPEID = te.TEM_CWORKTYPEID
+                    UNION
+                    SELECT
+                    *
+                    FROM
+                    TMG_MAST_WORKER4FLEX tmwf
+                    WHERE
+                    tmwf.TMWF_CWORKTYPEID = te.TEM_CWORKTYPEID
+                )
+            </when>
+        </choose>
+
+        <if test='workType!="flex" and workType!="variational" and workType!="all"'>
+            AND te.TEM_CWORKTYPEID = #{workType}
+        </if>
+    </select>
+</mapper>
