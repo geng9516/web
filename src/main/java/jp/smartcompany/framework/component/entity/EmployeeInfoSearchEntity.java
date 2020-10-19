@@ -31,23 +31,15 @@ public class EmployeeInfoSearchEntity implements Serializable {
     /** FUNCTION 職員氏名 */
     private String empName; // EMP_NAME
 
-    /** 職員氏名COLUMNアノテーション */
-    public static final String empName_COLUMN = "ME_CKANJINAME";
-
     /** FUNCTION 組織名称 */
     private String sectionName; // SECTION_NAME
 
-    /** 組織名称COLUMNアノテーション */
-    public static final String sectionName_COLUMN = "HD_CSECTIONNAME";
 
     /** 組織略称 */
     private String sectionNick = "";
 
     /** FUNCTION 役職名称 */
     private String postName; // POST_NAME
-
-    /** 役職名称COLUMNアノテーション */
-    public static final String postName_COLUMN = "HD_CPOSTNAME";
 
     /** 役職略称 */
     private String postNick = "";
@@ -75,9 +67,6 @@ public class EmployeeInfoSearchEntity implements Serializable {
 
     /** 在職・退職(2009/10/26 K.Monden 追加) */
     private String meCifStillEmployedId;
-
-    /** 在職･退職COLUMNアノテーション(2009/10/26 K.Monden 追加) */
-    public static final String meCifStillEmployedId_COLUMN = "ME_CIFSTILLEMPLOYEDID";
 
     /** 在職・退職 名称 */
     private String meCifStillEmployedName;

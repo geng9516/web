@@ -98,7 +98,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
                     resourceBundle.getString("MSG_SEARCH_WORD_BLANK")
             );
         }
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
 
         searchWord = searchWord+"%";
         searchWordConve = searchWordConve+"%";
@@ -168,7 +168,7 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
                         scCacheUtil.getSystemProperty(PROPERTY_KEY_SEARCH_ORDER))
         );
         // 发起查询
-        List<EmployeeInfoSearchEntity> lEmpInfoUserID =CollUtil.newArrayList();
+        List<EmployeeInfoSearchEntity> lEmpInfoUserID;
         // 職員検索
         if (type == 1) {
             lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDList(searchDTO);
@@ -212,6 +212,10 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         for (EmployeeInfoSearchEntity ent : lEmpInfo) {
             mEmpInfo.put(ent.getMeCuserid() + "_" + ent.getHdId(), ent);
         }
+        mEmpInfo.forEach((key,value)-> {
+            System.out.println(key+"-->"+value);
+        });
+
         // lEmpInfoUserIDに職員情報を当てはめ
         for (int i = 0; i < lEmpInfoUserID.size(); i++) {
             EmployeeInfoSearchEntity ent = lEmpInfoUserID.get(i);

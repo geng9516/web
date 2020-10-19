@@ -435,33 +435,33 @@
             ME_CUSERID,
             PSMASTER.FUNC_GET_EMP_NAME(
                 ME_CCUSTOMERID_CK,ME_CUSERID,'${searchDate}','${language}'
-            ) AS ME_CKANJINAME,
+            ) AS emp_name,
             ME_CKANANAME,
             HD.HD_CSECTIONID_FK,
             <if test='sSectionNick == "no"'>
                PSMASTER.FUNC_GET_SECTION_NAME(
                    HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
                    HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
-               ) AS HD_CSECTIONNAME,
+               ) AS section_Name,
             </if>
             <if test='sSectionNick=="yes"'>
                PSMASTER.FUNC_GET_SECTION_NICK(
                     HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
                     HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
-               ) AS HD_CSECTIONNAME,
+               ) AS section_Name,
             </if>
             HD.HD_CPOSTID_FK,
             <if test='sPostNick == "no"'>
                 PSMASTER.FUNC_GET_POST_NAME(
                      HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
                      HD.HD_CPOSTID_FK,'${searchDate}','${language}'
-                ) AS HD_CPOSTNAME,
+                ) AS post_name,
             </if>
             <if test='sPostNick == "yes"'>
                 PSMASTER.FUNC_GET_POST_NICK(
                      HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
                      HD.HD_CPOSTID_FK,'${searchDate}','${language}'
-                ) AS HD_CPOSTNAME,
+                ) AS post_name,
             </if>
             (
                 SELECT
@@ -480,12 +480,12 @@
                     HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
                     ${searchDate},'${language}'
                     ${searchDate},'${language}'
-                ) AS MAC_CCOMPANYNAME,
+                ) AS comp_name,
             </if>
             <if test='sCompNick == "yes"'>
                 PSMASTER.FUNC_GET_COMP_NICK(
                   HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,'${searchDate}','${language}'
-                ) AS MAC_CCOMPANYNAME,
+                ) AS comp_name,
             </if>
             PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
                 ME_CCUSTOMERID_CK,ME_CCOMPANYID,'QZAITAI|' || ME_CIFSTILLEMPLOYEDID,
