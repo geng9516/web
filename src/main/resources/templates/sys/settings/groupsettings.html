@@ -217,9 +217,28 @@
 
       <!--  条件式による定義 选择group和 役職 start-->
       <Drawer class="tc" placement="right" width="700" v-model="showGroupOrPositionDrawer" :closable="false">
-        <i-table v-show="curdisplayPanel === 'QPOST'" class="mb5" border :row-class-name="()=>'select-col'" :columns="positonColumns"
-          :disabled-hover="true" :data="positonData" :loading="loading" no-data-text="">
-        </i-table>
+        <span v-show="curdisplayPanel === 'QPOST'">
+          <div class="titlenorm mb5">
+            <Icon type="logo-buffer"></Icon>
+            役職
+          </div>
+          <Alert class="primary-info tl" style="margin-bottom: 5px;">
+            <div>※ 役職マスタを選択してください。</div>
+            <div class="mt2">&emsp;&nbsp;検索結果件数 {{ positonData.length }}件</div>
+          </Alert>
+          <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="positonColumns"
+            :disabled-hover="true" :data="positonData" :loading="loading" no-data-text="">
+            <template slot-scope="{ row }" slot="mapCpostidCk">
+              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+              @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="mapCpostname">
+              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
+              @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
+            </template>
+          </i-table>
+        </span>
         <span v-show="curdisplayPanel === 'QSECTION'">
           <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
@@ -284,7 +303,8 @@
                   QPOSTNUM  役職順位マスタを選択してください。 没有
                   QZAITAI  在職 	退職
                   TMG_MANAGEFLG 管理対象外 管理対象 -->
-                  <i-input class="mb10" v-if="!curdisplayPanel" v-model="updateValue.value"></i-input>
+                  <i-input class="mb5" v-if="!curdisplayPanel" v-model="updateValue.value"></i-input>
+                  <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue" style="display:block" size="small" class="mb5" long>決定</i-button>
                   <span v-show="curdisplayPanel === 'QHONKEN'">
                     <i-button @click="popClickAction('本務[0]')" type="primary" ghost style="display:block" size="small" class="mb5" long>本務[0]</i-button>
                     <i-button @click="popClickAction('兼務[1]')" type="primary" ghost style="display:block" size="small" class="mb5" long>兼務[1]</i-button>
@@ -308,7 +328,7 @@
                   <i-button @click="popClickAction('))')" type="primary" ghost style="display:block" size="small" class="mb5" long>))</i-button>
                   <i-button @click="popClickAction(')))')" type="primary" ghost style="display:block" size="small" class="mb5" long>)))</i-button>
                 </span>
-                  <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="poptipStyle.display = 'none'" style="display:block" size="small" class="mb5" long>キャンセル</i-button>
+                  <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="cancelpoptip" style="display:block" size="small" class="mb5" long>キャンセル</i-button>
                   <i-button v-show="hasSearchedQueryconditions && poptipType === 'columnname'" @click="queryconditionsFallback" style="display:block" size="small" class="mb5" long>戻る</i-button>
 
                   <Spin size="large" fix v-if="queryconditionsLoading"></Spin>
@@ -477,11 +497,11 @@
             {
               title: 'コード',
               width:120,
-              key: 'mapCpostidCk',
+              slot: 'mapCpostidCk',
             },
             {
               title: '名称',
-              key: 'mapCpostname',
+              slot: 'mapCpostname',
             },
           ],
           clickedCell: {},
@@ -543,8 +563,15 @@
         async handleQueryconditions(e) {
           if(this.hasSearchedQueryconditions) {
             console.log(e)
+            // columnname 项目
+            // displayvalue 值
             // 将项目的选中值更新到表格中
+            //   更新选择得条件
+            this.queryData[this.clickedCell.where].columnname = e.nameInfo
+            //   更新值的变换信息
             this.queryData[this.clickedCell.where].mastertablename = e.masterInfo
+            //   清空之前的值信息
+            this.queryData[this.clickedCell.where].displayvalue = ''
             this.poptipStyle.display = 'none'
             return
           }
@@ -642,7 +669,7 @@
         // 点击表格的格子
         async handleCellClickForAction(row, column, data, event) {
           this.poptipStyle.display = 'none'
-          console.log(row)
+          // console.log(row)
           if (column.slot === 'action') {
             return
           }
@@ -668,12 +695,27 @@
               this._treeData = Utils.deepClone(this.treeData)
               return
             }
-            this.curdisplayPanel
+            // this.curdisplayPanel
           }
           const elemLocation = event.target.offsetParent.getBoundingClientRect()
           this.poptipStyle.display = 'block'
           this.poptipStyle.left = `${elemLocation.x}px`
           this.poptipStyle.top = `${elemLocation.y}px`
+        },
+        updateInputValue() {
+          // 将input的值更新到表格中
+          this.queryData[this.clickedCell.where].displayvalue = this.updateValue.value
+          this.poptipStyle.display = 'none'
+          this.updateValue.value = ''
+        },
+        uptdatePositonValue(e) {
+          //mapCpostname  mapCpostidCk
+          this.queryData[this.clickedCell.where].displayvalue = `${e.mapCpostname}[${e.mapCpostidCk}]`
+          this.showGroupOrPositionDrawer = false
+        },
+        cancelpoptip() {
+          this.poptipStyle.display = 'none'
+          this.updateValue.value = ''
         },
         // 点击改变表格的值
         popClickAction(e) {
