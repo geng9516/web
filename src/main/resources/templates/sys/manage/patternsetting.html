@@ -1093,15 +1093,13 @@
                 for (var i = 0; i < data.lmsgList.length; i++) {
                     info += data.lmsgList[i] + "\n"
                 }
-
                 var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
                 if (fail_count > 0) {
                     //情報提示
-                    this.$Notice.warn({title: 'アップロード結果', desc: msg, duration: 0})
+                    this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
                 } else {
                     this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
                 }
-
                 //リストの取得
                 this.getTmgPatternList()
                 this.loadingStatus = false;
