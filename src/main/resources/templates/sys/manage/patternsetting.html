@@ -235,7 +235,8 @@
         <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select width100" type="drag">
             <div style="padding: 20px 0">
                 <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
-                <p style="color:var(--grey)">Click or drag files here to upload</p>
+                <p style="color:var(--grey)">クリックしてファイルを選択するか、</p>
+                <p style="color:var(--grey)">ここにファイルをドラッグ＆ドロップして下さい。</p>
             </div>
         </Upload>
         <div class="tl mt10" v-if="file !== null">
@@ -1032,7 +1033,7 @@
                             await this.http.postForm('sys/patternSetting/deletePattern', this.query_delete)
                             //リストの取得
                             await this.getTmgPatternList()
-                            this.$Notice.info({title: '「' + row.tpa_cpatternname + '」は削除されました', desc: ""})
+                            this.$Notice.info({title: '「' + row.tpa_cpatternname + '」は削除しました', desc: ""})
                         },
                         onCancel: () => {
 

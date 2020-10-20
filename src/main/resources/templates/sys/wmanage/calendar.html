@@ -26,7 +26,7 @@
                         v-if="!isEditable && !isDisable && !nodata">編集</i-button>
                     <i-button type="success" icon="md-done-all"  @click="updateCalendar" v-if="isDisable" :loading="updateLoading">登録</i-button>
                     <i-button type="error" icon="md-trash"  @click="deleteCalendar" v-if="isDisable && !isEditable" :loading="updateLoading">削除</i-button>
-                    <i-button  @click="cancel" v-if="isDisable">取消</i-button>
+                    <i-button  @click="cancel" v-if="isDisable">キャンセル</i-button>
                 </div>
             </div>
             <div class="searchwrap">

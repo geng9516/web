@@ -304,7 +304,7 @@
         </i-table>
             <Spin size="large" fix v-if="loading"></Spin>
         </div>
-        <Drawer title="週勤務パターン 編集" width="800" v-model="showWeek">
+        <Drawer title="週勤務パターン編集" width="800" v-model="showWeek">
             <Row>
                 <i-col span="6" class="label tc">所属</i-col>
                 <i-col span="9">
@@ -331,7 +331,7 @@
                 適用済
             </div>
             <div style="position: relative;">
-            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適応している週勤務パターンがありません" :disabled-hover="true">
+            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適用している週勤務パターンがありません" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="startTime">
                     <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
                                  format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(tableDataUsedbak[row._index].twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
