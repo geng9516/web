@@ -98,6 +98,7 @@
                             <Icon type="logo-buffer"></Icon>
                             職員
                         </div>
+                        <Alert class="primary-info mt10">※検索結果の上位100件を表示しています。</Alert>
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf($event,1)" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
