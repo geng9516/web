@@ -15,4 +15,9 @@ public class TmgLiquidationDetailServiceImpl extends ServiceImpl<TmgLiquidationD
     public List<EditDispVo> getLiquidationDetail(String custID, String compCode, String tlpId, String startDate, String endDate){
         return getBaseMapper().getLiquidationDetail( custID,  compCode,  tlpId,  startDate,  endDate);
     }
+
+    @Override
+    public List<EditDispVo> getLiquidationDetailNew(String startDate, String months){
+        return getBaseMapper().getLiquidationDetailNew(startDate,  months);
+    }
 }

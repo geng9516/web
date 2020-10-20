@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
@@ -60,10 +61,7 @@ public class TmgLiquidationPeriodBean {
 
     // 数据获取 搜索
     public LiquidationDispVo getLiquidationDisp(String type, String searchText, PsDBBean psDBBean) {
-
-
         LiquidationDispVo vo =new LiquidationDispVo();
-        //todo
         List<LiquidationPeriodListDto> liquidationPeriodListDtos=iTmgliquidationPeriodService.getLiquidationDispFromType(psDBBean.getCustID(),psDBBean.getCompCode(),type,searchText);
         vo.setLiquidationPeriodList(liquidationPeriodListDtos);
         return vo;
@@ -85,11 +83,10 @@ public class TmgLiquidationPeriodBean {
     public List<EditDispVo> getEditDisop(String tlpId , String startDate , String endDate , PsDBBean psDBBean) throws Exception {
         List<EditDispVo> vos=new ArrayList<>();
         if(StrUtil.hasEmpty(tlpId)){
-            //todo
+            vos= iTmgliquidationDetailService.getLiquidationDetailNew(startDate,String.valueOf(DateUtil.betweenMonth(DateUtil.parse(startDate),DateUtil.parse(endDate),true)+1));
         }else{
             vos = iTmgliquidationDetailService.getLiquidationDetail(psDBBean.getCustID(),psDBBean.getCompCode(),tlpId,startDate,endDate);
         }
-
         return vos;
     }
 
