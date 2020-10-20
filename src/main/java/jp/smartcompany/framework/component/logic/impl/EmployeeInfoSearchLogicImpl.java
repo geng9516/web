@@ -100,9 +100,15 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         }
         PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
 
-        searchWord = searchWord+"%";
-        searchWordConve = searchWordConve+"%";
-        searchWordEnglish = searchWordEnglish+"%";
+        if (StrUtil.isNotBlank(searchWord)) {
+            searchWord = "%"+searchWord + "%";
+        }
+        if (StrUtil.isNotBlank(searchWordConve)) {
+            searchWordConve = "%"+searchWordConve + "%";
+        }
+        if (StrUtil.isNotBlank(searchWordEnglish)) {
+            searchWordEnglish = "%"+searchWordEnglish + "%";
+        }
 
         // 退職者非表示がyesの場合
         /** システムプロパティの設定値 退職者非表示 */
@@ -212,9 +218,6 @@ public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
         for (EmployeeInfoSearchEntity ent : lEmpInfo) {
             mEmpInfo.put(ent.getMeCuserid() + "_" + ent.getHdId(), ent);
         }
-        mEmpInfo.forEach((key,value)-> {
-            System.out.println(key+"-->"+value);
-        });
 
         // lEmpInfoUserIDに職員情報を当てはめ
         for (int i = 0; i < lEmpInfoUserID.size(); i++) {
