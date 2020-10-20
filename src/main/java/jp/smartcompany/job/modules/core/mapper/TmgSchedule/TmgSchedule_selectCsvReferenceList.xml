@@ -300,7 +300,7 @@
         <if test="twp_nid != null and twp_nid != 0">
             and twp_nid != #{twp_nid}
         </if>
-        and twp_denddate <![CDATA[>]]> trunc(add_months(sysdate,1))
+        and twp_denddate <![CDATA[>]]> trunc(last_day(sysdate) +1)
     </select>
 
 </mapper>

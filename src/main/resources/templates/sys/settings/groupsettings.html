@@ -133,11 +133,13 @@
                   </i-input>
                 </i-col>
                 <i-col span="6" class="no-border-radius">
-                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">社員検索
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">
+                    社員検索
                   </i-button>
                 </i-col>
                 <i-col span="6" class="no-border-radius">
-                  <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt(true)">所属一覧検索
+                  <i-button long type="primary" icon="md-search" ghost :loading="loading"
+                    @click="handleSearchEmpt(true)">所属一覧検索
                   </i-button>
                 </i-col>
               </Row>
@@ -165,19 +167,24 @@
                 </i-button>
               </div>
 
-              <i-table class="mt5" border :row-class-name="()=>'select-col'" :columns="queryColumns" @on-cell-click="handleCellClickForAction"
-                :disabled-hover="true" :data="queryData" no-data-text="" ref="table">
+              <i-table class="mt5" border :row-class-name="()=>'select-col'" :columns="queryColumns"
+                @on-cell-click="handleCellClickForAction" :disabled-hover="true" :data="queryData" no-data-text=""
+                ref="table">
                 <template slot-scope="{ row }" slot="andor">{{ queryData[row._index].andor || '　'  }}</template>
 
-                <template slot-scope="{ row }" slot="openedparenthsis">{{ queryData[row._index].openedparenthsis || '　' }}</template>
+                <template slot-scope="{ row }"
+                  slot="openedparenthsis">{{ queryData[row._index].openedparenthsis || '　' }}</template>
 
-                <template slot-scope="{ row }" slot="columnname">{{ queryData[row._index].columnname || '　' }}</template>
+                <template slot-scope="{ row }"
+                  slot="columnname">{{ queryData[row._index].columnname || '　' }}</template>
 
                 <template slot-scope="{ row }" slot="operator">{{ queryData[row._index].operator || '　' }}</template>
 
-                <template slot-scope="{ row }" slot="displayvalue">{{ queryData[row._index].displayvalue || '　' }}</template>
+                <template slot-scope="{ row }"
+                  slot="displayvalue">{{ queryData[row._index].displayvalue || '　' }}</template>
 
-                <template slot-scope="{ row }" slot="closedparenthsis">{{ queryData[row._index].closedparenthsis || '　' }}</template>
+                <template slot-scope="{ row }"
+                  slot="closedparenthsis">{{ queryData[row._index].closedparenthsis || '　' }}</template>
                 <template slot-scope="{ row }" slot="action">
                   <Poptip v-model="lightDelBtnVisible3[row._index]" placement="left" transfer>
                     <div class="operateBtn" slot="content">
@@ -187,13 +194,20 @@
                     <i-button type="error" ghost size="small" style="width: 83px;text-align: left;">削除
                     </i-button>
                   </Poptip>
-                  <i-button type="success" class="mt5" ghost icon="md-arrow-down" size="small" @click="conditionAdd(row._index)" long>1行追加
+                  <i-button type="success" class="mt5" ghost icon="md-arrow-down" size="small"
+                    @click="conditionAdd(row._index)" long>1行追加
                   </i-button>
                 </template>
               </i-table>
             </tab-pane>
             <!-- 組織・役職選択による定義 -->
             <tab-pane label="組織・役職選択による定義" name="2">
+              <div class="tl tree mt5">
+                <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
+                  size="small">選択行を削除</i-button>
+                <Tree :data="sectionPostList" :render="renderTree" @on-select-change="" empty-text="" check-directly
+                  show-checkbox></Tree>
+              </div>
             </tab-pane>
           </Tabs>
           <div class="titlenorm mb5">
@@ -225,7 +239,8 @@
       <!-- 該当条件編集画面 end-->
 
       <!--  条件式による定義 选择group和 役職 start-->
-      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" v-model="showGroupOrPositionDrawer">
+      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'"
+        v-model="showGroupOrPositionDrawer">
         <span v-show="curdisplayPanel === 'QPOST'">
           <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
@@ -239,12 +254,12 @@
             :disabled-hover="true" :data="positonData" :loading="loading" no-data-text="">
             <template slot-scope="{ row }" slot="mapCpostidCk">
               <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-              @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
+                @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="mapCpostname">
               <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-              @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
+                @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
             </template>
           </i-table>
         </span>
@@ -293,9 +308,6 @@
               <Icon type="logo-buffer"></Icon>
               社員検索
             </div>
-            <Alert class="primary-info tl" style="margin-bottom: 5px;">
-              <div>※ カナ氏名、漢字氏名、社員番号のいずれかの先頭数文字を入力し、「検索」ボタンをクリックしてください。</div>
-            </Alert>
             <div class="tr mb5">
               <i-button type="primary" ghost @click="addSearchEmp">決定</i-button>
             </div>
@@ -314,7 +326,7 @@
           </i-col>
         </Row>
         <!-- 社員選択による搜索 -->
-          <!-- 搜社员 -->
+        <!-- 搜社员 -->
         <!-- <span v-show="curdisplayPanel === 'searchEmp'">
           <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
@@ -339,7 +351,7 @@
             </template>
           </i-table>
         </span> -->
-          <!-- 用所属搜社员 -->
+        <!-- 用所属搜社员 -->
         <!-- <span v-show="curdisplayPanel === 'searchDept'"></span> -->
       </Drawer>
       <!--  条件式による定義 选择group和 役職 end-->
@@ -353,28 +365,39 @@
               <div class="ivu-poptip-body-content-inner">
                 <!-- ＡＮＤ/ＯＲ -->
                 <span v-show="poptipType === 'andor'">
-                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
-                  <i-button @click="popClickAction('AND')" type="primary" ghost style="display:block" size="small" class="mb5" long>AND</i-button>
-                  <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small" class="mb5" long>OR</i-button>
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction('AND')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>AND</i-button>
+                  <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>OR</i-button>
                 </span>
 
                 <!-- （ -->
                 <span v-show="poptipType === 'openedparenthsis'">
-                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
-                  <i-button @click="popClickAction('(')" type="primary" ghost style="display:block" size="small" class="mb5" long>(</i-button>
-                  <i-button @click="popClickAction('((')" type="primary" ghost style="display:block" size="small" class="mb5" long>((</i-button>
-                  <i-button @click="popClickAction('(((')" type="primary" ghost style="display:block" size="small" class="mb5" long>(((</i-button>
-                  <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small" class="mb5" long>OR</i-button>
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction('(')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>(</i-button>
+                  <i-button @click="popClickAction('((')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>((</i-button>
+                  <i-button @click="popClickAction('(((')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>(((</i-button>
+                  <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>OR</i-button>
                 </span>
 
                 <!-- 項目 -->
                 <span v-show="poptipType === 'columnname'">
-                  <i-button v-for="(item,i) of queryconditionsList" :key="i" type="primary" ghost @click="handleQueryconditions(item)" style="display:block;" size="small" class="mb5 tl" long>{{ item.nameInfo }}</i-button>
+                  <i-button v-for="(item,i) of queryconditionsList" :key="i" type="primary" ghost
+                    @click="handleQueryconditions(item)" style="display:block;" size="small" class="mb5 tl" long>
+                    {{ item.nameInfo }}</i-button>
                 </span>
 
                 <!-- 比較 -->
                 <span v-show="poptipType === 'operator'">
-                  <i-button @click="popClickAction(item)" v-for="(item,i) of operatorList" type="primary" ghost style="display:block" size="small" class="mb5" long>{{ item }}</i-button>
+                  <i-button @click="popClickAction(item)" v-for="(item,i) of operatorList" type="primary" ghost
+                    style="display:block" size="small" class="mb5" long>{{ item }}</i-button>
                 </span>
 
                 <!-- 値 -->
@@ -387,34 +410,47 @@
                   QZAITAI  在職 	退職
                   TMG_MANAGEFLG 管理対象外 管理対象 -->
                   <i-input class="mb5" v-if="!curdisplayPanel" v-model="updateValue.value"></i-input>
-                  <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue" style="display:block" size="small" class="mb5" long>決定</i-button>
+                  <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue"
+                    style="display:block" size="small" class="mb5" long>決定</i-button>
                   <span v-show="curdisplayPanel === 'QHONKEN'">
-                    <i-button @click="popClickAction('本務[0]')" type="primary" ghost style="display:block" size="small" class="mb5" long>本務[0]</i-button>
-                    <i-button @click="popClickAction('兼務[1]')" type="primary" ghost style="display:block" size="small" class="mb5" long>兼務[1]</i-button>
+                    <i-button @click="popClickAction('本務[0]')" type="primary" ghost style="display:block" size="small"
+                      class="mb5" long>本務[0]</i-button>
+                    <i-button @click="popClickAction('兼務[1]')" type="primary" ghost style="display:block" size="small"
+                      class="mb5" long>兼務[1]</i-button>
                   </span>
 
                   <span v-show="curdisplayPanel === 'QZAITAI'">
-                    <i-button @click="popClickAction('在職[0]')" type="primary" ghost style="display:block" size="small" class="mb5" long>在職[0]</i-button>
-                    <i-button @click="popClickAction('退職[1]')" type="primary" ghost style="display:block" size="small" class="mb5" long>退職[1]</i-button>
+                    <i-button @click="popClickAction('在職[0]')" type="primary" ghost style="display:block" size="small"
+                      class="mb5" long>在職[0]</i-button>
+                    <i-button @click="popClickAction('退職[1]')" type="primary" ghost style="display:block" size="small"
+                      class="mb5" long>退職[1]</i-button>
                   </span>
 
                   <span v-show="curdisplayPanel === 'TMG_MANAGEFLG'">
-                    <i-button @click="popClickAction('管理対象外[0]')" type="primary" ghost style="display:block" size="small" class="mb5" long>管理対象外[0]</i-button>
-                    <i-button @click="popClickAction('管理対象[1]')" type="primary" ghost style="display:block" size="small" class="mb5" long>管理対象[1]</i-button>
+                    <i-button @click="popClickAction('管理対象外[0]')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>管理対象外[0]</i-button>
+                    <i-button @click="popClickAction('管理対象[1]')" type="primary" ghost style="display:block" size="small"
+                      class="mb5" long>管理対象[1]</i-button>
                   </span>
                 </span>
 
                 <!-- ） -->
                 <span v-show="poptipType === 'closedparenthsis'">
-                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small" class="mb5" long>なし</i-button>
-                  <i-button @click="popClickAction(')')" type="primary" ghost style="display:block" size="small" class="mb5" long>)</i-button>
-                  <i-button @click="popClickAction('))')" type="primary" ghost style="display:block" size="small" class="mb5" long>))</i-button>
-                  <i-button @click="popClickAction(')))')" type="primary" ghost style="display:block" size="small" class="mb5" long>)))</i-button>
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction(')')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>)</i-button>
+                  <i-button @click="popClickAction('))')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>))</i-button>
+                  <i-button @click="popClickAction(')))')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>)))</i-button>
                 </span>
-                  <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="cancelpoptip" style="display:block" size="small" class="mb5" long>キャンセル</i-button>
-                  <i-button v-show="hasSearchedQueryconditions && poptipType === 'columnname'" @click="queryconditionsFallback" style="display:block" size="small" class="mb5" long>戻る</i-button>
+                <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="cancelpoptip"
+                  style="display:block" size="small" class="mb5" long>キャンセル</i-button>
+                <i-button v-show="hasSearchedQueryconditions && poptipType === 'columnname'"
+                  @click="queryconditionsFallback" style="display:block" size="small" class="mb5" long>戻る</i-button>
 
-                  <Spin size="large" fix v-if="queryconditionsLoading"></Spin>
+                <Spin size="large" fix v-if="queryconditionsLoading"></Spin>
               </div>
             </div>
           </div>
@@ -433,12 +469,12 @@
           isShow: false,
           showGroupOrPositionDrawer: false,
           drawerBtnLoading: false,
-          queryconditionsLoading:false,
+          queryconditionsLoading: false,
           currentTab: '',
           lightDelBtnVisible: [],
           lightDelBtnVisible2: [],
           lightDelBtnVisible3: [],
-          treeData:[],
+          treeData: [],
           baseTreeData: [],
           beforeDate: '',
           searchEmpt: '',
@@ -457,7 +493,7 @@
             left: '0',
             top: '0'
           },
-          poptipType:'',
+          poptipType: '',
           columns: [
             {
               title: '期間',
@@ -539,15 +575,15 @@
             }
           ],
           emptData: [],
-          queryColumns:[
+          queryColumns: [
             {
               title: 'ＡＮＤ/ＯＲ',
               slot: 'andor',
-              width:100,
+              width: 100,
             },
             {
               title: '（',
-              width:70,
+              width: 70,
               slot: 'openedparenthsis',
             },
             {
@@ -556,7 +592,7 @@
             },
             {
               title: '比較',
-              width:100,
+              width: 100,
               slot: 'operator',
             },
             {
@@ -565,23 +601,23 @@
             },
             {
               title: '）',
-              width:70,
+              width: 70,
               slot: 'closedparenthsis',
             },
             {
               title: ' ',
-              width:100,
+              width: 100,
               slot: 'action',
             },
           ],
-          operatorList:['＝', '≠', '以上', '以下', 'より上', 'より下', '空白のみ', '空白以外'],
+          operatorList: ['＝', '≠', '以上', '以下', 'より上', 'より下', '空白のみ', '空白以外'],
           curdisplayPanel: '',
-          queryData:[],
-          deleteQueryData:[],
-          positonColumns:[
+          queryData: [],
+          deleteQueryData: [],
+          positonColumns: [
             {
               title: 'コード',
-              width:120,
+              width: 120,
               slot: 'mapCpostidCk',
             },
             {
@@ -589,11 +625,11 @@
               slot: 'mapCpostname',
             },
           ],
-          positonData:[],
-          searchEmpColumns:[
+          positonData: [],
+          searchEmpColumns: [
             {
               title: '社員番号',
-              width:120,
+              width: 120,
               key: 'meCuserid',
             },
             {
@@ -614,16 +650,17 @@
               align: 'center'
             },
           ],
-          searchEmpData:[],
-          searchDeptColumns:[],
-          searchDeptData:[],
+          searchEmpData: [],
+          searchDeptColumns: [],
+          searchDeptData: [],
+          sectionPostList:[], //組織・役職選択による定義
           clickedCell: {},
           tableData: [{}],
           _treeData: [],
           treeDataForSearch: [],
           searchDept: '',
-          queryconditionsList:[],
-          queryconditionsList_bak:[],
+          queryconditionsList: [],
+          queryconditionsList_bak: [],
           hasSearchedQueryconditions: false,
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -644,7 +681,7 @@
         isShow(newValue) {
           // 关闭浮层需要将小浮窗一起关闭
           // 且将待删除条件式数组清空
-          if(!newValue){
+          if (!newValue) {
             this.poptipStyle.display = 'none'
             this.deleteQueryData = []
           }
@@ -677,7 +714,7 @@
         },
         // 点击項目
         async handleQueryconditions(e) {
-          if(this.hasSearchedQueryconditions) {
+          if (this.hasSearchedQueryconditions) {
             console.log(e)
             // columnname 项目
             // displayvalue 值
@@ -693,7 +730,7 @@
           }
           try {
             this.queryconditionsLoading = true
-            const { data } = await this.http.get('sys/groupmanager/queryconditions',{tableId:e.codeInfo})
+            const { data } = await this.http.get('sys/groupmanager/queryconditions', { tableId: e.codeInfo })
             this.hasSearchedQueryconditions = true
             this.queryconditionsList = data
           } catch (error) {
@@ -721,37 +758,38 @@
         async handleSearchEmpt(isByDept) {
           // searchWord
           // targetDept
-          if(!isByDept && !this.searchEmpt.trim()) {
+          if (!isByDept && !this.searchEmpt.trim()) {
             return this.$Notice.warning({ title: '注意', desc: '検索文字列を入力してください。', duration: 6.5 })
           }
-          if(isByDept) {
+          if (isByDept) {
             this.curdisplayPanel = 'searchDept'
             this.showGroupOrPositionDrawer = true
-              const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
-              this.treeData = this.convertTreeData(data)
-              this.treeData[0].expand = true
-              this._treeData = Utils.deepClone(this.treeData)
+            const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
+            this.treeData = this.convertTreeData(data)
+            this.treeData[0].expand = true
+            this._treeData = Utils.deepClone(this.treeData)
+            this.searchEmpData = []
 
-          }else {
+          } else {
             this.curdisplayPanel = 'searchEmp'
-          this.showGroupOrPositionDrawer = true
-          const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt})
-          this.searchEmpData = data.map(e=> {
-            // 点开后将默认勾选勾上
-            if(this.emptData.find(t=> t.employeeId === e.meCuserid)) {
-              return {...e, _checked: true}
-            } else {
-              return e
-            }
-          })
+            this.showGroupOrPositionDrawer = true
+            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
+            this.searchEmpData = data.map(e => {
+              // 点开后将默认勾选勾上
+              if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
+                return { ...e, _checked: true }
+              } else {
+                return e
+              }
+            })
           }
         },
         // 将选择中的社员加到社員を指定表格里
         addSearchEmp() {
           console.log(this.$refs.empTable.getSelection())
           let emptData = []
-          this.$refs.empTable.getSelection().forEach(e=>{
-            if(!this.emptData.some(t=> t.employeeId === e.meCuserid)) {
+          this.$refs.empTable.getSelection().forEach(e => {
+            if (!this.emptData.some(t => t.employeeId === e.meCuserid)) {
               emptData = emptData.concat({
                 ...e,
                 companyName: e.compName,
@@ -760,7 +798,7 @@
               })
             }
           })
-          if(emptData.length > 0) this.emptData = this.emptData.concat(emptData)
+          if (emptData.length > 0) this.emptData = this.emptData.concat(emptData)
         },
         handleSystemChange() {
           this.getSiteList()
@@ -794,9 +832,10 @@
           this.updateValue.belowSingle = data.belowSingle
           this.updateValue.baseFlag = data.groupInfo.gsBaseFlg
           // 条件式による定義
-          this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList :[{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' }]
+          this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' }]
           // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
           // 所以这里直接取第一个法人的全部
+          // 基点組織
           this.baseTreeData = [{
             title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
               return {
@@ -808,6 +847,39 @@
             }), expand: true
           }]
 
+          // 組織・役職選択による定義
+          this.sectionPostList = data.orgJobConditions.companyList.map(t => {
+            return {
+              title: `【${t.companyId}】 ${t.companyName}`,
+              expand: true,
+              children: t.sectionList.map(n => {
+                return {
+                  ...n,
+                  title: `【${n.sectionId}】 ${n.sectionName}`,
+                  children: n.postList.map(m => {
+                    return {
+                      ...m,
+                      title: `【${m.postId}】 ${m.postName}`,
+                    }
+                  }),
+                  expand: true,
+                  isGroup: true, // 組織
+                }
+              }).concat(t.bossSectionList.map(n => {
+                return {
+                  ...n,
+                  title: `【${n.sectionId}】 ${n.sectionName}`,
+                  isBoss: true // 所属長
+                }
+              })).concat(t.postList.map(n => {
+                return {
+                  ...n,
+                  title: `【${n.postId}】 ${n.postName}`,
+                  isPost: true // 役職
+                }
+              }))
+            }
+          })
         },
         remove(i) {
           this.$set(this.lightDelBtnVisible, i, false)
@@ -833,17 +905,17 @@
           this.curdisplayPanel = row.mastertablename
           // 储存单击格的位置信息
           this.clickedCell = {
-              where: row._index,
-              which: column.slot
+            where: row._index,
+            which: column.slot
           }
-          if(this.poptipType === 'displayvalue') {
-            if(this.curdisplayPanel === 'QPOST') {
+          if (this.poptipType === 'displayvalue') {
+            if (this.curdisplayPanel === 'QPOST') {
               this.showGroupOrPositionDrawer = true
               const { data } = await this.http.get(`sys/tree/posts?psSite=${this.psSite}`)
               this.positonData = data.list
               return
             }
-            if(this.curdisplayPanel === 'QSECTION') {
+            if (this.curdisplayPanel === 'QSECTION') {
               this.showGroupOrPositionDrawer = true
               const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
               this.treeData = this.convertTreeData(data)
@@ -876,7 +948,7 @@
         // 点击改变表格的值
         popClickAction(e) {
           // console.log(e)
-          if(e === 'なし')　{
+          if (e === 'なし') {
             this.queryData[this.clickedCell.where][this.clickedCell.which] = ''
           } else {
             this.queryData[this.clickedCell.where][this.clickedCell.which] = e
@@ -885,16 +957,16 @@
         },
         async handleClickLeaf(e) {
           if (!e[0]) return
-          if(this.curdisplayPanel === 'searchDept') {
-            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, targetDept:e[0].sectionId})
-          this.searchEmpData = data.map(e=> {
-            // 点开后将默认勾选勾上
-            if(this.emptData.find(t=> t.employeeId === e.meCuserid)) {
-              return {...e, _checked: true}
-            } else {
-              return e
-            }
-          })
+          if (this.curdisplayPanel === 'searchDept') {
+            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { targetDept: e[0].sectionId, type: 2 })
+            this.searchEmpData = data.map(e => {
+              // 点开后将默认勾选勾上
+              if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
+                return { ...e, _checked: true }
+              } else {
+                return e
+              }
+            })
           } else {
             this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
             this.showGroupOrPositionDrawer = false
@@ -906,18 +978,18 @@
             title: '全行を削除します。よろしいですか？',
             okText: 'OK',
             cancelText: 'キャンセル',
-              onOk: () => {
-                this.deleteQueryData = this.queryData.filter(e=>!e.isAdd)
-                this.queryData = []
-              }
+            onOk: () => {
+              this.deleteQueryData = this.queryData.filter(e => !e.isAdd)
+              this.queryData = []
+            }
           })
           this.poptipStyle.display = 'none'
         },
         cancelconditionDelete(i) {
           this.$set(this.lightDelBtnVisible3, i, false)
         },
-        conditionDelete(row,i) {
-          if(row.isAdd) this.queryData = this.queryData.filter(e => e.addIndex !== row.addIndex)
+        conditionDelete(row, i) {
+          if (row.isAdd) this.queryData = this.queryData.filter(e => e.addIndex !== row.addIndex)
           else this.queryData = this.queryData.filter(e => e.id !== row.id)
           this.$set(this.lightDelBtnVisible3, i, false)
         },
@@ -932,7 +1004,7 @@
           this.poptipStyle.display = 'none'
         },
         handleSearchDept: Debounce(function () {
-          if(!this.searchDept) {
+          if (!this.searchDept) {
             this.treeData = this._treeData
             return
           }
@@ -946,7 +1018,7 @@
           // todo: 这里还是应该存路径解
           data.forEach((e, i) => {
             if (e.title.indexOf(_this.searchDept) > -1) {
-              _this.treeDataForSearch = _this.treeDataForSearch.concat({...e, children:[]})
+              _this.treeDataForSearch = _this.treeDataForSearch.concat({ ...e, children: [] })
             }
             if (e.children && e.children.length > 0) {
               _this.sectionInTreeData(e.children);
@@ -979,7 +1051,7 @@
           })
         },
         renderTree(h, { root, node, data }) {
-          // 第一个法人时需要显示可以追加組織
+          // 第一层法人时需要显示可以追加組織
           // 如果是組織・役職選択による定義， 则还可以追加所属长和役職
           // 最后一个组织的下方加入所属长追加，最后一个所属长的下方，加入役職追加
           if (data.expand) {
