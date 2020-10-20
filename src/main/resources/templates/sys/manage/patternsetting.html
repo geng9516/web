@@ -49,7 +49,8 @@
                    <Row class="tl mb5">
                        <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                        <i-col span="7" class="no-border-radius">
-                          <date-picker type="date"　v-model="curDate" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange" transfer></date-picker>
+                          <date-picker type="date" 　v-model="curDate" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
+                                       :clearable="false" @on-change="handleDeptDateChange" transfer></date-picker>
                        </i-col>
                         <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                           <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
@@ -106,34 +107,34 @@
     </div>
     <back-top></back-top>
     <!-- 勤務パターンSTART -->
-        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
-            <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
-          <i-form :label-width="120" ref="localValue" :model="localValue">
+    <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
+        <i-form :label-width="120" ref="localValue" :model="localValue">
             <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">
-              <i-button class="input-like-span mr30 cursor grey width100 border-radius:0">
-                  {{ deptName }}
-              </i-button>
+                <i-button class="input-like-span mr30 cursor grey width100 border-radius:0">
+                    {{ deptName }}
+                </i-button>
             </form-item>
             <form-item label="コード" prop="patternId">
-              <i-input v-model="rawData.tpa_cpatternid" :disabled="isPatternCodeDisable" 　placeholder="入力してください"></i-input>
+                <i-input v-model="rawData.tpa_cpatternid" :disabled="isPatternCodeDisable" 　placeholder="入力してください"></i-input>
             </form-item>
 
             <form-item label="名称" prop="patternName">
-              <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください"></i-input>
+                <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください"></i-input>
             </form-item>
 
             <form-item label="勤務時間" prop="dutyTime">
                 <Row>
                     <i-col span="10">
-                         <i-input v-model="rawData.dutyTime[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.dutyTime,0,$event.target)"></i-input>
+                        <i-input v-model="rawData.dutyTime[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.dutyTime,0,$event.target)"></i-input>
                     </i-col>
                     <i-col span="4">
-                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                     </i-col>
                     <i-col span="10">
-                         <i-input v-model="rawData.dutyTime[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.dutyTime,1,$event.target)"></i-input>
+                        <i-input v-model="rawData.dutyTime[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.dutyTime,1,$event.target)"></i-input>
                     </i-col>
                 </Row>
             </form-item>
@@ -141,93 +142,93 @@
             <form-item label="休憩時間1" prop="restTime1">
                 <Row>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest1[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest1,0,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest1[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest1,0,$event.target)"></i-input>
                     </i-col>
                     <i-col span="4">
-                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                     </i-col>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest1[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest1,1,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest1[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest1,1,$event.target)"></i-input>
                     </i-col>
-                 </Row>
+                </Row>
             </form-item>
 
             <form-item label="休憩時間2" prop="restTime2">
                 <Row>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest2[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest2,0,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest2[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest2,0,$event.target)"></i-input>
                     </i-col>
                     <i-col span="4">
-                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                     </i-col>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest2[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest2,1,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest2[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest2,1,$event.target)"></i-input>
                     </i-col>
-                 </Row>
+                </Row>
             </form-item>
 
             <form-item label="休憩時間3" prop="restTime3">
                 <Row>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest3[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest3,0,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest3[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest3,0,$event.target)"></i-input>
                     </i-col>
                     <i-col span="4">
-                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                     </i-col>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest3[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest3,1,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest3[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest3,1,$event.target)"></i-input>
                     </i-col>
-                 </Row>
+                </Row>
             </form-item>
 
             <form-item label="休憩時間4" prop="restTime4">
                 <Row>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest4[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest4,0,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest4[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest4,0,$event.target)"></i-input>
                     </i-col>
                     <i-col span="4">
-                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                     </i-col>
                     <i-col span="10">
-                         <i-input v-model="rawData.planRest4[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData.planRest4,1,$event.target)"></i-input>
+                        <i-input v-model="rawData.planRest4[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                 @on-blur="handleInputChange(rawData.planRest4,1,$event.target)"></i-input>
                     </i-col>
-                 </Row>
+                </Row>
             </form-item>
 
             <form-item label="日付切替時刻" prop="changeTime">
                 <i-col span="24">
-                         <i-input v-model="rawData.tpa_ndate_change_time" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                  @on-blur="handleInputChange(rawData,'tpa_ndate_change_time',$event.target)"></i-input>
+                    <i-input v-model="rawData.tpa_ndate_change_time" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                             @on-blur="handleInputChange(rawData,'tpa_ndate_change_time',$event.target)"></i-input>
                 </i-col>
             </form-item>
 
             <form-item label="翌日勤務パターン" prop="ykjtPattern">
-              <i-select v-model="ykjtPatternModel" placeholder="選択ください" filterable transfer @on-change="handleChangePattern($event)">
-                  <i-option label="なし" value=""></i-option>
-                  <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
-              </i-select>
+                <i-select v-model="ykjtPatternModel" placeholder="選択ください" filterable transfer @on-change="handleChangePattern($event)">
+                    <i-option label="なし" value=""></i-option>
+                    <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
+                </i-select>
             </form-item>
             <form-item label="デフォルト設定値">
                 <checkbox v-model="isDefault" class="input-like-span" style="margin: 0;" @on-change="defaultSelect"></checkbox>
             </form-item>
-          </i-form>
-          <div>
-              <div style="text-align: right">
-                  <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
-                  <i-button class="ivu-btn" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
-                  <i-button class="ivu-btn" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
-              </div>
-          </div>
-          <Spin size="large" fix v-if="mergePatternLoading"></Spin>
-        </Modal>
+        </i-form>
+        <div>
+            <div style="text-align: right">
+                <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
+                <i-button class="ivu-btn" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
+                <i-button class="ivu-btn" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+            </div>
+        </div>
+        <Spin size="large" fix v-if="mergePatternLoading"></Spin>
+    </Modal>
     <!-- 勤務パターン追加END -->
     <!-- CSVファイル取込STARD -->
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
@@ -313,7 +314,8 @@
                 },
                 query_sk_bak: {},
                 edit_flag: false,
-                pageTitle: '勤務パターン追加',
+                pageTitle: '勤務パターン新規',
+                pageTitleMsg:'勤務パターンを新規登録しました',
                 //翌日勤務パターン
                 ykjtPatternList: [],
                 ykjtPatternModel: '',
@@ -408,13 +410,13 @@
                 columns: [
                     {
                         title: '勤務パターン',
-                        minWidth:100,
+                        minWidth: 100,
                         key: 'tpa_cpatternname',
                         align: 'left'
                     },
                     {
                         title: 'オーナー',
-                        minWidth:80,
+                        minWidth: 80,
                         key: 'tpa_csectionname',
                         align: 'center'
                     },
@@ -457,12 +459,12 @@
                     {
                         title: '氏名',
                         key: 'empname',
-                        minWidth:100,
+                        minWidth: 100,
                         align: 'left'
                     },
                     {
                         title: '勤務パターン',
-                        minWidth:200,
+                        minWidth: 200,
                         key: 'tpa_cpatternname',
                         align: 'left'
                     }
@@ -536,8 +538,8 @@
                 this.curDate = e
                 this.isSearchHistory = true
                 await this.getOrgTree()
-                if(this.treeData.length !== 0) {
-                   this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+                if (this.treeData.length !== 0) {
+                    this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
                 }
             },
 
@@ -596,7 +598,7 @@
                 await this.getTmgPatternList()
 
                 //部署職員リスト
-                await　this.selectTmgPatternApplies()
+                await this.selectTmgPatternApplies()
 
                 //新規ボタンを有効にする
                 this.addPatternShow = true
@@ -613,6 +615,7 @@
                 if (row != undefined && null != row) {
                     // 編集
                     this.pageTitle = '勤務パターン編集'
+                    this.pageTitleMsg = '勤務パターンを更新しました'
                     this.isPatternCodeDisable = true
                     this.rawData = {...row}
                     this.edit_flag = true
@@ -682,6 +685,7 @@
                 } else {
                     //新規
                     this.pageTitle = '勤務パターン新規'
+                    this.pageTitleMsg = '勤務パターンを新規登録しました'
                     this.ykjtPatternModel = ''
                     this.edit_flag = false
                     this.rawData.flag = 'TMG_ONOFF|0'
@@ -1010,7 +1014,8 @@
                 this.cancel()
                 //リストの取得
                 await this.getTmgPatternList()
-                this.$Notice.info({title: this.pageTitle + 'しました', desc: ""})
+                this.$Notice.info({title: this.pageTitleMsg, desc: ""})
+
             },
             //勤務パターンを削除する
             async deletePattern(row) {
@@ -1152,7 +1157,7 @@
             },
             //ディフォルト勤務パターン
             defaultSelect(e) {
-               // console.log(e)
+                // console.log(e)
                 if (e === true) {
                     //checked
                     this.rawData.flag = 'TMG_ONOFF|1'
@@ -1166,11 +1171,11 @@
                 this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
 
                 this.targetPermSection = ''
-                if([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "group"){
+                if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "group") {
                     this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-                } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all"){
+                } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all") {
                     this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-                } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "section"){
+                } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "section") {
                     this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 }
                 this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
@@ -1255,16 +1260,16 @@
                 })
             },
             handleRestTime(list) {
-                if(!list) return
+                if (!list) return
                 const handleTime = Vue.filter('handleTime')
                 let _e = list.filter(e => e.NOPEN && e.NCLOSE)
-                if(_e.length === 1) return `${handleTime(_e[0].NOPEN)}～${handleTime(_e[0].NCLOSE)}`
+                if (_e.length === 1) return `${handleTime(_e[0].NOPEN)}～${handleTime(_e[0].NCLOSE)}`
                 let result = ''
-                _e.forEach((e, i)=> {
-                    if(i % 2 !== 0) {
-                            result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}\n`)
+                _e.forEach((e, i) => {
+                    if (i % 2 !== 0) {
+                        result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}\n`)
                     } else {
-                            result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}/`)
+                        result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}/`)
                     }
                 })
                 return result
