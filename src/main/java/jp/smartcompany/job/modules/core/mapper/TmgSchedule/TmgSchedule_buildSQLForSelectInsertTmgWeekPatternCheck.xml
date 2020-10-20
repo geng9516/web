@@ -68,7 +68,7 @@
             and twp_nid != #{twp_nid}
         </if>
         <if test="twp_nid == null">
-            and twp_denddate <![CDATA[>]]> trunc(add_months(sysdate,1))
+            and twp_denddate <![CDATA[>]]> trunc(last_day(sysdate) +1)
         </if>
         <!--
                 <if test="twp_nid != null">
