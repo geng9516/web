@@ -66,7 +66,11 @@
 
                 <Drawer :closable="false" class="tc" placement="right" title="反映エラー職員一覧" v-model="errDetailShow"
                     width="800">
-                    <i-table border :columns="columns2" :data="tableData2" :loading="loading" no-data-text=""
+                    <div class="tr mb5 mr5">
+                        <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+                              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
+                    </div>
+                    <i-table border :columns="columns2" :data="pageValue.currentPageData" :loading="loading" no-data-text=""
                         :disabled-hover="true">
                     </i-table>
                 </Drawer>
@@ -270,6 +274,15 @@
                             key: 'name'
                         }
                     ],
+                    pageValue: {
+                        amount: 0,
+                        curPage: 1,
+                        curSize: 50,
+                        currentPageData: [],//当前页显示内容
+                    },
+                    // totalPage: 1, // 统共页数，默认为1
+                    currentPage: 1, //当前页数 ，默认为1
+                    // pageSize: 50, // 每页显示数量
                     tableData: [],
                     tableData2: [],
                     ntfTypeList: [],
@@ -514,8 +527,30 @@
                     } catch (error) {
                         return
                     } finally {
-
+                        this.pageValue.amount = this.tableData2.length;
+                        this.setCurrentPageData();
                     }
+                },
+                // 设置当前页面数据，对数组操作的截取规则为[0~50],[50~100]...,
+                setCurrentPageData() {
+                    let begin = (this.pageValue.curPage - 1) * this.pageValue.curSize;
+                    let end = this.pageValue.curPage * this.pageValue.curSize;
+                    this.pageValue.currentPageData = this.tableData2.slice(
+                        begin,
+                        end
+                    );
+                },
+                pageChange(e) {
+                    console.log("--------------------------------1------------------------------------")
+                    console.log(e)
+                    this.opts.page = e
+                    this.pageValue.curPage = e
+                    let begin = (this.pageValue.curPage - 1) * this.pageValue.curSize;
+                    let end = this.pageValue.curPage * this.pageValue.curSize;
+                    this.pageValue.currentPageData = this.tableData2.slice(
+                        begin,
+                        end
+                    );
                 },
                 async SectionDetailShow(e) {
                     if (!e) {
