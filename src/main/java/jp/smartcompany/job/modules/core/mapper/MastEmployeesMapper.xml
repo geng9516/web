@@ -304,24 +304,30 @@
             WHERE
                  HD.HD_CUSERID = ME_CUSERID
                  AND (
-                     ME_CEMPLOYEEID_CK LIKE #{searchWord}
-                     OR ME_CKANANAME LIKE #{searchWordConve}
-                     OR ME_CKANJINAME LIKE #{searchWord}
-                     OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
-                     OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
-                     OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
-                     OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
+                     <if test="searchWord neq null">
+                         ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                         OR ME_CKANJINAME LIKE #{searchWord}
+                         OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                         OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                         OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
+                     </if>
+                     <if test="searchWordEnglish neq null">
+                         OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+                     </if>
+                     <if test="searchWordConve neq null">
+                         OR ME_CKANANAME LIKE #{searchWordConve}
+                     </if>
                  )
-                 <if test="validCompanies != null and validCompanies.size()>0">
+                 <if test="validCompanies neq null and validCompanies.size() gt 0">
                     AND ME_CCOMPANYID IN
                     <foreach collection="validCompanies" index="index" item="companyId" separator="," open="(" close=")">
                         #{companyId}
                     </foreach>
                  </if>
-                 <if test="companyCode != null">
+                 <if test="companyCode neq null">
                     AND HD.HD_CCOMPANYID_CK = #{companyCode}
                  </if>
-                 <if test="ifKeyorAdditionalRole != null">
+                 <if test="ifKeyorAdditionalRole neq null">
                      AND HD.HD_CIFKEYORADDITIONALROLE = #{ifKeyorAdditionalRole}
                  </if>
                  ${exists}
