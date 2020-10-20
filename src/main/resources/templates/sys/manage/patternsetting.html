@@ -1032,7 +1032,7 @@
                             await this.http.postForm('sys/patternSetting/deletePattern', this.query_delete)
                             //リストの取得
                             await this.getTmgPatternList()
-                            this.$Notice.info({title: '「' + row.tpa_cpatternname + '」は削除されました', desc: ""})
+                            this.$Notice.info({title: '「' + row.tpa_cpatternname + '」は削除しました', desc: ""})
                         },
                         onCancel: () => {
 
