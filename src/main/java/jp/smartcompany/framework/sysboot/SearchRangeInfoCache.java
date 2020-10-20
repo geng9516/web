@@ -58,12 +58,12 @@ public class SearchRangeInfoCache {
      * 検索対象範囲条件作成
      */
     public void loadSearchRangeInfo() {
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
         ghmDataSectionPost = (Map<String, List<SearchRangeInfoDTO>>)lruCache.get(ScCacheUtil.GHM_DATA_SECTION_POST);
         List<SearchRangeInfoDTO> lSecPostList;
         List<SearchRangeInfoDTO> lPermDefsList;
         if (ghmDataSectionPost == null) {
-            IMastDatapermissionService iMastDatapermissionService = (IMastDatapermissionService)SpringUtil.getBean("mastDatapermissionServiceImpl");
+            IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
             lSecPostList = iMastDatapermissionService.selectDataSectionPost();
             lPermDefsList = iMastDatapermissionService.selectDataPermissionDefs();
             // 検索範囲情報を常駐変数に保存する

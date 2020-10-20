@@ -79,7 +79,7 @@ public class PsTableCombinationType {
      * 指定した2つのテーブルの結合条件式を作成(ブレースフォルダ指定あり)
      */
     public String assemble(String psTableName1, String psTableBraceFolder1, String psTableName2, String psTableBraceFolder2, Timestamp pTimestamp, boolean pbUserID) {
-        ScCacheUtil scCacheUtil = (ScCacheUtil) SpringUtil.getBean("scCacheUtil");
+        ScCacheUtil scCacheUtil = SpringUtil.getBean("scCacheUtil");
         /* テーブル1とテーブル2の結合条件式情報を取得 */
         TableCombinationTypeDTO tableComb1 = scCacheUtil.getTableCombinationType(psTableName1);
         TableCombinationTypeDTO tableComb2 = scCacheUtil.getTableCombinationType(psTableName2);

@@ -57,11 +57,11 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         List<SearchRangeManagerDataDTO> dataList = histGroupdatapermissionService.getSearchRangeTableData(systemId,siteId,appId,searchDate,language,permGroupIds);
         // 在java中实现旧代码的createHistory逻辑
         dataList.forEach(item -> {
-            if (DateUtil.isSameDay(item.getHgpDstartdate(),now )) {
-                item.setCreateHistory(2);
-            } else if (item.getHgpDstartdate() == null){
+            if (item.getHgpDstartdate() == null){
                 item.setCreateHistory(1);
-            } else {
+            } else if (DateUtil.isSameDay(item.getHgpDstartdate(),now )) {
+                item.setCreateHistory(2);
+            }  else {
                 item.setCreateHistory(0);
             }
         });

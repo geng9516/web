@@ -34,10 +34,10 @@ public class AppSearchRangeInfoCache {
     }
 
     public void loadAppSearchRangeInfo(){
-        LRUCache<Object,Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
         // 初期化
         StringBuilder sb = new StringBuilder();
-        IMastSystemService iMastSystemService =(IMastSystemService) SpringUtil.getBean("mastSystemServiceImpl");
+        IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
         List <AppSearchRangeInfoDTO> lKeyList = iMastSystemService.selectSearchRangeInfo();
         for (AppSearchRangeInfoDTO appSearchRangeInfoEntity : lKeyList) {
             // 初期化

@@ -43,7 +43,7 @@ public class TmgDivisionTree {
     private Boolean gbAllDivision;
     private String gsRootSection;
 
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
     private final TmgSearchRangeUtil searchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     /**
