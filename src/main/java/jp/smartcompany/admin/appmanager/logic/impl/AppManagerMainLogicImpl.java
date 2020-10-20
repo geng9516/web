@@ -32,12 +32,21 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     @Override
     public List<MastTemplateDTO> getTemplateList() {
         try {
-            List<MastTemplateDTO> templateList = SqlExecutor.query(dataSource.getConnection(), "select MAT_ID, MAT_CTEMPLATEID, MAT_CNAME from mast_apptemplate",new MastTemplateHandler());
-            return templateList;
+            return SqlExecutor.query(dataSource.getConnection(), "select MAT_ID, MAT_CTEMPLATEID, MAT_CNAME from mast_apptemplate",new MastTemplateHandler());
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new GlobalException(e.getMessage());
         }
     }
+
+    /**
+     *  层级： application -> site -> application -> 页面 -> 按钮
+     *                       dialog application -> 页面 -> 按钮
+     *
+     *                          编辑自身信息
+     *   根节点（application）   添加dialog application
+     *                          添加site
+     */
+
 
 }
