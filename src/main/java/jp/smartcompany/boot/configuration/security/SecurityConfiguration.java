@@ -43,7 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(securityProperties.getWhiteList()).permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
                 .and()
                   .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
                   // 自定义过滤器在登录时认证用户名、密码
