@@ -230,9 +230,9 @@
           <div class="tl tree mt5">
             <span class="row-label-primary pl10 pr10 mt5 ml5 cursor">＋ このグループに該当する法人を追加</span>
             <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
-              size="small">選択行を削除</i-button>
+              size="small" @click="deleteBasetree">選択行を削除</i-button>
             <Tree :data="baseTreeData" :render="renderBaseTree" @on-select-change="" empty-text="" check-directly
-              show-checkbox></Tree>
+              show-checkbox ref="baseTree"></Tree>
           </div>
         </div>
       </Drawer>
@@ -283,8 +283,8 @@
           empty-text="所属データなし"></Tree>
         </span> -->
         <Row :gutter="8">
-          <i-col :span="curdisplayPanel === 'QSECTION' ? 24 : 8"
-            v-show="curdisplayPanel === 'QSECTION' || curdisplayPanel === 'searchDept'">
+          <i-col :span="curdisplayPanel === 'QSECTION'|| curdisplayPanel === 'base' ? 24 : 8"
+            v-show="curdisplayPanel === 'QSECTION' || curdisplayPanel === 'searchDept'|| curdisplayPanel === 'base'">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
               所属
@@ -299,8 +299,15 @@
                 <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchDept">検索
                 </i-button>
               </i-col>
+              <i-col span="4" offset="2" class="no-border-radius" v-if="curdisplayPanel === 'base'">
+                <i-button long type="primary" ghost :loading="loading" @click="handleSelectDept">決定
+                </i-button>
+              </i-col>
             </Row>
-            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" empty-text="所属データなし"></Tree>
+            <!-- 这颗树在基点组织时间，需要开启checkbox相关 -->
+            <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" empty-text="所属データなし"
+              :show-checkbox="curdisplayPanel === 'base'" :check-strictly="curdisplayPanel === 'base'"
+              :check-directly="curdisplayPanel === 'base'" ref="selectTree"></Tree>
           </i-col>
           <i-col :span="curdisplayPanel === 'searchEmp' ? 24 : 16"
             v-show="curdisplayPanel === 'searchEmp' || curdisplayPanel === 'searchDept'">
@@ -840,6 +847,7 @@
             title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
               return {
                 ...e,
+                sectionId: e.mgbsCsectionid,
                 title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
               }
             }), expand: true
@@ -972,10 +980,16 @@
                 return e
               }
             })
-          } else {
-            this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
-            this.showGroupOrPositionDrawer = false
+            return
           }
+          this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
+          this.showGroupOrPositionDrawer = false
+        },
+        handleSelectDept() {
+          // 同样这里是只考虑单法人
+          this.baseTreeData[0].children = [...this.$refs.selectTree.getCheckedNodes().map(
+            e => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false } })]
+          this.showGroupOrPositionDrawer = false
         },
         conditionDeleteAll() {
           this.$Modal.confirm({
@@ -1030,7 +1044,8 @@
             }
           })
         },
-        convertTreeData(treeData, fristDisable) {
+        // 可以传入一个selectedItemArray, 来回显已被选择的值
+        convertTreeData(treeData, selectedItemArray) {
           if (!treeData) {
             this.$Message.error({
               background: true,
@@ -1045,12 +1060,15 @@
               return {
                 ...e,
                 title: e.sectionName,
-                children: this.convertTreeData(e.children)
+                expand: true,
+                checked: selectedItemArray && selectedItemArray.includes(e.sectionId),
+                children: this.convertTreeData(e.children, selectedItemArray)
               }
             } else {
               return {
                 ...e,
-                title: e.sectionName
+                title: e.sectionName,
+                checked: selectedItemArray && selectedItemArray.includes(e.sectionId)
               }
             }
           })
@@ -1186,6 +1204,7 @@
           return h('span', data.title)
         },
         renderBaseTree(h, { root, node, data }) {
+          const that = this
           if (data.expand) {
             return h('span', {
               style: {
@@ -1205,6 +1224,7 @@
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.addBaseTree(0)
                     },
                   }
                 }, '＋ このグループに該当する組織を追加')
@@ -1212,6 +1232,32 @@
             ])
           }
           return h('span', data.title)
+        },
+        async addBaseTree(i) {
+          this.showGroupOrPositionDrawer = true
+          this.curdisplayPanel = 'base'
+          this.selectedBaseTreeData = []
+          const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
+          // 点击追加基点组织时，需要回显已选择的项目
+          const selectedBase = this.baseTreeData[i].children.map(e => e.sectionId)
+          this.treeData = this.convertTreeData(data, selectedBase)
+          this.treeData[0].expand = true
+          this._treeData = Utils.deepClone(this.treeData)
+        },
+        deleteBasetree() {
+          this.$Modal.confirm({
+            inDrawer: true,
+            title: '選択行を削除します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e=>e.sectionId)
+              // 同样这里是只考虑单法人
+              this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e=> !selectedNodes.includes(e.sectionId))
+              // 将半选的root清除
+              this.baseTreeData[0].indeterminate = false
+            }
+          })
         }
       }
     })
