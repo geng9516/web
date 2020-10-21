@@ -72,6 +72,7 @@
                 te.TEM_CCOMPANYID,
                 te.TEM_CCUSTOMERID
             ) AS EMPLOYEENAME,
+            te.TEM_CWORKTYPEID  AS  worktypeid,
             TMG_F_GET_MGD (
                 te.TEM_CWORKTYPEID,
                 SYSDATE,
@@ -138,5 +139,8 @@
         <if test='workType!="flex" and workType!="variational" and workType!="all"'>
             AND te.TEM_CWORKTYPEID = #{workType}
         </if>
+    </select>
+    <select id="getSeq" resultType="java.lang.String">
+        select TMG_LIQUIDATION_PERIOD_SEQ.nextval from dual
     </select>
 </mapper>

@@ -11,6 +11,7 @@ public class LiquidationPeriodListDto {
 
     private String employeeid;
     private String employeename;
+    private String worktypeid;
     private String worktypename;
     private String startdate;
     private String enddate;

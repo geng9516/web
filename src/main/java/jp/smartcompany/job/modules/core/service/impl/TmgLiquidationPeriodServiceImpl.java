@@ -22,4 +22,9 @@ public class TmgLiquidationPeriodServiceImpl extends ServiceImpl<TmgLiquidationP
     public List<LiquidationPeriodListDto> getLiquidationDispFromWorkType(String custId,String compId,String workType){
         return baseMapper.getLiquidationDispFromWorkType( custId, compId,workType);
     }
+
+    @Override
+    public  String getSeq(){
+        return baseMapper.getSeq();
+    }
 }
