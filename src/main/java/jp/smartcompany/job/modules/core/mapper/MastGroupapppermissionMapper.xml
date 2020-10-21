@@ -41,7 +41,7 @@
              LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID
                 AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID
                 AND MG_DSTARTDATE <![CDATA[ <= ]]> #{date}
-                AND MG_DENDDATE <![CDATA[ <= ]]> #{date}
+                AND MG_DENDDATE >= #{date}
         WHERE
             MTR_CSYSTEMID = #{systemId}
             AND	MTR_CTYPE <![CDATA[ <> ]]> '0'

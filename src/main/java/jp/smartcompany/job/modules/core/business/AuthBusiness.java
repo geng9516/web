@@ -222,7 +222,7 @@ public class AuthBusiness {
                     "LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID " +
                     "AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID " +
                     "AND MG_DSTARTDATE <= ?" +
-                    "AND MG_DENDDATE <= ?" +
+                    "AND MG_DENDDATE >= ?" +
                 ") " +
                 "WHERE " +
                 "MTR_CSYSTEMID = ? " +
