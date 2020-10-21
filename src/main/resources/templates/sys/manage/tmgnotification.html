@@ -975,7 +975,7 @@
                     this.deptDrawShow = false
                     this.deptName = '全て表示中'
                     this.treeData = []
-                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
                     if (!forAgencyApply) {
                         this.getTableData(false, true)
                     } else {
@@ -997,6 +997,7 @@
                 this.deptDrawShow = false
                 this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                 this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                this.referListObject.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
                 if (this.selectedDeptViewType === "section") {
                     this.deptName = e[0].label
                 }
