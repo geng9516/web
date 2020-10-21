@@ -841,7 +841,15 @@
                 this.query.hidSearchItems = this.referListObject.hidSearchItems
                 this.query.hidSearchCondition = this.referListObject.hidSearchCondition
                 this.query.hidSearchData = this.referListObject.hidSearchData
-                //ツリー：0、検索：1
+                if (this.query.hidSearchData === null || this.query.hidSearchData.trim() == '') {
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '検索内容が未設定です。検索内容を入力してください。'
+                    });
+                    return
+                }
                 this.getTableData()
             },
             async handleDeptDateChange(e) {
