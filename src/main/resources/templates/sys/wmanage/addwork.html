@@ -865,6 +865,15 @@
                 this.getEmpList()
             },
             searchOrgTree: Debounce( async function() {
+                if (this.referListObject.hidSearchData === null || this.referListObject.hidSearchData.trim() == '') {
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '検索内容が未設定です。検索内容を入力してください。'
+                    });
+                    return
+                }
                 this.empDeptLoading = true
                 try {
                     const { data,msg } = await this.http.get('sys/tree/search', this.referListObject)
