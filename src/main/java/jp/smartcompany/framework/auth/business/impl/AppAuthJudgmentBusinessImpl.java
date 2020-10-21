@@ -486,7 +486,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                                        Map<String, AppAuthJudgmentEntity> hAppInfo,
                                        Map<String, AppAuthJudgmentEntity> hDialogAppInfo,
                                        Map<String, AppAuthJudgmentEntity> hSiteInfo) {
-        ScCacheUtil scCacheUtil = (ScCacheUtil) SpringUtil.getBean("scCacheUtil");
+        ScCacheUtil scCacheUtil = SpringUtil.getBean("scCacheUtil");
         TopPageInfo topPageInfo = new TopPageInfo();
         for(List<LoginGroupBO> groupList : hGroups.values()) {
             for (LoginGroupBO loginGroupBO : groupList) {

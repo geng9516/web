@@ -793,7 +793,6 @@
                 }
 
                 //年月リスト.lengthがゼロ場合、非活性化にする
-                console.log("年月リスト.lengthがゼロ場合、非活性化にする")
                 console.log(this.queryList.hidSelectTab)
                 if (data.length == 0 && this.queryList.hidSelectTab == '0' ){
                     this.model1 = ''
@@ -1027,7 +1026,15 @@
                 this.queryList.hidSearchData = this.referListObject.hidSearchData
                 this.queryList.hidSearchItems = this.referListObject.hidSearchItems
                 this.queryList.hidSearchCondition = this.referListObject.hidSearchCondition
-
+                if (this.queryList.hidSearchData === null || this.queryList.hidSearchData.trim() == '') {
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '検索内容が未設定です。検索内容を入力してください。'
+                    });
+                    return
+                }
                 this.getDispTmgMonthlyList()
                 this.getTableData()
             },

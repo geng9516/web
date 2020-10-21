@@ -37,11 +37,11 @@ public class AppAuthJudgmentCache {
     }
 
     public void loadAppAuthJudgment(){
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
-        IMastGroupService iMastGroupService = (IMastGroupService) SpringUtil.getBean("mastGroupServiceImpl");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        IMastGroupService iMastGroupService = SpringUtil.getBean("mastGroupServiceImpl");
         List<MastGroupDO> groupList = iMastGroupService.list(SysUtil.<MastGroupDO>query().select("MG_CSYSTEMID_CK_FK","MG_CGROUPID_PK"));
         // 権限判定が必要な画面オブジェクトの一覧を取得
-        IMastApptreeService iMastApptreeService = (IMastApptreeService) SpringUtil.getBean("mastApptreeServiceImpl");
+        IMastApptreeService iMastApptreeService = SpringUtil.getBean("mastApptreeServiceImpl");
         List<AppAuthJudgmentEntity> lAppAuthJudgmentDtoList = iMastApptreeService.selectAppTreePermission();
         StringBuilder sb = new StringBuilder();
         Map<String, AppAuthJudgmentEntity> objectIdMapMaster = MapUtil.newHashMap();

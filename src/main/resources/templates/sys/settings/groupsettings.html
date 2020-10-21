@@ -205,7 +205,7 @@
               <div class="tl tree mt5">
                 <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
                   size="small">選択行を削除</i-button>
-                <Tree :data="sectionPostList" :render="renderTree" @on-select-change="" empty-text="" check-directly
+                <Tree :data="sectionPostList" :render="renderTabTree" @on-select-change="" empty-text="" check-directly
                   show-checkbox></Tree>
               </div>
             </tab-pane>
@@ -231,7 +231,7 @@
             <span class="row-label-primary pl10 pr10 mt5 ml5 cursor">＋ このグループに該当する法人を追加</span>
             <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
               size="small">選択行を削除</i-button>
-            <Tree :data="baseTreeData" :render="renderTree" @on-select-change="" empty-text="" check-directly
+            <Tree :data="baseTreeData" :render="renderBaseTree" @on-select-change="" empty-text="" check-directly
               show-checkbox></Tree>
           </div>
         </div>
@@ -653,7 +653,7 @@
           searchEmpData: [],
           searchDeptColumns: [],
           searchDeptData: [],
-          sectionPostList:[], //組織・役職選択による定義
+          sectionPostList: [], //組織・役職選択による定義
           clickedCell: {},
           tableData: [{}],
           _treeData: [],
@@ -840,8 +840,6 @@
             title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
               return {
                 ...e,
-                isGroup: true,
-                isLastGroup: data.baseSectionList[0] && data.baseSectionList[0].sectionList.length - 1 === i,
                 title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
               }
             }), expand: true
@@ -852,7 +850,11 @@
             return {
               title: `【${t.companyId}】 ${t.companyName}`,
               expand: true,
-              children: t.sectionList.map(n => {
+              isCompany: true, // 法人
+              noSectionList: t.sectionList.length === 0,
+              noBossSectionList: t.bossSectionList.length === 0,
+              noPostList: t.postList.length === 0,
+              children: t.sectionList.map((n, i) => {
                 return {
                   ...n,
                   title: `【${n.sectionId}】 ${n.sectionName}`,
@@ -864,12 +866,14 @@
                   }),
                   expand: true,
                   isGroup: true, // 組織
+                  isLastGroup: t.sectionList.length - 1 === i
                 }
-              }).concat(t.bossSectionList.map(n => {
+              }).concat(t.bossSectionList.map((n, i) => {
                 return {
                   ...n,
                   title: `【${n.sectionId}】 ${n.sectionName}`,
-                  isBoss: true // 所属長
+                  isBoss: true, // 所属長
+                  isLastBoss: t.bossSectionList.length - 1 === i
                 }
               })).concat(t.postList.map(n => {
                 return {
@@ -880,6 +884,7 @@
               }))
             }
           })
+          console.log(this.sectionPostList)
         },
         remove(i) {
           this.$set(this.lightDelBtnVisible, i, false)
@@ -1050,10 +1055,137 @@
             }
           })
         },
-        renderTree(h, { root, node, data }) {
-          // 第一层法人时需要显示可以追加組織
-          // 如果是組織・役職選択による定義， 则还可以追加所属长和役職
-          // 最后一个组织的下方加入所属长追加，最后一个所属长的下方，加入役職追加
+        renderTabTree(h, { root, node, data }) {
+          // 第一层法人可以追加組織，且组织的下方可以追加役職
+          // 最后一个组织的下方可以追加所属长
+          // 最后一个所属张的下方可以追加役職
+          // 如果 bossSectionList 和 postList 为空则在第一个也加上
+          if (data.isCompany) {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', data.title),
+              h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -1px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する組織を追加')
+              ]
+              ),
+              data.noSectionList || data.noBossSectionList ? h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -1px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する所属長を追加')
+              ]
+              ) : '',
+              data.noPostList && h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -1px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する役職を追加')
+              ]
+              )
+            ])
+          }
+          if (data.isGroup) {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', data.title),
+              h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 0'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する役職を追加')
+              ]),
+              data.isLastGroup && h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -28px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する所属長を追加')
+              ])
+            ])
+          }
+          if (data.isBoss && data.isLastBoss) {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', data.title),
+              h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -28px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する役職を追加')
+              ])
+            ])
+          }
+          return h('span', data.title)
+        },
+        renderBaseTree(h, { root, node, data }) {
           if (data.expand) {
             return h('span', {
               style: {
@@ -1078,58 +1210,6 @@
                 }, '＋ このグループに該当する組織を追加')
               ])
             ])
-          }
-          if (data.isGroup) {
-            if (data.isLastGroup) {
-              return h('span', {
-                style: {
-                  display: 'inline-block',
-                  width: '100%'
-                }
-              }, [
-                h('span', data.title),
-                h('div', [
-                  h('span', {
-                    domProps: {
-                      className: 'row-label-primary pl10 pr10'
-                    },
-                    style: {
-                      margin: '6px 0 0 -28px'
-                    },
-                    on: {
-                      click(e) {
-                        e.stopPropagation()
-                      },
-                    }
-                  }, '＋ このグループに該当する所属長を追加')
-                ])
-              ])
-            }
-            if (!data.isLastGroup) {
-              return h('span', {
-                style: {
-                  display: 'inline-block',
-                  width: '100%'
-                }
-              }, [
-                h('span', data.title),
-                h('div', [
-                  h('span', {
-                    domProps: {
-                      className: 'row-label-primary pl10 pr10'
-                    },
-                    style: {
-                      margin: '6px 0 0 0'
-                    },
-                    on: {
-                      click(e) {
-                        e.stopPropagation()
-                      },
-                    }
-                  }, '＋ このグループに該当する役職を追加')
-                ])
-              ])
-            }
           }
           return h('span', data.title)
         }

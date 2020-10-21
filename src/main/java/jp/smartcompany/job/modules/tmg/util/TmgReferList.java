@@ -77,9 +77,9 @@ public class TmgReferList {
     public static final String ATTR_TREEVIEW_PERM_TARGET_GROUP = "TREEVIEW_KEY_PERM_TARGET_GROUP";
 
     private PsDBBean psDBBean;
-    private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = (ITmgMgdMsgSearchTreeViewService)SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
-    private final TmgSearchRangeUtil tmgSearchRangeUtil = (TmgSearchRangeUtil) SpringUtil.getBean("tmgSearchRangeUtil");
+    private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean("tmgSearchRangeUtil");
 
     // psApp参数
     private String beanDesc;

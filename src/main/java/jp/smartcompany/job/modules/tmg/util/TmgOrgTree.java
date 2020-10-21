@@ -44,7 +44,7 @@ public class TmgOrgTree {
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
 
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
     private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     /**

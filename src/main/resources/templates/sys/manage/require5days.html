@@ -114,7 +114,7 @@
                 </span>
             </template>
         </i-table>
-        <Modal :mask-closable="false" class="tc" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1130"
+        <Modal :mask-closable="false" class="tc" @on-cancel="cancel" :title="titlesMessage" v-model="isShow" width="1130"
                footer-hide>
             <div>
                 <Row :gutter="10">
@@ -139,7 +139,7 @@
 
             <div class="titlenorm mb10" v-if="!isSeason">
                 <Icon type="logo-buffer"></Icon>
-                修正年次休暇付与内容
+                年次休暇付与編集
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" disabled-hover :row-class-name="() => 'select-col'"
                 class="mb30" key="forRest1">
@@ -518,7 +518,8 @@
                 forRest: true,
                 radioCheckedIndex: 0,
                 targetPermSection: '',
-                targetPermSectionFlag: false
+                targetPermSectionFlag: false,
+                titlesMessage: ''
             }
         },
         async mounted() {
@@ -541,6 +542,7 @@
                 console.log("handleBtn(e)")
                 console.log(i)
                 console.log(e)
+                this.titlesMessage = '年5日時季指定取得詳細'
                 this.privateInfo.taKijyunbi = e.basedDay[i]
                 this.privateInfo.Syutokudays = e.detailSyutokuDays[i]
                 this.privateInfo.ajustSyutokudays = e.detailAdjustSyutokuDays[i]
@@ -580,7 +582,7 @@
                 // if(this.$refs.editDatepicker){
                 //     this.$refs.editDatepicker.handleClear()
                 // }
-
+                this.titlesMessage = '年5日時季指定取得編集'
                 // 销毁table
                 this.forRest = !this.forRest
 

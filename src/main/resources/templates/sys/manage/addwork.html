@@ -62,7 +62,7 @@
                             </i-col>
                             <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                             <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange" transfer>
                                 <i-option value="all">全て</i-option>
                                 <i-option value="group">グループごとに</i-option>
                                 <i-option value="section">部署ごとに</i-option>
@@ -911,6 +911,15 @@
                     }
                 },
                 searchOrgTree: Debounce( async function() {
+                    if (this.referListObject.hidSearchData === null || this.referListObject.hidSearchData.trim() == '') {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '検索内容が未設定です。検索内容を入力してください。'
+                        });
+                        return
+                    }
                     this.empDeptLoading = true
                     try {
                         const { data,msg } = await this.http.get('sys/tree/search', this.referListObject)

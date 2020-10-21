@@ -34,8 +34,8 @@ public class TableCombinationTypeCache {
      * テーブル結合条件読み込み.
      */
     public void loadTableCombinationType() {
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
-        IMastSystemService iMastSystemService = (IMastSystemService) SpringUtil.getBean("mastSystemServiceImpl");
+        LRUCache<Object,Object> lruCache =  SpringUtil.getBean("scCache");
+        IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
         List<TableCombinationTypeDTO> tableCombinationTypeDTODtoList = iMastSystemService.getTableInfo();
         for (TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDTODtoList) {
             String sTableName = tableCombinationTypeDto.getTableName();

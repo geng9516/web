@@ -28,8 +28,8 @@ public class PsPermissionStringCache {
     }
 
     public void loadPermissionString() {
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
-        IMastGenericDetailService iMastGenericDetailService = (IMastGenericDetailService) SpringUtil.getBean("mastGenericDetailServiceImpl");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        IMastGenericDetailService iMastGenericDetailService = SpringUtil.getBean("mastGenericDetailServiceImpl");
         List<MastGenericDetailDO> permStrList = iMastGenericDetailService.selectPermissionString();
         for (MastGenericDetailDO mastGenericDetailDO : permStrList) {
             String keyJa = mastGenericDetailDO.getMgdCcustomerid() + "_"

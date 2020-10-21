@@ -65,7 +65,7 @@ public class TmgGroupList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ

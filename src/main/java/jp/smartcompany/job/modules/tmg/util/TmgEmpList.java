@@ -61,7 +61,7 @@ public class TmgEmpList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat;
 
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
     private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
     /**
      * コンストラクタ

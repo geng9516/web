@@ -15,4 +15,7 @@ public interface TmgLiquidationDetailMapper extends BaseMapper<TmgLiquidationDet
                                           @Param("tlpId") String tlpId,
                                           @Param("startDate") String startDate,
                                           @Param("endDate") String endDate);
+
+    List<EditDispVo> getLiquidationDetailNew(@Param("startDate") String startDate,
+                                             @Param("months") String months);
 }

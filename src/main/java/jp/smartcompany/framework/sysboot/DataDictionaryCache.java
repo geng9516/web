@@ -38,8 +38,8 @@ public class DataDictionaryCache {
      * データディクショナリ情報読込.
      */
     public void loadDataDictionary() {
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
-        IMastDatadictionaryService iMastDatadictionaryService = (IMastDatadictionaryService)SpringUtil.getBean("mastDatadictionaryServiceImpl");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        IMastDatadictionaryService iMastDatadictionaryService = SpringUtil.getBean("mastDatadictionaryServiceImpl");
         List<MastDatadictionaryDO> dictionaryList = iMastDatadictionaryService.selectAllDicts();
         if (CollUtil.isEmpty(dictionaryList)) {
             // 必須マスタデータ未登録例外
@@ -57,8 +57,8 @@ public class DataDictionaryCache {
      * データディクショナリ機密レベル情報読込.
      */
     public  void loadDataDicSeclevel() {
-        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
-        IMastDatadictionaryService iMastDatadictionaryService = (IMastDatadictionaryService)SpringUtil.getBean("mastDatadictionaryServiceImpl");
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        IMastDatadictionaryService iMastDatadictionaryService = SpringUtil.getBean("mastDatadictionaryServiceImpl");
         List <MastDatadicSeclevelDTO> dicSeclevelList = iMastDatadictionaryService.selectAllDataDicSecLevel();
         for (MastDatadicSeclevelDTO dataDicSeclevel : dicSeclevelList) {
             // キー設定

@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface ITmgliquidationDetailService extends IService<TmgLiquidationDetailDO> {
     List<EditDispVo> getLiquidationDetail(String custID, String compCode, String tlpId, String startDate, String endDate);
+
+    List<EditDispVo> getLiquidationDetailNew(String startDate, String months);
 }

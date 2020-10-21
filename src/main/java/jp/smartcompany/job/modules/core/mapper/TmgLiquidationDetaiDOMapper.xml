@@ -17,4 +17,15 @@
             TLD_DYYYYMM >=#{startDate}
             TLD_DYYYYMM <![CDATA[<=]]> #{endDate}
     </select>
+    <select id="getLiquidationDetailNew"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo">
+        SELECT
+            TO_CHAR(ADD_MONTHS( to_date( '2020/01/01' ), LEVEL - 1 ),'yyyy/mm') AS yyyymm,
+            '160' AS standard,
+            '160' AS result,
+            '0' AS adjust
+        FROM
+            dual
+        connect by level <![CDATA[<=]]> ${months}
+    </select>
 </mapper>

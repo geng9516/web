@@ -57,7 +57,7 @@ public class TmgMemberList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat;
 
-    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
