@@ -1,22 +1,27 @@
 package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDetailDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPeriodDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import jp.smartcompany.job.modules.core.service.ITmgliquidationDetailService;
 import jp.smartcompany.job.modules.core.service.ITmgliquidationPeriodService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationPeriodListDto;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeGroupDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,10 +96,55 @@ public class TmgLiquidationPeriodBean {
     }
 
 
-
-    public GlobalResponse updateEdit() throws Exception {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse insertLiquidation(LiquidationUpdateListDto updateDto, PsDBBean psDBBean){
         //todo
+        //sequence 获取
+        String seq=iTmgliquidationPeriodService.getSeq();
+        //一览数据新规
+        insertTlp(seq,updateDto.getEmpId(),updateDto.getWorktypeId(),updateDto.getStartDate(),updateDto.getEndDate(),psDBBean);
+        //详细数据新规
+        insertTlD(seq,updateDto.getEmpId(),updateDto.getTldDtos(),psDBBean);
         return GlobalResponse.ok();
     }
 
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse deleteLiquidation(String seq){
+        iTmgliquidationDetailService.getBaseMapper().delete(SysUtil.<TmgLiquidationDetailDO>query().eq("TLD_CTLDID",seq));
+        iTmgliquidationPeriodService.getBaseMapper().delete(SysUtil.<TmgLiquidationPeriodDO>query().eq("TLP_CTLPID",seq));
+        return GlobalResponse.ok();
+    }
+
+    //一览数据新规
+    private int insertTlp(String seq,String empId,String workTypeId,String startDate,String endDate,PsDBBean psDBBean){
+        TmgLiquidationPeriodDO tlpDo=new TmgLiquidationPeriodDO();
+        tlpDo.setTlpCcompanyid(psDBBean.getCompCode());
+        tlpDo.setTlpCcustomerid(psDBBean.getCustID());
+        tlpDo.setTlpCemployeeid(empId);
+        tlpDo.setTlpCmodifieruserid(psDBBean.getUserCode());
+        tlpDo.setTlpDmodifieddate(DateTime.now());
+        tlpDo.setTlpDstartdate(DateUtil.parseDate(startDate));
+        tlpDo.setTlpDenddate(DateUtil.parseDate(endDate));
+        tlpDo.setTlpCworktypeid(workTypeId);
+        tlpDo.setTlpCtlpid(seq);
+        return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);
+    }
+    //详细数据新规
+    private void insertTlD(String seq,String empId,List<LiquidationDetailDto> tldDtos, PsDBBean psDBBean){
+        for (LiquidationDetailDto dto: tldDtos) {
+            TmgLiquidationDetailDO tldDo=new TmgLiquidationDetailDO();
+            tldDo.setTldCcustomerid(psDBBean.getCustID());
+            tldDo.setTldCcompanyid(psDBBean.getCompCode());
+            tldDo.setTldCemployeeid(empId);
+            tldDo.setTldCmodifieruserid(psDBBean.getUserCode());
+            tldDo.setTldDmodifieddate(DateTime.now());
+            tldDo.setTldDstartdate(TmgUtil.minDate);
+            tldDo.setTldDenddate(TmgUtil.maxDate);
+            tldDo.setTldDyyyymm(dto.getYyyymm());
+            tldDo.setTldCstandardtime(dto.getStandard());
+            tldDo.setTldCresulttime(dto.getResult());
+            tldDo.setTldCtldid(seq);
+            iTmgliquidationDetailService.getBaseMapper().insert(tldDo);
+        }
+    }
 }

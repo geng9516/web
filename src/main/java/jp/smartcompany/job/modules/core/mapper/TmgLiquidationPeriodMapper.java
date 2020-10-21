@@ -19,4 +19,6 @@ public interface TmgLiquidationPeriodMapper extends BaseMapper<TmgLiquidationPer
     List<LiquidationPeriodListDto> getLiquidationDispFromWorkType(@Param("custId") String custId,
                                                                   @Param("compId") String compId,
                                                                   @Param("workType") String workType);
+
+    String getSeq();
 }
