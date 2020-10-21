@@ -94,15 +94,15 @@
                 精算期間
             </div>
             <Row>
-                <i-col span="21" class="tl">
+                <i-col span="20" class="tl">
                     <date-picker class="mar"  type="month" v-model="curDateFrom" :editable="false" :clearable="false"
                                  format="yyyy年MM月"></date-picker>
                     -
                     <date-picker class="mar"  type="month" v-model="curDateTo" :editable="false" :clearable="false"
                                  format="yyyy年MM月"></date-picker>
                 </i-col>
-                <i-col span="3" class="tr">
-                    <i-button type="primary" @click="handleDatePicker" ghost>確定</i-button>
+                <i-col span="4" class="tr">
+                    <i-button type="primary" @click="handleDatePicker" ghost>期間作成</i-button>
                 </i-col>
             </Row>
 
@@ -250,7 +250,6 @@ d
                 let totalStandard=0
                 let totalResult=0
                 let totalAdjust=0
-                console.log(this.$refs.table)
                 this.$refs.table && this.$refs.table.rebuildData.map(e=> {
                     totalStandard += (+e.standard)
                     totalResult += (+e.result)

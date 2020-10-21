@@ -817,11 +817,11 @@
                         obj.level = ''
                     } else {
                         if(this.addPermissionAdminInfo.name !== '承認者検索') {
-                            this.$set(this.permissionAdminValue[0], 'level', this.defaultPermissionLevel)
+                            obj.level  = this.defaultPermissionLevel
                         }
                     }
                 },
-                async handleClickEmpLeaf(e) {
+                handleClickEmpLeaf(e) {
                     if (!e[0]) return
                     // 需要将此条得信息覆盖
                     this.addPermissionAdminInfo.name = e[0].label
@@ -831,14 +831,16 @@
                     this.permissionAdminValue[i].secnic = e[0].secnic
                     this.$set(this.permissionAdminValue[i], 'validStartDate', e[0].dstart)
                     this.$set(this.permissionAdminValue[i], 'validEndDate', e[0].dend)
-
-                    const { data } = await this.http.get(`sys/evaluatorsetting/emplevel?empId=${e[0].empid}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`)
-                    this.defaultPermissionLevel = data.level
-                    if(this.permissionAdminValue[i].restConfirm) {
-                        this.$set(this.permissionAdminValue[i], 'level', this.defaultPermissionLevel)
-                    }
+                    this.getDefaultPermissionLevel(e[0].empid)
                     this.addPermissionAdminGroupDrawer = false
 
+                },
+                async getDefaultPermissionLevel(empid) {
+                    const { data } = await this.http.get(`sys/evaluatorsetting/emplevel?empId=${empid}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`)
+                    this.defaultPermissionLevel = data.level
+                    this.permissionAdminValue.forEach(e=>{
+                        if(e.restConfirm) this.$set(e, 'level', this.defaultPermissionLevel)
+                    })
                 },
                 async getTableData() {
                     this.loading = true
@@ -1020,6 +1022,7 @@
                     }
                     this.groupBtnLoading = true
                     try {
+                        this.getDefaultPermissionLevel(row.empid)
                         const { data } = await this.http.get('sys/evaluatorsetting/addeval', query)
                         this.enableMonthlyResult = data.enableMonthlyResult
                         this.addPermissionAdminGroupList = data.groupList.map(e => {
