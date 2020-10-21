@@ -793,7 +793,6 @@
         },
         // 将选择中的社员加到社員を指定表格里
         addSearchEmp() {
-          console.log(this.$refs.empTable.getSelection())
           let emptData = []
           this.$refs.empTable.getSelection().forEach(e => {
             if (!this.emptData.some(t => t.employeeId === e.meCuserid)) {
@@ -870,6 +869,7 @@
                     return {
                       ...m,
                       title: `【${m.postId}】 ${m.postName}`,
+                      isPost: true // 役職
                     }
                   }),
                   expand: true,
@@ -892,6 +892,7 @@
               }))
             }
           })
+          console.log('sectionList')
           console.log(this.sectionPostList)
         },
         remove(i) {
@@ -987,8 +988,54 @@
         },
         handleSelectDept() {
           // 同样这里是只考虑单法人
-          this.baseTreeData[0].children = [...this.$refs.selectTree.getCheckedNodes().map(
-            e => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false } })]
+          if (this.selectTreeType === 'base') {
+            this.baseTreeData[0].children = [...this.$refs.selectTree.getCheckedNodes().map(
+              e => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false } })]
+          }
+
+          if (this.selectTreeType === 'section') {
+            let cur = this.$refs.selectTree.getCheckedNodes()
+            let curId = cur.map(e => e.sectionId)
+            let foreGroupCount = 0
+            let deleteArray = []
+            this.sectionPostList[0].children.forEach((e, j) => {
+              if (e.isGroup) {
+                if (curId.includes(e.sectionId)) {
+                  foreGroupCount += 1
+                  cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
+                } else {
+                  foreGroupCount -= 1
+                  deleteArray.push(j)
+                }
+                // 将isLastGroup重置
+                if(e.children && e.children.length > 0) e.children[e.children.length - 1].isLastGroup = false
+                if (e.isLastGroup && cur.length !== 0) {
+                  e.isLastGroup = false
+                }
+              }
+            })
+            // 删除没打勾的
+            deleteArray.forEach(e => {
+              this.sectionPostList[0].children.splice(e, 1)
+            })
+            cur.forEach((e, j) => {
+              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true })
+              foreGroupCount += 1
+            })
+            // 找到真正的isLastGroup
+            this.sectionPostList[0].children.some((e, j) => {
+              if (!e.isGroup) {
+                const len = this.sectionPostList[0].children[j - 1].children.length
+                if (len === 0) {
+                  this.sectionPostList[0].children[j - 1].isLastGroup = true
+                }
+                else {
+                  this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
+                }
+                return true
+              }
+            })
+          }
           this.showGroupOrPositionDrawer = false
         },
         conditionDeleteAll() {
@@ -1045,7 +1092,7 @@
           })
         },
         // 可以传入一个selectedItemArray, 来回显已被选择的值
-        convertTreeData(treeData, selectedItemArray) {
+        convertTreeData(treeData, selectedItemArray, selectedItemkeyName) {
           if (!treeData) {
             this.$Message.error({
               background: true,
@@ -1061,14 +1108,14 @@
                 ...e,
                 title: e.sectionName,
                 expand: true,
-                checked: selectedItemArray && selectedItemArray.includes(e.sectionId),
-                children: this.convertTreeData(e.children, selectedItemArray)
+                checked: selectedItemArray && selectedItemArray.includes(e[selectedItemkeyName]),
+                children: this.convertTreeData(e.children, selectedItemArray, selectedItemkeyName)
               }
             } else {
               return {
                 ...e,
                 title: e.sectionName,
-                checked: selectedItemArray && selectedItemArray.includes(e.sectionId)
+                checked: selectedItemArray && selectedItemArray.includes(e[selectedItemkeyName])
               }
             }
           })
@@ -1078,6 +1125,7 @@
           // 最后一个组织的下方可以追加所属长
           // 最后一个所属张的下方可以追加役職
           // 如果 bossSectionList 和 postList 为空则在第一个也加上
+          const that = this
           if (data.isCompany) {
             return h('span', {
               style: {
@@ -1092,11 +1140,12 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -1px'
+                    margin: '6px 0 0 -28px'
                   },
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.addSectionTree()
                     },
                   }
                 }, '＋ このグループに該当する組織を追加')
@@ -1108,7 +1157,7 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -1px'
+                    margin: '6px 0 0 -28px'
                   },
                   on: {
                     click(e) {
@@ -1124,7 +1173,7 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -1px'
+                    margin: '6px 0 0 -28px'
                   },
                   on: {
                     click(e) {
@@ -1159,13 +1208,13 @@
                   }
                 }, '＋ このグループに該当する役職を追加')
               ]),
-              data.isLastGroup && h('div', [
+              data.isLastGroup && data.children.length === 0 && h('div', [
                 h('span', {
                   domProps: {
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -28px'
+                    margin: '6px 0 0 -56px'
                   },
                   on: {
                     click(e) {
@@ -1190,7 +1239,7 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -28px'
+                    margin: '6px 0 0 -56px'
                   },
                   on: {
                     click(e) {
@@ -1198,6 +1247,31 @@
                     },
                   }
                 }, '＋ このグループに該当する役職を追加')
+              ])
+            ])
+          }
+          if (data.isPost && data.isLastGroup) {
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', data.title),
+              h('div', [
+                h('span', {
+                  domProps: {
+                    className: 'row-label-primary pl10 pr10'
+                  },
+                  style: {
+                    margin: '6px 0 0 -80px'
+                  },
+                  on: {
+                    click(e) {
+                      e.stopPropagation()
+                    },
+                  }
+                }, '＋ このグループに該当する所属長を追加')
               ])
             ])
           }
@@ -1219,7 +1293,7 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -1px'
+                    margin: '6px 0 0 -28px'
                   },
                   on: {
                     click(e) {
@@ -1236,11 +1310,12 @@
         async addBaseTree(i) {
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
+          this.selectTreeType = 'base'
           this.selectedBaseTreeData = []
           const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
           // 点击追加基点组织时，需要回显已选择的项目
           const selectedBase = this.baseTreeData[i].children.map(e => e.sectionId)
-          this.treeData = this.convertTreeData(data, selectedBase)
+          this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
           this.treeData[0].expand = true
           this._treeData = Utils.deepClone(this.treeData)
         },
@@ -1251,9 +1326,41 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: () => {
-              const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e=>e.sectionId)
+              const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e => e.sectionId)
               // 同样这里是只考虑单法人
-              this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e=> !selectedNodes.includes(e.sectionId))
+              this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e => !selectedNodes.includes(e.sectionId))
+              // 将半选的root清除
+              this.baseTreeData[0].indeterminate = false
+            }
+          })
+        },
+        async addSectionTree() {
+          this.showGroupOrPositionDrawer = true
+          this.curdisplayPanel = 'base'
+          this.selectTreeType = 'section'
+          this.selectedBaseTreeData = []
+          const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
+          // 点击追加組織・役職選択による定義回显
+          let selectedBase = []
+          this.sectionPostList.forEach(e => {
+            e.children.forEach(t => {
+              if (t.isGroup) selectedBase = selectedBase.concat(t.sectionId)
+            })
+          })
+          this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
+          // this.treeData[0].expand = true
+          // this._treeData = Utils.deepClone(this.treeData)
+        },
+        deletePosttree() {
+          this.$Modal.confirm({
+            inDrawer: true,
+            title: '選択行を削除します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e => e.sectionId)
+              // 同样这里是只考虑单法人
+              this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e => !selectedNodes.includes(e.sectionId))
               // 将半选的root清除
               this.baseTreeData[0].indeterminate = false
             }
