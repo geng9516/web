@@ -143,4 +143,8 @@
             MTR_NSEQ ASC
     </select>
 
+    <delete id="removeAll">
+        truncate table MAST_APPTREE
+    </delete>
+
 </mapper>

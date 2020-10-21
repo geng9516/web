@@ -32,4 +32,7 @@ public interface MastApptreeMapper extends BaseMapper<MastApptreeDO> {
                                                 @Param("siteId") String psSiteId);
 
   List<MastAppTreeDTO> selectMastAppTree();
+
+  int removeAll();
+
 }

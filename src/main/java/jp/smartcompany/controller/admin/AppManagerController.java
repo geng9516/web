@@ -5,9 +5,7 @@ import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,6 +26,11 @@ public class AppManagerController {
   @GetMapping("templates")
   public List<MastTemplateDTO> getTemplateList() {
      return appManagerMainLogic.getTemplateList();
+  }
+
+  @PostMapping("update")
+  public String updateMenuList(@RequestBody List<MastAppTreeDTO> paramList) {
+    return appManagerMainLogic.updateMenuList(paramList);
   }
 
 }

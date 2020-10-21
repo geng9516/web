@@ -43,4 +43,9 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
         public List<MastAppTreeDTO> selectMastAppTree() {
                 return baseMapper.selectMastAppTree();
         }
+
+        @Override
+        public int removeAll() {
+                return baseMapper.removeAll();
+        }
 }

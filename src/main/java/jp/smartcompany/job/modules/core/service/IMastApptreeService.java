@@ -28,4 +28,6 @@ public interface IMastApptreeService extends IService<MastApptreeDO> {
 
         List<MastAppTreeDTO> selectMastAppTree();
 
+        int removeAll();
+
 }
