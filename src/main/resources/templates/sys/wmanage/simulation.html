@@ -140,7 +140,7 @@
                 exec: false,
                 compare: true,
                 curDate: new Date(),
-                pageTitle: '連携対象マスタ追加',
+                pageTitle: '連携対象マスタ新規',
                 errorFlag: false,
                 errorMsg: '',
                 isShow: false,
@@ -274,11 +274,13 @@
             },
             // 新規と編集画面を開く
             async mergeMaster(row) {
-                console.log(row)
+                //console.log(row)
                 if (!row) {
+                    this.pageTitle = '連携対象マスタ新規'
                     this.masterResult.operType = 'insert'
                 } else {
                     this.masterResult.operType = 'update'
+                    this.pageTitle = '連携対象マスタ編集'
                     this.query.startDate = row.startTime
                     this.query.endDate = row.endTime
                     this.masterResult.psStartDate = row.startTime
@@ -286,7 +288,7 @@
                     this.masterResult.startDate = row.startTime
                     this.masterResult.endDate = row.endTime
                 }
-                console.log(this.masterResult)
+                //console.log(this.masterResult)
                 this.isShow = true
                 this.tableLoading = true
                 const {data} = await this.http.get('sys/simulation/selectExcludecondCtl', this.query)
@@ -300,7 +302,7 @@
             async deleteMaster(row) {
                 // console.log("delete:" + row)
                 if (row) {
-                    console.log("this.dataCount:", this.dataCount)
+                    //console.log("this.dataCount:", this.dataCount)
                     if (this.dataCount == 1) {
                         //最後のデータの場合、削除できない
                         this.$Notice.info({title: '最後のデータの場合、削除できない', desc: ""})
@@ -420,9 +422,9 @@
                 const {data} = await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
                 //操作結果確認する
                 if (this.masterResult.operType === 'insert') {
-                    this.$Notice.info({title: 'マスタデータが追加されました', desc: ""})
+                    this.$Notice.info({title: 'マスタデータを新規登録しました', desc: ""})
                 } else {
-                    this.$Notice.info({title: 'マスタデータが更新完了しました', desc: ""})
+                    this.$Notice.info({title: 'マスタデータを更新しました', desc: ""})
                 }
 
                 //操作画面を閉める
