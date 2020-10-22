@@ -871,14 +871,14 @@
                     return {
                       ...m,
                       title: `【${m.postId}】 ${m.postName}`,
-                      level: `${j}.${k}`,
+                      uni_id: `${j}.${k}`,
                       isPost: true // 役職,
                     }
                   }),
                   expand: true,
                   isGroup: true, // 組織
                   isLastGroup: t.sectionList.length - 1 === j,
-                  level: `${j}`
+                  uni_id: `${j}`
                 }
               }).concat(t.bossSectionList.map((n, j) => {
                 childIndex += 1
@@ -887,7 +887,7 @@
                   title: `【${n.sectionId}】 ${n.sectionName}`,
                   isBoss: true, // 所属長
                   isLastBoss: t.bossSectionList.length - 1 === j,
-                  level: `${childIndex}`
+                  uni_id: `${childIndex}`
                 }
               })).concat(t.postList.map((n, j) => {
                 childIndex += 1
@@ -895,7 +895,7 @@
                   ...n,
                   title: `【${n.postId}】 ${n.postName}`,
                   isPost: true, // 役職,
-                  level: `${childIndex}`
+                  uni_id: `${childIndex}`
                 }
               }))
             }
@@ -1002,6 +1002,7 @@
           }
 
           if (this.selectTreeType === 'section') {
+            //　自己增加得项目也必须添加uni_id来统一在外面的删除
             let cur = this.$refs.selectTree.getCheckedNodes()
             let curId = cur.map(e => e.sectionId)
             let foreGroupCount = 0
@@ -1027,7 +1028,7 @@
               this.sectionPostList[0].children.splice(e, 1)
             })
             cur.forEach((e, j) => {
-              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true })
+              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true,  uni_id: Date.now()})
               foreGroupCount += 1
             })
             // 找到真正的isLastGroup
@@ -1042,6 +1043,53 @@
                 }
                 return true
               }
+            })
+          }
+
+          if (this.selectTreeType === 'boss') {
+            let cur = this.$refs.selectTree.getCheckedNodes()
+            let curId = cur.map(e => e.sectionId)
+
+            Promise.all(curId.map(e=>
+              this.http.get(`sys/groupmanager/bosslist?psSite=${this.psSite}`, { sectionId: e })
+            )).then(e=>{
+              console.log(e)
+              let foreGroupCount = 0
+              let deleteArray = []
+              this.sectionPostList[0].children.forEach((e, j) => {
+              if (e.isBoss) {
+                if (curId.includes(e.sectionId)) {
+                  foreGroupCount += 1
+                  cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
+                } else {
+                  foreGroupCount -= 1
+                  deleteArray.push(j)
+                }
+                // 将isLastBoss重置
+                if(e.isLastGroup) e.isLastBoss = false
+              }
+              })
+
+            // 删除没打勾的
+              deleteArray.forEach(e => {
+              this.sectionPostList[0].children.splice(e, 1)
+              })
+              cur.forEach((e, j) => {
+              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isBoss: true,  uni_id: Date.now()})
+                foreGroupCount += 1
+              })
+              this.sectionPostList[0].children.some((e, j) => {
+              // if (!e.isGroup) {
+              //   const len = this.sectionPostList[0].children[j - 1].children.length
+              //   if (len === 0) {
+              //     this.sectionPostList[0].children[j - 1].isLastGroup = true
+              //   }
+              //   else {
+              //     this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
+              //   }
+              //   return true
+              // }
+            })
             })
           }
           this.showGroupOrPositionDrawer = false
@@ -1170,6 +1218,7 @@
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.addBossTree()
                     },
                   }
                 }, '＋ このグループに該当する所属長を追加')
@@ -1227,6 +1276,7 @@
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.addBossTree()
                     },
                   }
                 }, '＋ このグループに該当する所属長を追加')
@@ -1277,6 +1327,7 @@
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.addBossTree()
                     },
                   }
                 }, '＋ このグループに該当する所属長を追加')
@@ -1364,37 +1415,58 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: () => {
-              const selectedNodes = this.$refs.sectionTree.getCheckedNodes().map(e => e.level)
+              const selectedNodes = this.$refs.sectionTree.getCheckedNodes().map(e => e.uni_id)
               // 同样这里是只考虑单法人
-              // 根据层级信息将勾选的删除
-              // selectedNodes.forEach(e=>{
-              //   if(e.indexOf('.') > -1) {
-              //     const _e = e.split('.')
-              //     // this.sectionPostList[0].children[_e[0]].children.splice(_e[1], 1)
-              //     delete this.sectionPostList[0].children[_e[0]].children[_e[1]]
-              //   } else {
-              //     // this.sectionPostList[0].children.splice(e, 1)
-              //     delete this.sectionPostList[0].children[e]
-              //   }
-              // })
               this.sectionPostList[0].children.forEach((e, i)=> {
-                if(selectedNodes.includes(e.level)) {
+                if(selectedNodes.includes(e.uni_id)) {
                   // 因为删除后索引会变，需要找到正确的索引
-                  this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.level === e.level), 1)
+                  this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.uni_id === e.uni_id), 1)
                 }
+                // 将isLastGroup重置
+                e.isLastGroup = false
                 if(e.children && e.children.length > 0) {
+                  // 将isLastGroup重置
+                  e.children[e.children.length - 1].isLastGroup = false
                   e.children.forEach(t => {
-                    if(selectedNodes.includes(t.level)) {
+                    if(selectedNodes.includes(t.uni_id)) {
                       this.sectionPostList[0].children[i].indeterminate = false
-                      this.sectionPostList[0].children[i].children.splice(this.sectionPostList[0].children[i].children.findIndex(n=> n.level === t.level), 1)
+                      this.sectionPostList[0].children[i].children.splice(this.sectionPostList[0].children[i].children.findIndex(n=> n.uni_id === t.uni_id), 1)
                     }
                   })
                 }
               })
+              // 找到真正的isLastGroup
+              this.sectionPostList[0].children.some((e, j) => {
+              if (!e.isGroup) {
+                const len = this.sectionPostList[0].children[j - 1].children.length
+                if (len === 0) {
+                  this.sectionPostList[0].children[j - 1].isLastGroup = true
+                }
+                else {
+                  this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
+                }
+                return true
+              }
+            })
               // 将半选的root清除
               this.sectionPostList[0].indeterminate = false
             }
           })
+        },
+        async addBossTree() {
+          this.showGroupOrPositionDrawer = true
+          this.curdisplayPanel = 'base'
+          this.selectTreeType = 'boss'
+          this.selectedBaseTreeData = []
+          const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
+          // 点击追加組織・役職選択による定義回显
+          let selectedBase = []
+          this.sectionPostList.forEach(e => {
+            e.children.forEach(t => {
+              if (t.isBoss) selectedBase = selectedBase.concat(t.sectionId)
+            })
+          })
+          this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
         }
       }
     })
