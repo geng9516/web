@@ -480,7 +480,7 @@
         methods: {
             // 職員検索
             async getSearchTableData() {
-                if (this.referListObject.hidSearchData === null || this.referListObject.hidSearchData.trim() == '') {
+                if (this.opts.hidSearchData === null || this.opts.hidSearchData.trim() == '') {
                     this.$Message.error({
                         background: true,
                         closable: true,
