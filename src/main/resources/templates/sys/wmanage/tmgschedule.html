@@ -1123,7 +1123,7 @@
             handleChangeDivision(e){
                 console.log("handleChangeDivision"+e)
                 // 区分选择しない时，将勤務パターン也置为変更しない
-                if(e === 'TMG_WORK|'|| e ===  'TMG_WORK|480') {
+                if("TMG_WORK|000"!=e) {
                     this.workPatternSelected = this.workPatternList[0].CPATTERNID
                 }
                 if("TMG_WORK|000"!=e){
