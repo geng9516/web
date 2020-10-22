@@ -106,8 +106,9 @@ const Utils = {
       // 统一格式化为变成HH:MM
       const handleTime = Vue.filter('handleTime')
 
-      object[name] = handleTime(+minutes)
-      return true
+      const result = handleTime(+minutes)
+      object[name] = result
+      if(/^[0-9]{2}:[0-9]{2}$/g.test(result)) return true
     }
     // el.focus() 取消focus
     Vue.prototype.$Notice.error({
