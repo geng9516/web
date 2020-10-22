@@ -1377,17 +1377,15 @@
               //     delete this.sectionPostList[0].children[e]
               //   }
               // })
-              this.sectionPostList[0].children.forEach(e=> {
+              this.sectionPostList[0].children.forEach((e, i)=> {
                 if(selectedNodes.includes(e.level)) {
                   // 因为删除后索引会变，需要找到正确的索引
                   this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.level === e.level), 1)
                 }
                 if(e.children && e.children.length > 0) {
-                  e.children.forEach((t, i)=> {
-                    console.log(i)
+                  e.children.forEach(t => {
                     if(selectedNodes.includes(t.level)) {
-                      console.log('zhaodaonile')
-                      console.log(i)
+                      this.sectionPostList[0].children[i].indeterminate = false
                       this.sectionPostList[0].children[i].children.splice(this.sectionPostList[0].children[i].children.findIndex(n=> n.level === t.level), 1)
                     }
                   })
