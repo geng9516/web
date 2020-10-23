@@ -10,8 +10,6 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
-import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
@@ -54,8 +52,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
     private final ITmgGroupService groupService;
     private final IMastEmployeesService employeesService;
 
-    private final GroupBusiness groupBusiness;
-    private final BaseSectionBusiness baseSectionBusiness;
     private final PsDBBeanUtil psDBBeanUtil;
 
     @Override

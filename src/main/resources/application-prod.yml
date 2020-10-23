@@ -4,3 +4,15 @@ spring:
     username: SPWM
     password: SPWMPASS
     driver-class-name: oracle.jdbc.OracleDriver
+security:
+  # 无需进行登录后授权只需要登录即可的url
+  onlyAuthenticationList:
+    - /web-work/
+    - /web-work/index
+    - /web-work/sys/**
+    - /web-work/tmg_admin/**
+    - /web-work/tmg_inp/**
+    - /web-work/admin/**
+    - /web-work/expirePassword
+    - /web-work/changeExpirePassword
+    - /web-work/changePassword
