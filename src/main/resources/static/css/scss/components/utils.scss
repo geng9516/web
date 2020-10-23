@@ -458,9 +458,9 @@
   }
 }
 .ivu-btn[disabled].ivu-btn-text[disabled] {
-  border-color: transparent;
+  border-color: transparent !important;
   &:hover {
-    border-color: transparent;
+    border-color: transparent !important;
   }
 }
 .ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body, .ivu-upload-list-file {

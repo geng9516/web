@@ -13,6 +13,7 @@ import java.util.List;
 @ToString
 public class OrgTreeVO {
 
+    private Long moId;
     private String sectionId;
     private String customerId;
     private String companyId;
@@ -25,6 +26,7 @@ public class OrgTreeVO {
 
     public static OrgTreeVO build(OrgTreeDTO orgTreeDTO) {
         OrgTreeVO deptTreeVO = new OrgTreeVO();
+        deptTreeVO.setMoId(orgTreeDTO.getMoId());
         deptTreeVO.setCompanyId(orgTreeDTO.getMoCcompanyidCkFk());
         deptTreeVO.setCustomerId(orgTreeDTO.getMoCcustomeridCkFk());
         deptTreeVO.setSectionId(orgTreeDTO.getMoCsectionidCk());

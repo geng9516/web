@@ -249,6 +249,7 @@
         SELECT /*+ INDEX(MO PS_MAST_ORGANISATION_IDX3) */
             MO.MO_CCUSTOMERID_CK_FK,
             MO.MO_CCOMPANYID_CK_FK,
+            MO.MO_ID,
             NVL(
                 CASE '${language}'
                     WHEN 'en' THEN b.MAC_CCOMPANYNAMEEN

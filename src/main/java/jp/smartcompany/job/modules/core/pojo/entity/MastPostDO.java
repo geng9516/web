@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @TableName("mast_post")
 @KeySequence("MAST_POST_SEQ")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MastPostDO implements Serializable {
 
     private static final long serialVersionUID = 3489556974953895316L;

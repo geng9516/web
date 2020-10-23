@@ -5,6 +5,7 @@
     <select id="select"  parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastPostDO">
         -- 役職マスタ検索
         SELECT
+            MAP_ID,
             MAP_CPOSTID_CK,
             PSMASTER.FUNC_GET_POST_NAME(
                '${customerId}',

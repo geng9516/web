@@ -5,8 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * サイトコンポーネントの組織ツリーーDtoクラス
@@ -19,7 +18,7 @@ public class OrgTreeDTO implements Serializable {
 
     private static final long serialVersionUID = -2430790659992130022L;
     //プロパティ変数
-    private BigDecimal moId; //MO_ID
+    private Long moId; //MO_ID
     private String moCcustomeridCkFk; //MO_CCUSTOMERID_CK_FK
     private String moCcompanyidCkFk; //MO_CCOMPANYID_CK_FK
     private String moCsectionidCk; //MO_CSECTIONID_CK
@@ -37,29 +36,29 @@ public class OrgTreeDTO implements Serializable {
     private String moCsectionnick01; //MO_CSECTIONNICK01
     private String moCsectionnick02; //MO_CSECTIONNICK02
     private String moClanguage; //MO_CLANGUAGE
-    private Timestamp moDstart; //MO_DSTART
-    private Timestamp moDend; //MO_DEND
+    private Date moDstart; //MO_DSTART
+    private Date moDend; //MO_DEND
     private String moCparentid; //MO_CPARENTID
-    private BigDecimal moNlevel; //MO_NLEVEL
-    private BigDecimal moNseq; //MO_NSEQ
-    private BigDecimal moNhr; //MO_NHR
+    private Long moNlevel; //MO_NLEVEL
+    private Long moNseq; //MO_NSEQ
+    private Long moNhr; //MO_NHR
     private String moCmodifieruserid; //MO_CMODIFIERUSERID
-    private Timestamp moDmodifieddate; //MO_DMODIFIEDDATE
+    private Date moDmodifieddate; //MO_DMODIFIEDDATE
     private String moCsparechar1; //MO_CSPARECHAR1
     private String moCsparechar2; //MO_CSPARECHAR2
     private String moCsparechar3; //MO_CSPARECHAR3
     private String moCsparechar4; //MO_CSPARECHAR4
     private String moCsparechar5; //MO_CSPARECHAR5
-    private BigDecimal moNsparenum1; //MO_NSPARENUM1
-    private BigDecimal moNsparenum2; //MO_NSPARENUM2
-    private BigDecimal moNsparenum3; //MO_NSPARENUM3
-    private BigDecimal moNsparenum4; //MO_NSPARENUM4
-    private BigDecimal moNsparenum5; //MO_NSPARENUM5
-    private Timestamp moDsparedate1; //MO_DSPAREDATE1
-    private Timestamp moDsparedate2; //MO_DSPAREDATE2
-    private Timestamp moDsparedate3; //MO_DSPAREDATE3
-    private Timestamp moDsparedate4; //MO_DSPAREDATE4
-    private Timestamp moDsparedate5; //MO_DSPAREDATE5
+    private Long moNsparenum1; //MO_NSPARENUM1
+    private Long moNsparenum2; //MO_NSPARENUM2
+    private Long moNsparenum3; //MO_NSPARENUM3
+    private Long moNsparenum4; //MO_NSPARENUM4
+    private Long moNsparenum5; //MO_NSPARENUM5
+    private Date moDsparedate1; //MO_DSPAREDATE1
+    private Date moDsparedate2; //MO_DSPAREDATE2
+    private Date moDsparedate3; //MO_DSPAREDATE3
+    private Date moDsparedate4; //MO_DSPAREDATE4
+    private Date moDsparedate5; //MO_DSPAREDATE5
     private Integer versionNo; //VERSIONNO
     /** 法人名称 */
     private String macCcompanyname;

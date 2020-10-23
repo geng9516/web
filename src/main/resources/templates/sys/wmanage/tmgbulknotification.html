@@ -335,7 +335,7 @@
                         secid=secid+e.id+','
                     })
                     this.UploadDto.sectionId = secid.slice(0,-1)
-                    if(this.ntfType  == ''){
+                    if(!this.UploadDto.bulkNtfId){
                         this.$Message.error({
                             background: true,
                             closable: true,
@@ -344,7 +344,7 @@
                         });
                         return false
                     }
-                    if(this.UploadDto.sectionId  == ''){
+                    if(!this.UploadDto.sectionId){
                         this.$Message.error({
                             background: true,
                             closable: true,
@@ -353,12 +353,21 @@
                         });
                         return false
                     }
-                    if( this.UploadDto.beginDate == '' || this.UploadDto.endDate  == '' ){
+                    if(!this.UploadDto.beginDate){
                         this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 6,
-                            content: '対象期間を入力してください。'
+                            content: '対象期間(開始日)選択してください。'
+                        });
+                        return false
+                    }
+                    if(!this.UploadDto.endDate){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '対象期間(終了日)選択してください。'
                         });
                         return false
                     }
