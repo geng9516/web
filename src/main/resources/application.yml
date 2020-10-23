@@ -103,7 +103,6 @@ security:
     - /sys/**
     - /tmg_admin/**
     - /tmg_inp/**
-    - /tmg_perm/**
     - /admin/**
     - /index
     - /expirePassword
