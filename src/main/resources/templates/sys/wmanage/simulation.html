@@ -57,7 +57,7 @@
 
             <template slot-scope="{ row }" slot="master">
                 <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
-                    <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
+                    <span class="row-label-primary tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
                     <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
                 </div>
             </template>
@@ -74,9 +74,9 @@
     <back-top></back-top>
     <!-- 連携対象マスタを追加するSTART -->
     <span>
-            <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
+            <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" width="600">
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
-                <i-form :label-width="120" ref="localValue" :model="localValue">
+                <i-form :label-width="180" ref="localValue" :model="localValue">
 
                     <form-item label="期間" prop="period">
                         <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" 　placeholder="開始時間"
