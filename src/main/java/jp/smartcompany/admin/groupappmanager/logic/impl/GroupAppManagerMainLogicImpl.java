@@ -516,7 +516,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
     timedCache.remove(REQ_SCOPE_NAME+"_"+sessionId);
     // 刷新启动权限
-    timedCache.remove(Constant.TOP_NAVS+"_"+sessionId);
+    timedCache.remove(Constant.TOP_NAVS);
 
     return "権限の変更が成功しました";
   }
