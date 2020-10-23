@@ -856,17 +856,13 @@
                 return true
             },
             //休憩時間が重複してるか
-            valid_rest_time_isRepeat(planRest1,planRest2,planRest3,planRest4) {
+            valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4) {
                 var planRests = [planRest1, planRest2, planRest3, planRest4]
                 var flag;
-                //console.log(planRests[j][0]+"   "+planRests[j][1])
                 for (var i = 0; i < planRests.length; i++) {
-                    if (!planRests[i][0] && !planRests[i][1]) {
-                        console.log("iiiiii:"+!planRests[i][0]+"   "+!planRests[i][1])
+                    if (planRests[i][0] && planRests[i][1]) {
                         for (var j = i + 1; j < planRests.length; j++) {
-                            console.log("jjjjjj:"+planRests[j])
-                            if (!planRests[j][0] && !planRests[j][1]) {
-                                console.log("jjjjjj:"+!planRests[j][0]+"  "+!planRests[j][1])
+                            if (planRests[j][0] && planRests[j][1]) {
                                 flag = this.fun_rest_time_isRepeat(planRests[j][0], planRests[i][1])
                                 if (!flag) {
                                     return false;
@@ -876,7 +872,6 @@
                                 continue;
                             }
                         }
-                        console.log("iiiiii:"+planRests[i])
                     } else {
                         continue;
                     }
@@ -890,7 +885,7 @@
                 var restEnd = new Date(Date.parse("2020-01-01 " + datatime2 + ":00"));
                 if (restStart < restEnd) {
                     //もし二番目の休憩開始時間は一番目の休憩終了時間より早くなったら、休憩時間が重複してます。
-                    this.showAlert('休憩時間が重複しています。')
+                    this.showAlert('休憩時間が重複しています')
                     return false
                 }
                 return true
@@ -972,7 +967,7 @@
                     this.hiddenAlert();
                 }
 
-                if(!this.valid_rest_time_isRepeat(planRest1,planRest2,planRest3,planRest4)){
+                if (!this.valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4)) {
                     return
                 }
 
