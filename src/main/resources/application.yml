@@ -23,7 +23,7 @@ server:
       force: on
 spring:
   profiles:
-    active: prod
+    active: test
   application:
     name: SmartPublic-WM
   servlet:
