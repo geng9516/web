@@ -401,15 +401,6 @@
             },
             //登録
             async handleSubmit(name) {
-                if(this.query.startDate.split("/").join("") - this.query.endDate.split("/").join("") > 0){
-                    this.$Message.error({
-                        background: true,
-                        closable: true,
-                        duration: 6,
-                        content: '期間の開始日('+this.query.startDate+')は期間の終了日('+this.query.endDate+')以前の日付を入力してください。'
-                    });
-                    return
-                }
                 if (!this.masterDataCheck_update()) {
                     return
                 }
@@ -420,6 +411,10 @@
                 this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
                 this.query.startDate = this.masterResult.psStartDate
                 this.query.endDate = this.masterResult.psEndDate
+                if(this.query.startDate.split("/").join("") - this.query.endDate.split("/").join("") > 0){
+                    this.showAlert('期間の開始日('+this.query.startDate+')は期間の終了日('+this.query.endDate+')以前の日付を入力してください。')
+                    return false
+                }
                 const isRight = await this.periodCheck_isRight()
                 if (!isRight) {
                     return
