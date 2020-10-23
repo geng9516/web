@@ -86,8 +86,8 @@
         <Drawer class="tc" title="精算期間詳細" placement="right" width="700" :closable="false" v-model="editFlag">
 
             <div class="tr">
-                <i-button type="error" class="mr15 mb10" ghost v-if="0===0">登録</i-button>
-                <i-button type="primary" class="mb10" ghost @click="" v-if="0===0">削除</i-button>
+                <i-button type="error" class="mr15 mb10" ghost @click="insertLiquidation" v-if="0===0">登録</i-button>
+                <i-button type="primary" class="mb10" ghost @click="deleteLiquidation" v-if="0===0">削除</i-button>
             </div>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
@@ -192,6 +192,12 @@ d
                     endDate:'',
                 },
                 editFlag:false,
+                empInfo:{
+                    empId:'',
+                    empName:'',
+                    empWorkTypeName:'',
+                    empWorkTypeId:'',
+                },
                 editColumns:[
                     {
                         title: '年月',
@@ -358,6 +364,8 @@ d
             async showDetails(e) {
                 if(e.newflag){
                     try {
+                        this.empInfo.empId=e.employeeid
+                        this.empInfo.empWorkTypeId=e.worktypeid
                         this.optsEmp.tlpId = e.newflag
                         this.optsEmp.startDate = e.startDate
                         this.optsEmp.endDate = e.endDate
@@ -401,6 +409,26 @@ d
                 this.editFlag = true;
 
             },
+            async insertLiquidation() {
+                console.log(this.$refs.table.rebuildData)
+                const OPTS = {
+                    empId: this.empInfo.empId,
+                    worktypeId: this.empInfo.empWorkTypeId,
+                    startDate: Utils.formatDate(this.curDateFrom, 'yyyy/mm/dd'),
+                    endDate: Utils.formatDate(this.curDateTo, 'yyyy/mm/dd'),
+                    tldDtos: this.$refs.table.rebuildData
+                }
+                console.log(OPTS)
+                try {
+                    const {data} = await this.http.post('sys/tmgliquidationperiod/InsertLiquidation', OPTS)
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
+            deleteLiquidation(){
+
+            }
 
         }
     })

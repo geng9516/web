@@ -316,7 +316,7 @@
                 query_sk_bak: {},
                 edit_flag: false,
                 pageTitle: '勤務パターン新規',
-                pageTitleMsg:'勤務パターンを新規登録しました',
+                pageTitleMsg: '勤務パターンを新規登録しました',
                 //翌日勤務パターン
                 ykjtPatternList: [],
                 ykjtPatternModel: '',
@@ -855,6 +855,41 @@
                 }
                 return true
             },
+            //休憩時間が重複してるか
+            valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4) {
+                var planRests = [planRest1, planRest2, planRest3, planRest4]
+                var flag;
+                for (var i = 0; i < planRests.length; i++) {
+                    if (planRests[i][0] && planRests[i][1]) {
+                        for (var j = i + 1; j < planRests.length; j++) {
+                            if (planRests[j][0] && planRests[j][1]) {
+                                flag = this.fun_rest_time_isRepeat(planRests[j][0], planRests[i][1])
+                                if (!flag) {
+                                    return false;
+                                    break;
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                return true;
+            },
+            //休憩時間が重複してるか
+            fun_rest_time_isRepeat(datatime1, datatime2) {
+                //先ずは、値が存在である
+                var restStart = new Date(Date.parse("2020-01-01 " + datatime1 + ":00"));
+                var restEnd = new Date(Date.parse("2020-01-01 " + datatime2 + ":00"));
+                if (restStart < restEnd) {
+                    //もし二番目の休憩開始時間は一番目の休憩終了時間より早くなったら、休憩時間が重複してます。
+                    this.showAlert('休憩時間が重複しています')
+                    return false
+                }
+                return true
+            },
             //時間フォーマットに変更する
             handleInputChange(object, index, el) {
                 if (object) {
@@ -930,6 +965,10 @@
                     return
                 } else {
                     this.hiddenAlert();
+                }
+
+                if (!this.valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4)) {
+                    return
                 }
 
                 //休憩時間は勤務時間と　比べる

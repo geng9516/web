@@ -170,7 +170,7 @@
             </i-col>
         </Row>
 
-            <i-table :columns="columnsAction" :data="columnsActionData" v-if="isEditable" :row-class-name="() => 'select-col'">
+            <i-table border :columns="columnsAction" :data="columnsActionData" v-if="isEditable" :row-class-name="() => 'select-col'">
             <template slot-scope="{ row }" slot="workDivision">
                 <i-select  transfer v-model="pattern.workId" @on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
@@ -885,7 +885,7 @@
             //一括適用区分选择处理
             handleChangeDivision(e){
                 // 区分选择しない时，将勤務パターン也置为変更しない
-                if(e === 'TMG_WORK|') {
+                if("TMG_WORK|000"!=e) {
                     this.workPatternSelected = this.workPatternList[0].CPATTERNID
                 }
                 if("TMG_WORK|000"!=e){

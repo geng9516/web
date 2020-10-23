@@ -12,4 +12,6 @@ public interface ITmgliquidationPeriodService  extends IService<TmgLiquidationPe
     List<LiquidationPeriodListDto> getLiquidationDispFromType(String custId,String compId,String type, String searchText);
 
     List<LiquidationPeriodListDto> getLiquidationDispFromWorkType(String custId,String compId,String workType);
+
+    String getSeq();
 }

@@ -553,8 +553,9 @@
                 let nadjustTo = this.paidNowData[4].days
                 let nadjustHoursTo = this.paidNowData[4].times
                 let dexpireAdjustTo = this.paidNowData[4].expiryDate
-
+                console.log("----------------------01----------------------------")
                 if (!this.checkError()) {
+                    console.log("----------------------02----------------------------")
                     this.dataDetail.nadjust = nadjust
                     this.dataDetail.nadjustHours = nadjustHours
                     this.dataDetail.dexpireAdjust = dexpireAdjust
@@ -632,196 +633,8 @@
                 return true
 
             },
-            checkError() {
-
-                // 未入力チェック
-                // 調整付与日数
-                if (this.paidNowData[3].days === '') {
-                    this.$Notice.warning({desc: "調整付与日数を入力してください。"})
-                    return false
-                }
-                // 調整付与時間数
-                if (this.paidNowData[3].times === '') {
-                    this.$Notice.warning({desc: "調整付与時間数を入力してください。"})
-                    return false
-                }
-                // 調整繰越日数
-                if (this.paidNowData[4].days === '') {
-                    this.$Notice.warning({desc: "調整繰越日数を入力してください。"})
-                    return false
-                }
-                // 調整繰越時間数
-                if (this.paidNowData[4].times === '') {
-                    this.$Notice.warning({desc: "調整繰越時間数を入力してください。"})
-                    return false
-                }
-
-                //整数チェック
-                // 調整付与日数
-                if (isNaN(this.paidNowData[3].days) || this.paidNowData[3].days % 0.5 > 0) {
-                    this.$Notice.warning({desc: "調整付与日数は半休単位(0.5)で入力してください。"})
-                    return false;
-                }
-                //調整付与時間数
-                if (isNaN(this.paidNowData[3].times)) {
-                    this.$Notice.warning({desc: "調整付与時間数には０以上の数を指定してください。"})
-                    return false;
-                }
-                // 調整繰越日数
-                if (isNaN(this.paidNowData[4].days) || this.paidNowData[4].days % 0.5 > 0) {
-                    this.$Notice.warning({desc: "調整繰越日数は半休単位(0.5)で入力してください。"})
-                    return false;
-                }
-                //調整繰越時間数
-                if (isNaN(this.paidNowData[4].times)) {
-                    this.$Notice.warning({desc: "調整繰越時間数には０以上の数を指定してください。"})
-                    return false;
-                }
-
-
-                // 調整付与時間数
-                if (!this.numeric_check(this.paidNowData[3].times * 1000 / 10) ||
-                    this.toMinuteFromHours(this.paidNowData[3].times) % 15 > 0 ||
-                    (this.paidNowData[3].times * 10 % 10) * 10 > 45) {
-                    this.$Notice.warning({desc: "調整付与時間数は0.15単位で入力してください。"})
-
-                    return false;
-                }
-
-                // 調整繰越時間数
-                if (!this.numeric_check(this.paidNowData[4].times * 1000 / 10) ||
-                    this.toMinuteFromHours(this.paidNowData[4].times) % 15 > 0 ||
-                    (this.paidNowData[3].times * 10 % 10) * 10 > 45) {
-                    this.$Notice.warning({desc: "調整繰越時間数は0.15単位で入力してください。"})
-
-                    return false;
-                }
-
-                // 調整付与時間が(週平均勤務時間 - 15分)より大きい場合は入力エラー
-                // ただし、調整時間が0の場合は、チェック不要
-                if (this.paidNowData[3].times > 0 && this.paidNowData[3].times >= this.dataDetail.navgworktimeCalc) {
-                    this.$Notice.warning({desc: "調整付与時間数は週平均勤務時間数を超える値は入力できません。(0～" + this.dataDetail.navgworktimeCalc + ")"})
-                    return false;
-                }
-
-                // 繰越調整時間が(週平均勤務時間 - 15分)より大きい場合は入力エラー
-                if (this.paidNowData[4].times > 0 && this.paidNowData[4].times >= this.dataDetail.navgworktimeCalc) {
-                    //繰越調整時間は週平均勤務時間を超える時間は入力できません。(0～
-                    this.$Notice.warning({desc: "調整繰越時間数は週平均勤務時間数を超える値は入力できません。(0～" + this.dataDetail.navgworktimeCalc + ")"})
-                    return false;
-                }
-
-                // 調整付与時間数、前期繰越時間数、調整繰越時間数の合計チェック
-                if (
-                    this.toHoursFromMinutes(
-                        this.toMinuteFromHours(this.paidNowData[3].times) +
-                        this.toMinuteFromHours(this.paidNowData[4].times) +
-                        this.toMinuteFromHours(this.paidNowData[1].times)
-                    ) > 0 &&
-                    this.toHoursFromMinutes(
-                        this.toMinuteFromHours(this.paidNowData[3].times) +
-                        this.toMinuteFromHours(this.paidNowData[4].times) +
-                        this.toMinuteFromHours(this.paidNowData[1].times)
-                    ) >= this.dataDetail.navgworktimeCalc) {
-                    //調整付与時間数、前期繰越時間数、調整繰越時間数の合計が週平均勤務時間数を超えないようにして下さい。(0～
-                    this.$Notice.warning({desc: "調整付与時間数、前期繰越時間数、調整繰越時間数の合計が週平均勤務時間数を超えないようにして下さい。(0～" + this.dataDetail.navgworktimeCalc + ")"})
-
-                    return false;
-                }
-
-                // 調整付与日数と今期付与日数の合計
-                // if (parseInt(this.paidNowData[0].days) + parseInt(this.paidNowData[3].days) > 100) {
-                //     // MSG_NO_OVER_SUM_HUYO
-                //     this.$Notice.warning({desc: "調整付与日数と今期付与日数の合計は100を超えないようにして下さい。"})
-                //
-                //     return false;
-                // }
-                // 調整繰越日数と前期繰越日数の合計
-                // if (parseInt(this.paidNowData[1].days) + parseInt(this.paidNowData[4].days) > 100) {
-                //     // MSG_NO_OVER_SUM_KURIKOSI
-                //     this.$Notice.warning({desc: "調整繰越日数と前期繰越日数の合計は100を超えないようにして下さい。"})
-                //
-                //     return false;
-                // }
-
-                // 付与日数の合計
-                if (parseInt(+this.paidNowData[0].days) + eval(+this.paidNowData[3].days) < 0) {
-                    //MSG_LESS_KIJUNHUYONISSU
-                    this.$Notice.warning({desc: "付与日数の合計はマイナスに設定できません。"})
-                    return false;
-                }
-
-                // 越日数の合計
-                if (+parseInt(+this.paidNowData[1].days) + +eval(+this.paidNowData[4].days) < 0) {
-                    //MSG_LESS_TYOSEIKURIKOSINISSU
-                    this.$Notice.warning({desc: "繰越日数の合計はマイナスに設定できません。"})
-                    return false;
-                }
-
-                // 有効期限（調整付与）
-                if (this.toNumber(this.paidNowData[3].days) !== 0 || this.toNumber(this.paidNowData[3].times) !== 0) {
-                    // 未入力
-                    if (this.paidNowData[3].expiryDate === '') {
-                        // MSG_NO_INPUT_EXPIRE
-
-                        this.$Notice.warning({desc: "有効期限（調整付与）を入力してください。"})
-
-                        return false;
-                    }
-                    // // 	形式チェック
-                    // if (!this.date_check(this.paidNowData[3].expiryDate)) {
-                    //     //MSG_NO_DATE_EXPIRE
-                    //     this.$Notice.warning({desc: "有効期限（調整付与）はyyyy/mm/dd形式で入力してください。"})
-                    //
-                    //     return false;
-                    // }
-                    //付与日チェック
-                    if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[3].expiryDate) < 0) {
-                        // MSG_BEFORE_EXPIRE
-                        this.$Notice.warning({desc: "有効期限（調整付与）は付与日以降の日付を指定してください。"})
-                        return false;
-                    }
-
-                }
-                //有効期限（調整繰越）
-                if (this.toNumber(this.paidNowData[4].days) !== 0 || this.toNumber(this.paidNowData[4].times) !== 0) {
-
-                    // 未入力
-                    if (this.paidNowData[4].expiryDate === '') {
-                        // MSG_NO_INPUT_EXPIRE_TO
-
-                        this.$Notice.warning({desc: "有効期限（調整繰越）を入力してください。"})
-
-                        return false;
-                    }
-                    // // 	形式チェック
-                    // if (!this.date_check(this.paidNowData[4].expiryDate)) {
-                    //     //MSG_NO_DATE_EXPIRE_TO
-                    //     this.$Notice.warning({desc: "有効期限（調整繰越）はyyyy/mm/dd形式で入力してください。"})
-                    //
-                    //     return false;
-                    // }
-                    //付与日チェック
-                    if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[4].expiryDate) < 0) {
-                        // MSG_BEFORE_EXPIRE_TO
-                        this.$Notice.warning({desc: "有効期限（調整繰越）は付与日以降の日付を指定してください。"})
-                        return false;
-                    }
-                }
-
-                // 変更者コメント
-                if (!this.length_check(this.dataDetail.ccomment, '3', 1000)) {
-
-                    // MSG_LONG_COMMENT
-                    this.$Notice.warning({desc: "変更者コメントは半角1000文字、全角500文字以内で入力してください。"})
-                    return false;
-                }
-
-                return true
-
-            },
             refresh() {
-
+                console.log("-----------------------------10------------------------------------")
                 // 未入力チェック
                 // 調整付与日数
                 if (this.paidNowData[3].days === '') {
@@ -949,7 +762,7 @@
                 // 有効期限（調整付与）
                 if (this.toNumber(this.paidNowData[3].days) !== 0 || this.toNumber(this.paidNowData[3].times) !== 0) {
                     // 未入力
-                    if (this.paidNowData[3].expiryDate === '') {
+                    if (this.paidNowData[3].expiryDate == null) {
                         // MSG_NO_INPUT_EXPIRE
 
                         this.$Notice.warning({desc: "有効期限（調整付与）を入力してください。"})
@@ -975,7 +788,7 @@
                 if (this.toNumber(this.paidNowData[4].days) !== 0 || this.toNumber(this.paidNowData[4].times) !== 0) {
 
                     // 未入力
-                    if (this.paidNowData[4].expiryDate === '') {
+                    if (this.paidNowData[4].expiryDate == null) {
                         // MSG_NO_INPUT_EXPIRE_TO
 
                         this.$Notice.warning({desc: "有効期限（調整繰越）を入力してください。"})
@@ -1137,7 +950,7 @@
                 // 有効期限（調整付与）
                 if (this.toNumber(this.paidNowData[3].days) !== 0 || this.toNumber(this.paidNowData[3].times) !== 0) {
                     // 未入力
-                    if (this.paidNowData[3].expiryDate === '') {
+                    if (this.paidNowData[3].expiryDate == null) {
                         // MSG_NO_INPUT_EXPIRE
 
                         this.$Notice.warning({desc: "有効期限（調整付与）を入力してください。"})
@@ -1163,7 +976,7 @@
                 if (this.toNumber(this.paidNowData[4].days) !== 0 || this.toNumber(this.paidNowData[4].times) !== 0) {
 
                     // 未入力
-                    if (this.paidNowData[4].expiryDate === '') {
+                    if (this.paidNowData[4].expiryDate == null) {
                         // MSG_NO_INPUT_EXPIRE_TO
 
                         this.$Notice.warning({desc: "有効期限（調整繰越）を入力してください。"})

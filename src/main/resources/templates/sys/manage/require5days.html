@@ -253,7 +253,7 @@
                         <div class="person-info">{{ privateInfo.taLessdays9 | addNumDeci(true) }}</div>
                         </i-col>
                     </Row>
-                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="takenDaysDataLoading" class="mb30 mt10">
+                    <i-table border :columns="takenDaysColums" :data="takenDaysData" disabled-hover :row-class-name="() => 'select-col'" :loading="takenDaysDataLoading" class="mb30 mt10">
                     </i-table>
                 </span>
         </Modal>

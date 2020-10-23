@@ -4,9 +4,11 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.TmgLiquidationPeriodBean;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationUpdateListDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeGroupDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,7 @@ public class TmgLiquidationPeriodController {
 
 
     /**
-     *
-     *
+     *获取职种列表
      * @return　エラー
      */
     @GetMapping("WorkTypeList")
@@ -38,11 +39,8 @@ public class TmgLiquidationPeriodController {
 
         return tmgLiquidationPeriodBean.getWorkTypeList(psDBBean);
     }
-
-
     /**
-     *
-     *
+     *主页一览
      * @return　エラー
      */
     @GetMapping("Disp")
@@ -58,10 +56,8 @@ public class TmgLiquidationPeriodController {
         }
 
     }
-
     /**
-     *
-     *
+     *详细页面
      * @return　エラー
      */
     @GetMapping("EditDisp")
@@ -72,5 +68,29 @@ public class TmgLiquidationPeriodController {
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
         return tmgLiquidationPeriodBean.getEditDisop(tlpId,startDate,endDate,psDBBean);
+    }
+
+
+    /**
+     * 新规
+     * @return　エラー
+     */
+    @PostMapping("InsertLiquidation")
+    @ResponseBody
+    public GlobalResponse insertLiquidation(
+            @RequestBody LiquidationUpdateListDto liquidationUpdateListDto,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgLiquidationPeriodBean.insertLiquidation(liquidationUpdateListDto,psDBBean);
+    }
+
+    /**
+     * 删除
+     * @return　エラー
+     */
+    @PostMapping("deleteLiquidation")
+    public GlobalResponse deleteLiquidation(
+            @RequestParam("tlpId") String tlpId,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgLiquidationPeriodBean.deleteLiquidation(tlpId);
     }
 }

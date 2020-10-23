@@ -209,6 +209,7 @@
                         全選択
                     </i-button>
                 </div>
+                <Alert class="primary-info">※修正＆命令した超過勤務のみ、「命令/確定」の実行対象となります。</Alert>
                 <i-table border class="hack" :row-class-name="() => 'select-col'" :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
                         <span>{{ row.empName }}</span>

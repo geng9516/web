@@ -4,7 +4,7 @@
 
     <!-- 指定された勤務パターンIDがDBに存在している場合 -->
     <select id="checkPatternId" parameterType="java.util.HashMap" resultType="java.lang.String">
-        select tpa_cpatternid from tmg_pattern where tpa_cpatternid = #{patternId} and tpa_ccompanyid=#{compCode} and tpa_dstartdate <![CDATA[<=]]> trunc(sysdate)
+        select tpa_cpatternid from tmg_pattern where tpa_cpatternid = #{patternId}  and tpa_dstartdate <![CDATA[<=]]> trunc(sysdate) and rownum=1
     </select>
 
 </mapper>
