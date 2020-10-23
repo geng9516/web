@@ -1009,12 +1009,15 @@
             let deleteArray = []
             this.sectionPostList[0].children.forEach((e, j) => {
               if (e.isGroup) {
+                // 储存有多少个组织
+                foreGroupCount += 1
                 if (curId.includes(e.sectionId)) {
-                  foreGroupCount += 1
+                  // 得到需要追加的
                   cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
                 } else {
                   foreGroupCount -= 1
-                  deleteArray.push(j)
+                  // 得到需要减去的
+                  deleteArray.push(e.uni_id)
                 }
                 // 将isLastGroup重置
                 if(e.children && e.children.length > 0) e.children[e.children.length - 1].isLastGroup = false
@@ -1025,10 +1028,10 @@
             })
             // 删除没打勾的
             deleteArray.forEach(e => {
-              this.sectionPostList[0].children.splice(e, 1)
+              this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.uni_id === e), 1)
             })
             cur.forEach((e, j) => {
-              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true,  uni_id: Date.now()})
+              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true,  uni_id: e.sectionId})
               foreGroupCount += 1
             })
             // 找到真正的isLastGroup
