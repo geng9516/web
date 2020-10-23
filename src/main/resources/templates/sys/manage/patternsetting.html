@@ -830,6 +830,7 @@
                 }
                 return true
             },
+
             //休憩時間は勤務時間の範囲内かどうかをチェックする
             valid_time(item, dutyStart, dutyEnd, restStart, restEnd) {
                 this.hiddenAlert()
@@ -858,7 +859,7 @@
             //休憩時間が重複してるか
             valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4) {
                 var planRests = [planRest1, planRest2, planRest3, planRest4]
-                var flag;
+                var flag
                 for (var i = 0; i < planRests.length; i++) {
                     if (planRests[i][0] && planRests[i][1]) {
                         for (var j = i + 1; j < planRests.length; j++) {
@@ -878,14 +879,40 @@
                 }
                 return true;
             },
+            //休憩終了時刻は休憩開始時刻より未来の時刻を入力してください
+            valid_rest_time_isTrue(planRest1, planRest2, planRest3, planRest4) {
+                var planRests = [planRest1, planRest2, planRest3, planRest4]
+                var flag
+                for (var i = 0; i < planRests.length; i++) {
+                    if (planRests[i][0] && planRests[i][1]) {
+                        flag = this.fun_rest_time_isTrue(planRests[i][0], planRests[i][1],i+1)
+                        if (!flag) {
+                            return false;
+                            break;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                return true;
+            },
             //休憩時間が重複してるか
             fun_rest_time_isRepeat(datatime1, datatime2) {
-                //先ずは、値が存在である
                 var restStart = new Date(Date.parse("2020-01-01 " + datatime1 + ":00"));
                 var restEnd = new Date(Date.parse("2020-01-01 " + datatime2 + ":00"));
                 if (restStart < restEnd) {
                     //もし二番目の休憩開始時間は一番目の休憩終了時間より早くなったら、休憩時間が重複してます。
                     this.showAlert('休憩時間が重複しています')
+                    return false
+                }
+                return true
+            },
+            //休憩終了時刻は休憩開始時刻より未来の時刻を入力してください
+            fun_rest_time_isTrue(datatime1, datatime2,index) {
+                var restStart = new Date(Date.parse("2020-01-01 " + datatime1 + ":00"));
+                var restEnd = new Date(Date.parse("2020-01-01 " + datatime2 + ":00"));
+                if (restStart > restEnd) {
+                    this.showAlert('[休憩時間'+index+']休憩終了時刻は休憩開始時刻より未来の時刻を入力してください')
                     return false
                 }
                 return true
@@ -966,7 +993,9 @@
                 } else {
                     this.hiddenAlert();
                 }
-
+                if (!this.valid_rest_time_isTrue(planRest1, planRest2, planRest3, planRest4)) {
+                    return
+                }
                 if (!this.valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4)) {
                     return
                 }
