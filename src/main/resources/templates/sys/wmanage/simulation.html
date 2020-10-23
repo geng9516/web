@@ -57,7 +57,7 @@
 
             <template slot-scope="{ row }" slot="master">
                 <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
-                    <span class="row-label-primary tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
+                    <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
                     <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
                 </div>
             </template>
