@@ -76,4 +76,6 @@ public class Constant {
      */
     public final static String HEADER_XMLHTTPREQUEST = "X-Requested-With";
 
+    public final static String IS_APPROVER = "isApprover";
+
 }

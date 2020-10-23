@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.configuration;
 
+import cn.hutool.core.util.ArrayUtil;
 import jp.smartcompany.boot.configuration.security.SecurityProperties;
 import jp.smartcompany.boot.interceptor.AuditInterceptor;
 import jp.smartcompany.boot.interceptor.LoginInfoInterceptor;
@@ -26,7 +27,12 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/logout","/expirePassword","/favicon.ico","/sys/log/**","/static/**","/error");
         registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/static/**");
-        registry.addInterceptor(loginInfoInterceptor).addPathPatterns(securityProperties.getOnlyAuthenticationList());
+        String[] configAuthenticationList = securityProperties.getOnlyAuthenticationList();
+        String[] onlyAuthenticationList = new String[configAuthenticationList.length+1];
+        System.arraycopy(configAuthenticationList, 0, onlyAuthenticationList, 0, configAuthenticationList.length);
+        // 单独添加承认site的匹配路径
+        onlyAuthenticationList[onlyAuthenticationList.length-1] = "/tmg_perm/**";
+        registry.addInterceptor(loginInfoInterceptor).addPathPatterns(onlyAuthenticationList);
     }
 
     @Override

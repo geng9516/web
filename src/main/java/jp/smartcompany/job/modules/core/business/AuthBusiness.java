@@ -21,7 +21,6 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
-import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
@@ -48,7 +47,10 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -196,7 +198,7 @@ public class AuthBusiness {
         loginAuditService.save(loginAuditDO);
     }
 
-    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds,String employId) {
+    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds,boolean isApprover) {
 
         List<Object> commonParams = CollUtil.newArrayList();
         String sql = "SELECT DISTINCT MGP_CGROUPID,NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP," +
@@ -246,12 +248,7 @@ public class AuthBusiness {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             conn.setReadOnly(true);
 
-            String now = SysUtil.transDateToString(DateUtil.date());
-            String countEvaluater = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '"+employId+"' AND TEV_DSTARTDATE <= '"+now+"' AND TEV_DENDDATE >= '"+now+"'";
-            List<Entity> evaluaterCount = SqlExecutor.query(conn,countEvaluater,new EntityListHandler());
-            // 为0则表示不是承认者，不显示承认site
-            int count = evaluaterCount.get(0).getInt("COUNT");
-            if (count>0) {
+            if (isApprover) {
                 List<Object> tmgPermParams = CollUtil.newArrayList();
                 tmgPermParams.addAll(commonParams);
                 tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);

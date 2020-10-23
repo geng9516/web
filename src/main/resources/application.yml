@@ -100,10 +100,10 @@ security:
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
     - /
+    - /index
     - /sys/**
     - /tmg_admin/**
     - /tmg_inp/**
-    - /tmg_perm/**
     - /admin/**
     - /index
     - /expirePassword

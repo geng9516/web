@@ -7,24 +7,22 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupappmanager.logic.impl.GroupAppManagerMainLogicImpl;
 import jp.smartcompany.admin.searchrangemanager.logic.impl.SearchRangeMangerLogicImpl;
 import jp.smartcompany.boot.common.Constant;
-import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
-import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
-import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgGroupDO;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
-import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITmgGroupService;
-import jp.smartcompany.job.modules.core.util.*;
+import jp.smartcompany.job.modules.core.util.PsConst;
+import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +39,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -50,8 +46,7 @@ import java.util.stream.Collectors;
 public class LoginInfoInterceptor implements HandlerInterceptor {
 
 
-    private final IMastSystemService iMastSystemService;
-    private final AuthBusiness authBusiness;
+//    private final IMastSystemService iMastSystemService;
     private final LRUCache<Object,Object> lruCache;
     private final TimedCache<String,Object> timedCache;
 
@@ -87,10 +82,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
         String customerId = "01";
 
         List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
-        if (systemList==null) {
-            systemList =  iMastSystemService.getByLang(language);
-            lruCache.put(Constant.SYSTEM_LIST,systemList);
-        }
         if (StrUtil.isBlank(systemCode)) {
             systemCode = systemList.get(0).getMsCsystemidPk();
             // 默认customerId都为01
@@ -108,11 +99,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
         configGlobalParameters(request,systemList.get(0));
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (SecurityUtil.isAuthenticated()) {
-            executeLoginSequence(systemList,httpSession);
-            if (timedCache.get(Constant.TOP_NAVS,false) == null) {
-                loadMenus(systemCode, systemList,httpSession);
-            }
-
             String sessionId = httpSession.getId();
             // 不是权限设定管理页面的话则要把缓存的设定列表对象先删除
             if (!requestUri.contains("groupappmanager")) {
@@ -134,25 +120,8 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
     public void configGlobalParameters(HttpServletRequest request,MastSystemDO mastSystemDO) {
         HttpSession httpSession = request.getSession();
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
-        session.setLanguage(mastSystemDO.getMsClanguage());
-        session.setLoginCompany(mastSystemDO.getMsCsystemidPk());
         // 登录后且还未设置PsSession里的值则需要进行设置
         Hashtable<String,Object> hashtable = new Hashtable<>();
-        if (SecurityUtil.isAuthenticated()){
-            SmartUserDetails account = SecurityUtil.getLoginUser();
-            String username = account.getUsername();
-            if (StrUtil.isNotBlank(username)) {
-                session.setLoginAccount(username);
-                session.setLoginCompany(account.getHdCcompanyidCk());
-                session.setLoginUser(username);
-                session.setLoginCustomer(account.getHdCcustomeridCk());
-                session.setLoginKanjiName(account.getMeCemployeename());
-                session.setLoginEmployee(account.getHdCemployeeidCk());
-                session.setWorkTypeName(account.getWorkTypeName());
-                List<Designation> designationList = getDesignationList(CollUtil.newArrayList(account));
-                session.setLoginDesignation(designationList);
-            }
-        }
 
         // 设置PsDBBean公共参数
         String compCode = request.getParameter("CompCode");
@@ -396,101 +365,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
         psDBBeanUtil.setSysControl(hashtable,psDBBean);
         request.setAttribute("BeanName",psDBBean);
 
-    }
-
-    public List<Designation> getDesignationList(List<SmartUserDetails> lAccountInfoList) {
-        /*
-         * 検索結果を異動歴のListに設定する ※PsSession側の型がArrayListのため、そちらに合わせる
-         */
-        List<Designation> lDesignationList = CollUtil.newArrayList();
-        for (SmartUserDetails accountInfo : lAccountInfoList) {
-            Designation designation = new Designation();
-
-            // 顧客コード
-            designation.setCustomerCode(accountInfo.getHdCcustomeridCk());
-
-            // 法人コード
-            designation.setCompanyCode(accountInfo.getHdCcompanyidCk());
-
-            // 法人内部階層コード
-            designation.setCompanyHierarchy(accountInfo.getMacClayeredcompanyid());
-
-            // 法人並び順
-            designation.setCompanyOrder(accountInfo.getMacNseq().toString());
-
-            // 法人名称
-            designation.setCompanyName(accountInfo.getMacCcompanyname());
-
-            // 職員番号
-            designation.setEmployee(accountInfo.getHdCemployeeidCk());
-
-            // ユーザID
-            designation.setUserid(accountInfo.getHdCuserid());
-
-            // 氏名
-            designation.setName(accountInfo.getMeCemployeename());
-
-            // 氏名カナ
-            designation.setNameKana(accountInfo.getMeCkananame());
-
-            // 組織(所属)コード
-            designation.setSection(accountInfo.getHdCsectionidFk());
-
-            // 組織内部階層コード
-            designation.setSectionHierarchy(accountInfo.getMoClayeredsectionid());
-
-            // 組織並び順
-            designation.setSectionOrder(accountInfo.getMoNseq().toString());
-
-            // 組織名称
-            designation.setSectionName(accountInfo.getMoCsectionname());
-
-            // 役職コード
-            designation.setPostCode(accountInfo.getHdCpostidFk());
-
-            // 役職順位
-            designation.setPostRank(accountInfo.getMapNweightage());
-
-            // 役職名称
-            designation.setPostName(accountInfo.getMapCpostname());
-
-            // 本務兼務区分
-            designation.setAttachRole(accountInfo.getHdCifkeyoradditionalrole());
-
-            // 異動歴開始日
-            designation.setPersonnelChangesBigin(accountInfo.getHdDstartdateCk());
-
-            // 所属長フラグ
-            designation.setBossOrNot(accountInfo.getHdCbossornot());
-
-            // 異動歴リストに追加
-            lDesignationList.add(designation);
-
-        }
-        return lDesignationList;
-    }
-
-    private void executeLoginSequence(List<MastSystemDO> systemList, HttpSession httpSession) {
-        groupBusiness.getGroupList("ja",systemList,httpSession);
-        baseSectionBusiness.getBaseSectionList(httpSession);
-    }
-
-    // 加载系统菜单
-    private void loadMenus(String systemCode,  List<MastSystemDO> systemList,HttpSession httpSession) {
-        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
-        Map<String,List<LoginGroupBO>> loginGroupList = session.getLoginGroups();
-        List<LoginGroupBO> groupList = CollUtil.newArrayList();
-        systemList.forEach(system ->
-                loginGroupList.forEach((key,value)-> {
-                    if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
-                        CollUtil.addAllIfNotContains(groupList,value);
-                    }
-                })
-        );
-        // 根据用户拥有的用户组获取对应菜单（测试时注释）
-        List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
-        List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,session.getLoginEmployee());
-        timedCache.put(Constant.TOP_NAVS,menuGroupList);
     }
 
     private void saveOrgName(String sectionId,String siteId,HttpSession httpSession) {
