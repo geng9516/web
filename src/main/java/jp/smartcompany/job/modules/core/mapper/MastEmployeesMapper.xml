@@ -264,6 +264,7 @@
                 -- (職員検索ダイアログ)
                 HD.HD_ID,
                 ME_CUSERID,
+                ME.ME_ID,
                 (
                     SELECT
                         MAP_NWEIGHTAGE
@@ -383,6 +384,7 @@
     <select id="selectEmployeeInfoUserIDListAdd" parameterType="jp.smartcompany.framework.component.dto.EmployInfoSearchDTO" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">
         SELECT
             HD_ID,
+            ME_ID,
             HD_CUSERID AS ME_CUSERID,
             (
                 SELECT
@@ -437,6 +439,7 @@
 
     <select id="selectEmployeeInfoList" parameterType="map" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">
         SELECT
+            ME_ID,
             HD.HD_ID,
             HD.HD_CCOMPANYID_CK,
             ME_CEMPLOYEEID_CK,

@@ -77,4 +77,6 @@ public class EmployeeInfoSearchEntity implements Serializable {
     /** 異動歴ID */
     private Long hdId;
 
+    /*社員ID*/
+    private Long meId;
 }
