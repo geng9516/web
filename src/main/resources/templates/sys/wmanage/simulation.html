@@ -401,6 +401,15 @@
             },
             //登録
             async handleSubmit(name) {
+                if(this.query.startDate.split("/").join("") - this.query.endDate.split("/").join("") > 0){
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '期間の開始日('+this.query.startDate+')は期間の終了日('+this.query.endDate+')以前の日付を入力してください。'
+                    });
+                    return
+                }
                 if (!this.masterDataCheck_update()) {
                     return
                 }
