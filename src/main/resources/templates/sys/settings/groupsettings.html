@@ -207,6 +207,16 @@
                   size="small" @click="deleteSectionTree">選択行を削除</i-button>
                 <Tree :data="sectionPostList" :render="renderTabTree" @on-select-change="" empty-text="" check-directly
                   show-checkbox ref="sectionTree"></Tree>
+
+                <span class="row-label-primary pl10 pr10 mt10 mb10 cursor" @click="openBossTree()">＋ このグループに該当する所属長を追加</span>
+                <checkbox-group v-model="bossListSelected" @on-change="" class="tl">
+                   <Checkbox v-for="item of bossList" :key="item.uni_id" :label="item.uni_id" class="mb5" style="display: block;">{{ item.title }}</Checkbox>
+                </checkbox-group>
+
+                <span class="row-label-primary pl10 pr10 mt10 mb10 cursor" @click="openPostTree()">＋ このグループに該当する役職を追加</span>
+                <checkbox-group v-model="postListSelected" @on-change="" class="tl">
+                  <Checkbox v-for="item of postList" :key="item.uni_id" :label="item.uni_id" class="mb5" style="display: block;">{{ item.title }}</Checkbox>
+               </checkbox-group>
               </div>
             </tab-pane>
           </Tabs>
@@ -250,38 +260,25 @@
             <div>※ 役職マスタを選択してください。</div>
             <div class="mt2">&emsp;&nbsp;検索結果件数 {{ positonData.length }}件</div>
           </Alert>
+          <div class="tr mb5" v-if="selectTreeType === 'post'">
+            <i-button type="primary" ghost @click="addPostTree">決定</i-button>
+          </div>
           <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="positonColumns"
-            :disabled-hover="true" :data="positonData" :loading="loading" no-data-text="">
+            :disabled-hover="true" :data="positonData" :loading="loading" no-data-text="" ref="postTable">
             <template slot-scope="{ row }" slot="mapCpostidCk">
               <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-                @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
+                @click="uptdatePositonValue(row)" v-if="selectTreeType !== 'post'">{{ row.mapCpostidCk }}</span>
+              <span v-else>{{ row.mapCpostidCk }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="mapCpostname">
               <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-                @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
+                @click="uptdatePositonValue(row)" v-if="selectTreeType !== 'post'">{{ row.mapCpostname }}</span>
+              <span v-else>{{ row.mapCpostname }}</span>
             </template>
           </i-table>
         </span>
-        <!-- <span v-show="curdisplayPanel === 'QSECTION'">
-          <div class="titlenorm mb5">
-            <Icon type="logo-buffer"></Icon>
-            所属
-          </div>
-          <Row class="tl mb5" :gutter="8">
-            <i-col span="10">
-              <i-input class="mar like-select" placeholder="検索" v-model="searchDept"
-                @keyup.enter.native="handleSearchDept">
-              </i-input>
-            </i-col>
-            <i-col span="8" class="no-border-radius">
-              <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchDept">検索
-              </i-button>
-            </i-col>
-          </Row>
-          <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf"
-          empty-text="所属データなし"></Tree>
-        </span> -->
+
         <Row :gutter="8">
           <i-col :span="curdisplayPanel === 'QSECTION'|| curdisplayPanel === 'base' ? 24 : 8"
             v-show="curdisplayPanel === 'QSECTION' || curdisplayPanel === 'searchDept'|| curdisplayPanel === 'base'">
@@ -304,7 +301,7 @@
                 </i-button>
               </i-col>
             </Row>
-            <!-- 这颗树在基点组织时间，需要开启checkbox相关 -->
+            <!-- 这颗树在基点组织时，需要开启checkbox相关 -->
             <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" empty-text="所属データなし"
               :show-checkbox="curdisplayPanel === 'base'" :check-strictly="curdisplayPanel === 'base'"
               :check-directly="curdisplayPanel === 'base'" ref="selectTree"></Tree>
@@ -320,46 +317,9 @@
             </div>
             <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="searchEmpColumns"
               :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
-              <template slot-scope="{ row }" slot="mapCpostidCk">
-                <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-                  @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
-              </template>
-
-              <template slot-scope="{ row }" slot="mapCpostname">
-                <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-                  @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
-              </template>
             </i-table>
           </i-col>
         </Row>
-        <!-- 社員選択による搜索 -->
-        <!-- 搜社员 -->
-        <!-- <span v-show="curdisplayPanel === 'searchEmp'">
-          <div class="titlenorm mb5">
-            <Icon type="logo-buffer"></Icon>
-            社員検索
-          </div>
-          <Alert class="primary-info tl" style="margin-bottom: 5px;">
-            <div>※ カナ氏名、漢字氏名、社員番号のいずれかの先頭数文字を入力し、「検索」ボタンをクリックしてください。</div>
-          </Alert>
-          <div class="tr mb5">
-            <i-button type="primary" ghost @click="addSearchEmp">決定</i-button>
-          </div>
-          <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="searchEmpColumns"
-            :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
-            <template slot-scope="{ row }" slot="mapCpostidCk">
-              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-              @click="uptdatePositonValue(row)">{{ row.mapCpostidCk }}</span>
-            </template>
-
-            <template slot-scope="{ row }" slot="mapCpostname">
-              <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary"
-              @click="uptdatePositonValue(row)">{{ row.mapCpostname }}</span>
-            </template>
-          </i-table>
-        </span> -->
-        <!-- 用所属搜社员 -->
-        <!-- <span v-show="curdisplayPanel === 'searchDept'"></span> -->
       </Drawer>
       <!--  条件式による定義 选择group和 役職 end-->
     </div>
@@ -478,6 +438,7 @@
           drawerBtnLoading: false,
           queryconditionsLoading: false,
           currentTab: '',
+          selectTreeType : '',
           lightDelBtnVisible: [],
           lightDelBtnVisible2: [],
           lightDelBtnVisible3: [],
@@ -661,6 +622,10 @@
           searchDeptColumns: [],
           searchDeptData: [],
           sectionPostList: [], //組織・役職選択による定義
+          bossList:[],
+          bossListSelected:[],
+          postList:[],
+          postListSelected:[],
           clickedCell: {},
           tableData: [{}],
           _treeData: [],
@@ -805,6 +770,7 @@
             }
           })
           if (emptData.length > 0) this.emptData = this.emptData.concat(emptData)
+          this.showGroupOrPositionDrawer = false
         },
         handleSystemChange() {
           this.getSiteList()
@@ -854,14 +820,12 @@
 
           // 組織・役職選択による定義
           let childIndex = 0
+          // 组织树
           this.sectionPostList = data.orgJobConditions.companyList.map((t, i) => {
             return {
-              title: `【${t.companyId}】 ${t.companyName}`,
+              title: t.companyId === '*' ? '全社区分' : `【${t.companyId}】 ${t.companyName}`,
               expand: true,
               isCompany: true, // 法人
-              noSectionList: t.sectionList.length === 0,
-              noBossSectionList: t.bossSectionList.length === 0,
-              noPostList: t.postList.length === 0,
               children: t.sectionList.map((n, j) => {
                 childIndex += j
                 return {
@@ -880,24 +844,26 @@
                   isLastGroup: t.sectionList.length - 1 === j,
                   uni_id: `${j}`
                 }
-              }).concat(t.bossSectionList.map((n, j) => {
-                childIndex += 1
-                return {
-                  ...n,
-                  title: `【${n.sectionId}】 ${n.sectionName}`,
-                  isBoss: true, // 所属長
-                  isLastBoss: t.bossSectionList.length - 1 === j,
-                  uni_id: `${childIndex}`
-                }
-              })).concat(t.postList.map((n, j) => {
-                childIndex += 1
-                return {
+              })
+            }
+          })
+          // 所属长
+          // 还需要查一查部门 有人没有
+          const bossIdlist = data.orgJobConditions.companyList[0].bossSectionList.map(e => e.sectionId)
+          Promise.all(bossIdlist.map(e=>
+              this.http.get(`sys/groupmanager/bosslist?psSite=${this.psSite}`, { sectionId: e })
+            )).then(resArray=>{
+              this.bossList = [...data.orgJobConditions.companyList[0].bossSectionList.map(
+              (e, i) => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, uni_id: e.sectionId,isBoss: true, checked: false, expand: false } })]
+            })
+
+          // 役職
+          this.postList = data.orgJobConditions.companyList[0].postList.map(n => {
+            return {
                   ...n,
                   title: `【${n.postId}】 ${n.postName}`,
                   isPost: true, // 役職,
-                  uni_id: `${childIndex}`
-                }
-              }))
+                  uni_id: n.postId
             }
           })
           console.log('sectionList')
@@ -933,6 +899,11 @@
           if (this.poptipType === 'displayvalue') {
             if (this.curdisplayPanel === 'QPOST') {
               this.showGroupOrPositionDrawer = true
+              const selectionIndex = this.positonColumns.findIndex(e=> e.type==='selection')
+              if(selectionIndex) {
+                this.positonColumns.splice(selectionIndex, 1)
+              }
+              this.selectTreeType = ''
               const { data } = await this.http.get(`sys/tree/posts?psSite=${this.psSite}`)
               this.positonData = data.list
               return
@@ -960,7 +931,11 @@
         },
         uptdatePositonValue(e) {
           //mapCpostname  mapCpostidCk
-          this.queryData[this.clickedCell.where].displayvalue = `${e.mapCpostname}[${e.mapCpostidCk}]`
+          if(this.selectTreeType === 'post') {
+            return
+          } else {
+            this.queryData[this.clickedCell.where].displayvalue = `${e.mapCpostname}[${e.mapCpostidCk}]`
+          }
           this.showGroupOrPositionDrawer = false
         },
         cancelpoptip() {
@@ -1005,24 +980,16 @@
             //　自己增加得项目也必须添加uni_id来统一在外面的删除
             let cur = this.$refs.selectTree.getCheckedNodes()
             let curId = cur.map(e => e.sectionId)
-            let foreGroupCount = 0
             let deleteArray = []
             this.sectionPostList[0].children.forEach((e, j) => {
               if (e.isGroup) {
                 // 储存有多少个组织
-                foreGroupCount += 1
                 if (curId.includes(e.sectionId)) {
                   // 得到需要追加的
                   cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
                 } else {
-                  foreGroupCount -= 1
                   // 得到需要减去的
                   deleteArray.push(e.uni_id)
-                }
-                // 将isLastGroup重置
-                if(e.children && e.children.length > 0) e.children[e.children.length - 1].isLastGroup = false
-                if (e.isLastGroup && cur.length !== 0) {
-                  e.isLastGroup = false
                 }
               }
             })
@@ -1031,21 +998,7 @@
               this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.uni_id === e), 1)
             })
             cur.forEach((e, j) => {
-              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true,  uni_id: e.sectionId})
-              foreGroupCount += 1
-            })
-            // 找到真正的isLastGroup
-            this.sectionPostList[0].children.some((e, j) => {
-              if (!e.isGroup) {
-                const len = this.sectionPostList[0].children[j - 1].children.length
-                if (len === 0) {
-                  this.sectionPostList[0].children[j - 1].isLastGroup = true
-                }
-                else {
-                  this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
-                }
-                return true
-              }
+              this.sectionPostList[0].children.splice(this.sectionPostList[0].children.length + j, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true,  uni_id: e.sectionId})
             })
           }
 
@@ -1055,44 +1008,10 @@
 
             Promise.all(curId.map(e=>
               this.http.get(`sys/groupmanager/bosslist?psSite=${this.psSite}`, { sectionId: e })
-            )).then(e=>{
-              console.log(e)
-              let foreGroupCount = 0
-              let deleteArray = []
-              this.sectionPostList[0].children.forEach((e, j) => {
-              if (e.isBoss) {
-                if (curId.includes(e.sectionId)) {
-                  foreGroupCount += 1
-                  cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
-                } else {
-                  foreGroupCount -= 1
-                  deleteArray.push(j)
-                }
-                // 将isLastBoss重置
-                if(e.isLastGroup) e.isLastBoss = false
-              }
-              })
-
-            // 删除没打勾的
-              deleteArray.forEach(e => {
-              this.sectionPostList[0].children.splice(e, 1)
-              })
-              cur.forEach((e, j) => {
-              this.sectionPostList[0].children.splice(foreGroupCount, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isBoss: true,  uni_id: Date.now()})
-                foreGroupCount += 1
-              })
-              this.sectionPostList[0].children.some((e, j) => {
-              // if (!e.isGroup) {
-              //   const len = this.sectionPostList[0].children[j - 1].children.length
-              //   if (len === 0) {
-              //     this.sectionPostList[0].children[j - 1].isLastGroup = true
-              //   }
-              //   else {
-              //     this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
-              //   }
-              //   return true
-              // }
-            })
+            )).then(resArray=>{
+              console.log(resArray)
+              this.bossList = [...cur.map(
+              (e, i) => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, checked: false, expand: false, uni_id: e.sectionId } })]
             })
           }
           this.showGroupOrPositionDrawer = false
@@ -1199,48 +1118,15 @@
                     className: 'row-label-primary pl10 pr10'
                   },
                   style: {
-                    margin: '6px 0 0 -28px'
+                    margin: '6px 0 0 -1px'
                   },
                   on: {
                     click(e) {
                       e.stopPropagation()
-                      that.addSectionTree()
+                      that.openSectionTree()
                     },
                   }
                 }, '＋ このグループに該当する組織を追加')
-              ]
-              ),
-              data.noSectionList || data.noBossSectionList ? h('div', [
-                h('span', {
-                  domProps: {
-                    className: 'row-label-primary pl10 pr10'
-                  },
-                  style: {
-                    margin: '6px 0 0 -28px'
-                  },
-                  on: {
-                    click(e) {
-                      e.stopPropagation()
-                      that.addBossTree()
-                    },
-                  }
-                }, '＋ このグループに該当する所属長を追加')
-              ]
-              ) : '',
-              data.noPostList && h('div', [
-                h('span', {
-                  domProps: {
-                    className: 'row-label-primary pl10 pr10'
-                  },
-                  style: {
-                    margin: '6px 0 0 -28px'
-                  },
-                  on: {
-                    click(e) {
-                      e.stopPropagation()
-                    },
-                  }
-                }, '＋ このグループに該当する役職を追加')
               ]
               )
             ])
@@ -1264,76 +1150,10 @@
                   on: {
                     click(e) {
                       e.stopPropagation()
+                      that.openPostTree(data)
                     },
                   }
                 }, '＋ このグループに該当する役職を追加')
-              ]),
-              data.isLastGroup && data.children.length === 0 && h('div', [
-                h('span', {
-                  domProps: {
-                    className: 'row-label-primary pl10 pr10'
-                  },
-                  style: {
-                    margin: '6px 0 0 -56px'
-                  },
-                  on: {
-                    click(e) {
-                      e.stopPropagation()
-                      that.addBossTree()
-                    },
-                  }
-                }, '＋ このグループに該当する所属長を追加')
-              ])
-            ])
-          }
-          if (data.isBoss && data.isLastBoss) {
-            return h('span', {
-              style: {
-                display: 'inline-block',
-                width: '100%'
-              }
-            }, [
-              h('span', data.title),
-              h('div', [
-                h('span', {
-                  domProps: {
-                    className: 'row-label-primary pl10 pr10'
-                  },
-                  style: {
-                    margin: '6px 0 0 -56px'
-                  },
-                  on: {
-                    click(e) {
-                      e.stopPropagation()
-                    },
-                  }
-                }, '＋ このグループに該当する役職を追加')
-              ])
-            ])
-          }
-          if (data.isPost && data.isLastGroup) {
-            return h('span', {
-              style: {
-                display: 'inline-block',
-                width: '100%'
-              }
-            }, [
-              h('span', data.title),
-              h('div', [
-                h('span', {
-                  domProps: {
-                    className: 'row-label-primary pl10 pr10'
-                  },
-                  style: {
-                    margin: '6px 0 0 -80px'
-                  },
-                  on: {
-                    click(e) {
-                      e.stopPropagation()
-                      that.addBossTree()
-                    },
-                  }
-                }, '＋ このグループに該当する所属長を追加')
               ])
             ])
           }
@@ -1396,7 +1216,7 @@
             }
           })
         },
-        async addSectionTree() {
+        async openSectionTree() {
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
           this.selectTreeType = 'section'
@@ -1425,11 +1245,7 @@
                   // 因为删除后索引会变，需要找到正确的索引
                   this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t=> t.uni_id === e.uni_id), 1)
                 }
-                // 将isLastGroup重置
-                e.isLastGroup = false
                 if(e.children && e.children.length > 0) {
-                  // 将isLastGroup重置
-                  e.children[e.children.length - 1].isLastGroup = false
                   e.children.forEach(t => {
                     if(selectedNodes.includes(t.uni_id)) {
                       this.sectionPostList[0].children[i].indeterminate = false
@@ -1438,25 +1254,19 @@
                   })
                 }
               })
-              // 找到真正的isLastGroup
-              this.sectionPostList[0].children.some((e, j) => {
-              if (!e.isGroup) {
-                const len = this.sectionPostList[0].children[j - 1].children.length
-                if (len === 0) {
-                  this.sectionPostList[0].children[j - 1].isLastGroup = true
-                }
-                else {
-                  this.sectionPostList[0].children[j - 1].children[len - 1].isLastGroup = true
-                }
-                return true
-              }
-            })
+              this.bossList.forEach(e=>{
+                if(this.bossListSelected.includes(e.uni_id)) this.bossList.splice(this.bossList.findIndex(t=> t.uni_id === e.uni_id), 1)
+              })
+
+              this.postList.forEach(e=>{
+                if(this.postListSelected.includes(e.uni_id)) this.postList.splice(this.postList.findIndex(t=> t.uni_id === e.uni_id), 1)
+              })
               // 将半选的root清除
               this.sectionPostList[0].indeterminate = false
             }
           })
         },
-        async addBossTree() {
+        async openBossTree() {
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
           this.selectTreeType = 'boss'
@@ -1464,12 +1274,64 @@
           const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
           // 点击追加組織・役職選択による定義回显
           let selectedBase = []
-          this.sectionPostList.forEach(e => {
-            e.children.forEach(t => {
-              if (t.isBoss) selectedBase = selectedBase.concat(t.sectionId)
-            })
+          this.bossList.forEach(e => {
+            selectedBase = selectedBase.concat(e.sectionId)
           })
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
+        },
+        async addPostTree() {
+          // console.log(this.$refs.postTable.getSelection())
+          // console.log(this.postList)
+          if(!this.postUnderWhichDept) {
+            this.postList = this.$refs.postTable.getSelection().map(e=> {
+              return {
+                id: e.mapId,
+                title: `【${e.mapCpostidCk}】 ${e.mapCpostname}`,
+                postId: e.mapCpostidCk,
+                isPost: true, // 役職,
+                uni_id: e.mapCpostidCk
+              }
+            })
+          } else {
+            const that = this
+            this.sectionPostList[0].children.some((e, i)=> {
+              if(e.sectionId === this.postUnderWhichDept) {
+                // 将役職正确的塞到组织中去
+                this.sectionPostList[0].children[i].children = this.$refs.postTable.getSelection().map(t=> {
+                  return {
+                  id: t.mapId,
+                  title: `【${t.mapCpostidCk}】 ${t.mapCpostname}`,
+                  postId: t.mapCpostidCk,
+                  isPost: true, // 役職
+                  uni_id: t.mapCpostidCk
+                  }
+                })
+                return true
+              }
+            })
+          }
+        },
+        async openPostTree(underDeptInfo) {
+          this.postUnderWhichDept = ''
+          this.showGroupOrPositionDrawer = true
+          this.curdisplayPanel = 'QPOST'
+          this.selectTreeType = 'post'
+          if(!this.positonColumns.some(e=> e.type === 'selection')) this.positonColumns = this.positonColumns.concat({type: 'selection', width: 60, align: 'center'})
+          const { data } = await this.http.get(`sys/tree/posts?psSite=${this.psSite}`)
+          let IDs = []
+          if(!underDeptInfo) {
+          // 点击役職定義回显
+            IDs = this.postList.map(e => e.postId)
+          } else {
+            if(underDeptInfo.children && underDeptInfo.children.length > 0 ) IDs = underDeptInfo.children.map(e => e.postId)
+            this.postUnderWhichDept = underDeptInfo.sectionId
+          }
+          this.positonData = data.list.map(e=> {
+              return {
+                ...e,
+                _checked: IDs.includes(e.mapCpostidCk)
+              }
+          })
         }
       }
     })
