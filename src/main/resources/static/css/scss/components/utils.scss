@@ -448,9 +448,9 @@
   border-color: var(--disabled-btn-border);
 }
 .ivu-btn[disabled], .ivu-btn-ghost.ivu-btn-primary[disabled],.ivu-btn-ghost.ivu-btn-success[disabled] {
-  background: var(--disabled-btn-bg);
-  color: var(--disabled-btn);
-  border-color: var(--disabled-btn-border);
+  background: var(--disabled-btn-bg) !important;
+  color: var(--disabled-btn) !important;
+  border-color: var(--disabled-btn-border) !important;
   &:hover {
     border-color: var(--disabled-btn-border);
     background: var(--disabled-btn-bg);
