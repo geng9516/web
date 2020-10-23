@@ -34,7 +34,7 @@ public class MailUtil {
     @PostConstruct
     public void getSender() {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        from = "yin.tianxiang@nisshin-sci.co.jp";
+        from = "sp_wm_dev@nisshin-sci.co.jp";
         javaMailSenderImpl.setUsername(from);
         javaMailSenderImpl.setPassword("password0");
         javaMailSenderImpl.setPort(587);
