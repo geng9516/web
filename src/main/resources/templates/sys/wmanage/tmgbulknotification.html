@@ -335,12 +335,39 @@
                         secid=secid+e.id+','
                     })
                     this.UploadDto.sectionId = secid.slice(0,-1)
+                    if(!this.UploadDto.bulkNtfId){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '一括登録区分選択してください。'
+                        });
+                        return false
+                    }
                     if(!this.UploadDto.sectionId){
                         this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 6,
                             content: '対象部署選択してください。'
+                        });
+                        return false
+                    }
+                    if(!this.UploadDto.beginDate){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '対象期間(開始日)選択してください。'
+                        });
+                        return false
+                    }
+                    if(!this.UploadDto.endDate){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '対象期間(終了日)選択してください。'
                         });
                         return false
                     }
