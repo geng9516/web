@@ -107,7 +107,7 @@
             <Icon type="logo-buffer"></Icon>
             現在のマスタデータリスト
         </div>
-        <div class="ivu-table ivu-table-default ivu-table-border">
+        <div>
             <i-table :columns="columns_online" :data="tableData_online" border :loading="tableData_online_load" no-data-text="データなし">
                 <template slot-scope="{ row }" slot="date_online">
                     <span>{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
