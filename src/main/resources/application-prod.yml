@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:oracle:thin:@192.168.20.160:1521/TMG
+    url: jdbc:oracle:thin:@192.168.21.217:1521/TMG
     username: SPWM
     password: SPWMPASS
     driver-class-name: oracle.jdbc.OracleDriver
