@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupmanager.logic.impl;
 
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,6 +56,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
     private final DbControllerLogic dbControllerLogic;
+    private final TimedCache<String,Object> timedCache;
 
     private final QueryConditionValidatorLogic queryConditionValidatorLogic;
     private final QueryConditionLogic queryConditionLogic;
@@ -499,6 +502,10 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         updateMastGroupDefinitions(
                 insertGroupDefinitions(customerId, systemId, groupId, startDate, endDate, baseFlag),
                 groupCheckQuery,dto);
+        HttpSession session = ContextUtil.getSession();
+        session.removeAttribute(Constant.IS_APPROVER);
+        timedCache.remove(Constant.TOP_NAVS);
+
     }
 
 

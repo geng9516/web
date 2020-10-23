@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.appmanager.logic.impl;
 
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
@@ -8,7 +9,9 @@ import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
 import jp.smartcompany.admin.appmanager.handler.MastTemplateHandler;
 import jp.smartcompany.admin.appmanager.logic.AppManagerMainLogic;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
@@ -33,6 +36,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     private final IMastApptreeService appTreeService;
     private final DataSource dataSource;
     private Connection connection;
+    private final TimedCache<String,Object> timedCache;
 
     @PostConstruct
     public void init() throws SQLException {
@@ -75,7 +79,8 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         }
 
         appTreeService.saveBatch(updateList);
-
+        timedCache.remove(Constant.TOP_NAVS);
+        ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更成功";
     }
     /**
