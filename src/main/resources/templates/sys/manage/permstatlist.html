@@ -1186,7 +1186,10 @@
                 } else {
                     this.$Modal.confirm({
                         title: '',
-                        content: 'チェックされた職員の日次就業実績を承認しますか。よろしいでしょうか？',
+                        closable: true,
+                        inDrawer: true,
+                        content: 'チェックされた職員の日次就業実績を承認します。\nよろしいでしょうか？',
+                        width: 450,
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
