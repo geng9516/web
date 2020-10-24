@@ -4,6 +4,11 @@ spring:
     username: SPWM
     password: SPWMPASS
     driver-class-name: oracle.jdbc.OracleDriver
+#  datasource:
+#    url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
+#    username: SPWM
+#    password: SPWMPASS
+#    driver-class-name: oracle.jdbc.OracleDriver
 security:
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:

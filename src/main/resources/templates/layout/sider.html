@@ -37,7 +37,7 @@
             data() {
                 return {
                     topNavs: [[${topNavs}]],
-                    baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
+                    baseUrl: BASE_URL,
                     curPageId: Utils.getUrlParam(location.href, 'psSite') + Utils.getUrlParam(location.href, 'moduleIndex'),
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),
                     showSider: false,
