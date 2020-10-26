@@ -814,10 +814,10 @@
                 },
                 handleRestConfirmCheckBox(e, obj) {
                     if (!e) {
-                        obj.level = ''
+                        this.$set(obj, 'level', '')
                     } else {
                         if(this.addPermissionAdminInfo.name !== '承認者検索') {
-                            obj.level  = this.defaultPermissionLevel
+                            this.$set(obj, 'level', this.defaultPermissionLevel)
                         }
                     }
                 },
