@@ -45,6 +45,7 @@ spring:
       # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
+      validation-timeout: 5000
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
