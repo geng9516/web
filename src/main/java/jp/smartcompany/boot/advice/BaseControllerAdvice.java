@@ -3,6 +3,7 @@ package jp.smartcompany.boot.advice;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.configuration.security.SecurityProperties;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpSession;
 public class BaseControllerAdvice {
 
     private final TimedCache<String,Object> timedCache;
+    private final SecurityProperties securityProperties;
 
     /**
      * 把值绑定到Model中，使全局@RequestMapping可以获取到该值
@@ -31,6 +33,7 @@ public class BaseControllerAdvice {
     @ModelAttribute
     public void addAttributes(Model model) {
         HttpSession session =  ContextUtil.getSession();
+        model.addAttribute("enableSSL",securityProperties.getSsl());
         // 如果tmgreferlist里不存在系统时间，则设置一个默认时间
         String currentDate = (String)session.getAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE);
         if (currentDate==null) {

@@ -28,5 +28,6 @@ public class SecurityProperties {
     private String loginSuccessUrl;
     private String loginFailureUrl;
     private String accessDeniedUrl;
+    private Boolean ssl;
 
 }

@@ -45,7 +45,6 @@ spring:
       login-timeout: 500
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml
-  type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
   global-config:
     db-config:
       id-type: INPUT

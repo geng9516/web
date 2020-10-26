@@ -21,3 +21,4 @@ security:
     - /web-work/expirePassword
     - /web-work/changeExpirePassword
     - /web-work/changePassword
+  ssl: on
