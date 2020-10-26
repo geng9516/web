@@ -87,7 +87,7 @@
       <!-- 該当条件編集画面 start-->
       <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面">
         <div class="mb10 tr">
-          <i-button type="primary" ghost @click="handleEvent" icon="md-create" :loading="drawerBtnLoading">
+          <i-button type="primary" ghost @click="updateGroup" icon="md-create" :loading="drawerBtnLoading">
             登録
           </i-button>
         </div>
@@ -109,11 +109,11 @@
             </template>
 
             <template slot-scope="{ row }" slot="name">
-              <i-input class="tl" v-model="row.mgCgroupdescription"><span slot="prepend">日本語</span></i-input>
+              <i-input class="tl" v-model="groupInfoData[0].mgCgroupdescription"><span slot="prepend">日本語</span></i-input>
             </template>
 
             <template slot-scope="{ row }" slot="count">
-              <i-input class="tr" v-model="row.mgNpartinentnumber"><span slot="append">人</span></i-input>
+              <i-input class="tr" v-model="groupInfoData[0].mgNpartinentnumber"><span slot="append">人</span></i-input>
             </template>
           </i-table>
           <!-- <div class="tl mt10">
@@ -167,7 +167,7 @@
                 </i-button>
               </div>
 
-              <i-table class="mt5" border :row-class-name="()=>'select-col'" :columns="queryColumns"
+              <i-table class="mt5 no-padding" border :row-class-name="()=>'select-col'" :columns="queryColumns"
                 @on-cell-click="handleCellClickForAction" :disabled-hover="true" :data="queryData" no-data-text=""
                 ref="table">
                 <template slot-scope="{ row }" slot="andor">{{ queryData[row._index].andor || '　'  }}</template>
@@ -724,9 +724,6 @@
           // this.getTableData()
           // this.updateValue = []
         },
-        handleEvent() {
-
-        },
         async handleSearchEmpt(isByDept) {
           // searchWord
           // targetDept
@@ -803,6 +800,8 @@
           this.emptData = data.empList.empList
           this.updateValue.belowSingle = data.belowSingle
           this.updateValue.baseFlag = data.groupInfo.gsBaseFlg
+          this.updateValue.weightAge = data.groupInfo.mgNweightage
+          this.sectionPostList_bak = Utils.deepClone(data)
           // 条件式による定義
           this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' }]
           // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
@@ -825,6 +824,8 @@
             return {
               title: t.companyId === '*' ? '全社区分' : `【${t.companyId}】 ${t.companyName}`,
               expand: true,
+              companyId: data.companyId,
+              companyName: data.companyName,
               isCompany: true, // 法人
               children: t.sectionList.map((n, j) => {
                 childIndex += j
@@ -885,6 +886,7 @@
         },
         // 点击表格的格子
         async handleCellClickForAction(row, column, data, event) {
+          // console.log(event)
           this.poptipStyle.display = 'none'
           if (column.slot === 'action') {
             return
@@ -973,7 +975,16 @@
           // 同样这里是只考虑单法人
           if (this.selectTreeType === 'base') {
             this.baseTreeData[0].children = [...this.$refs.selectTree.getCheckedNodes().map(
-              e => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false } })]
+              e => { return {
+                 ...e,
+                mgbsCgroupid: this.groupInfoData.mgCgroupidPk,
+                mgbsCcompanyid: this.groupInfoData.mgCcompanyid,
+                mgbsCsystemid: this.groupInfoData.mgCsystemidCkFk,
+                mgbsCbeloworsingle: this.updateValue.belowSingle,
+                mgbsCsectionid: e.sectionId,
+                mgbsClayeredsectionid: e.layeredSectionId,
+                mgbsCcustomerid: e.customerId,
+                children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false } })]
           }
 
           if (this.selectTreeType === 'section') {
@@ -983,7 +994,6 @@
             let deleteArray = []
             this.sectionPostList[0].children.forEach((e, j) => {
               if (e.isGroup) {
-                // 储存有多少个组织
                 if (curId.includes(e.sectionId)) {
                   // 得到需要追加的
                   cur.splice(cur.findIndex(t => t.sectionId === e.sectionId), 1)
@@ -1011,7 +1021,7 @@
             )).then(resArray=>{
               console.log(resArray)
               this.bossList = [...cur.map(
-              (e, i) => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, checked: false, expand: false, uni_id: e.sectionId } })]
+              (e, i) => { return { ...e, children: [],id: e.moId, title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, checked: false, expand: false, uni_id: e.sectionId } })]
             })
           }
           this.showGroupOrPositionDrawer = false
@@ -1286,6 +1296,7 @@
             this.postList = this.$refs.postTable.getSelection().map(e=> {
               return {
                 id: e.mapId,
+                companyId: '01',
                 title: `【${e.mapCpostidCk}】 ${e.mapCpostname}`,
                 postId: e.mapCpostidCk,
                 isPost: true, // 役職,
@@ -1300,6 +1311,8 @@
                 this.sectionPostList[0].children[i].children = this.$refs.postTable.getSelection().map(t=> {
                   return {
                   id: t.mapId,
+                  companyId: '01',
+                  sectionId: e.sectionId,
                   title: `【${t.mapCpostidCk}】 ${t.mapCpostname}`,
                   postId: t.mapCpostidCk,
                   isPost: true, // 役職
@@ -1332,6 +1345,90 @@
                 _checked: IDs.includes(e.mapCpostidCk)
               }
           })
+        },
+        updateGroup() {
+          const updateValue ={
+            ...this.updateValue,
+            mgpId: this.groupInfoData[0].mgpId,
+            mgId: this.groupInfoData[0].mgpId,
+            groupId: this.groupInfoData[0].mgCgroupidPk,
+            startDate: this.groupInfoData[0].mgDstartdate,
+            endDate: this.groupInfoData[0].mgDenddate,
+            peopleCount: this.groupInfoData[0].mgNpartinentnumber,
+            groupName: this.groupInfoData[0].mgCgroupdescription,
+            remark: this.groupInfoData[0].mgCtext,
+            sectionPostList:{
+              companyId: this.sectionPostList[0].companyId,
+              companyName: this.sectionPostList[0].companyName,
+              sectionList: this.sectionPostList[0].children.map(e=> {
+                return {
+                  companyId: e.companyId,
+                  sectionId: e.sectionId,
+                  id: e.id ? e.id : e.moId,
+                  postList: e.children.map(t => {
+                    return {
+                      companyId: t.companyId,
+                      sectionId: t.sectionId,
+                      postId: t.postId,
+                      id: t.id ,
+                    }
+                  })
+                }
+              }),
+              postList: [...this.postList],
+              bossSectionList: [...this.bossList],
+            },
+            employList: [], //社員選択による定義
+            queryConditionList:[],
+            baseSectionList:[{sectionList:this.baseTreeData[0].children}],
+
+          }
+          // 組織・役職選択による定義
+          // 組織的处理
+          const sectionIdList = updateValue.sectionPostList.sectionList.map(e => e.sectionId)
+          // console.log(this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList)
+          this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList.forEach(e=>{
+            // 如果之前的数组中存在此条組織，则对比postlist
+            if(sectionIdList.includes(e.sectionId)) {
+              const sectionIndex = updateValue.sectionPostList.sectionList.findIndex(n => n.sectionId === e.sectionId)
+              const postIdList = updateValue.sectionPostList.sectionList[sectionIndex].postList.map(t=> t.postId)
+              e.postList.forEach(t=> {
+                // 既有组织删除了役職, 则将它加回去
+                if(!postIdList.includes(t.postId)) {
+                  updateValue.sectionPostList.sectionList[sectionIndex].postList.push({ id: t.id, delete: true })
+                }
+              })
+            } else {
+              // 如果之前的数组中不存在此条組織, 则将它加回去
+              updateValue.sectionPostList.sectionList.push({ id: e.id, delete: true})
+            }
+          })
+
+          // 所属长
+          const bossIdList = updateValue.sectionPostList.bossSectionList.map(e => e.sectionId)
+          this.sectionPostList_bak.orgJobConditions.companyList[0].bossSectionList.forEach(e => {
+            if(!bossIdList.includes(e.sectionId)) {
+              updateValue.sectionPostList.bossSectionList.push({ id: e.id, delete: true})
+            }
+          })
+
+          // 役職
+          const postIdList = updateValue.sectionPostList.postList.map(e => e.postId)
+          // console.log(postIdList)
+          this.sectionPostList_bak.orgJobConditions.companyList[0].postList.forEach(e => {
+            if(!postIdList.includes(e.postId)) {
+              updateValue.sectionPostList.postList.push({ id: e.id, delete: true})
+            }
+          })
+
+          // 基点組織
+          const baseIdList = updateValue.baseSectionList.map(e => e.mgbsCsectionid)
+          this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
+            if(!baseIdList.includes(e.mgbsCsectionid)) {
+              updateValue.baseSectionList.push({ id: e.mgbsId, delete: true}) // todo mgbsId
+            }
+          })
+          console.log(this.queryData)
         }
       }
     })
