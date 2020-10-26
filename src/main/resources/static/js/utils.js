@@ -108,7 +108,7 @@ const Utils = {
 
       const result = handleTime(+minutes)
       object[name] = result
-      if(/^[0-9]{2}:[0-9]{2}$/g.test(result)) return true
+      if(/^[0-9]{1,2}:[0-9]{2}$/g.test(result)) return true
     }
     // el.focus() 取消focus
     Vue.prototype.$Notice.error({
