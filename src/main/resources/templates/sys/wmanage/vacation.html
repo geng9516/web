@@ -512,35 +512,45 @@
                 this.dataDetail = ''
                 this.paidDetailsLoading = true
 
-                this.dataDetail = {...this.dataDetailBack}
+                this.$nextTick(()=>this.dataDetail = {...this.dataDetailBack})
                 setTimeout(() => this.paidDetailsLoading = false)
 
             },
             //登録ボタン押下
             exeUpdate: Debounce(async function () {
                 if (this.calculation()) {
-                    this.paramters.cemployeeid = this.cemployeeid
-                    this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
-                    this.paramters.ninvest = this.dataDetail.ninvest
-                    this.paramters.nadjust = this.dataDetail.nadjust
-                    // this.paramters.nadjustHours = this.format_hours(this.dataDetail.nadjustHours,2)
-                    // this.paramters.nadjustHours = this.format_hours(this.toMinuteFromHours(this.dataDetail.nadjustHours)/60,2)
-                    this.paramters.nadjustHours = this.dataDetail.nadjustHours
-                    this.paramters.nadjustTo = this.dataDetail.nadjustTo
-                    // this.paramters.nadjustHoursTo =  this.format_hours(this.dataDetail.nadjustHoursTo,2)
-                    this.paramters.nadjustHoursTo = this.dataDetail.nadjustHoursTo
-                    this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
-                    this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
-                    this.paramters.ccomment = this.dataDetail.ccomment
-                    this.paidDetailsLoadingFlg = 0
-                    this.updateLoading = true
-                    this.paidNowLoading = true
-                    await this.http.get('sys/paidholiday/execUpdate', this.paramters)
-                    await this.getTableData()
-                    await this.getDetailList(this.paramters.dyyyymmdd, this.paramters.cemployeeid)
-                    this.updateLoading = false
-                    this.paidNowLoading = false
-                    // this.paidHolidayInitRList = false
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '入力内容を登録します。よろしいでしょうか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            this.paramters.cemployeeid = this.cemployeeid
+                            this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
+                            this.paramters.ninvest = this.dataDetail.ninvest
+                            this.paramters.nadjust = this.dataDetail.nadjust
+                            // this.paramters.nadjustHours = this.format_hours(this.dataDetail.nadjustHours,2)
+                            // this.paramters.nadjustHours = this.format_hours(this.toMinuteFromHours(this.dataDetail.nadjustHours)/60,2)
+                            this.paramters.nadjustHours = this.dataDetail.nadjustHours
+                            this.paramters.nadjustTo = this.dataDetail.nadjustTo
+                            // this.paramters.nadjustHoursTo =  this.format_hours(this.dataDetail.nadjustHoursTo,2)
+                            this.paramters.nadjustHoursTo = this.dataDetail.nadjustHoursTo
+                            this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
+                            this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
+                            this.paramters.ccomment = this.dataDetail.ccomment
+                            this.paidDetailsLoadingFlg = 0
+                            this.updateLoading = true
+                            this.paidNowLoading = true
+                            await this.http.get('sys/paidholiday/execUpdate', this.paramters)
+                            await this.getTableData()
+                            await this.getDetailList(this.paramters.dyyyymmdd, this.paramters.cemployeeid)
+                            this.updateLoading = false
+                            this.paidNowLoading = false
+                            // this.paidHolidayInitRList = false
+                        },
+                        onCancel: () => {
+                        }
+                    })
                 }
             }),
             // 計算ボタン押下
@@ -553,9 +563,7 @@
                 let nadjustTo = this.paidNowData[4].days
                 let nadjustHoursTo = this.paidNowData[4].times
                 let dexpireAdjustTo = this.paidNowData[4].expiryDate
-                console.log("----------------------01----------------------------")
                 if (!this.checkError()) {
-                    console.log("----------------------02----------------------------")
                     this.dataDetail.nadjust = nadjust
                     this.dataDetail.nadjustHours = nadjustHours
                     this.dataDetail.dexpireAdjust = dexpireAdjust
@@ -821,6 +829,13 @@
                 return true
 
             },
+            toMinuteFromHours(pHours) {
+                let nMin = (Math.floor(Math.abs(pHours)) * 60) + Math.floor(Math.abs(pHours) * 1000 / 10 % 100);
+                if (0 > pHours) {
+                    nMin = nMin * -1;
+                }
+                return nMin;
+            },
             checkError() {
 
                 // 未入力チェック
@@ -1008,13 +1023,6 @@
 
                 return true
 
-            },
-            toMinuteFromHours(pHours) {
-                let nMin = (Math.floor(Math.abs(pHours)) * 60) + Math.floor(Math.abs(pHours) * 1000 / 10 % 100);
-                if (0 > pHours) {
-                    nMin = nMin * -1;
-                }
-                return nMin;
             },
             toHoursFromMinutes(pMin) {
                 let nHours = Math.floor(Math.abs(pMin) / 60) + (Math.floor(Math.abs(pMin) % 60) / 100);
