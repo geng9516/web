@@ -504,7 +504,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 groupCheckQuery,dto);
         HttpSession session = ContextUtil.getSession();
         session.removeAttribute(Constant.IS_APPROVER);
-        timedCache.remove(Constant.TOP_NAVS);
+        timedCache.remove("menu:"+session.getId() +":"+Constant.TOP_NAVS);
 
     }
 

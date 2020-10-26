@@ -37,7 +37,7 @@ public class BaseControllerAdvice {
             session.setAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE, SysUtil.transDateToString(DateUtil.date()));
         }
         String navKey = Constant.TOP_NAVS;
-        model.addAttribute(navKey, timedCache.get(navKey,false));
+        model.addAttribute(navKey, timedCache.get("menu:"+session.getId() +":"+ navKey,false));
     }
 
 }

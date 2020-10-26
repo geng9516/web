@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -61,6 +62,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public String updateMenuList(List<MastAppTreeDTO> paramList) {
+        HttpSession session = ContextUtil.getSession();
         appTreeService.removeAll();
         Date date = DateUtil.date();
         String username = SecurityUtil.getUsername();
@@ -79,7 +81,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         }
 
         appTreeService.saveBatch(updateList);
-        timedCache.remove(Constant.TOP_NAVS);
+        timedCache.remove("menu:"+session.getId() +":"+Constant.TOP_NAVS);
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更成功";
     }
