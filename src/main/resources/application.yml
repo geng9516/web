@@ -23,7 +23,7 @@ server:
       force: on
 spring:
   profiles:
-    active: test
+    active: prod
   application:
     name: SmartPublic-WM
   servlet:
@@ -36,16 +36,13 @@ spring:
   datasource:
     hikari:
       poolName: web-work-pool
-      # 自动提交从池中返回的连接
       auto-commit: on
-      # 连接最大等待毫秒数
       connectionTimeout: 30000
-      # 池中连接最长生命周期(1800000ms=30m)
       maxLifetime: 1800000
-      # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
-      validation-timeout: 5000
+      validation-timeout: 1000
+      login-timeout: 500
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
