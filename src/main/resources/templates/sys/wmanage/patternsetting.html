@@ -225,8 +225,8 @@
         <div>
             <div style="text-align: right">
                 <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
-                <i-button class="ivu-btn" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
-                <i-button class="ivu-btn" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+                <i-button class="ivu-btn" type="success" disabled v-if="btn_sk_commit_show===false">{{titlesMessage}}</i-button>
+                <i-button class="ivu-btn" type="success" @click="handleSubmit('localValue')" 　v-else>{{titlesMessage}}</i-button>
             </div>
         </div>
         <Spin size="large" fix v-if="mergePatternLoading"></Spin>
@@ -265,6 +265,7 @@
                 loadingStatus: false,
                 errorFlag: false,
                 errorMsg: '',
+                titlesMessage: '',
                 hasPassedTimeCheck: true,
                 planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
@@ -625,6 +626,7 @@
                 if (row != undefined && null != row) {
                     // 編集
                     this.pageTitle = '勤務パターン編集'
+                    this.titlesMessage = '変更'
                     this.pageTitleMsg = '勤務パターンを更新しました'
                     this.isPatternCodeDisable = true
                     this.rawData = {...row}
@@ -692,6 +694,7 @@
                 } else {
                     //新規
                     this.pageTitle = '勤務パターン新規'
+                    this.titlesMessage = '登録'
                     this.pageTitleMsg = '勤務パターンを新規登録しました'
                     this.ykjtPatternModel = ''
                     this.edit_flag = false
