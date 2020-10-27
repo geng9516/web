@@ -22,7 +22,7 @@ server:
       charset: utf-8
       force: on
     session:
-      timeout: 300s
+      timeout: 600s
 spring:
   profiles:
     active: test
