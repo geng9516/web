@@ -391,6 +391,7 @@
                     restInfoLoading:false,
                     listLoading: false,
                     applyHistoryListData: [],
+                    contentMsg:'',
                     opts: {
                         ntfTypeId:'',
                         statusFlg: 0,
@@ -581,22 +582,34 @@
                     this.rotate = !this.rotate
                 },
                 cancel: Debounce(async function (e, i) {
-                    // 自己取消后无论如何都应该再拉取一遍最新的数据
-                    this.$set(this.cacelBtnLoading ,i , true)
-                    try {
-                        await this.http.post('sys/vapply/EditWithdrop',{
-                            action:'ACT_EditApply_UWithdraw',
-                            ntfNo:e.tntfCntfNo,
-                            psSite: this.opts.psSite
-                        })
-                        await this.getRestInfo()
-                        this.$Message.success('取り消し完了')
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.$set(this.cacelBtnLoading ,i , false)
-                        this.getApplyHistory()
-                    }
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        content: 'この申請を取り下げます。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            // 自己取消后无论如何都应该再拉取一遍最新的数据
+                            this.$set(this.cacelBtnLoading ,i , true)
+                            try {
+                                await this.http.post('sys/vapply/EditWithdrop',{
+                                    action:'ACT_EditApply_UWithdraw',
+                                    ntfNo:e.tntfCntfNo,
+                                    psSite: this.opts.psSite
+                                })
+                                await this.getRestInfo()
+                                this.$Message.success('取り消し完了')
+                            } catch (error) {
+                                return
+                            } finally {
+                                this.$set(this.cacelBtnLoading ,i , false)
+                                this.getApplyHistory()
+                            }
+
+                        },
+                        onCancel: () => {
+                        }
+                    })
                 }, 700),
                 handleHistoryStatusChange(e) {
                     this.getApplyHistory()
@@ -605,8 +618,10 @@
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
                     this.errorInfo = false
                     this.restApply.action = 'ACT_MakeApply_CAppl'
+                    this.contentMsg = 'この内容で申請します。よろしいですか？'
                     if(isRestApply) {
                         this.restApply.action = 'ACT_ReMakeApply_CAppl'
+                        this.contentMsg = 'この内容で再申請します。よろしいですか？'
                     }
                     this.restApply.typeNew = this.selectedRestInfo.ntfId
                     // 代理申请用，个人申请此处为空
@@ -731,42 +746,53 @@
                         this.errorMsg = '添付ファイルを入力してください。'
                         return
                     }
-                    this.deleteFiles = [...new Set(this.deleteFiles)]
-                    try {
-                        this.loading = true
-                        console.log(this.restApply)
-                        await this.http.uploadFiles('sys/vapply/MakeApply',{
-                            params:JSON.stringify(this.restApply),
-                            uploadFiles:this.uploadFiles.filter(e=> !e.isDefault),
-                            deleteFiles:JSON.stringify(this.deleteFiles),
-                            psSite: this.opts.psSite
-                        })
-                        this.restApply =  {
-                            useVacation: false,
-                            restTypeId: '全て',
-                            weekSelected: [],
-                            noreserved:1,
-                            _dateList: '',
-                            _dateListRange:['', ''],
-                            dateListRange:['', ''],
-                            txtAddDate:null,
-                            txtTargetNumber:null
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        content: this.contentMsg,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            this.deleteFiles = [...new Set(this.deleteFiles)]
+                            try {
+                                this.loading = true
+                                console.log(this.restApply)
+                                await this.http.uploadFiles('sys/vapply/MakeApply',{
+                                    params:JSON.stringify(this.restApply),
+                                    uploadFiles:this.uploadFiles.filter(e=> !e.isDefault),
+                                    deleteFiles:JSON.stringify(this.deleteFiles),
+                                    psSite: this.opts.psSite
+                                })
+                                this.restApply =  {
+                                    useVacation: false,
+                                    restTypeId: '全て',
+                                    weekSelected: [],
+                                    noreserved:1,
+                                    _dateList: '',
+                                    _dateListRange:['', ''],
+                                    dateListRange:['', ''],
+                                    txtAddDate:null,
+                                    txtTargetNumber:null
+                                }
+                                this.rotate = !this.rotate
+                                this.isReApplyIng = false
+                                await this.getApplyHistory(true)
+                                await this.getRestInfo()
+                                this.$Message.success('申请完了')
+                                this.uploadFiles = []
+                            } catch (error) {
+                                if(error.config || error.response && error.response.status === 500) return
+                                this.errorInfo = true
+                                const _error = JSON.parse(error)
+                                this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
+                            } finally {
+                                this.loading = false
+                                this.deleteFiles = []
+                            }
+                        },
+                        onCancel: () => {
                         }
-                        this.rotate = !this.rotate
-                        this.isReApplyIng = false
-                        await this.getApplyHistory(true)
-                        await this.getRestInfo()
-                        this.$Message.success('申请完了')
-                        this.uploadFiles = []
-                    } catch (error) {
-                        if(error.config || error.response && error.response.status === 500) return
-                        this.errorInfo = true
-                        const _error = JSON.parse(error)
-                        this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
-                    } finally {
-                        this.loading = false
-                        this.deleteFiles = []
-                    }
+                    })
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
