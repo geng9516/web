@@ -658,7 +658,7 @@
                   this.rotate = !this.rotate
                   this.isReApplyIng = false
                   await this.getApplyHistory(true)
-                  this.$Message.success('申请完了')
+                  this.$Message.success('申請完了')
                   this.uploadFiles = []
                } catch (error) {
                   if (error.config || error.response && error.response.status === 500) return
