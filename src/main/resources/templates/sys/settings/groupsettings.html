@@ -361,8 +361,8 @@
 
                 <!-- 比較 -->
                 <span v-show="poptipType === 'operator'">
-                  <i-button @click="popClickAction(item)" v-for="(item,i) of curdisplayPanel ? operatorList : operatorList2" type="primary" ghost
-                    style="display:block" size="small" class="mb5" long>{{ item }}</i-button>
+                  <i-button @click="popClickAction(item.name, item.value)" v-for="(item,i) of curdisplayPanel ? operatorList : operatorList2" type="primary" ghost
+                    style="display:block" size="small" class="mb5" long>{{ item.name }}</i-button>
                 </span>
 
                 <!-- 値 -->
@@ -378,23 +378,23 @@
                   <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue"
                     style="display:block" size="small" class="mb5" long>決定</i-button>
                   <span v-show="curdisplayPanel === 'QHONKEN'">
-                    <i-button @click="popClickAction('本務[0]')" type="primary" ghost style="display:block" size="small"
+                    <i-button @click="popClickAction('本務[0]', '0')" type="primary" ghost style="display:block" size="small"
                       class="mb5" long>本務[0]</i-button>
-                    <i-button @click="popClickAction('兼務[1]')" type="primary" ghost style="display:block" size="small"
+                    <i-button @click="popClickAction('兼務[1]', '1')" type="primary" ghost style="display:block" size="small"
                       class="mb5" long>兼務[1]</i-button>
                   </span>
 
                   <span v-show="curdisplayPanel === 'QZAITAI'">
-                    <i-button @click="popClickAction('在職[0]')" type="primary" ghost style="display:block" size="small"
+                    <i-button @click="popClickAction('在職[0]', '0')" type="primary" ghost style="display:block" size="small"
                       class="mb5" long>在職[0]</i-button>
-                    <i-button @click="popClickAction('退職[1]')" type="primary" ghost style="display:block" size="small"
+                    <i-button @click="popClickAction('退職[1]', '1')" type="primary" ghost style="display:block" size="small"
                       class="mb5" long>退職[1]</i-button>
                   </span>
 
                   <span v-show="curdisplayPanel === 'TMG_MANAGEFLG'">
-                    <i-button @click="popClickAction('管理対象外[0]')" type="primary" ghost style="display:block"
+                    <i-button @click="popClickAction('管理対象外[0]', '0')" type="primary" ghost style="display:block"
                       size="small" class="mb5" long>管理対象外[0]</i-button>
-                    <i-button @click="popClickAction('管理対象[1]')" type="primary" ghost style="display:block" size="small"
+                    <i-button @click="popClickAction('管理対象[1]', '1')" type="primary" ghost style="display:block" size="small"
                       class="mb5" long>管理対象[1]</i-button>
                   </span>
                 </span>
@@ -425,8 +425,26 @@
   </main>
   <div th:replace="layout/head::header"></div>
   <script>
-    var operatorList2 = ['＝', '≠', '≧', '≦', '＞', '＜', 'IS NULL', 'IS NOT NULL']
-    var operatorList3 = ['＝', '<>', '>=', '<=', '>', '<', 'ISNULL', 'ISNOTNULL']
+    var operatorList = [
+      { name:'＝', value:'＝' },
+      { name:'≠', value:'<>' },
+      { name:'以上', value:'>=' },
+      { name:'以下', value:'<=' },
+      { name:'より上', value:'>' },
+      { name:'より下', value:'<' },
+      { name:'空白のみ', value:'ISNULL' },
+      { name:'空白以外', value:'ISNOTNULL' },
+    ]
+    var operatorList2 = [
+      { name:'＝', value:'＝' },
+      { name:'≠', value:'<>' },
+      { name:'≧', value:'>=' },
+      { name:'≦', value:'<=' },
+      { name:'＞', value:'>' },
+      { name:'＜', value:'<' },
+      { name:'IS NULL', value:'ISNULL' },
+      { name:'IS NOT NULL', value:'ISNOTNULL' },
+    ]
   </script>
   <script type="text/babel" th:inline="javascript">
     const GROUP_SETTINGS = new Vue({
@@ -549,11 +567,13 @@
             {
               title: 'ＡＮＤ/ＯＲ',
               slot: 'andor',
+              align: 'center',
               width: 100,
             },
             {
               title: '（',
               width: 70,
+              align: 'center',
               slot: 'openedparenthsis',
             },
             {
@@ -563,6 +583,7 @@
             {
               title: '比較',
               width: 100,
+              align: 'center',
               slot: 'operator',
             },
             {
@@ -572,6 +593,7 @@
             {
               title: '）',
               width: 70,
+              align: 'center',
               slot: 'closedparenthsis',
             },
             {
@@ -580,7 +602,6 @@
               slot: 'action',
             },
           ],
-          operatorList: ['＝', '≠', '以上', '以下', 'より上', 'より下', '空白のみ', '空白以外'],
           curdisplayPanel: '',
           queryData: [],
           deleteQueryData: [],
@@ -700,6 +721,7 @@
             this.queryData[this.clickedCell.where].mastertablename = e.masterInfo
             //   清空之前的值信息
             this.queryData[this.clickedCell.where].displayvalue = ''
+            this.queryData[this.clickedCell.where].value = ''
             this.poptipStyle.display = 'none'
             return
           }
@@ -764,6 +786,10 @@
             if (!this.emptData.some(t => t.employeeId === e.meCuserid)) {
               emptData = emptData.concat({
                 ...e,
+                id:e.meId,
+                companyId: e.hdCcompanyidCk,
+                sectionId: e.hdCsectionidFk,
+                postId: e.hdCpostidFk,
                 companyName: e.compName,
                 employeeId: e.meCuserid,
                 kanJiName: e.empName
@@ -932,6 +958,7 @@
         updateInputValue() {
           // 将input的值更新到表格中
           this.queryData[this.clickedCell.where].displayvalue = this.updateValue.value
+          this.queryData[this.clickedCell.where].value = this.updateValue.value
           this.poptipStyle.display = 'none'
           this.updateValue.value = ''
         },
@@ -949,7 +976,7 @@
           this.updateValue.value = ''
         },
         // 点击改变表格的值
-        popClickAction(e) {
+        popClickAction(e, value2) {
           if (e === 'なし') {
             this.queryData[this.clickedCell.where][this.clickedCell.which] = ''
             if(this.clickedCell.which === 'openedparenthsis') this.queryData[this.clickedCell.where].closedparenthsis = ''
@@ -964,6 +991,8 @@
               '))': '((',
               ')))': '(((',
             }
+            if(this.clickedCell.which === 'displayvalue') this.queryData[this.clickedCell.where].value = value2
+            if(this.clickedCell.which === 'operator') this.queryData[this.clickedCell.where].operator = value2
             if(this.clickedCell.which === 'openedparenthsis') this.queryData[this.clickedCell.where].closedparenthsis = paernthsis[e]
             if(this.clickedCell.which === 'closedparenthsis') this.queryData[this.clickedCell.where].openedparenthsis = paernthsis[e]
           }
@@ -1393,15 +1422,14 @@
               postList: [...this.postList],
               bossSectionList: [...this.bossList],
             },
-            employList: [], //社員選択による定義
-            queryConditionList:[],
+            employList: this.updateValue.baseFlag === '0' ? this.emptData : [], // 社員選択による定義
+            queryConditionList: this.updateValue.baseFlag === '1' ? this.queryData : [],
             baseSectionList:[{sectionList:this.baseTreeData[0].children}],
 
           }
           // 組織・役職選択による定義
           // 組織的处理
           const sectionIdList = updateValue.sectionPostList.sectionList.map(e => e.sectionId)
-          // console.log(this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList)
           this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList.forEach(e=>{
             // 如果之前的数组中存在此条組織，则对比postlist
             if(sectionIdList.includes(e.sectionId)) {
@@ -1442,7 +1470,32 @@
               updateValue.baseSectionList.push({ id: e.mgbsId, delete: true}) // todo mgbsId
             }
           })
-          console.log(this.queryData)
+          // 条件式による定義
+          if(this.updateValue.baseFlag === '1') {
+            updateValue.queryConditionList.some(e=> {
+              if(!e.columnname) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
+              if(!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { return this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください。', duration: 6.5 }) }
+            })
+            if(this.sectionPostList_bak.queryConditions.rowList.length > 0) {
+              const queryIdList = updateValue.queryConditionList.map(e => e.id)
+              this.sectionPostList_bak.queryConditions.rowList.forEach(e => {
+                if(!queryIdList.includes(e.id)) {
+                  updateValue.queryConditionList.push({ ...e, delete: true}) // todo mgbsId
+                }
+            })
+          }
+          }
+
+          // 社員選択による定義
+          if(this.updateValue.baseFlag === '0') {
+            if(updateValue.employList.length === 0) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
+            const empIdList = updateValue.employList.map(e => e.id)
+            this.sectionPostList_bak.empList.empList.length > 0 && this.sectionPostList_bak.empList.empList.forEach(e => {
+            if(!empIdList.includes(e.id)) {
+              updateValue.employList.push({ ...e, delete: true}) // todo mgbsId
+            }
+          })
+          }
         }
       }
     })
