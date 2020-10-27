@@ -321,6 +321,7 @@
                 },
                 query_sk_bak: {},
                 edit_flag: false,
+                contentMsg: '',
                 pageTitle: '勤務パターン追加',
                 pageTitleMsg:'勤務パターンを新規登録しました',
                 //翌日勤務パターン
@@ -940,6 +941,8 @@
             },
             //勤務パターン更新登録
             async handleSubmit(name) {
+                console.log(name)
+                console.log("--------------------1--------------------")
                 //form validate
                 var sectionId = this.rawData.tpa_csectionid
                 var groupId = this.rawData.groupId
@@ -1062,34 +1065,44 @@
                         restMins4 = 0
                     }
                 }
-
-
-                //休憩時間（総計）
-                var totalRestMins = restMins1 + restMins2 + restMins3 + restMins4
-                //法律について、一定の労働時間には一定の休憩時間を与えることが必要です
-                //１.六時間労働時間の場合、少なくとも45分の休憩時間
-                //２.八時間労働時間の場合、少なくとも60分の休憩時間
-                if (!this.valid_dutyAndRest(dutyMins, totalRestMins)) {
-                    return
-                }
-                //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
-                //翌日勤務パターンがあれば.日付切替時刻を入力しなければならない
-                //if (!this.valid_nextPtn(changeTime, nextptn)) {
-                //    return
-                //}
-                this.btn_sk_commit_show = false
-                if (this.isDefault === true) {
-                    this.rawData.flag = "TMG_ONOFF|1"
-                } else {
-                    this.rawData.flag = "TMG_ONOFF|0"
-                }
-                //パターンを更新
-                await this.http.post('sys/patternSetting/modifiEditAndNew', this.rawData)
-                //新規又は編集画面を閉じる
-                this.cancel()
-                //リストの取得
-                await this.getTmgPatternList()
-                this.$Notice.info({title: this.pageTitleMsg, desc: ""})
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: this.contentMsg,
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                        onOk: async () => {
+                            //休憩時間（総計）
+                            var totalRestMins = restMins1 + restMins2 + restMins3 + restMins4
+                            //法律について、一定の労働時間には一定の休憩時間を与えることが必要です
+                            //１.六時間労働時間の場合、少なくとも45分の休憩時間
+                            //２.八時間労働時間の場合、少なくとも60分の休憩時間
+                            if (!this.valid_dutyAndRest(dutyMins, totalRestMins)) {
+                                return
+                            }
+                            //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
+                            //翌日勤務パターンがあれば.日付切替時刻を入力しなければならない
+                            //if (!this.valid_nextPtn(changeTime, nextptn)) {
+                            //    return
+                            //}
+                            this.btn_sk_commit_show = false
+                            if (this.isDefault === true) {
+                                this.rawData.flag = "TMG_ONOFF|1"
+                            } else {
+                                this.rawData.flag = "TMG_ONOFF|0"
+                            }
+                            //パターンを更新
+                            await this.http.post('sys/patternSetting/modifiEditAndNew', this.rawData)
+                            //新規又は編集画面を閉じる
+                            this.cancel()
+                            //リストの取得
+                            await this.getTmgPatternList()
+                            this.$Notice.info({title: this.pageTitleMsg, desc: ""})
+                        },
+                    onCancel: () => {
+                    }
+                })
             },
             //勤務パターンを削除する
             async deletePattern(row) {
@@ -1098,8 +1111,10 @@
                     this.query_delete.sectionId = row.tpa_csectionid
                     this.query_delete.groupId = row.tpa_cgroupid
                     this.$Modal.confirm({
-                        title: '操作確認',
-                        content: '選択した勤務パターン「' + row.tpa_cpatternname + '」は削除します。よろしいでしょうか？',
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この勤務パターンを削除します。よろしいですか？',
                         okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
@@ -1153,41 +1168,54 @@
             },
             //アップロード
             async upload() {
-                this.loadingStatus = true;
-                const {data} = await this.http.uploadFiles('sys/patternSetting/modifiCSVDwnload', this.query_upload)
-                this.csvuploadModal = false
-                // アップロード結果を統計する
-                var total = data.insertFlg.length
-                var success_count = 0
-                var fail_count = 0
-                for (var i = 0; i < data.insertFlg.length; i++) {
-                    if (data.insertFlg[i] == true) {
-                        success_count++
-                    } else {
-                        fail_count++
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'このCSVファイルをアップロードします。\nよろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.loadingStatus = true;
+                        const {data} = await this.http.uploadFiles('sys/patternSetting/modifiCSVDwnload', this.query_upload)
+                        this.csvuploadModal = false
+                        // アップロード結果を統計する
+                        var total = data.insertFlg.length
+                        var success_count = 0
+                        var fail_count = 0
+                        for (var i = 0; i < data.insertFlg.length; i++) {
+                            if (data.insertFlg[i] == true) {
+                                success_count++
+                            } else {
+                                fail_count++
+                            }
+                        }
+                        //詳細情報
+                        var info = ""
+                        for (var i = 0; i < data.lmsgList.length; i++) {
+                            info += data.lmsgList[i] + "\n"
+                        }
+
+                        var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
+                        if (fail_count > 0) {
+                            //情報提示
+                            this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
+                        } else {
+                            this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
+                        }
+
+                        //リストの取得
+                        this.getTmgPatternList()
+                        this.loadingStatus = false;
+
+                        //リセットアップロード対象
+                        this.query_upload.file = null
+                        this.file = null
+                    },
+                    onCancel: () => {
                     }
-                }
-                //詳細情報
-                var info = ""
-                for (var i = 0; i < data.lmsgList.length; i++) {
-                    info += data.lmsgList[i] + "\n"
-                }
+                })
 
-                var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
-                if (fail_count > 0) {
-                    //情報提示
-                    this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
-                } else {
-                    this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
-                }
-
-                //リストの取得
-                this.getTmgPatternList()
-                this.loadingStatus = false;
-
-                //リセットアップロード対象
-                this.query_upload.file = null
-                this.file = null
             },
             //アップロードをキャンセル
             uploadCancel() {
