@@ -577,6 +577,11 @@
             }
           }
 
+          if(this.detailData.passwordType === 2) {
+            delete this.detailData.password
+            delete this.detailData.repeatPassword
+          }
+
           if(this.useType === 'personal') {
             if (!this.detailData.account.maDstart) {
               return this.$Notice.warning({ title: '注意', desc: `開始日を入力してください。`, duration: 6.5 })
