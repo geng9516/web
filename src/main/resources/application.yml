@@ -21,6 +21,8 @@ server:
     encoding:
       charset: utf-8
       force: on
+    session:
+      timeout: 300s
 spring:
   profiles:
     active: test
@@ -41,8 +43,7 @@ spring:
       max-lifetime: 1800000
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
-      validation-timeout: 1000
-      login-timeout: 500
+      validation-timeout: 5000
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml
   global-config:
