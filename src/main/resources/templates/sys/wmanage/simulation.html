@@ -161,6 +161,7 @@
                 compareBtn_name: '現在の設定を参照',
                 groupId: 'TMG_EXCLUDE4THW_SIM',
                 execCode: 'TMG_WTSIMSTATUS|010',
+                contentMsg: '',
                 query: {
                     custId: [[${ session.psSession.loginCustomer }]],
                     compCode: [[${ session.psSession.loginCompany }]],
@@ -280,10 +281,12 @@
                     this.pageTitle = '連携対象マスタ新規'
                     this.masterResult.operType = 'insert'
                     this.titlesMessage = '登録'
+                    this.contentMsg = 'この編集内容で登録します。よろしいですか？'
                 } else {
                     this.masterResult.operType = 'update'
                     this.pageTitle = '連携対象マスタ編集'
                     this.titlesMessage = '変更'
+                    this.contentMsg = 'この編集内容で更新します。よろしいですか？'
                     this.query.startDate = row.startTime
                     this.query.endDate = row.endTime
                     this.masterResult.psStartDate = row.startTime
@@ -314,8 +317,10 @@
                     this.query.startDate = row.startTime
                     this.query.endDate = row.endTime
                     this.$Modal.confirm({
-                        title: '操作確認',
-                        content: '選択したマスタデータを削除します。よろしいでしょうか？',
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: '選択したマスタデータを削除します。\nよろしいでしょうか？',
                         okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
@@ -404,40 +409,52 @@
             },
             //登録
             async handleSubmit(name) {
-                if (!this.masterDataCheck_update()) {
-                    return
-                }
-                if (!this.periodCheck_isNull()) {
-                    return
-                }
-                this.masterResult.psStartDate = Utils.formatDate(this.masterResult.psStartDate, "YYYY/MM/DD")
-                this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
-                this.query.startDate = this.masterResult.psStartDate
-                this.query.endDate = this.masterResult.psEndDate
-                if(this.query.startDate.split("/").join("") - this.query.endDate.split("/").join("") > 0){
-                    this.showAlert('期間の開始日('+this.query.startDate+')は期間の終了日('+this.query.endDate+')以前の日付を入力してください。')
-                    return false
-                }
-                const isRight = await this.periodCheck_isRight()
-                if (!isRight) {
-                    return
-                }
-                if (!this.masterDataCheck()) {
-                    return
-                }
-                var masterResult = JSON.stringify(this.masterResult)
-                const {data} = await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
-                //操作結果確認する
-                if (this.masterResult.operType === 'insert') {
-                    this.$Notice.info({title: 'マスタデータを新規登録しました', desc: ""})
-                } else {
-                    this.$Notice.info({title: 'マスタデータを更新しました', desc: ""})
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    width: 480,
+                    content: this.contentMsg,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        if (!this.masterDataCheck_update()) {
+                            return
+                        }
+                        if (!this.periodCheck_isNull()) {
+                            return
+                        }
+                        this.masterResult.psStartDate = Utils.formatDate(this.masterResult.psStartDate, "YYYY/MM/DD")
+                        this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
+                        this.query.startDate = this.masterResult.psStartDate
+                        this.query.endDate = this.masterResult.psEndDate
+                        if(this.query.startDate.split("/").join("") - this.query.endDate.split("/").join("") > 0){
+                            this.showAlert('期間の開始日('+this.query.startDate+')は期間の終了日('+this.query.endDate+')以前の日付を入力してください。')
+                            return false
+                        }
+                        const isRight = await this.periodCheck_isRight()
+                        if (!isRight) {
+                            return
+                        }
+                        if (!this.masterDataCheck()) {
+                            return
+                        }
+                        var masterResult = JSON.stringify(this.masterResult)
+                        const {data} = await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
+                        //操作結果確認する
+                        if (this.masterResult.operType === 'insert') {
+                            this.$Notice.info({title: 'マスタデータを新規登録しました', desc: ""})
+                        } else {
+                            this.$Notice.info({title: 'マスタデータを更新しました', desc: ""})
+                        }
 
-                //操作画面を閉める
-                this.cancel()
-                //データリスト画面をリロード
-                this.getData()
+                        //操作画面を閉める
+                        this.cancel()
+                        //データリスト画面をリロード
+                        this.getData()
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             //新規又は更新する画面をキャンセルする
             cancel(i) {
@@ -502,8 +519,10 @@
             async decisionMaster() {
                 //先ずは、操作確認を提示する
                 this.$Modal.confirm({
-                    title: '操作確認',
-                    content: 'データを確定します。よろしいでしょうか？',
+                    inDrawer: true,
+                    title: '注意',
+                    width: 480,
+                    content: 'このマスタデータを確定します。よろしいですか？',
                     okText: '確定',
                     cancelText: '戻る',
                     onOk: async () => {
