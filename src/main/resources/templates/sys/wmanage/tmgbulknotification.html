@@ -380,41 +380,55 @@
                         });
                         return false
                     }
-                    try {
-                        const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
-                        if (msg === '0') {
-                            this.newOrDisp = true
-                            this.getHistoryDisp()
-                            return
-                        }
-                        this.errMsg = JSON.parse(msg)
-                        let errMsg20
-                        let check = Object.keys(this.errMsg).some(e => {
-                            if (e === 'ERRTYPE_10') {
-                                this.$Notice.error({ title: 'Error!',desc: this.errMsg.ERRTYPE_10[0].ERRMSG, duration: this.errMsg.ERRTYPE_10[0].ERRMSG.length > 20 ? 0 : 6.5 })
-                                return true
-                            }
-                            if (e === 'ERRTYPE_20') {
-                                this.errMsg.ERRTYPE_20.forEach(e20 => {
-                                    errMsg20 = errMsg20 + e20.ERRMSG + '/n'
-                                })
-                                this.$Notice.error({ title: 'Error!', desc: errMsg20, duration: errMsg20.length > 20 ? 0 : 6.5 })
-                            }
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この編集内容で登録します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try {
+                                const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
+                                if (msg === '0') {
+                                    this.newOrDisp = true
+                                    this.getHistoryDisp()
+                                    return
+                                }
+                                this.errMsg = JSON.parse(msg)
+                                let errMsg20
+                                let check = Object.keys(this.errMsg).some(e => {
+                                    if (e === 'ERRTYPE_10') {
+                                        this.$Notice.error({ title: 'Error!',desc: this.errMsg.ERRTYPE_10[0].ERRMSG, duration: this.errMsg.ERRTYPE_10[0].ERRMSG.length > 20 ? 0 : 6.5 })
+                                        return true
+                                    }
+                                    if (e === 'ERRTYPE_20') {
+                                        this.errMsg.ERRTYPE_20.forEach(e20 => {
+                                            errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                                        })
+                                        this.$Notice.error({ title: 'Error!', desc: errMsg20, duration: errMsg20.length > 20 ? 0 : 6.5 })
+                                    }
 
-                        })
-                        if (check) {
-                            return false
+                                })
+                                if (check) {
+                                    return false
+                                }
+                            } catch (e) {
+                                return
+                            }
+                        },
+                        onCancel: () => {
                         }
-                    } catch (e) {
-                        return
-                    }
+                    })
+
 
                 },
                 async bulkNtfCancel(e) {
                     this.$Modal.confirm({
                         inDrawer: true,
-                        title: '休暇・休業一括登録の反映内容を取消します。よろしいですか？\n' +
-                            '※取消処理は途中でキャンセルすることはできません。',
+                        title: '注意',
+                        width: 480,
+                        title: '休暇・休業一括登録の反映内容を取消します。よろしいですか？\n※取消処理は途中でキャンセルすることはできません。',
                         width: 490,
                         okText: 'OK',
                         cancelText: 'キャンセル',
