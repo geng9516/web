@@ -1390,7 +1390,7 @@
               }
           })
         },
-        updateGroup() {
+        async updateGroup() {
           const updateValue ={
             ...this.updateValue,
             mgpId: this.groupInfoData[0].mgpId,
@@ -1464,10 +1464,10 @@
           })
 
           // 基点組織
-          const baseIdList = updateValue.baseSectionList.map(e => e.mgbsCsectionid)
+          const baseIdList = updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid)
           this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
             if(!baseIdList.includes(e.mgbsCsectionid)) {
-              updateValue.baseSectionList.push({ id: e.mgbsId, delete: true}) // todo mgbsId
+              updateValue.baseSectionList[0].sectionList.push({ mgbsId: e.mgbsId, delete: true}) // todo mgbsId
             }
           })
           // 条件式による定義
@@ -1496,6 +1496,8 @@
             }
           })
           }
+          const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
+          this.isShow = false
         }
       }
     })
