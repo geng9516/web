@@ -1319,37 +1319,59 @@
                         return
                     }
                 }
-                this.weekPatternloading2=true
-                try{
-                    const  query={...this.query,txtACTION:"ACT_MakeWeekPattern_UWPtn",twp_dstartdate:startdate,twp_denddate:enddate,twp_nid:nid}
-                    const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, query)
-                    if(data){
-                        this.$Message.success('更新完了')
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で更新します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.weekPatternloading2=true
+                        try{
+                            const  query={...this.query,txtACTION:"ACT_MakeWeekPattern_UWPtn",twp_dstartdate:startdate,twp_denddate:enddate,twp_nid:nid}
+                            const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, query)
+                            if(data){
+                                this.$Message.success('更新完了')
+                            }
+                        }catch (e) {
+                            return
+                        }finally {
+                            this.weekPatternloading2=false
+                        }
+                        this.selectTmgWeekPatternList()
+                        this.getSelectScheduleInfo()
+                    },
+                    onCancel: () => {
                     }
-                }catch (e) {
-                    return
-                }finally {
-                    this.weekPatternloading2=false
-                }
-                this.selectTmgWeekPatternList()
-                this.getSelectScheduleInfo()
-
-
+                })
             },
             //周勤务pattern删除处理
             async deleteWeekPtn(index){
-                this.weekPatternloading2=true
-                const query ={...this.query,twp_nid:this.tableDataUsed[index].twp_nid}
-                try{
-                    const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, query)
-                }catch(e){
-                    return
-                }finally {
-                    this.weekPatternloading2=false
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この週勤務パターンを削除します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.weekPatternloading2=true
+                        const query ={...this.query,twp_nid:this.tableDataUsed[index].twp_nid}
+                        try{
+                            const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, query)
+                        }catch(e){
+                            return
+                        }finally {
+                            this.weekPatternloading2=false
 
-                }
-                this.selectTmgWeekPatternList()
-                this.getSelectScheduleInfo()
+                        }
+                        this.selectTmgWeekPatternList()
+                        this.getSelectScheduleInfo()
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             //周勤务pattern登陆处理
             async executeMakeWeekPattern(){
