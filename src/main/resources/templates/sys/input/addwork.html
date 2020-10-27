@@ -967,22 +967,22 @@
                     return false
                 }
                 this.$Modal.confirm({
-                        inDrawer: true,
-                        title: '注意',
-                        content: 'コメントのみを登録します。よろしいですか？',
-                        width: 400,
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: () => {
-                            try {
-                                this.http.post('sys/tmgResults/updateInp', this.tmgResultsDto)
-                            } catch (error) {
-                                
-                            } finally {
-                                this.isShow = false
-                            }
+                    inDrawer: true,
+                    title: '注意',
+                    width: 480,
+                    content: 'コメントのみを登録します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: () => {
+                        try {
+                            this.http.post('sys/tmgResults/updateInp', this.tmgResultsDto)
+                        } catch (error) {
+
+                        } finally {
+                            this.isShow = false
                         }
-                    })
+                    }
+                })
             }),
             //登録
             async updateDaily() {
