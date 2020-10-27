@@ -629,8 +629,10 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        title: '',
-                        content: '表示されている内容を登録します。\nなお、登録した内容は翌日から反映されます。\nよろしいですか？',
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この編集内容を登録します。\nなお、登録した内容は翌日から反映されます。\nよろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
@@ -821,8 +823,10 @@
 
                 try {
                     this.$Modal.confirm({
-                        title: '',
-                        content: '表示されている内容を登録します。よろしいですか？\n※登録されるのは現在表示されている項目のみとなります。',
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この編集内容で登録します。よろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
