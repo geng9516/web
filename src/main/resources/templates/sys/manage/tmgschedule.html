@@ -1111,34 +1111,47 @@
                 if(result){
                     return
                 }
-                let endDispDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                let baseDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                let content={
-                    monthlyScheduleEmpInfoDTOS:postValue,
-                    endDispDate:endDispDate,
-                    baseDate:baseDate,
-                    dispStartDate:Utils.formatDate(Date.now(),'YYYY/MM/DD'),
-                    targetUserId:this.query.EmployeeCode,
-                    loginUserId: [[${ session.psSession.loginEmployee }]]
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で登録します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        let endDispDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                        let baseDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                        let content={
+                            monthlyScheduleEmpInfoDTOS:postValue,
+                            endDispDate:endDispDate,
+                            baseDate:baseDate,
+                            dispStartDate:Utils.formatDate(Date.now(),'YYYY/MM/DD'),
+                            targetUserId:this.query.EmployeeCode,
+                            loginUserId: [[${ session.psSession.loginEmployee }]]
+                        }
 
-                const query = {...this.query,content:JSON.stringify(content) }
-                console.log("postExecuteEditMonthlyUSchedule"+query)
-                try{
-                    this.postScheduleLoading=true
-                    this.loading=true
-                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
-                    this.$Message.success('登録完了')
-                }catch (e) {
-                    return
-                }finally {
-                    this.isEditable=false
-                    this.valueMap=[]
-                    this.postScheduleLoading=false
-                    this.loading=false
-                }
-                await this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
+                        const query = {...this.query,content:JSON.stringify(content) }
+                        console.log("postExecuteEditMonthlyUSchedule"+query)
+                        try{
+                            this.postScheduleLoading=true
+                            this.loading=true
+                            await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
+                            this.$Message.success('登録完了')
+                        }catch (e) {
+                            return
+                        }finally {
+                            this.isEditable=false
+                            this.valueMap=[]
+                            this.postScheduleLoading=false
+                            this.loading=false
+                        }
+                        await this.getSelectScheduleInfo()
+                        this.getSelectIkkaInfo()
+                    },
+                    onCancel: () => {
+                    }
+                })
+
             }),
             //获取勤務パターン列表  区分列表 出張列表接口
             async getSelectIkkaInfo() {
