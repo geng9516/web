@@ -431,6 +431,7 @@
                     lightDelBtnVisible: [],
                     lightDelBtnVisible2: [],
                     model1: '', //年月选择（Date）
+                    contentMsg: '',
                     dispMonthlyList: [],       //年月リスト
                     deptName: '選んでください',   //選択した職員の所属
                     kanjiName: '',
@@ -1102,18 +1103,32 @@
                 async updateMonth(e) {
                     if (e === 'approval') {
                         this.query.txtAction = 'ACT_FIXED'
+                        this.contentMsg = '月次就業実績を承認します。よろしいですか？'
                     } else if (e === 'cancel') {
                         this.query.txtAction = 'ACT_RESCISSION'
+                        this.contentMsg = '月次就業実績を解除します。よろしいですか？'
                     }
-                    try{
-                        this.updateMonthloading=true
-                        await this.http.postForm('sys/tmgResults/updateMonth', this.query)
-                        this.getTitleData()
-                    }catch(error){
-                        return
-                    }finally {
-                        this.updateMonthloading=false
-                    }
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        content: this.contentMsg,
+                        okText: 'OK',
+                        width: 480,
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try{
+                                this.updateMonthloading=true
+                                await this.http.postForm('sys/tmgResults/updateMonth', this.query)
+                                this.getTitleData()
+                            }catch(error){
+                                return
+                            }finally {
+                                this.updateMonthloading=false
+                            }
+                        },
+                        onCancel: () => {
+                        }
+                    })
 
                 },
                 async confWork(){
@@ -1421,8 +1436,9 @@
                 async updateRemandsStatus() {
                     this.$Modal.confirm({
                         inDrawer: true,
-                        title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n'+'※今回、入力した内容は、承認者コメントのみ保存されます',
-                        width: 490,
+                        title: '注意',
+                        width: 480,
+                        content: '勤務実績内容を入力者へ差戻します。よろしいですか？\n※今回の入力内容は承認者コメントのみを登録します。',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
