@@ -147,4 +147,15 @@ public class TmgLiquidationPeriodBean {
             iTmgliquidationDetailService.getBaseMapper().insert(tldDo);
         }
     }
+
+
+    private String LiquidationCheck(){
+
+
+
+        return "";
+    }
+
+
+
 }
