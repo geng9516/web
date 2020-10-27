@@ -1163,8 +1163,10 @@
 
                     } else {
                         this.$Modal.confirm({
-                            title: '',
-                            content: 'チェックされた職員の月次就業実績を承認しますか。よろしいでしょうか？',
+                            inDrawer: true,
+                            title: '注意',
+                            width: 480,
+                            content: 'チェックされた職員の月次就業実績を承認します。\nよろしいですか？',
                             okText: 'OK',
                             cancelText: 'キャンセル',
                             onOk: async () => {
@@ -1203,11 +1205,11 @@
 
                     } else {
                         this.$Modal.confirm({
-                            title: '',
+                            title: '注意',
                             closable: true,
                             inDrawer: true,
-                            content: 'チェックされた職員の日次就業実績を承認します。\nよろしいでしょうか？',
-                            width: 450,
+                            content: 'チェックされた職員の日次就業実績を承認します。\nよろしいですか？',
+                            width: 480,
                             okText: 'OK',
                             cancelText: 'キャンセル',
                             onOk: async () => {
@@ -1568,8 +1570,9 @@
                 async updateRemandsStatus() {
                     this.$Modal.confirm({
                         inDrawer: true,
-                        title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n'+'※今回、入力した内容は、承認者コメントのみ保存されます',
-                        width: 490,
+                        title: '注意',
+                        content: '勤務実績内容を入力者へ差戻します。よろしいですか？\n※今回の入力内容は承認者コメントのみを登録します。',
+                        width: 480,
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
