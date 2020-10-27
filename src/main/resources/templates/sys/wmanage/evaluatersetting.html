@@ -385,6 +385,7 @@
                 ],
                 loading: false,
                 tableData: [],
+                contentMsg:'',
                 mergeSpanInfo: [],
                 emplistLoading: false,
                 referListObject: {
@@ -1077,6 +1078,7 @@
                     }
                 })
                 if (type === "add") {
+                    this.contentMsg = 'この編集内容で登録します。よろしいですか？'
                     if (this.addPermissionAdminInfo.name === '承認者検索') {
                         this.$Notice.warning({ title: '注意', desc: '承認者を選択してください。', duration: 6.5 })
                         return
@@ -1086,6 +1088,7 @@
                 // 更新时的最后一项权限可以为空
                 let updateLastOneBlank = false
                 if (type === "update") {
+                    this.contentMsg = 'この編集内容で更新します。よろしいですか？'
                     const lastOne = this.permissionAdminValue[this.permissionAdminValue.length - 1]
                     if (!lastOne.workConfirm &&
                         !lastOne.monthConfirm &&
@@ -1152,154 +1155,200 @@
                     }
                 })
                 if(basicCheck) return
-
-                console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
-                if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
-                    if (type === "add") {
-                        const query = {
-                            empId: this.permissionAdminValue[0].empId,
-                            groupId: this.permissionAdminValue[0].groupId,
-                            sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                            startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
-                            endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
-                            approvalLevel: this.permissionAdminValue[0].level,
-                            dailyResult: this.permissionAdminValue[0].workConfirm,
-                            monthlyResult: this.permissionAdminValue[0].monthConfirm,
-                            overTime: this.permissionAdminValue[0].overWorkConfirm,
-                            schedule: this.permissionAdminValue[0].scheduleCreate,
-                            authority: this.permissionAdminValue[0].permissionGive,
-                            notification: this.permissionAdminValue[0].restConfirm
-                        }
-                        try {
-                            this.updatePermissionFlagLoading = true
-                            await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
-                            this.$Message.success('追加完了')
-                            this.getTableData()
-                            this.permissionAdminAddModal = false
-                        } catch (error) {
-                            this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
-                        } finally {
-                            this.updatePermissionFlagLoading = false
-                        }
-                    } else {
-                        let list = []
-                        this.permissionAdminValue.forEach((e, i) => {
-                            if(updateLastOneBlank && i === this.permissionAdminValue.length - 1) {
-                            } else {
-                                list = list.concat({
-                                    delete: e.delete || false,
-                                    newLine: i === this.permissionAdminValue.length - 1,
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: this.contentMsg,
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
+                        if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
+                            if (type === "add") {
+                                const query = {
+                                    empId: this.permissionAdminValue[0].empId,
+                                    groupId: this.permissionAdminValue[0].groupId,
                                     sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                                    startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
-                                    endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
-                                    approvalLevel: e.level || '',
-                                    dailyResult: e.workConfirm || false,
-                                    monthlyResult: e.monthConfirm || false,
-                                    overTime: e.overWorkConfirm || false,
-                                    schedule: e.scheduleCreate || false,
-                                    authority: e.permissionGive || false,
-                                    notification: e.restConfirm || false,
-                                    beforeStartDate: e.beforeStartDate || '',
-                                    beforeEndDate: e.beforeEndDate|| ''
+                                    startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
+                                    endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
+                                    approvalLevel: this.permissionAdminValue[0].level,
+                                    dailyResult: this.permissionAdminValue[0].workConfirm,
+                                    monthlyResult: this.permissionAdminValue[0].monthConfirm,
+                                    overTime: this.permissionAdminValue[0].overWorkConfirm,
+                                    schedule: this.permissionAdminValue[0].scheduleCreate,
+                                    authority: this.permissionAdminValue[0].permissionGive,
+                                    notification: this.permissionAdminValue[0].restConfirm
+                                }
+                                try {
+                                    this.updatePermissionFlagLoading = true
+                                    await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
+                                    this.$Message.success('追加完了')
+                                    this.getTableData()
+                                    this.permissionAdminAddModal = false
+                                } catch (error) {
+                                    this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                                } finally {
+                                    this.updatePermissionFlagLoading = false
+                                }
+                            } else {
+                                let list = []
+                                this.permissionAdminValue.forEach((e, i) => {
+                                    if(updateLastOneBlank && i === this.permissionAdminValue.length - 1) {
+                                    } else {
+                                        list = list.concat({
+                                            delete: e.delete || false,
+                                            newLine: i === this.permissionAdminValue.length - 1,
+                                            sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                            startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
+                                            endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
+                                            approvalLevel: e.level || '',
+                                            dailyResult: e.workConfirm || false,
+                                            monthlyResult: e.monthConfirm || false,
+                                            overTime: e.overWorkConfirm || false,
+                                            schedule: e.scheduleCreate || false,
+                                            authority: e.permissionGive || false,
+                                            notification: e.restConfirm || false,
+                                            beforeStartDate: e.beforeStartDate || '',
+                                            beforeEndDate: e.beforeEndDate|| ''
+                                        })
+                                    }
                                 })
+                                const query = {
+                                    empId: this.permissionAdminValue[0].empId,
+                                    groupId: this.permissionAdminValue[0].groupId,
+                                    sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                    list: list
+                                }
+                                try {
+                                    this.updatePermissionFlagLoading = true
+                                    await this.http.post(`sys/evaluatorsetting/editEval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
+                                    this.$Message.success('変更完了')
+                                    this.getTableData()
+                                    this.permissionAdminAddModal = false
+                                } catch (error) {
+                                    this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                                } finally {
+                                    this.updatePermissionFlagLoading = false
+                                }
                             }
-                        })
-                        const query = {
-                            empId: this.permissionAdminValue[0].empId,
-                            groupId: this.permissionAdminValue[0].groupId,
-                            sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                            list: list
+                        } else {
+                            this.$Notice.warning({ title: '注意', desc: ' 有効期間が重複しています。', duration: 6.5 })
                         }
-                        try {
-                            this.updatePermissionFlagLoading = true
-                            await this.http.post(`sys/evaluatorsetting/editEval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
-                            this.$Message.success('変更完了')
-                            this.getTableData()
-                            this.permissionAdminAddModal = false
-                        } catch (error) {
-                            this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
-                        } finally {
-                            this.updatePermissionFlagLoading = false
-                        }
+                    },
+                    onCancel: () => {
                     }
-                } else {
-                    this.$Notice.warning({ title: '注意', desc: ' 有効期間が重複しています。', duration: 6.5 })
-                }
-
+                })
             },
             updateGruopName: Debounce(async function (name) {
                 if (!this.gruopNameForm.groupName) {
                     return this.$Notice.warning({ title: '注意', desc: 'グループ名を入力してください。', duration: 6.5 })
                 }
-                const query = {
-                    txtAction: 'ACT_EditGroup_UGrpName',
-                    txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                    targetGroupId: this.gruopNameForm.groupId,
-                    targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                    groupName: this.gruopNameForm.groupName,
-                    psSite: this.referListObject.psSite,
-                    psApp: this.referListObject.psApp
-                }
-                try {
-                    this.solvingLoading = true
-                    this.updateGruopNameLoading = true
-                    const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
-                    this.cancel('gruopNameForm', 'editGroupNameModal')
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                } catch (error) {
-                    this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
-                    this.solvingLoading = false
-                } finally {
-                    this.updateGruopNameLoading = false
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で更新します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const query = {
+                            txtAction: 'ACT_EditGroup_UGrpName',
+                            txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                            targetGroupId: this.gruopNameForm.groupId,
+                            targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                            groupName: this.gruopNameForm.groupName,
+                            psSite: this.referListObject.psSite,
+                            psApp: this.referListObject.psApp
+                        }
+                        try {
+                            this.solvingLoading = true
+                            this.updateGruopNameLoading = true
+                            const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
+                            this.cancel('gruopNameForm', 'editGroupNameModal')
+                            this.$Message.success('更新完了')
+                            this.getTableData()
+                        } catch (error) {
+                            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
+                            this.solvingLoading = false
+                        } finally {
+                            this.updateGruopNameLoading = false
+                        }
+                    },
+                    onCancel: () => {
+                    }
+                })
             }),
             addGruopName: Debounce(async function (name) {
                 if (!this.gruopNameForm.groupName) {
                     return this.$Notice.warning({ title: '注意', desc: 'グループ名を入力してください。', duration: 6.5 })
                 }
-                const query = {
-                    txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                    targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                    groupName: this.gruopNameForm.groupName,
-                    psSite: this.referListObject.psSite,
-                    psApp: this.referListObject.psApp
-                }
-                try {
-                    this.solvingLoading = true
-                    this.addGruopNameLoading = true
-                    const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
-                    this.cancel('gruopNameForm', 'editGroupNameModal')
-                    this.$Message.success('追加完了')
-                    this.getTableData()
-                } catch (error) {
-                    this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
-                    this.solvingLoading = false
-                } finally {
-                    this.addGruopNameLoading = false
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で登録します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const query = {
+                            txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                            targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                            groupName: this.gruopNameForm.groupName,
+                            psSite: this.referListObject.psSite,
+                            psApp: this.referListObject.psApp
+                        }
+                        try {
+                            this.solvingLoading = true
+                            this.addGruopNameLoading = true
+                            const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
+                            this.cancel('gruopNameForm', 'editGroupNameModal')
+                            this.$Message.success('追加完了')
+                            this.getTableData()
+                        } catch (error) {
+                            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
+                            this.solvingLoading = false
+                        } finally {
+                            this.addGruopNameLoading = false
+                        }
+                    },
+                    onCancel: () => {
+                    }
+                })
             }),
             async delGruopName() {
-                const query = {
-                    txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                    targetGroupId: this.gruopNameForm.groupId,
-                    sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                    psSite: this.referListObject.psSite,
-                    psApp: this.referListObject.psApp
-                }
-                try {
-                    this.solvingLoading  = true
-                    this.delGruopNameLoading = true
-                    const { data } = await this.http.get('sys/evaluatorsetting/deletegroup', query)
-                    this.cancel('gruopNameForm', 'editGroupNameModal')
-                    this.$Message.success('削除完了')
-                    this.getTableData()
-                } catch (error) {
-                    this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
-                    this.solvingLoading  = false
-                } finally {
-                    this.delGruopNameLoading = false
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'このグループを削除します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const query = {
+                            txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                            targetGroupId: this.gruopNameForm.groupId,
+                            sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                            psSite: this.referListObject.psSite,
+                            psApp: this.referListObject.psApp
+                        }
+                        try {
+                            this.solvingLoading  = true
+                            this.delGruopNameLoading = true
+                            const { data } = await this.http.get('sys/evaluatorsetting/deletegroup', query)
+                            this.cancel('gruopNameForm', 'editGroupNameModal')
+                            this.$Message.success('削除完了')
+                            this.getTableData()
+                        } catch (error) {
+                            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
+                            this.solvingLoading  = false
+                        } finally {
+                            this.delGruopNameLoading = false
+                        }
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             // member edit
             async handleClickEditMember() {
@@ -1338,20 +1387,32 @@
                 }
             },
             async updateMemberAssign() {
-                const query = this.memberAssignValue.filter(e=> e.originalGroupId !== e.groupId)
-                if(query.length === 0) return
-                try {
-                    this.updatePermissionFlagLoading = true
-                    const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
-                    this.$Message.success('変更完了')
-                    this.handleClickEditMember()
-                } catch (error) {
-                    this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
-                } finally {
-                    this.permissionAdminAddModal = false
-                    this.updatePermissionFlagLoading = false
-                }
-                console.log(query)
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で更新します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const query = this.memberAssignValue.filter(e=> e.originalGroupId !== e.groupId)
+                        if(query.length === 0) return
+                        try {
+                            this.updatePermissionFlagLoading = true
+                            const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
+                            this.$Message.success('変更完了')
+                            this.handleClickEditMember()
+                        } catch (error) {
+                            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
+                        } finally {
+                            this.permissionAdminAddModal = false
+                            this.updatePermissionFlagLoading = false
+                        }
+                        console.log(query)
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             handleSpan({ rowIndex, columnIndex }) {
                 // 这里将得到得合并信息进行表格列项合并
