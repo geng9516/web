@@ -1458,28 +1458,41 @@
                 if(result){
                     return
                 }
-                this.weekPatternloading2=true
-                const query={...this.query,content:JSON.stringify(this.value2) }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この編集内容で登録します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.weekPatternloading2=true
+                        const query={...this.query,content:JSON.stringify(this.value2) }
 
-                try{
-                    await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,query)
-                }catch (e) {
-                    this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
-                }finally {
-                    this.weekPatternloading2=false
-                }
-                this.selectTmgWeekPatternList()
-                this.getSelectScheduleInfo()
-                this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
-                        let id='TMG_WORK|000'
-                        if(index==0){
-                            id='TMG_WORK|500'
+                        try{
+                            await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,query)
+                        }catch (e) {
+                            this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
+                        }finally {
+                            this.weekPatternloading2=false
                         }
-                        if(index==6){
-                            id='TMG_WORK|570'
-                        }
-                        return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
-                    })}
+                        this.selectTmgWeekPatternList()
+                        this.getSelectScheduleInfo()
+                        this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
+                                let id='TMG_WORK|000'
+                                if(index==0){
+                                    id='TMG_WORK|500'
+                                }
+                                if(index==6){
+                                    id='TMG_WORK|570'
+                                }
+                                return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
+                            })}
+                    },
+                    onCancel: () => {
+                    }
+                })
+
             },
             //提交预定做成数据处理
             postExecuteEditMonthlyUSchedule: Debounce( async function() {
