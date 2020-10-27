@@ -1226,22 +1226,34 @@
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             async confirm() {
-                const ntfNoList = this.$refs.table.getSelection().map(e => e.tntfCntfNo)
-                if (ntfNoList.length === 0) {
-                    return this.$Notice.warning({title: '注意', desc: '少なくとも一つの項目を選んでください。', duration: 6.5})
-                }
-                this.confirmLoading = true
-                try {
-                    const {data} = await this.http.postForm('sys/vapply/BulkPermit', {
-                        ntfNoList: JSON.stringify(ntfNoList),
-                        psSite: this.referListObject.psSite
-                    })
-                    this.$Message.success('一括承認完了')
-                    this.getTableData(false, true)
-                } catch (error) {
-                } finally {
-                    this.confirmLoading = false
-                }
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'チェックされた職員の申請情報を承認します。\nよろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const ntfNoList = this.$refs.table.getSelection().map(e => e.tntfCntfNo)
+                        if (ntfNoList.length === 0) {
+                            return this.$Notice.warning({title: '注意', desc: '少なくとも一つの項目を選んでください。', duration: 6.5})
+                        }
+                        this.confirmLoading = true
+                        try {
+                            const {data} = await this.http.postForm('sys/vapply/BulkPermit', {
+                                ntfNoList: JSON.stringify(ntfNoList),
+                                psSite: this.referListObject.psSite
+                            })
+                            this.$Message.success('一括承認完了')
+                            this.getTableData(false, true)
+                        } catch (error) {
+                        } finally {
+                            this.confirmLoading = false
+                        }
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             confirmByPerson() {
                 let query = {...this.referListObject}
@@ -1316,8 +1328,9 @@
                 console.log(query)
                 this.$Modal.confirm({
                     inDrawer: true,
-                    title: '申請の最終決裁を取消します。よろしいですか？',
-                    width: 490,
+                    width: 480,
+                    title: '注意',
+                    content: 'この申請の最終決裁を取消します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
@@ -1565,42 +1578,55 @@
                     this.errorMsg = '添付ファイルを入力してください。'
                     return
                 }
-                this.deleteFiles = [...new Set(this.deleteFiles)]
-                try {
-                    this.applyLoading = true
-                    await this.http.uploadFiles('sys/vapply/MakeApply', {
-                        params: JSON.stringify(this.restApply),
-                        uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
-                        deleteFiles: JSON.stringify(this.deleteFiles),
-                        txtTmgReferListTreeViewPermTargetEmp: this.curClickedEmpId,
-                        psSite: this.referListObject.psSite
-                    })
-                    this.restApply = {
-                        useVacation: false,
-                        restTypeId: '全て',
-                        weekSelected: [],
-                        noreserved: 1,
-                        _dateList: '',
-                        _dateListRange: ['', ''],
-                        dateListRange: ['', ''],
-                        txtAddDate: null,
-                        txtTargetNumber: null
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '注意',
+                    content: 'この内容で申請します。よろしいですか？',
+                    okText: 'OK',
+                    width: 480,
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.deleteFiles = [...new Set(this.deleteFiles)]
+                        try {
+                            this.applyLoading = true
+                            await this.http.uploadFiles('sys/vapply/MakeApply', {
+                                params: JSON.stringify(this.restApply),
+                                uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
+                                deleteFiles: JSON.stringify(this.deleteFiles),
+                                txtTmgReferListTreeViewPermTargetEmp: this.curClickedEmpId,
+                                psSite: this.referListObject.psSite
+                            })
+                            this.restApply = {
+                                useVacation: false,
+                                restTypeId: '全て',
+                                weekSelected: [],
+                                noreserved: 1,
+                                _dateList: '',
+                                _dateListRange: ['', ''],
+                                dateListRange: ['', ''],
+                                txtAddDate: null,
+                                txtTargetNumber: null
+                            }
+                            this.$Message.success('申请完了')
+                            this.agencyApplyShow = false
+                            this.getTableData(false, true)
+                            this.uploadFiles = []
+                            this.$refs.select.clearSingleSelect()
+                            this.curTab = 'name1'
+                        } catch (error) {
+                            if (error.config || error.response && error.response.status === 500) return
+                            this.errorInfo = true
+                            const _error = JSON.parse(error)
+                            this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
+                        } finally {
+                            this.applyLoading = false
+                            this.deleteFiles = []
+                        }
+                    },
+                    onCancel: () => {
                     }
-                    this.$Message.success('申请完了')
-                    this.agencyApplyShow = false
-                    this.getTableData(false, true)
-                    this.uploadFiles = []
-                    this.$refs.select.clearSingleSelect()
-                    this.curTab = 'name1'
-                } catch (error) {
-                    if (error.config || error.response && error.response.status === 500) return
-                    this.errorInfo = true
-                    const _error = JSON.parse(error)
-                    this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
-                } finally {
-                    this.applyLoading = false
-                    this.deleteFiles = []
-                }
+                })
+
             }),
             handleWeekSelect(e) {
                 //console.log(e)
