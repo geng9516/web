@@ -15,7 +15,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `カレンダー編集` }}
+                        {{ titleMsg }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -186,6 +186,7 @@
                     deptDrawShow: false,
                     isSearchHistory: false,
                     treeData: [],
+                    titleMsg: 'カレンダー',
                     empTreeData: [],
                     deptName: '選んでください',   //選択した職員の所属
                     referListObject: {
@@ -456,6 +457,7 @@
                     }
                 },
                 async editshow() {
+                    this.titleMsg = 'カレンダー編集'
                     this.query.year = Utils.formatDate(this.curDate, 'yyyy')
                     try {
                         this.loading = true
@@ -525,6 +527,7 @@
                                 return
                             }finally {
                                 this.updateLoading=false
+                                this.titleMsg = 'カレンダー'
                             }
                         },
                         onCancel: () => {
@@ -548,6 +551,7 @@
                             }catch(error){
                                 return
                             }finally {
+                                this.titleMsg = 'カレンダー'
                                 this.updateLoading=false
                             }
                         },
@@ -556,6 +560,7 @@
                     })
                 },
                 async cancel() {
+                    this.titleMsg = 'カレンダー'
                     this.getCalendarData()
                 },
                 async handleClickLeaf(e) {
