@@ -967,8 +967,10 @@
 
                 if (this.errorCheck()){
                     this.$Modal.confirm({
-                        title: '',
-                        content: '入力内容を保存します。よろしいですか？',
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この編集内容で登録します。よろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
@@ -1003,8 +1005,10 @@
                 this.updateAcquired5DaysVO.txtNusedaysDays = ''
 
                 this.$Modal.confirm({
-                    title: '',
-                    content: '編集内容を削除します。よろしいですか？',
+                    inDrawer: true,
+                    title: '注意',
+                    width: 480,
+                    content: 'この年次休暇付与情報を削除します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
