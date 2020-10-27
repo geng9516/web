@@ -489,47 +489,71 @@
 
                 },
                 async updateCalendar() {
-                    this.updateLoading=true
-                    if(this.isEditable){
-                        this.CalendarYearDto.monthlist = this.yearData.map(e => {
-                            return {
-                                month:e.tcaDyyyymm.split(" ")[0].replace(/-/g,"/"),
-                                holFlgList:[...Object.values(e.dataFlg)]
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この編集内容で登録します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            this.updateLoading=true
+                            if(this.isEditable){
+                                this.CalendarYearDto.monthlist = this.yearData.map(e => {
+                                    return {
+                                        month:e.tcaDyyyymm.split(" ")[0].replace(/-/g,"/"),
+                                        holFlgList:[...Object.values(e.dataFlg)]
+                                    }
+                                })
+                            }else{
+                                this.CalendarYearDto.monthlist = this.changeMonthList.map(e => {
+                                    return {
+                                        month:this.yearData[e - 1].tcaDyyyymm.split(" ")[0].replace(/-/g,"/"),
+                                        holFlgList: [...Object.values(this.yearData[e - 1].dataFlg)]
+                                    }
+                                })
                             }
-                        })
-                    }else{
-                        this.CalendarYearDto.monthlist = this.changeMonthList.map(e => {
-                            return {
-                                month:this.yearData[e - 1].tcaDyyyymm.split(" ")[0].replace(/-/g,"/"),
-                                holFlgList: [...Object.values(this.yearData[e - 1].dataFlg)]
+                            try{
+                                if(this.isEditable){
+                                    console.log(this.query)
+                                    await this.http.post(`sys/calendar/insertCalendar?txtTmgReferListTreeViewAdminTargetSection=${this.query.txtTmgReferListTreeViewAdminTargetSection}&txtTmgReferListTreeViewRecordDate=${this.referListObject.txtTmgReferListTreeViewRecordDate}&psSite=${Utils.getUrlParam(location.href, 'psSite')}&type=21&psApp=calendar`,this.CalendarYearDto)
+                                }else{
+                                    await this.http.post(`sys/calendar/updateCalendar?txtTmgReferListTreeViewAdminTargetSection=${this.query.txtTmgReferListTreeViewAdminTargetSection}&txtTmgReferListTreeViewRecordDate=${this.referListObject.txtTmgReferListTreeViewRecordDate}&psSite=${Utils.getUrlParam(location.href, 'psSite')}&type=21&psApp=calendar`,this.CalendarYearDto)
+                                }
+                                this.getCalendarData()
+                            }catch(error){
+                                return
+                            }finally {
+                                this.updateLoading=false
                             }
-                        })
-                    }
-                    try{
-                        if(this.isEditable){
-                            console.log(this.query)
-                            await this.http.post(`sys/calendar/insertCalendar?txtTmgReferListTreeViewAdminTargetSection=${this.query.txtTmgReferListTreeViewAdminTargetSection}&txtTmgReferListTreeViewRecordDate=${this.referListObject.txtTmgReferListTreeViewRecordDate}&psSite=${Utils.getUrlParam(location.href, 'psSite')}&type=21&psApp=calendar`,this.CalendarYearDto)
-                        }else{
-                            await this.http.post(`sys/calendar/updateCalendar?txtTmgReferListTreeViewAdminTargetSection=${this.query.txtTmgReferListTreeViewAdminTargetSection}&txtTmgReferListTreeViewRecordDate=${this.referListObject.txtTmgReferListTreeViewRecordDate}&psSite=${Utils.getUrlParam(location.href, 'psSite')}&type=21&psApp=calendar`,this.CalendarYearDto)
+                        },
+                        onCancel: () => {
                         }
-                        this.getCalendarData()
-                    }catch(error){
-                        return
-                    }finally {
-                        this.updateLoading=false
-                    }
+                    })
                 },
 
                 async deleteCalendar() {
-                    try{
-                        this.updateLoading=true
-                        await this.http.postForm('sys/calendar/deleteCalendar', this.query)
-                        this.getCalendarData()
-                    }catch(error){
-                        return
-                    }finally {
-                        this.updateLoading=false
-                    }
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: 'この一年間の設定を削除します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try{
+                                this.updateLoading=true
+                                await this.http.postForm('sys/calendar/deleteCalendar', this.query)
+                                this.getCalendarData()
+                            }catch(error){
+                                return
+                            }finally {
+                                this.updateLoading=false
+                            }
+                        },
+                        onCancel: () => {
+                        }
+                    })
                 },
                 async cancel() {
                     this.getCalendarData()
