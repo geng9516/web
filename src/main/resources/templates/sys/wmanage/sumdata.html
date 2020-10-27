@@ -519,8 +519,10 @@
                 monthlyDelFix(e){
                     this.opts.baseDate = e.concat('/01')
                     this.$Modal.confirm({
+                        inDrawer: true,
                         title: '注意',
-                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の月次締め解除処理を実行します。\nよろしいですか？',
+                        width: 480,
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'月の就業締め解除処理を実行します。\nよろしいですか？',
                         onOk: async () => {
                             try {
                                 this.loading = true
