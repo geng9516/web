@@ -73,6 +73,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
 
         String requestUrl = request.getRequestURI();
 
+
         if (SecurityUtil.isAuthenticated()) {
 
             loadUserBasicInfo(request, httpSession);

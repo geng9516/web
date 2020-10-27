@@ -1,7 +1,4 @@
 spring:
-  session:
-    # session过期时间默认为600秒，即10分钟,小于60秒会被当作60秒处理
-    timeout: 600
 #  datasource:
 #    url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
 #    username: SPWM
