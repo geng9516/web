@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -37,6 +38,7 @@ public class TmgOrgTree {
     public static final int DEFAULT_KEY_CUST    = 5;
     public static final int DEFAULT_KEY_COMP    = 6;
 
+    private Connection connection;
     private PsDBBean psDBBean;
     private String beanDesc = null;
     private List dataArray = null;
@@ -84,7 +86,6 @@ public class TmgOrgTree {
 
     public void createOrgTree(String custId, String compCode, String language, String baseDate) throws Exception{
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
-        Connection connection = null;
         List entityList = null;
         try {
             connection = dataSource.getConnection();
@@ -92,9 +93,7 @@ public class TmgOrgTree {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            DbUtil.close(connection);
         }
         dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }

@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -39,11 +39,6 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     private Connection connection;
     private final TimedCache<String,Object> timedCache;
 
-    @PostConstruct
-    public void init() throws SQLException {
-        connection = dataSource.getConnection();
-    }
-
     @Override
     public List<MastAppTreeDTO> getAppTree() {
        return appTreeService.selectMastAppTree();
@@ -52,16 +47,13 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     @Override
     public List<MastTemplateDTO> getTemplateList() {
         try {
+            connection = dataSource.getConnection();
             return SqlExecutor.query(connection, "select MAT_ID, MAT_CTEMPLATEID, MAT_CNAME from mast_apptemplate",new MastTemplateHandler());
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new GlobalException(e.getMessage());
         } finally {
-            try {
-                connection.close();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
+            DbUtil.close(connection);
         }
     }
 

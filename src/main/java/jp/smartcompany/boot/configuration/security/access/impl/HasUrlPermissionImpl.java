@@ -5,6 +5,7 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.handler.NumberHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
@@ -188,11 +189,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
             } catch(SQLException e) {
                 e.printStackTrace();
             } finally {
-                try {
-                    connection.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+                DbUtil.close(connection);
             }
         }
         groupBusiness.getGroupList("ja",systemList,httpSession);
