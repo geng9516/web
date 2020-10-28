@@ -79,6 +79,6 @@ public class BaseSectionRowDTO implements Serializable {
     /** 選択済みの組織一覧(指定法人)の件数 */
 //    private int gnSelectedSectionCnt = 0;
     /** 削除フラグ  */
-    private Boolean delete;
+    private Boolean delete = false;
 
 }

@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.mapper;
+package jp.smartcompany.job.modules.core.mapper.TmgUpdsKintai;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgUpdsKintaiDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

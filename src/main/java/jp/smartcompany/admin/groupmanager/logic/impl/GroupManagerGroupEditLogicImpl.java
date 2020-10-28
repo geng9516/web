@@ -453,7 +453,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         boolean checkFlag = isQueryCondition(baseFlag,queryConditionDTO.getRowList());
         int checkResult=0;
         // グループID重複チェック(新規登録のみ)
-        if (iMastGroupService.selectGroupExists(customerId,systemId,groupId) > 0 && checkFlag) {
+        if (dto.getMgId()==null && iMastGroupService.selectGroupExists(customerId,systemId,groupId) > 0 && checkFlag) {
             checkFlag = false;
             checkResult = 1;
         }
@@ -468,7 +468,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         }
         // チェック判定
         if (!checkFlag) {
-            throw new GlobalException("変更できません、エーラ:"+checkResult);
+            throw new GlobalException(400,"変更できません、エーラ:"+checkResult);
         }
 
         // グループ定義情報を更新
@@ -505,7 +505,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         HttpSession session = ContextUtil.getSession();
         session.removeAttribute(Constant.IS_APPROVER);
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
-
+        session.removeAttribute(Constant.PS_SESSION);
     }
 
 
@@ -756,13 +756,15 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public void deleteBaseSection(List<MastGroupbasesectionDO> baseSectionList) {
         // データベースへ更新(削除)
         List<Long> ids = CollUtil.newArrayList();
-        for (MastGroupbasesectionDO mastGroupbasesectionDO : baseSectionList) {
-            // IDの有るもの(DBに存在するデータ)のみ、更新する
-            if (mastGroupbasesectionDO.getMgbsId() != null) {
-                ids.add(mastGroupbasesectionDO.getMgbsId());
+        if (CollUtil.isNotEmpty(baseSectionList)) {
+            for (MastGroupbasesectionDO mastGroupbasesectionDO : baseSectionList) {
+                // IDの有るもの(DBに存在するデータ)のみ、更新する
+                if (mastGroupbasesectionDO.getMgbsId() != null) {
+                    ids.add(mastGroupbasesectionDO.getMgbsId());
+                }
             }
+            iMastGroupbasesectionService.removeByIds(ids);
         }
-        iMastGroupbasesectionService.removeByIds(ids);
     }
 
     /**
@@ -774,14 +776,16 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 削除件数
         List<Long> ids = CollUtil.newArrayList();
         // データベースへ更新(削除)
-        for (HistGroupdefinitionsDO deleteDefinition : deleteDefinitions) {
-            // IDの有るもの(DBに存在するデータ)のみ、更新する
-            Long id = deleteDefinition.getHgdId();
-            if (id != null) {
-                ids.add(id);
+        if (CollUtil.isNotEmpty(deleteDefinitions)) {
+            for (HistGroupdefinitionsDO deleteDefinition : deleteDefinitions) {
+                // IDの有るもの(DBに存在するデータ)のみ、更新する
+                Long id = deleteDefinition.getHgdId();
+                if (id != null) {
+                    ids.add(id);
+                }
             }
+            iHistGroupdefinitionsService.removeByIds(ids);
         }
-        iHistGroupdefinitionsService.removeByIds(ids);
     }
 
     /**
@@ -792,14 +796,16 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public void deleteGroupSectionPost(List<MastGroupsectionpostmappingDO> deleteSectionPost) {
         List<Long> ids = CollUtil.newArrayList();
         // データベースへ更新(削除)
-        for (MastGroupsectionpostmappingDO mastGroupsectionpostmappingDO : deleteSectionPost) {
-            // IDの有るもの(DBに存在するデータ)のみ、更新する
-            Long id = mastGroupsectionpostmappingDO.getMagId();
-            if (id!=null) {
-                  ids.add(id);
+        if (CollUtil.isNotEmpty(deleteSectionPost)) {
+            for (MastGroupsectionpostmappingDO mastGroupsectionpostmappingDO : deleteSectionPost) {
+                // IDの有るもの(DBに存在するデータ)のみ、更新する
+                Long id = mastGroupsectionpostmappingDO.getMagId();
+                if (id != null) {
+                    ids.add(id);
+                }
             }
+            iMastGroupsectionpostmappingService.removeByIds(ids);
         }
-        iMastGroupsectionpostmappingService.removeByIds(ids);
     }
 
     /**
@@ -1107,19 +1113,21 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         List<MastGroupbasesectionDO> saveRows = CollUtil.newArrayList();
         List<MastGroupbasesectionDO> updateRows = CollUtil.newArrayList();
         // 入れ替え処理(表示用DTO ⇒ 更新用Entity)を行い、登録
-        for (BaseSectionRowDTO baseSectionRowDTO : baseSectionList) {
-            for (BaseSectionRowListDTO rowListDTO:baseSectionRowDTO.getSectionList()) {
-                MastGroupbasesectionDO ent = baseSectionLogic.insertBaseSection(rowListDTO);
-                ent.setMgbsCmodifieruserid(session.getLoginUser());    // 更新者
-                // IDの無いもの(DBに存在しないデータ)は追加する
-                if (ent.getMgbsId() == null) {
-                    // データベースへ更新(新規登録)
+        if (CollUtil.isNotEmpty(baseSectionList)) {
+            for (BaseSectionRowDTO baseSectionRowDTO : baseSectionList) {
+                for (BaseSectionRowListDTO rowListDTO : baseSectionRowDTO.getSectionList()) {
+                    MastGroupbasesectionDO ent = baseSectionLogic.insertBaseSection(rowListDTO);
+                    ent.setMgbsCmodifieruserid(session.getLoginUser());    // 更新者
+                    // IDの無いもの(DBに存在しないデータ)は追加する
+                    if (ent.getMgbsId() == null) {
+                        // データベースへ更新(新規登録)
 //                    ent.setVersionno(1L);
-                    saveRows.add(ent);
-                    // IDがあるものは更新する
-                } else {
-                    // データベースへ更新(更新)
-                    updateRows.add(ent);
+                        saveRows.add(ent);
+                        // IDがあるものは更新する
+                    } else {
+                        // データベースへ更新(更新)
+                        updateRows.add(ent);
+                    }
                 }
             }
         }

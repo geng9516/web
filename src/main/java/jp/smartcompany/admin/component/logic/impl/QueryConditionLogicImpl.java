@@ -125,21 +125,23 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
         List <QueryConditionRowDTO> oJoinQuery = CollUtil.newArrayList();
 
         // 結合式とテーブル取得
-        for (QueryConditionRowDTO queryConditionRowDTO : oInfo) {
-            String sTableId = queryConditionRowDTO.getTableid();
-            List<QueryConditionRowDTO> oResult = CollUtil.newArrayList();
+        if (CollUtil.isNotEmpty(oInfo)) {
+            for (QueryConditionRowDTO queryConditionRowDTO : oInfo) {
+                String sTableId = queryConditionRowDTO.getTableid();
+                List<QueryConditionRowDTO> oResult = CollUtil.newArrayList();
 
-            // 異動歴以外の場合のみ、結合式作成
-            if (sTableId != null) {
-                // 重複しているテーブルは除く
-                if (!sTableId.equals(TBL_HIST_DESIGNATION) && checkDuplicate(oJoinQuery, sTableId)) {
-                    oResult = iMastDatadictionaryService.selectGroupJoinQuery(psCustomerId, sTableId);
+                // 異動歴以外の場合のみ、結合式作成
+                if (sTableId != null) {
+                    // 重複しているテーブルは除く
+                    if (!sTableId.equals(TBL_HIST_DESIGNATION) && checkDuplicate(oJoinQuery, sTableId)) {
+                        oResult = iMastDatadictionaryService.selectGroupJoinQuery(psCustomerId, sTableId);
+                    }
                 }
-            }
 
-            if (oResult.size() > 0) {
-                oResult.get(0).setTableid(sTableId);
-                oJoinQuery.add(oResult.get(0));
+                if (oResult.size() > 0) {
+                    oResult.get(0).setTableid(sTableId);
+                    oJoinQuery.add(oResult.get(0));
+                }
             }
         }
 
@@ -179,8 +181,8 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
 
         // グループ判定用クエリの結合式を作成する
         if (oJoinQuery.size() > 0) {
-            for (int i = 0; i < oJoinQuery.size(); i++) {
-                sbQuery.append(oJoinQuery.get(i).getJoinquery());
+            for (QueryConditionRowDTO queryConditionRowDTO : oJoinQuery) {
+                sbQuery.append(queryConditionRowDTO.getJoinquery());
             }
         } else {
             sbQuery.append(PT_AND);
@@ -198,106 +200,108 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
         }
 
         // 条件式が設定されている場合
-        if (oInfo.size() > 0) {
+        if (CollUtil.isNotEmpty(oInfo)) {
             sbQuery.append(PT_AND);
             sbQuery.append(PT_OPEN_PAR);
         }
 
         // 取得した設定値より、条件式を作成する
-        for (QueryConditionRowDTO queryConditionRowDto : oInfo) {
+        if (CollUtil.isNotEmpty(oInfo)) {
+            for (QueryConditionRowDTO queryConditionRowDto : oInfo) {
 
-            String sOperator = toBlank(queryConditionRowDto.getOperator());      // 比較演算子
-            String sType = toBlank(queryConditionRowDto.getTypeofcolumn());  // データ型
-            String sValue = toBlank(queryConditionRowDto.getValue());         // 値
-            String sMaster = toBlank(queryConditionRowDto.getMastertablename()); // マスタ項目
+                String sOperator = toBlank(queryConditionRowDto.getOperator());      // 比較演算子
+                String sType = toBlank(queryConditionRowDto.getTypeofcolumn());  // データ型
+                String sValue = toBlank(queryConditionRowDto.getValue());         // 値
+                String sMaster = toBlank(queryConditionRowDto.getMastertablename()); // マスタ項目
 
-            // 比較演算子が特定値以外
-            if (!sOperator.equals("")) {
+                // 比較演算子が特定値以外
+                if (!sOperator.equals("")) {
 
-                sbQuery.append(toBlank(queryConditionRowDto.getAndor())).append(PT_SPACE);
-                sbQuery.append(toBlank(queryConditionRowDto.getOpenedparenthsis())).append(PT_SPACE);
+                    sbQuery.append(toBlank(queryConditionRowDto.getAndor())).append(PT_SPACE);
+                    sbQuery.append(toBlank(queryConditionRowDto.getOpenedparenthsis())).append(PT_SPACE);
 
-                if (sOperator.equals(COMPARE_IS_NULL)) {
-                    sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE).append(PT_IS_NULL);
-                } else if (sOperator.equals(COMPARE_IS_NOT_NULL)) {
-                    sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE).append(PT_IS_NOT_NULL);
-                } else if (sValue.equals("")) {
-                    // 値が指定されていない場合は、このクエリは組み立てない
-                } else if (sMaster.equals("")) {
-                    // マスタ区分未使用
-                    sbQuery.append(queryConditionRowDto.getColumnid()
-                            + PT_SPACE);
-                    sbQuery.append(sOperator + PT_SPACE);
-                    // データ型で判定する
-                    if (sType.equals("NUMBER")) {
-                        sbQuery.append(this.toDBNumber(sValue));
-                    } else if (sType.equals("DATE")) {
-                        sbQuery.append(this.toDBDate(sValue));
+                    if (sOperator.equals(COMPARE_IS_NULL)) {
+                        sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE).append(PT_IS_NULL);
+                    } else if (sOperator.equals(COMPARE_IS_NOT_NULL)) {
+                        sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE).append(PT_IS_NOT_NULL);
+                    } else if (sValue.equals("")) {
+                        // 値が指定されていない場合は、このクエリは組み立てない
+                    } else if (sMaster.equals("")) {
+                        // マスタ区分未使用
+                        sbQuery.append(queryConditionRowDto.getColumnid()
+                                + PT_SPACE);
+                        sbQuery.append(sOperator + PT_SPACE);
+                        // データ型で判定する
+                        if (sType.equals("NUMBER")) {
+                            sbQuery.append(this.toDBNumber(sValue));
+                        } else if (sType.equals("DATE")) {
+                            sbQuery.append(this.toDBDate(sValue));
+                        } else {
+                            sbQuery.append(this.escDBString(sValue));
+                        }
+                    } else if (sMaster.equals(MASTER_QPOSTNUM)) {
+                        // 役職順位マスタ区分
+                        Pattern pattern = Pattern.compile(PT_BAR);
+                        String[] stValue = pattern.split(sValue);
+                        sValue = stValue[1];
+
+                        sbQuery.append("HD_CPOSTID_FK IN ");
+                        sbQuery.append("( ");
+                        sbQuery.append("SELECT MAP_CPOSTID_CK ");
+                        sbQuery.append("FROM MAST_POST ");
+                        sbQuery.append("WHERE MAP_CCUSTOMERID_CK_FK = "
+                                + COL_HD_CUSTOMERID
+                                + PT_SPACE);
+                        sbQuery.append("AND MAP_CCOMPANYID_CK_FK = "
+                                + COL_HD_COMPANYID
+                                + PT_SPACE);
+                        sbQuery.append("AND MAP_NWEIGHTAGE " + getWeightageOperator(sOperator)
+                                + PT_SPACE
+                                + this.toDBNumber(sValue)
+                                + PT_SPACE);
+                        sbQuery.append("AND MAP_CLANGUAGE = 'ja' ");
+                        sbQuery.append("AND MAP_DSTART <= TRUNC(SYSDATE) ");
+                        sbQuery.append("AND MAP_DEND >= TRUNC(SYSDATE) ");
+                        sbQuery.append(")");
+                    } else if (sMaster.equals(MASTER_QSECTION)
+                            || sMaster.equals(MASTER_QPOST)) {
+                        // 在職・退職マスタ区分 or 本務・兼務マスタ区分
+                        Pattern pattern = Pattern.compile(PT_BAR);
+                        String[] stValue = pattern.split(sValue);
+                        sValue = stValue[1];
+
+                        sbQuery.append(queryConditionRowDto.getColumnid()
+                                + PT_SPACE);
+                        sbQuery.append(sOperator + PT_SPACE);
+                        // データ型で判定する
+                        if (sType.equals("NUMBER")) {
+                            sbQuery.append(this.toDBNumber(sValue));
+                        } else if (sType.equals("DATE")) {
+                            sbQuery.append(this.toDBDate(sValue));
+                        } else {
+                            sbQuery.append(this.escDBString(sValue));
+                        }
                     } else {
-                        sbQuery.append(this.escDBString(sValue));
+                        // 一般的なマスタ区分
+                        sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE);
+                        sbQuery.append(sOperator).append(PT_SPACE);
+                        // データ型で判定する
+                        if (sType.equals("NUMBER")) {
+                            sbQuery.append(this.toDBNumber(sValue));
+                        } else if (sType.equals("DATE")) {
+                            sbQuery.append(this.toDBDate(sValue));
+                        } else {
+                            sbQuery.append(this.escDBString(sValue));
+                        }
                     }
-                } else if (sMaster.equals(MASTER_QPOSTNUM)) {
-                    // 役職順位マスタ区分
-                    Pattern pattern = Pattern.compile(PT_BAR);
-                    String[] stValue = pattern.split(sValue);
-                    sValue = stValue[1];
-
-                    sbQuery.append("HD_CPOSTID_FK IN ");
-                    sbQuery.append("( ");
-                    sbQuery.append("SELECT MAP_CPOSTID_CK ");
-                    sbQuery.append("FROM MAST_POST ");
-                    sbQuery.append("WHERE MAP_CCUSTOMERID_CK_FK = "
-                            + COL_HD_CUSTOMERID
-                            + PT_SPACE);
-                    sbQuery.append("AND MAP_CCOMPANYID_CK_FK = "
-                            + COL_HD_COMPANYID
-                            + PT_SPACE);
-                    sbQuery.append("AND MAP_NWEIGHTAGE " + getWeightageOperator(sOperator)
-                            + PT_SPACE
-                            + this.toDBNumber(sValue)
-                            + PT_SPACE);
-                    sbQuery.append("AND MAP_CLANGUAGE = 'ja' ");
-                    sbQuery.append("AND MAP_DSTART <= TRUNC(SYSDATE) ");
-                    sbQuery.append("AND MAP_DEND >= TRUNC(SYSDATE) ");
-                    sbQuery.append(")");
-                } else if (sMaster.equals(MASTER_QSECTION)
-                        || sMaster.equals(MASTER_QPOST)) {
-                    // 在職・退職マスタ区分 or 本務・兼務マスタ区分
-                    Pattern pattern = Pattern.compile(PT_BAR);
-                    String[] stValue = pattern.split(sValue);
-                    sValue = stValue[1];
-
-                    sbQuery.append(queryConditionRowDto.getColumnid()
-                            + PT_SPACE);
-                    sbQuery.append(sOperator + PT_SPACE);
-                    // データ型で判定する
-                    if (sType.equals("NUMBER")) {
-                        sbQuery.append(this.toDBNumber(sValue));
-                    } else if (sType.equals("DATE")) {
-                        sbQuery.append(this.toDBDate(sValue));
-                    } else {
-                        sbQuery.append(this.escDBString(sValue));
-                    }
-                } else {
-                    // 一般的なマスタ区分
-                    sbQuery.append(queryConditionRowDto.getColumnid()).append(PT_SPACE);
-                    sbQuery.append(sOperator).append(PT_SPACE);
-                    // データ型で判定する
-                    if (sType.equals("NUMBER")) {
-                        sbQuery.append(this.toDBNumber(sValue));
-                    } else if (sType.equals("DATE")) {
-                        sbQuery.append(this.toDBDate(sValue));
-                    } else {
-                        sbQuery.append(this.escDBString(sValue));
-                    }
+                    sbQuery.append(PT_SPACE);
+                    sbQuery.append(this.toBlank(queryConditionRowDto.getClosedparenthsis()));
                 }
-                sbQuery.append(PT_SPACE);
-                sbQuery.append(this.toBlank(queryConditionRowDto.getClosedparenthsis()));
             }
         }
 
         // 条件式が設定されている場合
-        if (oInfo.size() > 0) {
+        if (CollUtil.isNotEmpty(oInfo)) {
             sbQuery.append(PT_CLOSE_PAR);
         }
         return sbQuery.toString();
