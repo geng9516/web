@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Map;
@@ -156,11 +157,21 @@ public class EvaluatorSettingBean {
         params.setLanguage(bean.getLanguage());
         params.setEmployee(empId);
         Map<String,Object> map = MapUtil.newHashMap();
+        Connection conn = null;
         try {
-            Vector<Vector<Object>> rs = dbControllerLogic.executeQuery(buildSQLForSelectDefaultApproval(params), dataSource.getConnection());
+            conn = dataSource.getConnection();
+            Vector<Vector<Object>> rs = dbControllerLogic.executeQuery(buildSQLForSelectDefaultApproval(params), conn);
             map.put("level",rs.get(1).get(0));
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (conn!=null) {
+                    conn.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
         return map;
     }

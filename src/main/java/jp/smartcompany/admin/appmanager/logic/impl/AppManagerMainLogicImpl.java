@@ -56,6 +56,12 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new GlobalException(e.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 

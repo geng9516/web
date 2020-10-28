@@ -57,10 +57,9 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     private Connection connection;
 
     @PostConstruct
-    public void init() throws SQLException {
+    public void init() {
         urlList = securityProperties.getOnlyAuthenticationList();
         matcher.setCachePatterns(true);
-        connection = dataSource.getConnection();
     }
 
     @Override
@@ -173,17 +172,28 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         timedCache.put("menu:"+httpSession.getId() +":"+Constant.TOP_NAVS,menuGroupList);
     }
 
-    private void executeLoginSequence(List<MastSystemDO> systemList, HttpSession httpSession) throws SQLException {
+    private void executeLoginSequence(List<MastSystemDO> systemList, HttpSession httpSession) {
         // 判断是否是承认者
         String empId = SecurityUtil.getLoginUser().getHdCemployeeidCk();
         String now = SysUtil.transDateToString(DateUtil.date());
         Boolean isApprover = (Boolean)httpSession.getAttribute(Constant.IS_APPROVER);
         if (isApprover==null) {
             int countValue;
-            String countEvaluator = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '" + empId + "' AND TEV_DSTARTDATE <= '" + now + "' AND TEV_DENDDATE >= '" + now + "'";
-            Number count = SqlExecutor.query(connection, countEvaluator, new NumberHandler());
-            countValue = count.intValue();
-            httpSession.setAttribute(Constant.IS_APPROVER, countValue>0);
+            try {
+                connection = dataSource.getConnection();
+                String countEvaluator = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '" + empId + "' AND TEV_DSTARTDATE <= '" + now + "' AND TEV_DENDDATE >= '" + now + "'";
+                Number count = SqlExecutor.query(connection, countEvaluator, new NumberHandler());
+                countValue = count.intValue();
+                httpSession.setAttribute(Constant.IS_APPROVER, countValue > 0);
+            } catch(SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    connection.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
         }
         groupBusiness.getGroupList("ja",systemList,httpSession);
         baseSectionBusiness.getBaseSectionList(httpSession);
