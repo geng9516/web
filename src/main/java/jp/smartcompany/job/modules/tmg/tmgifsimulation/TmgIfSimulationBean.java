@@ -614,10 +614,6 @@ public class TmgIfSimulationBean {
         return DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(6);
     }
 
-    public static void main(String[] args) {
-        System.out.println(DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(4));
-    }
-
 
 }
 

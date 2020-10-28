@@ -92,7 +92,6 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
     Map<String,Object> passwordMap = MapUtil.newHashMap();
 
     List<MastPasswordDO> updatePasswordList = CollUtil.newArrayList();
-    System.out.println(dtoParam);
     for (UserManagerUpdateParamDTO dto : dtoParam) {
       String account = dto.getMaCaccount();
       if (account != null) {

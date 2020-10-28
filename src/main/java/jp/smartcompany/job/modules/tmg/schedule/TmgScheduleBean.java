@@ -17,6 +17,7 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import java.util.*;
  **/
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class TmgScheduleBean {
     private final Logger logger = LoggerFactory.getLogger(TmgScheduleBean.class);
 
@@ -453,7 +455,7 @@ public class TmgScheduleBean {
         try {
             date = new SimpleDateFormat(FORMAT_DATE_TYPE1).parse(strDate);
         } catch (ParseException e) {
-            System.err.println(e.getMessage());
+            log.error(e.getMessage());
         }
         return date;
     }
@@ -813,7 +815,7 @@ public class TmgScheduleBean {
 
         // 表示開始日
         _startDispDate = _baseDate;
-        System.out.println("764-->" + _startDispDate);
+       log.info("764-->" + _startDispDate);
         // 表示終了日
         _endDispDate = _endDate;
 
@@ -825,9 +827,9 @@ public class TmgScheduleBean {
         // 週単位でチェックする人は表示開始終了日を取得
         HashMap<String, Object> results0 = this.selectDsipDate(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
         if (null != results0) {
-            System.out.println("results0  size:" + results0.size());
+            log.info("results0  size:" + results0.size());
         } else {
-            System.out.println("results0 is empty");
+            log.info("results0 is empty");
         }
         if (null != results0) {
             // 前月シート存在確認
@@ -835,7 +837,7 @@ public class TmgScheduleBean {
             String preMonth = this.selectLinkOfNextMonth(_baseDate, _targetUserCode);
             if (null != preMonth) {
                 _startDispDate = results0.get("START_DATE").toString();
-                System.out.println("781-->" + _startDispDate);
+                log.info("781-->" + _startDispDate);
             }
             // 翌月シート存在確認
             HashMap<String, Object> results2 = this.selectLinkOfNextMonthNextSaturday(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);

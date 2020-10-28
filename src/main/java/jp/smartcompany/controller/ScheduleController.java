@@ -230,7 +230,7 @@ public class ScheduleController {
     @GetMapping("selectTargetUserDetail")
     @ResponseBody
     public TargetUserDetailDTO selectTargetUserDetail(@RequestAttribute("BeanName") PsDBBean psDBBean) {
-        System.out.println("controller-->selectTargetUserDetail");
+//        System.out.println("controller-->selectTargetUserDetail");
         //初期化
         tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectTargetUserDetail();
