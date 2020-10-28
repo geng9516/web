@@ -894,7 +894,7 @@
               this.http.get(`sys/groupmanager/bosslist?psSite=${this.psSite}`, { sectionId: e })
             )).then(resArray => {
               this.bossList = [...data.orgJobConditions.companyList[0].bossSectionList.map(
-                (e, i) => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, uni_id: e.sectionId, isBoss: true, checked: false, expand: false } })]
+                (e, i) => { return { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, uni_id: e.sectionId, isBoss: true, checked: false, expand: false, delete: false } })]
             })
 
             // 役職
@@ -902,6 +902,7 @@
               return {
                 ...n,
                 title: `【${n.postId}】 ${n.postName}`,
+                delete: false,
                 isPost: true, // 役職,
                 uni_id: n.postId
               }
@@ -1043,7 +1044,7 @@
                   mgbsCsectionid: e.sectionId,
                   mgbsClayeredsectionid: e.layeredSectionId,
                   mgbsCcustomerid: e.customerId,
-                  children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false
+                  children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, expand: false, delete: false,
                 }
               })]
           }
@@ -1069,7 +1070,7 @@
               this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t => t.uni_id === e), 1)
             })
             cur.forEach((e, j) => {
-              this.sectionPostList[0].children.splice(this.sectionPostList[0].children.length + j, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, isGroup: true, uni_id: e.sectionId })
+              this.sectionPostList[0].children.splice(this.sectionPostList[0].children.length + j, 0, { ...e, children: [], title: `【${e.sectionId}】 ${e.sectionName}`, checked: false, delete: false, isGroup: true, uni_id: e.sectionId })
             })
           }
 
@@ -1082,7 +1083,7 @@
             )).then(resArray => {
               console.log(resArray)
               this.bossList = [...cur.map(
-                (e, i) => { return { ...e, children: [], id: e.moId, title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, checked: false, expand: false, uni_id: e.sectionId } })]
+                (e, i) => { return { ...e, children: [], id: e.moId, title: `【${e.sectionId}】 ${e.sectionName}【${resArray[i].data}】`, checked: false, expand: false, delete: false, uni_id: e.sectionId } })]
             })
           }
           this.showGroupOrPositionDrawer = false
