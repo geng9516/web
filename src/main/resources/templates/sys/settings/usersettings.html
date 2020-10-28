@@ -618,6 +618,11 @@
 
                 if (this.useType === 'personal') {
                   const { data } = await this.http.post(`sys/usermanager/personal?psSite=${this.psSite}&psApp=${this.psApp}`, this.detailData)
+                  let msg = ''
+                  Object.keys(data).forEach(e=>{
+                    msg = msg.concat(`アカウント: ${e} パスワード: ${data[e]}\n`)
+                  })
+                  this.$Notice.success({ title:'パスワード変更結果',desc: msg, duration: 0 })
                 }
 
                 if (this.useType === 'password') {
