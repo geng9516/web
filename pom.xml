@@ -19,7 +19,7 @@
     <properties>
         <mybatis.plus.version>3.4.0</mybatis.plus.version>
         <java.version>1.8</java.version>
-        <hutool.version>5.4.5</hutool.version>
+        <hutool.version>5.4.6</hutool.version>
         <poi.version>4.1.2</poi.version>
         <jdom.version>2.0.6</jdom.version>
     </properties>
