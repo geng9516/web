@@ -842,7 +842,7 @@
             this.updateValue.weightAge = data.groupInfo.mgNweightage
             this.sectionPostList_bak = Utils.deepClone(data)
             // 条件式による定義
-            this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' }]
+            this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
             // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
             // 所以这里直接取第一个法人的全部
             // 基点組織
@@ -1112,12 +1112,12 @@
         },
         conditionAddTop() {
           // 条件式表格顶部加一行
-          this.queryData.unshift({ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' })
+          this.queryData.unshift({ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete:false })
           this.poptipStyle.display = 'none'
         },
         conditionAdd(i) {
           // 条件式表格中间加一行
-          this.queryData.splice(i + 1, 0, { isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '' })
+          this.queryData.splice(i + 1, 0, { isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete:false })
           this.poptipStyle.display = 'none'
         },
         handleSearchDept: Debounce(function () {
@@ -1413,7 +1413,7 @@
           const updateValue = {
             ...this.updateValue,
             mgpId: this.groupInfoData[0].mgpId,
-            mgId: this.groupInfoData[0].mgpId,
+            mgId: this.groupInfoData[0].mgId,
             groupId: this.groupInfoData[0].mgCgroupidPk,
             startDate: this.groupInfoData[0].mgDstartdate,
             endDate: this.groupInfoData[0].mgDenddate,
