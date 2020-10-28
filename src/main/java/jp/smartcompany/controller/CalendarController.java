@@ -64,10 +64,16 @@ public class CalendarController {
     @ResponseBody
     public GlobalResponse updateCalendar(@RequestBody CalendarYearDto CalendarYearDto,
                                          @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
-                CalendarYearDto.getMonthlist().get(0).getMonth()
-                ,TmgReferList.TREEVIEW_TYPE_LIST, true);
-        return calendarBean.updateCalendar(CalendarYearDto,psDBBean,referList);
+        if(CalendarYearDto.getMonthlist().size()>0){
+            TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
+                    CalendarYearDto.getMonthlist().get(0).getMonth()
+                    ,TmgReferList.TREEVIEW_TYPE_LIST, true);
+            return calendarBean.updateCalendar(CalendarYearDto,psDBBean,referList);
+        }else{
+            return GlobalResponse.ok("更新なし");
+        }
+
+
     }
 
     /**
