@@ -1426,14 +1426,14 @@
                   companyId: e.companyId,
                   sectionId: e.sectionId,
                   id: e.id ? e.id : e.moId,
-                  delete: e.delete,
+                  delete: false,
                   postList: e.children.map(t => {
                     return {
                       companyId: t.companyId,
                       sectionId: t.sectionId,
                       postId: t.postId,
                       id: t.id,
-                      delete: t.delete
+                      delete: false
                     }
                   })
                 }
