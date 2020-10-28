@@ -941,8 +941,6 @@
             },
             //勤務パターン更新登録
             async handleSubmit(name) {
-                console.log(name)
-                console.log("--------------------1--------------------")
                 //form validate
                 var sectionId = this.rawData.tpa_csectionid
                 var groupId = this.rawData.groupId
@@ -1066,7 +1064,6 @@
                     }
                 }
                 this.$Modal.confirm({
-                    inDrawer: true,
                     title: '注意',
                     content: this.contentMsg,
                     okText: 'OK',
@@ -1111,7 +1108,6 @@
                     this.query_delete.sectionId = row.tpa_csectionid
                     this.query_delete.groupId = row.tpa_cgroupid
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         width: 480,
                         content: 'この勤務パターンを削除します。よろしいですか？',
@@ -1169,7 +1165,6 @@
             //アップロード
             async upload() {
                 this.$Modal.confirm({
-                    inDrawer: true,
                     title: '注意',
                     content: 'このCSVファイルをアップロードします。\nよろしいですか？',
                     okText: 'OK',

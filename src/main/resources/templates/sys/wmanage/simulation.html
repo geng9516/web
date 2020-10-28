@@ -317,7 +317,6 @@
                     this.query.startDate = row.startTime
                     this.query.endDate = row.endTime
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         width: 480,
                         content: '選択したマスタデータを削除します。\nよろしいでしょうか？',
@@ -410,7 +409,6 @@
             //登録
             async handleSubmit(name) {
                 this.$Modal.confirm({
-                    inDrawer: true,
                     title: '注意',
                     width: 480,
                     content: this.contentMsg,
@@ -519,7 +517,6 @@
             async decisionMaster() {
                 //先ずは、操作確認を提示する
                 this.$Modal.confirm({
-                    inDrawer: true,
                     title: '注意',
                     width: 480,
                     content: 'このマスタデータを確定します。よろしいですか？',
