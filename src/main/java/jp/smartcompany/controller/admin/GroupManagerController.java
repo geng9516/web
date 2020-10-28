@@ -131,7 +131,7 @@ public class GroupManagerController {
      *           "postId": "ZZL",
      *           "employeeId": "65494392",
      *           "id": 1101,
-     *           "delete": null
+     *           "delete": true
      *       }
      *    ],
      *    "queryConditionList": [

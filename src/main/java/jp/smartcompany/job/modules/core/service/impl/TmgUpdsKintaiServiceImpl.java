@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgUpdsKintaiDO;
-import jp.smartcompany.job.modules.core.mapper.TmgUpdsKintaiMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgUpdsKintai.TmgUpdsKintaiMapper;
 import jp.smartcompany.job.modules.core.service.ITmgUpdsKintaiService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

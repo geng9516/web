@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgWorkMonthlyoutputlistDO;
-import jp.smartcompany.job.modules.core.mapper.TmgWorkMonthlyoutputlistMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgWorkMonthlyoutputlist.TmgWorkMonthlyoutputlistMapper;
 import jp.smartcompany.job.modules.core.service.ITmgWorkMonthlyoutputlistService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

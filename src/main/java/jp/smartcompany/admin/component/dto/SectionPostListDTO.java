@@ -75,5 +75,5 @@ public class SectionPostListDTO {
 //    /** VERSIONNO */
 //    private Integer versionNo;
     /** 削除フラグ  */
-    private Boolean delete;
+    private Boolean delete = false;
 }

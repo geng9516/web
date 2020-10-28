@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.mapper;
+package jp.smartcompany.job.modules.core.mapper.TmgWorkMonthlyoutputlist;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgWorkMonthlyoutputlistDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
