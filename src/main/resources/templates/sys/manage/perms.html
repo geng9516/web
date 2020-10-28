@@ -1160,7 +1160,6 @@
                     })
                     if(basicCheck) return
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         content: this.contentMsg,
                         okText: 'OK',
@@ -1251,7 +1250,6 @@
                         return this.$Notice.warning({ title: '注意', desc: 'グループ名を入力してください。', duration: 6.5 })
                     }
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         content: 'この編集内容で更新します。よろしいですか？',
                         okText: 'OK',
@@ -1291,7 +1289,6 @@
                         return this.$Notice.warning({ title: '注意', desc: 'グループ名を入力してください。', duration: 6.5 })
                     }
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         content: 'この編集内容で登録します。よろしいですか？',
                         okText: 'OK',
@@ -1325,7 +1322,6 @@
                 }),
                 async delGruopName() {
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         content: 'このグループを削除します。よろしいですか？',
                         okText: 'OK',
@@ -1396,7 +1392,6 @@
                 },
                 async updateMemberAssign() {
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         content: 'この編集内容で更新します。よろしいですか？',
                         okText: 'OK',

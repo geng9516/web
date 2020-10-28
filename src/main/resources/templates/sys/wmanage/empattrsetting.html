@@ -629,7 +629,6 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         width: 480,
                         content: 'この編集内容を登録します。\nなお、登録した内容は翌日から反映されます。\nよろしいですか？',
@@ -823,7 +822,6 @@
 
                 try {
                     this.$Modal.confirm({
-                        inDrawer: true,
                         title: '注意',
                         width: 480,
                         content: 'この編集内容で登録します。よろしいですか？',
