@@ -78,4 +78,8 @@ public class Constant {
 
     public final static String IS_APPROVER = "isApprover";
 
+    public static String getSessionMenuId(String sessionId) {
+        return "sys:menu:"+TOP_NAVS+":"+sessionId;
+    }
+
 }

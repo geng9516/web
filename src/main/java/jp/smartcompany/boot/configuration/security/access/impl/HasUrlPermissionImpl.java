@@ -147,7 +147,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
 
         executeLoginSequence(systemList, httpSession);
 
-        if (timedCache.get("menu:"+httpSession.getId() +":"+Constant.TOP_NAVS,false) == null) {
+        if (timedCache.get(Constant.getSessionMenuId(httpSession.getId()),false) == null) {
             loadMenus(systemList, request.getSession());
         }
     }
@@ -169,7 +169,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,(Boolean)httpSession.getAttribute(Constant.IS_APPROVER));
-        timedCache.put("menu:"+httpSession.getId() +":"+Constant.TOP_NAVS,menuGroupList);
+        timedCache.put(Constant.getSessionMenuId(httpSession.getId()),menuGroupList);
     }
 
     private void executeLoginSequence(List<MastSystemDO> systemList, HttpSession httpSession) {

@@ -87,7 +87,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         }
 
         appTreeService.saveBatch(updateList);
-        timedCache.remove("menu:"+session.getId() +":"+Constant.TOP_NAVS);
+        timedCache.remove(Constant.getSessionMenuId(session.getId()));
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更成功";
     }
