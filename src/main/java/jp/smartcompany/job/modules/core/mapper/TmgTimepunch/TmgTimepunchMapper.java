@@ -18,27 +18,6 @@ import java.util.List;
 public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
 
     /**
-     * 打刻時に打刻データ(未反映)情報に登録する
-     *
-     * @param params
-     */
-    void insertTmgTimePunch(HashMap<String, Object> params);
-
-    /**
-     * TMG_TRIGGERへINSERTする
-     *
-     * @param params
-     */
-    void insertTmgTrigger(HashMap<String, Object> params);
-
-    /**
-     * TMG_TRIGGERへDELETEする
-     *
-     * @param params
-     */
-    void deleteTmgTrigger(HashMap<String, Object> params);
-
-    /**
      * 打刻画面表示判断
      *
      * @param params

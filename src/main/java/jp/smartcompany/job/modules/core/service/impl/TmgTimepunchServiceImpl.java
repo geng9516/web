@@ -1,17 +1,26 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
-import jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper;
-import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.mapper.TmgTimepunch.TmgTimepunchMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
+import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
+import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * [勤怠]打刻
@@ -19,41 +28,52 @@ import java.util.List;
  * @author X02461
  */
 @Repository
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, TmgTimepunchDO> implements ITmgTimepunchService {
+
+    private final ITmgTriggerService tmgTriggerService;
 
     @Override
     public void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid, String ctpTypeid) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("compCode", compCode);
-        params.put("custId", custId);
-        params.put("employeeId", employeeId);
-        params.put("modifierprogramid", modifierprogramid);
-        params.put("minDate", minDate);
-        params.put("maxDate", maxDate);
-        params.put("ctpTypeid", ctpTypeid);
-        baseMapper.insertTmgTimePunch(params);
+        DateTime now = DateUtil.date();
+        TmgTimepunchDO tmgTimepunchDO = new TmgTimepunchDO();
+        tmgTimepunchDO.setTtpCtptypeid(ctpTypeid);
+        tmgTimepunchDO.setTtpCcompanyid(compCode);
+        tmgTimepunchDO.setTtpCcustomerid(custId);
+        tmgTimepunchDO.setTtpCemployeeid(employeeId);
+        tmgTimepunchDO.setTtpCmodifierprogramid(modifierprogramid);
+        tmgTimepunchDO.setTtpDstartdate(SysUtil.transStringToDate(minDate));
+        tmgTimepunchDO.setTtpDenddate(SysUtil.transStringToDate(maxDate));
+        tmgTimepunchDO.setTtpCmodifieruserid(employeeId);
+        tmgTimepunchDO.setTtpDmodifieddate(now);
+        tmgTimepunchDO.setTtpDtpdate(now);
+        tmgTimepunchDO.setTtpDtptime(now);
+        save(tmgTimepunchDO);
     }
 
     @Override
     public void insertTmgTrgger(String custId, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("compCode", compCode);
-        params.put("custId", custId);
-        params.put("employeeId", employeeId);
-        params.put("modifierprogramid", modifierprogramid);
-        params.put("minDate", minDate);
-        params.put("maxDate", maxDate);
-        baseMapper.insertTmgTrigger(params);
+        TmgTriggerDO tmgTriggerDO = new TmgTriggerDO();
+        tmgTriggerDO.setTtrCcompanyid(compCode);
+        tmgTriggerDO.setTtrCcustomerid(custId);
+        tmgTriggerDO.setTtrCemployeeid(employeeId);
+        tmgTriggerDO.setTtrCprogramid(modifierprogramid);
+        tmgTriggerDO.setTtrDmodifieddate(DateUtil.date());
+        tmgTriggerDO.setTtrCmodifierprogramid(modifierprogramid);
+        tmgTriggerDO.setTtrDstartdate(SysUtil.transStringToDate(minDate));
+        tmgTriggerDO.setTtrDenddate(SysUtil.transStringToDate(maxDate));
+        tmgTriggerService.save(tmgTriggerDO);
     }
 
     @Override
     public void deleteTmgTrgger(String custId, String compCode, String employeeId, String modifierprogramid) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("compCode", compCode);
-        params.put("custId", custId);
-        params.put("employeeId", employeeId);
-        params.put("modifierprogramid", modifierprogramid);
-        baseMapper.deleteTmgTrigger(params);
+        Map<String, Object> params = MapUtil.newHashMap();
+        params.put("ttr_ccompanyid", compCode);
+        params.put("ttr_ccustomerid", custId);
+        params.put("ttr_cemployeeid", employeeId);
+        params.put("ttr_cmodifieruserid",employeeId);
+        params.put("ttr_cmodifierprogramid",modifierprogramid);
+        tmgTriggerService.removeByMap(params);
     }
 
     @Override
