@@ -182,11 +182,4 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
             return baseMapper.updateGroupPrionityLevel(searchDate,custId,systemId);
         }
 
-        /**
-          * 指定されたグループの画面入力情報(順序)を更新
-          */
-        @Override
-        public int updateGroupSort(List<GroupManagerSortDTO> list) {
-            return baseMapper.updateGroupSort(list);
-        }
 }

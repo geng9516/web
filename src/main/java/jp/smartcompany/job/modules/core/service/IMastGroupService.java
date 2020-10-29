@@ -125,9 +125,4 @@ public interface IMastGroupService extends IService<MastGroupDO> {
                                       String custId,
                                       String systemId);
 
-        /**
-         * 指定されたグループの画面入力情報(順序)を更新
-         */
-        int updateGroupSort(List<GroupManagerSortDTO> list);
-
 }

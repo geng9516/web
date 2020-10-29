@@ -112,7 +112,10 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         List<GroupManagerSortDTO> sortList = CollUtil.newArrayList();
         String now = SysUtil.transDateToString(DateUtil.date());
+
         for (int i = 0; i < groupIds.size(); i++) {
+            MastGroupDO mastGroupDO = new MastGroupDO();
+            mastGroupDO.setMgNweightage((long)i+1);
              GroupManagerSortDTO sortDTO=new GroupManagerSortDTO();
              sortDTO.setGroupId(groupIds.get(i));
              sortDTO.setCustId(session.getLoginCustomer());
@@ -120,8 +123,14 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
              sortDTO.setSort(i);
              sortDTO.setSystemId(systemId);
              sortList.add(sortDTO);
+
+           iMastGroupService.update(mastGroupDO,
+                   SysUtil.<MastGroupDO>query().eq("MG_CCUSTOMERID","01")
+                                               .eq("MG_CSYSTEMID_CK_FK","01")
+                                               .eq("MG_ID",groupIds.get(i))
+                                               .eq("MG_CLANGUAGE","ja")
+           .le("MG_DSTARTDATE",now).ge("MG_DENDDATE",now));
         }
-        iMastGroupService.updateGroupSort(sortList);
         return "順位を変更しました。";
     }
 

@@ -124,9 +124,4 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
                                       @Param("custId") String custId,
                                       @Param("systemId") String systemId);
 
-        /**
-         * 指定されたグループの画面入力情報(順序)を更新
-         * (順序変更が行われている場合のみ)
-         */
-        int updateGroupSort(List<GroupManagerSortDTO> list);
 }

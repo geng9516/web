@@ -375,23 +375,6 @@
            MG_DENDDATE >= #{searchDate}
     </update>
 
-    <update id="updateGroupSort"  parameterType="java.util.List">
-        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-            update MAST_GROUP
-            <set>
-                MG_NWEIGHTAGE=#{item.sort}
-            </set>
-            <where>
-                and MG_CCUSTOMERID = #{item.custId}
-                and MG_CSYSTEMID_CK_FK = #{item.systemId}
-                and MG_GROUPID_PK = #{item.groupId}
-                and MG_CLANGUAGE = 'ja'
-                <if test="item.searchDate!=null">
-                    and MG_DSTARTDATE <![CDATA[<=]]> #{item.searchDate}
-                    and MG_DENDDATE >= #{item.searchDate}
-                </if>
-            </where>
-        </foreach>
-    </update>
+
 
 </mapper>
