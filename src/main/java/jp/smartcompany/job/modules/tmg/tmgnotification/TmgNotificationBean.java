@@ -480,7 +480,6 @@ public class TmgNotificationBean {
                 }
             }
         }
-
         return typeGroupVoList;
     }
 
@@ -493,7 +492,6 @@ public class TmgNotificationBean {
         List<MgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(psDBBean.getCustID(),
                 psDBBean.getCompCode(), DateTime.now(), psDBBean.getLanguage());
         List<TypeGroupVo> typeGroupVoList=new ArrayList<TypeGroupVo>();
-
         for(MgdNtfTypeDispAppVo vo:mgdNtfTypeDispAppVoList){
             TypeGroupVo typeGroupVo=new TypeGroupVo();
             typeGroupVo.setGroupId(vo.getGroupId());// 0 グループの区分

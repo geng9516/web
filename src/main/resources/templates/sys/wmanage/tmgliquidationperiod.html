@@ -157,8 +157,6 @@
             <i-table
                     class="long-table cross-hover-table mt10"
                     @on-row-click="handleClickRow(arguments)"
-                    @mouseover.native.stop="handleMouseHover($event, true)"
-                    @mouseout.native.stop="handleMouseHover($event)"
                     max-height="730"
                     border
                     :columns="columns4Year"
@@ -811,91 +809,40 @@ d
 
             },
 
-
-            handleMouseHover(e, isOver) {
-                let target = e.target.parentElement
-                let father = e.target.offsetParent.offsetParent
-                if(target.nodeName !== 'TR') {
-                    target = e.target.parentElement.parentElement
-                    if(target.nodeName !== 'TR') {
-                        //左边得表格，包了两层
-                        target = e.target.parentElement.parentElement.parentElement
-                        if(target.nodeName !== 'TR') {
-                            // 中间表格得slot，包了三层
-                            target = e.target.parentElement.parentElement.parentElement.parentElement
-                        }
-                    }
-                    father = e.target.offsetParent.offsetParent.offsetParent
-                }
-                // console.dir(target)
-                // console.dir(father)
-                if (!father) return
-                if (father.nodeName === 'BODY') {
-                    // 中间表格
-                    // 找到hover到了第几行，并给两边表格同一行设置相同背景，并且移出时取消
-                    const index = [].indexOf.call(this.centerTable, target)
-                    // 有时会找不到
-                    if (!this.leftTable[index]) return
-                    if (isOver) {
-                        this.leftTable[index].style.background = 'rgb(255, 255, 163)'
-                        this.rightTable[index].style.background = 'rgb(255, 255, 163)'
-                    } else {
-                        this.leftTable[index].style.background = ''
-                        this.rightTable[index].style.background = ''
-                    }
-                    return
-                }
-                if (father.className.indexOf('right') > -1) {
-                    // 右边表格
-                    const index = [].indexOf.call(this.rightTable, target)
-                    if (!this.centerTable[index]) return
-                    if (isOver) {
-                        this.centerTable[index].style.background = 'rgb(255, 255, 163)'
-                        this.leftTable[index].style.background = 'rgb(255, 255, 163)'
-                    } else {
-                        this.centerTable[index].style.background = ''
-                        this.leftTable[index].style.background = ''
-                    }
-                    return
-                }
-                // 左边表格
-                const index = [].indexOf.call(this.leftTable, target)
-                if (!this.centerTable[index]) return
-                if (isOver) {
-                    this.centerTable[index].style.background = 'rgb(255, 255, 163)'
-                    this.rightTable[index].style.background = 'rgb(255, 255, 163)'
-                } else {
-                    this.centerTable[index].style.background = ''
-                    this.rightTable[index].style.background = ''
-                }
-            },
             handleClickRow() {},
             handleSpan ({ row, column, rowIndex, columnIndex }) {
 
+                //每月第三行时 日期列 合并整行 非日期列 不合并
                 if (rowIndex % 3 === 2 && columnIndex === 1) {
                     return  [1, 31];
                 }else if(rowIndex % 3 === 2 && columnIndex > 1 && columnIndex < 32){
                     return  [0, 0];
                 }
-                if (rowIndex % 3 === 1  && columnIndex % 7 === 1 && columnIndex < 32) {
+                //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
+                if(rowIndex % 3 === 1  && columnIndex === 1){
+                    return [1,(8-new Date("1/1/2020").getDay())];
+                }else if(rowIndex % 3 === 1  && columnIndex > 1 && columnIndex < (9-new Date("1/1/2020").getDay())){
+                    return [0,0];
+                }
+                //每月第二行时 非第一列 合并（周一为周开始日的情况下）
+                if (rowIndex % 3 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) &&  (columnIndex-8+new Date("1/1/2020").getDay()) % 7 === 1 && columnIndex < 32) {
+                    //最后一个只合并剩余
                     if((31-columnIndex) < 7){
                         return [1,31-columnIndex+1];
                     }else{
                         return [1, 7];
                     }
-                }else if(rowIndex % 3 === 1  && columnIndex % 7 != 1 && columnIndex < 32){
+                }else if(rowIndex % 3 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) && (columnIndex-8+new Date("1/1/2020").getDay()) % 7 != 1 && columnIndex < 32){
                     return [0,0];
                 }
+                //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分
                 if(column.title != '1日'  && rowIndex % 3 === 0 &&  columnIndex < 2 ){
-                    console.log(`rrr${columnIndex}`)
                     return [3, 1];
                 } else if(column.title != '1日'  && rowIndex % 3 === 1 &&   columnIndex  < 2 ){
-                    console.log(`lll${columnIndex}`)
-                    return  [0, 0];
+                    return [0, 0];
                 } else if(column.title != '1日'  && rowIndex % 3 === 2 &&   columnIndex < 2  ){
-                    return  [0, 0];
+                    return [0, 0];
                 }
-
             }
         }
     })
