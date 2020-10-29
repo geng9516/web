@@ -1,12 +1,9 @@
 package jp.smartcompany.job.modules.tmg.timepunch;
 
-import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.lang.Console;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
@@ -126,7 +123,7 @@ public class TmgTimePunchBean {
      * @param maxDate
      * @param psAction
      */
-    private void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
+    public void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
         log.info("打刻時に打刻データ(未反映)情報に登録する");
         //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
@@ -145,10 +142,11 @@ public class TmgTimePunchBean {
      * @param maxDate
      * @param psAction
      */
-    private void insertTmgTrgger(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
+    public void insertTmgTrgger(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
         log.info("TMG_TRIGGERへINSERTする");
         //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
+
         iTmgTimepunchService.insertTmgTrgger(custId, compCode, employeeId, minDate, maxDate, modifierprogramid);
     }
 
@@ -161,7 +159,7 @@ public class TmgTimePunchBean {
      * @param employeeId
      * @param psAction
      */
-    private void deleteTmgTrgger(String custId, String compCode, String employeeId, String psAction) {
+    public void deleteTmgTrgger(String custId, String compCode, String employeeId, String psAction) {
         log.info("TMG_TRIGGERへDELETEする");
         //更新プログラム
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
@@ -175,16 +173,14 @@ public class TmgTimePunchBean {
      */
     @Transactional(rollbackFor = GlobalException.class)
     public boolean clock(String employeeId, String custId, String compId, String psAction) {
-        boolean result = false;
+        boolean result;
         //lock thread safe
         try {
-            synchronized (this) {
                 //打刻時に打刻データ(未反映)情報に登録する
                 this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
                 //TMG_TRIGGERへINSERTする
                 this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
                 result = true;
-            }
         } catch (Exception e) {
             result = false;
             logger.error("打刻に失敗しました。", e);
