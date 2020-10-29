@@ -97,7 +97,18 @@
           </i-button>
         </div>
         <div class="mt10 mb10">
-          <Row></Row>
+          <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">法人</span>
+            <i-select v-model="groupInfoData[0].companyId">
+              <i-option value="*" label="全社区分"></i-option>
+              <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">
+                {{ item.macCcompanyname }}</i-option>
+            </i-select>
+          </div>
+          <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">備考</span>
+            <i-input class="tl" v-model="groupInfoData[0].mgCtext"></i-input>
+          </div>
           <Row :gutter="10" v-if="!isAdding">
             <i-col span="12">
               <div class="label pl10">法人</div>
@@ -492,7 +503,6 @@
           baseTreeData: [],
           beforeDate: '',
           searchEmpt: '',
-          updateValue: [],
           systemList: [],
           curDate: new Date(),
           opts: {
@@ -661,6 +671,7 @@
               align: 'center'
             },
           ],
+          legalPersonList: [],
           searchEmpData: [],
           searchDeptColumns: [],
           searchDeptData: [],
@@ -690,6 +701,7 @@
       },
       async created() {
         this.getData()
+        this.getLegalPersonList()
         this.getqueryconditions()
       },
       watch: {
@@ -771,6 +783,14 @@
             mgCgroupdescription: '',
             mgNpartinentnumber: ''
           }]
+          this.updateValue = {}
+          this.baseTreeData = [{title: `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,expand:true,children:[]}]
+          // 条件式による定義
+          this.queryData = [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
+          this.sectionPostList = []
+          this.bossList = []
+          this.postList = []
+          // 基点組織
           // this.loading = true
           // let OPTS = { permList: [...new Set(this.updateValue)] }
           // if (this.opts.date) {
@@ -835,12 +855,15 @@
         handleSystemChange() {
           this.getSiteList()
         },
-        async handleDatePicker(e) {
+        handleDatePicker(e) {
           if (!e) return
           this.opts.date = e
-          await this.getLegalPersonList()
-          await this.getGroupList()
           this.getTableData()
+        },
+        async getLegalPersonList() {
+          const { data } = await this.http.get(`sys/groupappmanager/companies?psSite=${this.psSite}&psApp=${this.psApp}`)
+          this.legalPersonList = data
+          this.opts.companyId = data[0] && data[0].macCcompanyidCk
         },
         getPreData() {
           this.opts.date = this.beforeDate
