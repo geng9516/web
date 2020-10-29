@@ -4,7 +4,7 @@
 <head th:replace="layout/header::common_header(title='グループ定義',cssPaths='/pages/content.min.css')">
 </head>
 
-<body>
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <!-- 菜单导航栏 -->
   <div th:replace="layout/sider"></div>
@@ -43,13 +43,20 @@
               <span class="ml5">{{beforeDate}} 改定分</span>
             </i-button>
           </i-col>
+          <i-col span="20" class="tr">
+            <span class="mr10">ドラッグ機能:  </span><i-switch v-model="isDraggable" size="large">
+              <span slot="open">ON</span>
+              <span slot="close">OFF</span>
+            </i-switch>
+            <i-button class="ml10" type="primary" icon="md-refresh" @click="sortingTableData" :loading="sortingLoading" :disabled="!hasDragTable">順序更新</i-button>
+          </i-col>
         </Row>
       </div>
       <div class="titlenorm mb10 mt5" style="font-size:15px">
         <Icon type="logo-buffer"></Icon>
         有効なグループ
       </div>
-      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading" draggable 
+      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading" :draggable="isDraggable" @on-drag-drop="sortTableByDrag"
         :row-class-name="() => 'select-col'">
         <template slot-scope="{ row }" slot="date">
             <span class="ml15">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
@@ -430,6 +437,7 @@
     </div>
   </main>
   <div th:replace="layout/head::header"></div>
+  <script th:src="${baseUrl + '/static/js/dragTableTr.js'}"></script>
   <script>
     var operatorList = [
       { name: '＝', value: '＝' },
@@ -458,8 +466,11 @@
       data() {
         return {
           loading: true,
+          isDraggable: true,
+          hasDragTable: false,
           editLoading: false,
           drawLoading: false,
+          sortingLoading: false,
           isShow: false,
           showGroupOrPositionDrawer: false,
           drawerBtnLoading: false,
@@ -1519,6 +1530,22 @@
           }
           const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
           this.isShow = false
+        },
+        sortTableByDrag(from, to) {
+          this.hasDragTable = true
+          this.$set(this.tableData, from, [this.tableData[to], this.tableData[to]=this.tableData[from]][0])
+        },
+        async sortingTableData() {
+           try {
+            this.sortingLoading = true
+            const { data } = await this.http.post(`sys/groupmanager/sort?psSite=${this.psSite}`, this.tableData.map(e => e.mgId))
+            this.$Message.success('優先順位更新完了')
+            this.hasDragTable = false
+            this.getData()
+          } catch (error) {
+          } finally {
+            this.sortingLoading = false
+          }
         }
       }
     })
