@@ -1002,7 +1002,7 @@
             async handleEditData(row) {
                 this.PermissionAdminEditer = true
                 this.permissionAdminAddModal = true
-                this.addPermissionAdminInfo.name = row.empId
+                this.addPermissionAdminInfo.name = row.name
                 // 和追加以下一致，但需要将决裁level的键值互换，因为需要的是key其实是 xxxxx❘1 这样的,
                 if(this.levelList.length === 0) {
                     const query = {
@@ -1041,7 +1041,7 @@
                     return {
                         groupId: row.groupId,
                         empId: row.empId,
-                        groupName: row.name,
+                        groupName: row.groupName,
                         ...e,
                         level: levelListHelper[e.level - 1],
                         beforeStartDate: e.validStartDate,
