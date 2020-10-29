@@ -78,12 +78,8 @@
               <a @click="cancel(row._index)">いいえ</a>
               <a @click="remove(row._index)">はい</a>
             </div>
-            <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash">削除</i-button>
+            <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash" @click="deleteGroup(row.mgId)">削除</i-button>
           </Poptip>
-        </template>
-        <template slot-scope="{ row }" slot="order">
-          <i-button type="primary" class="mr5" ghost size="small" icon="md-arrow-round-up"></i-button>
-          <i-button type="primary" ghost size="small" icon="md-arrow-round-down"></i-button>
         </template>
       </i-table>
       <div class="titlenorm mb10 mt10" style="font-size:15px">
@@ -523,12 +519,6 @@
               slot: 'del',
               align: 'center',
               width: 80,
-            },
-            {
-              title: '順序',
-              slot: 'order',
-              align: 'center',
-              width: 100,
             }
           ],
           groupInfoColumns: [
@@ -1545,6 +1535,15 @@
           } catch (error) {
           } finally {
             this.sortingLoading = false
+          }
+        },
+        async deleteGroup(id) {
+          try {
+            const { data } = await this.http.post(`sys/groupmanager/delete?psSite=${this.psSite}`, [id])
+            this.$Message.success('削除完了')
+            this.getData()
+          } catch (error) {
+          } finally {
           }
         }
       }
