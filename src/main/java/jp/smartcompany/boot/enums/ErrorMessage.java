@@ -50,7 +50,7 @@ public enum ErrorMessage implements ResponseMessage {
     /**
      * LOAD_CONFIG_FAILED
      */
-    LOAD_CONFIG_FAILED(HttpStatus.INTERNAL_SERVER_ERROR.value(),"グローバル設定の読み込みに失敗しました"),
+    LOAD_CONFIG_FAILED(HttpStatus.INTERNAL_SERVER_ERROR.value(),"グローバル設定の読み込みに失敗しました。"),
     /**
      * PASSWORD_INVALID
      */

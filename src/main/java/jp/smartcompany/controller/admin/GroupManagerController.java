@@ -178,7 +178,7 @@ public class GroupManagerController {
     @PostMapping("update")
     public String executeUpdate(@Valid @RequestBody GroupManagerEditDTO dto) {
         groupManagerGroupEditLogic.update(dto);
-        return "変更成功";
+        return "変更しました。";
     }
 
     /**

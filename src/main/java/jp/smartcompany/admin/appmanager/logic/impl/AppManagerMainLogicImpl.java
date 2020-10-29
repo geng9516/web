@@ -81,7 +81,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         appTreeService.saveBatch(updateList);
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
-        return "変更成功";
+        return "変更しました。";
     }
     /**
      *  层级： application -> site -> application -> 页面 -> 按钮

@@ -100,7 +100,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         iMastGroupService.remove(qw);
         nestedMastDelete(dto.getGroupIds(),dto.getSystemId(),session.getLoginCustomer(),session.getLoginCompany());
         iMastGroupService.updateGroupPrionityLevel(date,session.getLoginCustomer(),dto.getSystemId());
-        return "グループを削除しました";
+        return "グループを削除しました。";
     }
 
     @Override
@@ -122,7 +122,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
              sortList.add(sortDTO);
         }
         iMastGroupService.updateGroupSort(sortList);
-        return "順位を変更しました";
+        return "順位を変更しました。";
     }
 
     public void nestedMastDelete(List<String> groupIds,String systemId,String custId,String companyId) {

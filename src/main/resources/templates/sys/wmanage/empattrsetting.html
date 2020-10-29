@@ -128,14 +128,14 @@
 
                         <template slot-scope="{ row }" slot="tphaNavgworktime">
                             <i-button type="primary" ghost size="small" style="margin-right: 5px" :disabled="isEditable"
-                                      @click.stop="handleAvgTime(row)">
+                                      @click.stop="handleAvgTime(row,0)">
                                 {{ Math.trunc(row.tphaNavgworktime/60) }}時間 {{ row.tphaNavgworktime%60 }}分
                             </i-button>
                         </template>
 
                         <template slot-scope="{ row }" slot="tphaNworkingdaysWeek">
                             <i-button type="primary" ghost size="small" style="margin-right: 5px" :disabled="isEditable"
-                                      @click.stop="handleAvgTime(row)">
+                                      @click.stop="handleAvgTime(row,1)">
                                 {{ row.tphaNworkingdaysWeek }}日
                             </i-button>
                         </template>
@@ -148,7 +148,7 @@
     </div>
 
 
-    <Modal v-model="isShow" title="個人属性設定" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide>
+    <Modal v-model="isShow" :title="titlesMessage" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide>
         <Row :gutter="10">
             <i-col span="8">
                 <div class="label tc"> 所属</div>
@@ -433,7 +433,7 @@
                     {
                         title: '更新者',
                         key: 'modifieruserId',
-                        align: 'right',
+                        align: 'left',
                         width: 150
                     },
                     {
@@ -469,7 +469,8 @@
                 averageTimeData: [],
                 historyData: [],
                 referSettingData: [],
-                hasPassedTimeCheck: false
+                hasPassedTimeCheck: false,
+                titlesMessage: ''
             }
         },
         async mounted() {
@@ -637,7 +638,7 @@
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
-                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.$Notice.info({title: '登録しました。', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.getTableData()
@@ -653,14 +654,15 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: '基準日以降の設定内容を削除します。\nなお、削除した内容は翌日から反映されます。\nよろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
-                            this.$Notice.info({title: '削除成功', desc: ""})
+                            this.$Notice.info({title: '削除しました。', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.getTableData()
@@ -685,14 +687,15 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: '選択された行の設定を削除します。よろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
-                            this.$Notice.info({title: '削除成功', desc: ""})
+                            this.$Notice.info({title: '削除しました。', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.workDaySettingData.splice(index, 1)
@@ -793,7 +796,8 @@
 
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: msg,
                         okText: 'OK',
                         cancelText: 'キャンセル',
@@ -829,7 +833,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
-                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.$Notice.info({title: '登録しました。', desc: ""})
                             this.isEditable = false
                             this.getTableData()
                         }
@@ -990,6 +994,8 @@
             // 勤務開始日
             async handleBeginDate(e) {
                 if (!e) return
+
+                this.titlesMessage = '勤務開始日設定'
                 if (this.opts.hidSelectTab == '1') {
                     //職員検索の場合、リクエスト要
                     this.query.txtTmgReferListTreeViewAdminTargetEmp = e.meCemployeeidCk
@@ -1035,8 +1041,14 @@
 
             },
             // 平均勤務時間設定
-            async handleAvgTime(e) {
+            async handleAvgTime(e,tabType) {
                 if (!e) return
+
+                if (tabType == '0') {
+                    this.titlesMessage = '平均勤務時間設定'
+                } else if (tabType == '1') {
+                    this.titlesMessage = '勤務日数設定'
+                }
                 if (this.opts.hidSelectTab == '1') {
                     //職員検索の場合、リクエスト要
                     this.query.txtTmgReferListTreeViewAdminTargetEmp = e.meCemployeeidCk
