@@ -126,7 +126,7 @@ public class TmgIfSimulationBean {
                 }
             }
         } else {
-            logger.error("期間のマスタを取得することが失敗しました");
+            logger.error("期間のマスタを取得することが失敗しました。");
         }
         return conditionColDTOList;
     }
@@ -204,7 +204,7 @@ public class TmgIfSimulationBean {
      */
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse simulationMerge(String simulationMergeJson) {
-        GlobalResponse globalResponse = GlobalResponse.ok("処理しました");
+        GlobalResponse globalResponse = GlobalResponse.ok("処理しました。");
         //先ずは、jsonオブジェクトをチェックする
         if (null != simulationMergeJson && !"".equals(simulationMergeJson)) {
             if (JSONUtil.isJsonObj(simulationMergeJson)) {
@@ -220,8 +220,8 @@ public class TmgIfSimulationBean {
                     boolean flag = this.deleteMastGenericDetail_notrans(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), simulationInsertJsonDTO.getLanguage(), simulationInsertJsonDTO.getPsGroupId(), simulationInsertJsonDTO.getStartDate(), simulationInsertJsonDTO.getEndDate());
                     if (!flag) {
                         //処理失敗しました
-                        logger.warn("マスタ対象をmergeすることが失敗しました");
-                        globalResponse = GlobalResponse.error("マスタ対象をmergeすることが失敗しました");
+                        logger.warn("マスタ対象をmergeすることが失敗しました。");
+                        globalResponse = GlobalResponse.error("マスタ対象をmergeすることが失敗しました。");
                         return globalResponse;
                     }
                 }
@@ -260,11 +260,11 @@ public class TmgIfSimulationBean {
                     //最後、データをリセット
                     batchBulk.clear();
                 }
-                logger.info("データは「" + page + "」ページで処理完了しました");
+                logger.info("データは「" + page + "」ページで処理が完了しました。");
                 //db 処理
                 this.updateTmgStatusWorkTypeSim(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), modifierProgramId, simulationInsertJsonDTO.getEmployeId(), TmgUtil.Cs_MGD_TMG_WTSIMSTATUS_010);
-                logger.info("段階導入シミュレーション登録情報に登録しました");
-                globalResponse = GlobalResponse.ok("登録しました");
+                logger.info("段階導入シミュレーション登録情報に登録しました。");
+                globalResponse = GlobalResponse.ok("登録しました。");
             } else {
                 logger.error("JSON対象ではありません");
                 globalResponse = GlobalResponse.error("JSON対象ではありません");
@@ -434,7 +434,7 @@ public class TmgIfSimulationBean {
                 logger.warn("マスタリスト対象をjsonオブジェクトに変更できない");
             }
         } else {
-            logger.error("JSON対象がオブジェクトに変更することが失敗しました");
+            logger.error("JSON対象がオブジェクトに変更することが失敗しました。");
         }
 
         return null;
@@ -485,13 +485,13 @@ public class TmgIfSimulationBean {
         this.updateTmgStatusWorkTypeSim(custID, compCode, modifierProgramId, employeId, TmgUtil.Cs_MGD_TMG_WTSIMSTATUS_010);
 
         if (flag1 && flag2) {
-            return GlobalResponse.ok("確定完了しました");
+            return GlobalResponse.ok("確定完了しました。");
         }
 
         if (!flag1 || !flag2) {
-            return GlobalResponse.error("確定失敗しました");
+            return GlobalResponse.error("確定に失敗しました。");
         }
-        return GlobalResponse.error("確定失敗しました");
+        return GlobalResponse.error("確定に失敗しました。");
     }
 
 
@@ -577,7 +577,7 @@ public class TmgIfSimulationBean {
             logger.info("シミュレーションの実行を行っています");
             return true;
         }
-        logger.error("シミュレーションの実行を行うことが失敗しました");
+        logger.error("シミュレーションの実行を行うことが失敗しました。");
         return false;
     }
 

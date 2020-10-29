@@ -127,7 +127,7 @@ public class TimepunchController {
             //出勤打刻データがある場合、画面へ返却する
             clockResultVO.setResultCode("0");
             clockResultVO.setClockTime(clockInfoVO.getNopen());
-            clockResultVO.setResultMsg("今日はもう出勤打刻しました");
+            clockResultVO.setResultMsg("今日はもう出勤打刻しました。");
             return clockResultVO;
         }
         //打刻

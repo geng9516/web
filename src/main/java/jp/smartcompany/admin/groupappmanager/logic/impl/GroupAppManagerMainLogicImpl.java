@@ -518,7 +518,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     // 刷新启动权限
     timedCache.remove(Constant.getSessionMenuId(httpSession.getId()));
     httpSession.removeAttribute(Constant.IS_APPROVER);
-    return "権限の変更が成功しました";
+    return "権限を変更しました。";
   }
 
   /**

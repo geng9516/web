@@ -187,7 +187,7 @@ public class TmgTimePunchBean {
             }
         } catch (Exception e) {
             result = false;
-            logger.error("打刻失敗しました", e);
+            logger.error("打刻に失敗しました。", e);
         } finally {
             this.deleteTmgTrgger(custId, compId, employeeId, psAction);
         }
@@ -271,7 +271,7 @@ public class TmgTimePunchBean {
                     }
                 } else {
                     resultCode = "30";
-                    resultMsg = "打刻時に、内部エラーが発生しました";
+                    resultMsg = "打刻時に、内部エラーが発生しました。";
                 }
 
             } else {
@@ -693,7 +693,7 @@ public class TmgTimePunchBean {
                     gsToday = sToday;
                 }
             } else {
-                log.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました");
+                log.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました。");
             }
         } else {
             //打刻更新先となる日と今日の日付を取得するクエリ
@@ -781,7 +781,7 @@ public class TmgTimePunchBean {
             //職員の勤務パターン
             changeTime = iTmgTimepunchService.selectEmpPattern(custId, compCode, employeeId);
         } catch (Exception e) {
-            logger.error("職員の時間帯時間を取得することが失敗しました", e);
+            logger.error("職員の時間帯時間を取得することが失敗しました。", e);
             //失敗の場合、変更時間を初期化になる
             changeTime = 300;
         }

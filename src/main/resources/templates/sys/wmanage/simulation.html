@@ -326,14 +326,14 @@
                             try {
                                 const {data} = await this.http.postForm('sys/simulation/deleteMastGeneric', this.query)
                                 if (data) {
-                                    this.$Notice.info({title: 'マスタデータを削除完了しました', desc: ""})
+                                    this.$Notice.info({title: 'マスタデータを削除完了しました。', desc: ""})
                                     this.getData()
                                 } else {
-                                    this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
+                                    this.$Notice.error({title: 'マスタデータを削除失敗しました。', desc: ""})
                                 }
 
                             } catch (error) {
-                                this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
+                                this.$Notice.error({title: 'マスタデータを削除失敗しました。', desc: ""})
                                 return
                             }
                         },
@@ -440,9 +440,9 @@
                         const {data} = await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
                         //操作結果確認する
                         if (this.masterResult.operType === 'insert') {
-                            this.$Notice.info({title: 'マスタデータを新規登録しました', desc: ""})
+                            this.$Notice.info({title: 'マスタデータを新規登録しました。', desc: ""})
                         } else {
-                            this.$Notice.info({title: 'マスタデータを更新しました', desc: ""})
+                            this.$Notice.info({title: 'マスタデータを更新しました。', desc: ""})
                         }
 
                         //操作画面を閉める
@@ -526,18 +526,18 @@
                         try {
                             const {data} = await this.http.postForm('sys/simulation/dicisionMasterDate', this.query)
                             console.log("確定結果", data)
-                            this.$Notice.info({title: 'マスタデータを確定完了しました', desc: ""})
+                            this.$Notice.info({title: 'マスタデータを確定完了しました。', desc: ""})
                             /*if (data) {
-                                this.$Notice.info({title: 'マスタデータを削除完了しました', desc: ""})
+                                this.$Notice.info({title: 'マスタデータを削除完了しました。', desc: ""})
                                 this.getData()
                             } else {
-                                this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
+                                this.$Notice.error({title: 'マスタデータを削除失敗しました。', desc: ""})
                             }
                              */
                             //現在のデータページへ遷移する
                             this.readMaster()
                         } catch (error) {
-                            this.$Notice.error({title: 'マスタデータを確定失敗しました', desc: ""})
+                            this.$Notice.error({title: 'マスタデータを確定失敗しました。', desc: ""})
                             return
                         }
                     },
@@ -576,12 +576,12 @@
                         try {
                             const {data} = await this.http.postForm('sys/simulation/execSim', this.param_exec)
                             if (data) {
-                                this.$Notice.info({title: '操作結果', desc: "タスクは今行っています、少々お待ちください"})
+                                this.$Notice.info({title: '操作結果', desc: "タスクは今行っています、少々お待ちください。"})
                             } else {
-                                this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください"})
+                                this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください。"})
                             }
                         } catch (error) {
-                            this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください"})
+                            this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください。"})
                             return
                         }
 

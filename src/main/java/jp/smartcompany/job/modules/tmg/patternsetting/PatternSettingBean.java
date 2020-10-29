@@ -73,7 +73,7 @@ public class PatternSettingBean {
         try {
             referList = new TmgReferList(psDBBean, beanDesc, pBaseDate, TmgReferList.TREEVIEW_TYPE_LIST, true, true);
         } catch (Exception e) {
-            logger.error("汎用リンクコンポーネントを生成することは失敗しました", e);
+            logger.error("汎用リンクコンポーネントを生成することは失敗しました。", e);
         }
     }
 
@@ -741,7 +741,7 @@ public class PatternSettingBean {
                 lPstParamList.add(sBuffer);
             }
         } catch (IOException e) {
-            logger.error("ファイルが読み込むことが失敗しました", e);
+            logger.error("ファイルが読み込むことが失敗しました。", e);
         }
         // 文字コードの制約で、1行目に不要な改行コードが入ってしまうため
         // 明示的に1行目だけは削除する

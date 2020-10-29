@@ -256,12 +256,12 @@ public class EvaluatorSettingBean {
         if (CollUtil.isNotEmpty(msg)) {
             String errorMsg = (String)msg.get(0);
             if (StrUtil.equals(errorMsg ,"0")) {
-               return GlobalResponse.ok("追加成功しました");
+               return GlobalResponse.ok("追加しました。");
             } else {
                 return GlobalResponse.error(errorMsg);
             }
         }
-        return GlobalResponse.error("追加失敗しました");
+        return GlobalResponse.error("追加に失敗しました。");
     }
 
     /**
@@ -630,9 +630,9 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForDeletePatternApply(params)); // 対象グループに紐付く勤務パターン割付情報を削除
         int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows == 0) {
-            return GlobalResponse.ok("削除成功しました");
+            return GlobalResponse.ok("削除しました。");
         }
-        return GlobalResponse.error("削除失敗しました");
+        return GlobalResponse.error("削除に失敗しました。");
     }
 
     /**
@@ -667,9 +667,9 @@ public class EvaluatorSettingBean {
         // DB反映
         int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
         if (rows >0) {
-            return GlobalResponse.ok("登録処理成功しました");
+            return GlobalResponse.ok("登録しました。");
         }
-        return GlobalResponse.error("登録処理失敗しました");
+        return GlobalResponse.error("登録に失敗しました。");
     }
 
     // 結果セット番号
@@ -791,12 +791,12 @@ public class EvaluatorSettingBean {
         if (CollUtil.isNotEmpty(msg)) {
             String errorMsg = (String)msg.get(0);
             if (StrUtil.equals(errorMsg ,"0")) {
-                return GlobalResponse.ok("追加成功しました");
+                return GlobalResponse.ok("追加しました。");
             } else {
                 return GlobalResponse.error(errorMsg);
             }
         }
-        return GlobalResponse.error("追加失敗しました");
+        return GlobalResponse.error("追加に失敗しました。");
     }
 
     /**
@@ -882,9 +882,9 @@ public class EvaluatorSettingBean {
 
         int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows >0) {
-            return GlobalResponse.ok("登録処理成功しました");
+            return GlobalResponse.ok("登録しました。");
         }
-        return GlobalResponse.error("登録処理失敗しました");
+        return GlobalResponse.error("登録に失敗しました。");
     }
 
     public Map<String,Object> showEditEvalHandler(PsDBBean bean,String sectionId,String groupId,String empId) {
@@ -1013,9 +1013,9 @@ public class EvaluatorSettingBean {
         }
         int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows >0) {
-            return GlobalResponse.ok("変更処理成功しました");
+            return GlobalResponse.ok("変更しました。");
         }
-        return GlobalResponse.error("変更処理失敗しました");
+        return GlobalResponse.error("変更に失敗しました。");
     }
 
 

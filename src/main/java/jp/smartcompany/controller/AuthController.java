@@ -88,7 +88,7 @@ public class AuthController {
                 loginAccountBo = authBusiness.basicStamping(username, password);
             } catch (Exception e) {
                 clockResultVO.setResultCode("10");
-                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください。");
                 return clockResultVO;
             }
             if (null != loginAccountBo) {
@@ -103,7 +103,7 @@ public class AuthController {
                     //出勤打刻データがある場合、画面へ返却する
                     clockResultVO.setResultCode("0");
                     clockResultVO.setClockTime(clockInfoVO.getNopen());
-                    clockResultVO.setResultMsg("今日はもう出勤打刻しました");
+                    clockResultVO.setResultMsg("今日はもう出勤打刻しました。");
                     return clockResultVO;
                 }
                 //打刻
@@ -117,11 +117,11 @@ public class AuthController {
             } else {
                 clockResultVO.setEmployeeId(username);
                 clockResultVO.setResultCode("10");
-                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください。");
             }
         } else {
             clockResultVO.setResultCode("10");
-            clockResultVO.setResultMsg("チェック失敗しました、もう一度ユーザー又はパスワードを入力し直してください");
+            clockResultVO.setResultMsg("チェック失敗しました、もう一度ユーザー又はパスワードを入力し直してください。");
         }
         return clockResultVO;
     }
@@ -139,14 +139,14 @@ public class AuthController {
     @ResponseBody
     public String changeExpirePassword(@RequestBody @Valid ChangePasswordDTO dto) {
         authBusiness.changePassword(dto);
-        return "パスワード変更成功";
+        return "パスワードを変更しました。";
     }
 
     @PostMapping("changePassword")
     @ResponseBody
     public String changePassword(@RequestBody @Valid ChangePasswordDTO dto) {
         authBusiness.changePassword(dto);
-        return "パスワード変更成功";
+        return "パスワードを変更しました。";
     }
 
     @GetMapping("403")
