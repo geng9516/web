@@ -357,14 +357,14 @@
                         align: 'left'
                     },
                     {
-                        title: '職種',
+                        title: '種別',
                         key: 'hdCpostname',
                         minWidth: 180,
                         align: 'left',
                         tooltip: true
                     },
                     {
-                        title: '種別',
+                        title: '職種',
                         key: 'temCworktypename',
                         minWidth: 220,
                         align: 'left',
@@ -433,7 +433,7 @@
                     {
                         title: '更新者',
                         key: 'modifieruserId',
-                        align: 'right',
+                        align: 'left',
                         width: 150
                     },
                     {
@@ -654,7 +654,8 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: '基準日以降の設定内容を削除します。\nなお、削除した内容は翌日から反映されます。\nよろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
@@ -686,7 +687,8 @@
                 const OPTS = {...this.opts, "params": JSON.stringify(params)}
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: '選択された行の設定を削除します。よろしいですか？',
                         okText: 'OK',
                         cancelText: 'キャンセル',
@@ -794,7 +796,8 @@
 
                 try {
                     this.$Modal.confirm({
-                        title: '',
+                        title: '注意',
+                        width: 480,
                         content: msg,
                         okText: 'OK',
                         cancelText: 'キャンセル',

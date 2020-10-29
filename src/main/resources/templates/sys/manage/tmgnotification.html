@@ -1261,8 +1261,9 @@
                 query = this.changeData(query)
                 this.$Modal.confirm({
                     inDrawer: true,
-                    title: 'この申請を最終決裁します。よろしいですか？',
-                    width: 490,
+                    title: '注意',
+                    width: 480,
+                    content: 'この申請を最終決裁します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
@@ -1284,8 +1285,9 @@
                 query = this.changeData(query)
                 this.$Modal.confirm({
                     inDrawer: true,
-                    title: 'この申請を差戻します。よろしいですか？',
-                    width: 490,
+                    title: '注意',
+                    width: 480,
+                    content: 'この申請を差戻します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {

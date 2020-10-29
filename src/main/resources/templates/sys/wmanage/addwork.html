@@ -1382,8 +1382,9 @@
                 }
                 this.$Modal.confirm({
                     inDrawer: true,
-                    title: msg || 'この内容で承認します。よろしいですか？',
-                    width: 490,
+                    title: '注意',
+                    width: 480,
+                    content: 'この内容で承認します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
