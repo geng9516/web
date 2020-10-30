@@ -41,11 +41,11 @@ public class ContextUtil {
   public static HttpSession getSession() {
     HttpServletRequest request = getHttpRequest();
     if (request == null) {
-      throw new GlobalException("リクエストオブジェクトが存在しません");
+      throw new GlobalException("リクエストオブジェクトが存在しません。");
     }
     HttpSession session = request.getSession();
     if (session == null) {
-      throw new GlobalException("セッションオブジェクトが存在しません");
+      throw new GlobalException("セッションオブジェクトが存在しません。");
     }
     return session;
   }

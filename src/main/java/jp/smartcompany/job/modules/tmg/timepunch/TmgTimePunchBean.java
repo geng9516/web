@@ -210,27 +210,27 @@ public class TmgTimePunchBean {
         logger.info("打刻ユーザー：" + employeeId);
         if (null == employeeId || "".equals(employeeId)) {
             isPass = false;
-            resultMsg = "職員番号が空です";
+            resultMsg = "職員番号が空です。";
             log.warn(resultMsg);
         }
         if (null == custId || "".equals(custId)) {
             isPass = false;
-            resultMsg = "顧客番号が空です";
+            resultMsg = "顧客番号が空です。";
             log.warn(resultMsg);
         }
         if (null == compId || "".equals(compId)) {
             isPass = false;
-            resultMsg = "会社コードが空です";
+            resultMsg = "会社コードが空です。";
             log.warn(resultMsg);
         }
         if (null == psAction || "".equals(psAction)) {
             isPass = false;
-            resultMsg = "打刻タイプが空です";
+            resultMsg = "打刻タイプが空です。";
             log.warn(resultMsg);
         }
         if (!psAction.equals(ACT_EXEC_OPEN) && !psAction.equals(ACT_EXEC_CLOSE)) {
             isPass = false;
-            resultMsg = "打刻タイプが不正です";
+            resultMsg = "打刻タイプが不正です。";
             log.warn(resultMsg);
         }
         if (isPass) {
@@ -299,7 +299,7 @@ public class TmgTimePunchBean {
     public boolean isNotTimePunch(String custId, String compCode, String employeeId, String gsToday) {
 
         if (null != gsToday) {
-            log.warn("打刻更新日が取得していない");
+            log.warn("打刻更新日が取得していない。");
             return false;
         }
         //打刻画面表示判断
@@ -482,11 +482,11 @@ public class TmgTimePunchBean {
                 Object[] result = this.scheduleDataResult(result_conver);
                 return result;
             } else {
-                logger.warn("出勤予定時間又は退勤予定時間が空です");
+                logger.warn("出勤予定時間又は退勤予定時間が空です。");
                 return null;
             }
         } else {
-            logger.warn("予定データが空です");
+            logger.warn("予定データが空です。");
             return null;
         }
     }
@@ -528,7 +528,7 @@ public class TmgTimePunchBean {
             Object[] result = vector.toArray();
             return result;
         } else {
-            logger.warn("予定データが空です");
+            logger.warn("予定データが空です。");
             return null;
         }
     }
@@ -566,7 +566,7 @@ public class TmgTimePunchBean {
             npaidRestDaysHour += hour + "時";
             npaidRestDaysHour += min + "分";
         } else {
-            log.warn("年次休暇残対象が空です");
+            log.warn("年次休暇残対象が空です。");
         }
         return npaidRestDaysHour;
     }
@@ -784,7 +784,7 @@ public class TmgTimePunchBean {
         if (changeTime == 0) {
             changeTime = 300;
         }
-        logger.info("職員「" + employeeId + "」の勤務変更時間は「" + changeTime + "」です");
+        logger.info("職員「" + employeeId + "」の勤務変更時間は「" + changeTime + "」です。");
         int startTime = changeTime / 60;
         Integer[] schSection = new Integer[]{startTime, startTime + 24};
 

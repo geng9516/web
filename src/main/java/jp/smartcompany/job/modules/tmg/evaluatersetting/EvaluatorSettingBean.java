@@ -611,7 +611,7 @@ public class EvaluatorSettingBean {
 
     public GlobalResponse deleteGroupHandler(PsDBBean bean,String sectionId,String groupId) {
         if (StrUtil.endWith(groupId,TmgUtil.Cs_DEFAULT_GROUPSEQUENCE)) {
-            throw new GlobalException("デフォルトグループを削除できません");
+            throw new GlobalException("デフォルトグループを削除できません。");
         }
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         configYYYYMMDD(bean,params);

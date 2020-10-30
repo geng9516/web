@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class EditGroupDTO {
 
-  @NotBlank(message = "sectionIdは空白するのを許可されていません")
+  @NotBlank(message = "sectionIdは空白するのを許可されていません。")
   private String sectionId;
 
   private Boolean autoStart;

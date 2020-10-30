@@ -88,7 +88,7 @@ public class AuthController {
                 loginAccountBo = authBusiness.basicStamping(username, password);
             } catch (Exception e) {
                 clockResultVO.setResultCode("10");
-                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください。");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました。もう一度入力し直してください。");
                 return clockResultVO;
             }
             if (null != loginAccountBo) {
@@ -97,7 +97,7 @@ public class AuthController {
                 if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
                     //予定データがない場合、打刻しない
                     clockResultVO.setResultCode("20");
-                    clockResultVO.setResultMsg("今日は出勤しない日です");
+                    clockResultVO.setResultMsg("今日は出勤しない日です。");
                 }
                 if ("ACT_EXEC_OPEN".equals(pAction) && null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
                     //出勤打刻データがある場合、画面へ返却する
@@ -109,19 +109,19 @@ public class AuthController {
                 //打刻
                 clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
                 if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
-                    clockResultVO.setResultMsg("今日も一日頑張りましょう");
+                    clockResultVO.setResultMsg("今日も一日頑張りましょう。");
                 }
                 if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
-                    clockResultVO.setResultMsg("今日も一日お疲れ様でした");
+                    clockResultVO.setResultMsg("今日も一日お疲れ様でした。");
                 }
             } else {
                 clockResultVO.setEmployeeId(username);
                 clockResultVO.setResultCode("10");
-                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください。");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました。もう一度入力し直してください。");
             }
         } else {
             clockResultVO.setResultCode("10");
-            clockResultVO.setResultMsg("チェック失敗しました、もう一度ユーザー又はパスワードを入力し直してください。");
+            clockResultVO.setResultMsg("チェック失敗しました。もう一度ユーザー又はパスワードを入力し直してください。");
         }
         return clockResultVO;
     }

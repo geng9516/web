@@ -43,7 +43,7 @@ public class AddEvaluatorDTO {
 
     public void validate() {
         if (!notification && StrUtil.isNotBlank(approvalLevel)) {
-            throw new GlobalException("休暇認定許可をオンにしないとレベルを設定できません");
+            throw new GlobalException("休暇認定許可をオンにしないとレベルを設定できません。");
         }
     }
 

@@ -578,10 +578,10 @@
                             if (data) {
                                 this.$Notice.info({title: '操作結果', desc: "タスクは今行っています、少々お待ちください。"})
                             } else {
-                                this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください。"})
+                                this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました。もう一度やり直してください。"})
                             }
                         } catch (error) {
-                            this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください。"})
+                            this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました。もう一度やり直してください。"})
                             return
                         }
 

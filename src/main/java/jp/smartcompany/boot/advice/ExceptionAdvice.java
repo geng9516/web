@@ -123,7 +123,7 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public GlobalResponse unknownAccountException(UsernameNotFoundException e) {
         printStackTrace(e);
-        return GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(),"システム処理中にエラーが発生しました。システム管理者にお問い合わせください");
+        return GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(),"システム処理中にエラーが発生しました。システム管理者にお問い合わせください。");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

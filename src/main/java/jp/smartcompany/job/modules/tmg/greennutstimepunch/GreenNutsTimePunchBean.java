@@ -87,11 +87,11 @@ public class GreenNutsTimePunchBean {
                     //0件の場合
                 } else if (emplist.size() == 0) {
                     //设置备注
-                    tplog.setTgtlCmemo("NO_DATA_FOUND : ICカード番号に該当する職員マスタが見つかりません");
+                    tplog.setTgtlCmemo("NO_DATA_FOUND : ICカード番号に該当する職員マスタが見つかりません。");
                 } else {
                     //2件以上の場合
                     //设置备注
-                    tplog.setTgtlCmemo("TOO_MANY_ROWS : ICカード番号に該当する職員マスタが2件以上存在します");
+                    tplog.setTgtlCmemo("TOO_MANY_ROWS : ICカード番号に該当する職員マスタが2件以上存在します。");
                 }
                 //保存打刻日志记录
                 iTmgGreennutsTplogService.save(tplog);

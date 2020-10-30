@@ -96,7 +96,7 @@ public class PatternSettingBean {
         List<JSONObject> restArray = null;
 
         if ("null".equals(groupId)) {
-            logger.warn("GROUPIDが空です");
+            logger.warn("GROUPIDが空です。");
             groupId = null;
         }
         for (int i = 0; i < tmgPatternDTOS.size(); i++) {
@@ -143,11 +143,11 @@ public class PatternSettingBean {
     public List<TmgPatternDTO> selectTmgPatternOwn(String groupId, String sectionId) {
 
         if (null == groupId || "".equals(groupId)) {
-            logger.warn("GROUPIDが空です");
+            logger.warn("GROUPIDが空です。");
             //return null;
         }
         if (null == sectionId || "".equals(sectionId)) {
-            logger.warn("SECTIONIDが空です");
+            logger.warn("SECTIONIDが空です。");
             //return null;
         }
         //TMG_PATTERNより利用可能な勤務パターン
@@ -197,7 +197,7 @@ public class PatternSettingBean {
      */
     public List<TmgPatternAppliesDTO> selectTmgPatternApplies(String baseDate) {
         if (null == baseDate || "".equals(baseDate)) {
-            logger.warn("基準時間が空です");
+            logger.warn("基準時間が空です。");
             return null;
         }
         //目標対象
@@ -206,7 +206,7 @@ public class PatternSettingBean {
             targetEmployees = referList.buildSQLForSelectEmployees();
         }
         if (null == targetEmployees || "".equals(targetEmployees)) {
-            logger.warn("関する職員番号リストSQLが空です");
+            logger.warn("関する職員番号リストSQLが空です。");
             return null;
         }
         return iPatternSettingService.selectTmgPatternApplies(baseDate, targetEmployees, psDBBean.getLanguage());
@@ -267,7 +267,7 @@ public class PatternSettingBean {
         //ルートノード
         String groupId = "000000";
         if (null == patternId || "".equals(patternId)) {
-            logger.warn("パターン番号が空です");
+            logger.warn("パターン番号が空です。");
             return false;
         }
         if (null != this.selectTmgPatternById(groupId, patternId)) {
@@ -285,11 +285,11 @@ public class PatternSettingBean {
      */
     public TmgPatternVO selectEditPatternInfo(String groupId, String patternId) {
         if (null == groupId || "".equals(groupId)) {
-            logger.warn("所属番号が空です");
+            logger.warn("所属番号が空です。");
             return null;
         }
         if (null == patternId || "".equals(patternId)) {
-            logger.warn("パターン番号が空です");
+            logger.warn("パターン番号が空です。");
             return null;
         }
         TmgPatternVO tmgPatternVO = new TmgPatternVO();
@@ -311,13 +311,13 @@ public class PatternSettingBean {
     @Transactional(rollbackFor = GlobalException.class)
     public void deletePattern(String groupId, String sectionId, String patternId) {
         if (null == groupId || "".equals(groupId)) {
-            logger.warn("GROUP番号が空です");
+            logger.warn("GROUP番号が空です。");
         }
         if (null == sectionId || "".equals(sectionId)) {
-            logger.warn("SECTION番号が空です");
+            logger.warn("SECTION番号が空です。");
         }
         if (null == patternId || "".equals(patternId)) {
-            logger.warn("パターン番号が空です");
+            logger.warn("パターン番号が空です。");
             return;
         }
         iPatternSettingService.deleteTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);

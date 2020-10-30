@@ -190,7 +190,7 @@ public class TmgIfSimulationBean {
 
             return result;
         } else {
-            logger.warn("メタデータが空です");
+            logger.warn("メタデータが空です。");
             return null;
         }
 
@@ -266,12 +266,12 @@ public class TmgIfSimulationBean {
                 logger.info("段階導入シミュレーション登録情報に登録しました。");
                 globalResponse = GlobalResponse.ok("登録しました。");
             } else {
-                logger.error("JSON対象ではありません");
-                globalResponse = GlobalResponse.error("JSON対象ではありません");
+                logger.error("JSON対象ではありません。");
+                globalResponse = GlobalResponse.error("JSON対象ではありません。");
             }
         } else {
-            logger.warn("マスタデータが空です");
-            globalResponse = GlobalResponse.error("マスタデータが空です");
+            logger.warn("マスタデータが空です。");
+            globalResponse = GlobalResponse.error("マスタデータが空です。");
         }
         return globalResponse;
     }
@@ -291,10 +291,10 @@ public class TmgIfSimulationBean {
     public boolean deleteMastGenericDetail(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
         if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotEmpty(endDate)) {
             int count = iTmgStatusWorktypeSimService.deleteMastGenericDetail(custID, compCode, language, genericgroupId, startDate, endDate);
-            logger.info("名称マスタ詳細情報を削除することが完了しました,総計「" + count + "」件");
+            logger.info("名称マスタ詳細情報を削除することが完了しました。総計「" + count + "」件");
             return true;
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
             return false;
         }
     }
@@ -313,10 +313,10 @@ public class TmgIfSimulationBean {
     public boolean deleteMastGenericDetail_notrans(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
         if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId)) {
             int count = iTmgStatusWorktypeSimService.deleteMastGenericDetail(custID, compCode, language, genericgroupId, startDate, endDate);
-            logger.info("名称マスタ詳細情報を削除することが完了しました,総計「" + count + "」件");
+            logger.info("名称マスタ詳細情報を削除することが完了しました。総計「" + count + "」件");
             return true;
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
             return false;
         }
     }
@@ -399,12 +399,12 @@ public class TmgIfSimulationBean {
                             simulationInsertDTOList.add(simulationInsertDTO);
                         }
                     } else {
-                        logger.warn("マスタ値が空です");
+                        logger.warn("マスタ値が空です。");
                     }
                 }
             }
         } else {
-            logger.warn("マスタインサート対象が空です");
+            logger.warn("マスタインサート対象が空です。");
         }
         return simulationInsertDTOList;
     }
@@ -458,7 +458,7 @@ public class TmgIfSimulationBean {
                 return true;
             }
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
         }
 
         return false;
@@ -509,10 +509,10 @@ public class TmgIfSimulationBean {
 
         if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(onlinegroupId)) {
             int count = iTmgStatusWorktypeSimService.insertOnlineMasterData(custID, compCode, language, genericgroupId, onlinegroupId);
-            logger.info("臨時マスタデータをオンラインデータに確定する数は「" + count + "」です");
+            logger.info("臨時マスタデータをオンラインデータに確定する数は「" + count + "」です。");
             return true;
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
         }
         return false;
     }
@@ -528,10 +528,10 @@ public class TmgIfSimulationBean {
     private boolean buildSQLForDeleteTmgTrgger(String psCustId, String psCompId, String psUserId, String psModifierProgramId) {
         if (ObjectUtil.isNotEmpty(psCustId) && ObjectUtil.isNotEmpty(psCompId) && ObjectUtil.isNotEmpty(psUserId) && ObjectUtil.isNotEmpty(psModifierProgramId)) {
             int count = iTmgStatusWorktypeSimService.buildSQLForDeleteTmgTrgger(psCustId, psCompId, psUserId, psModifierProgramId);
-            logger.info("TMG_TRIGGERを削除するクエリを返する数は「" + count + "」です");
+            logger.info("TMG_TRIGGERを削除するクエリを返する数は「" + count + "」です。");
             return true;
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
         }
         return false;
     }
@@ -550,10 +550,10 @@ public class TmgIfSimulationBean {
     private boolean buildSQLForInsertTmgTrgger(String custID, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid) {
         if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(employeeId) && ObjectUtil.isNotEmpty(minDate) && ObjectUtil.isNotEmpty(maxDate) && ObjectUtil.isNotEmpty(modifierprogramid)) {
             int count = iTmgStatusWorktypeSimService.buildSQLForInsertTmgTrgger(custID, compCode, employeeId, minDate, maxDate, modifierprogramid);
-            logger.info("TMG_TRIGGERへINSERTするクエリを返する数は「" + count + "」です");
+            logger.info("TMG_TRIGGERへINSERTするクエリを返する数は「" + count + "」です。");
             return true;
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
         }
         return false;
     }
@@ -599,7 +599,7 @@ public class TmgIfSimulationBean {
         if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language)) {
             return iTmgStatusWorktypeSimService.buildSQLForSelectTmgStatusWorkTypeSim(custID, compCode, language);
         } else {
-            logger.warn("パラメータが不正です");
+            logger.warn("パラメータが不正です。");
             return null;
         }
     }

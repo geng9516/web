@@ -116,11 +116,11 @@
                 </i-button>
             </form-item>
             <form-item label="コード" prop="patternId">
-                <i-input v-model="rawData.tpa_cpatternid" :disabled="isPatternCodeDisable" 　placeholder="入力してください"></i-input>
+                <i-input v-model="rawData.tpa_cpatternid" :disabled="isPatternCodeDisable" 　placeholder="入力してください。"></i-input>
             </form-item>
 
             <form-item label="名称" prop="patternName">
-                <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください"></i-input>
+                <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください。"></i-input>
             </form-item>
 
             <form-item label="勤務時間" prop="dutyTime">
@@ -211,7 +211,7 @@
             </form-item>
 
             <form-item label="翌日勤務パターン" prop="ykjtPattern">
-                <i-select v-model="ykjtPatternModel" placeholder="選択ください" filterable transfer @on-change="handleChangePattern($event)">
+                <i-select v-model="ykjtPatternModel" placeholder="選択ください。" filterable transfer @on-change="handleChangePattern($event)">
                     <i-option label="なし" value=""></i-option>
                     <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
                 </i-select>
@@ -318,7 +318,7 @@
                 edit_flag: false,
                 contentMsg: '',
                 pageTitle: '勤務パターン新規',
-                pageTitleMsg: '勤務パターンを新規登録しました',
+                pageTitleMsg: '勤務パターンを新規登録しました。',
                 //翌日勤務パターン
                 ykjtPatternList: [],
                 ykjtPatternModel: '',
@@ -339,7 +339,7 @@
                     type: 21
                 },
                 empTreeData: [],
-                deptName: '選んでください',
+                deptName: '選んでください。',
                 // sectionId:'',
                 // groupId:'',
                 query: {
@@ -542,7 +542,7 @@
                 this.isSearchHistory = true
                 await this.getOrgTree()
                 if (this.treeData.length !== 0) {
-                    this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
+                    this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください。"})
                 }
             },
 
@@ -620,7 +620,7 @@
                     this.pageTitle = '勤務パターン編集'
                     this.titlesMessage = '変更'
                     this.contentMsg = 'この編集内容で更新します。よろしいですか？'
-                    this.pageTitleMsg = '勤務パターンを更新しました'
+                    this.pageTitleMsg = '勤務パターンを更新しました。'
                     this.isPatternCodeDisable = true
                     this.rawData = {...row}
                     this.edit_flag = true
@@ -731,7 +731,7 @@
                 this.hiddenAlert()
                 if (!groupId) {
                     if (!sectionId) {
-                        this.showAlert('部署とグループが空です')
+                        this.showAlert('部署とグループが空です。')
                         return false
                     }
                 }
@@ -741,7 +741,7 @@
             valid_ifnull(title, msg) {
                 this.hiddenAlert()
                 if (!msg) {
-                    this.showAlert(title + 'を入力してください')
+                    this.showAlert(title + 'を入力してください。')
                     return false
                 }
                 return true
@@ -751,7 +751,7 @@
                 var regEn = /[`~!@#$%^&*+>?:"{},.\/;'[\]]/im
                 var regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im
                 if (regEn.test(msg) || regCn.test(msg)) {
-                    this.showAlert(title + '中に特殊文字（`~!@#$%^&*+>?:"{},.\\/;\'[\\]）が含めています、入力し直してください')
+                    this.showAlert(title + '中に特殊文字（`~!@#$%^&*+>?:"{},.\\/;\'[\\]）が含めています、入力し直してください。')
                     return false;
                 }
                 return true
@@ -760,11 +760,11 @@
             valid_length(title, msg) {
                 this.hiddenAlert()
                 if (msg.length < 5) {
-                    this.showAlert(title + 'は半角英数記号文字を5文字以上に入力してください')
+                    this.showAlert(title + 'は半角英数記号文字を5文字以上に入力してください。')
                     return false
                 }
                 if (msg.length > 50) {
-                    this.showAlert(title + 'は半角英数記号文字を50文字以下に入力してください')
+                    this.showAlert(title + 'は半角英数記号文字を50文字以下に入力してください。')
                     return false
                 }
                 return true
@@ -831,7 +831,7 @@
                 }
                 const {data} = await this.http.get('sys/patternSetting/selectEditPatternExist', {patternId: patternId})
                 if (data) {
-                    this.showAlert('勤務パターンコードが存在しています、入力し直してください')
+                    this.showAlert('勤務パターンコードが存在しています、入力し直してください。')
                     return false
                 }
                 return true
@@ -845,19 +845,19 @@
                 var restStart_date = new Date(Date.parse("2020-01-01 " + restStart + ":00"));
                 var restEnd_date = new Date(Date.parse("2020-01-01 " + restEnd + ":00"));
                 if (dutyStart_date > restStart_date) {
-                    this.showAlert('[' + item + ']休憩開始時間は勤務開始時間より早いです')
+                    this.showAlert('[' + item + ']休憩開始時間は勤務開始時間より早いです。')
                     return false
                 }
                 if (restStart_date > dutyEnd_date) {
-                    this.showAlert('[' + item + ']休憩開始時間は退勤時間より遅いです')
+                    this.showAlert('[' + item + ']休憩開始時間は退勤時間より遅いです。')
                     return false
                 }
                 if (dutyStart_date > restEnd_date) {
-                    this.showAlert('[' + item + ']休憩終了時間は勤務開始時間より早いです')
+                    this.showAlert('[' + item + ']休憩終了時間は勤務開始時間より早いです。')
                     return false
                 }
                 if (restEnd_date > dutyEnd_date) {
-                    this.showAlert('[' + item + ']休憩終了時間は退勤時間より遅いです')
+                    this.showAlert('[' + item + ']休憩終了時間は退勤時間より遅いです。')
                     return false
                 }
                 return true
@@ -918,7 +918,7 @@
                 var restStart = new Date(Date.parse("2020-01-01 " + datatime1 + ":00"));
                 var restEnd = new Date(Date.parse("2020-01-01 " + datatime2 + ":00"));
                 if (restStart > restEnd) {
-                    this.showAlert('[休憩時間'+index+']休憩終了時刻は休憩開始時刻より未来の時刻を入力してください')
+                    this.showAlert('[休憩時間'+index+']休憩終了時刻は休憩開始時刻より未来の時刻を入力してください。')
                     return false
                 }
                 return true
@@ -956,7 +956,7 @@
                         //console.log('befor  isDefault', this.rawData_bak.flag)
                         //console.log('this.rawData_bak', JSON.stringify(this.rawData_bak))
                         //console.log('this.rawData', JSON.stringify(this.rawData))
-                        this.showAlert('まだ編集していません、先ずは編集しましょう')
+                        this.showAlert('まだ編集していません、先ずは編集しましょう。')
                         return
                     } else {
                         this.hiddenAlert()
@@ -994,7 +994,7 @@
                     return
                 }
                 if (!this.hasPassedTimeCheck) {
-                    this.showAlert('勤務時間または休憩時間フォーマットが正しくないので、もう一度確認してください')
+                    this.showAlert('勤務時間または休憩時間フォーマットが正しくないので、もう一度確認してください。')
                     return
                 } else {
                     this.hiddenAlert();
@@ -1125,7 +1125,7 @@
                         }
                     })
                 } else {
-                    this.$Notice.warning({title: '先ずは、目標パターンを選択してください', desc: ""})
+                    this.$Notice.warning({title: '先ずは、目標パターンを選択してください。', desc: ""})
                 }
             },
             //翌日勤務パターンリスト
@@ -1138,7 +1138,7 @@
             handleFormatError(file) {
                 if (file != null && file != undefined) {
                     if (file.type != 'application/vnd.ms-excel') {
-                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "サポートされているファイルタイプはCSVです"})
+                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "サポートされているファイルタイプはCSVです。"})
                         return false
                     }
                     return true
@@ -1149,7 +1149,7 @@
             handleMaxSize(file) {
                 if (file != null && file != undefined) {
                     if (file.size > 1024000) {
-                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "ファイルサイズの最大値は1Mです"})
+                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "ファイルサイズの最大値は1Mです。"})
                         return false
                     }
                     return true

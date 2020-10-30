@@ -7,8 +7,8 @@ import jp.smartcompany.boot.enums.ResponseMessage;
  */
 public enum CoreError implements ResponseMessage {
 
-    USER_LOCK(100,"ユーザーはロックされており、ログインできません"),
-    LOGIN_GROUP_NOT_FOUND(101,"ログイングループは空にできません");
+    USER_LOCK(100,"ユーザーはロックされており、ログインできません。"),
+    LOGIN_GROUP_NOT_FOUND(101,"ログイングループは空にできません。");
 
     CoreError(final int code, final String msg) {
         this.code = code;
