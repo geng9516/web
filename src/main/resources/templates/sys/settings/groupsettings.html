@@ -1621,11 +1621,10 @@
           }
           try {
             this.drawLoading = true
-            // const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
-            console.log(updateValue)
+            const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
             this.isShow = false
             this.sectionPostList_bak = {}
-            // this.getData()
+            this.getData()
           } catch (error) {
             this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
           } finally {
