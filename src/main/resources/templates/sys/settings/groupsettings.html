@@ -786,6 +786,7 @@
               mgDstartdate: '',
               companyName: '',
               companyId: '01',
+              mgCcompanyid: '01',
               mgCtext: '',
               mgCgroupdescription: '',
               mgNpartinentnumber: ''
@@ -1128,9 +1129,9 @@
               e => {
                 return {
                   ...e,
-                  mgbsCgroupid: this.groupInfoData.mgCgroupidPk,
-                  mgbsCcompanyid: this.groupInfoData.mgCcompanyid,
-                  mgbsCsystemid: this.groupInfoData.mgCsystemidCkFk,
+                  mgbsCgroupid: this.groupInfoData[0].mgCgroupidPk,
+                  mgbsCcompanyid: this.groupInfoData[0].mgCcompanyid,
+                  mgbsCsystemid: this.groupInfoData[0].mgCsystemidCkFk,
                   mgbsCbeloworsingle: this.updateValue.belowSingle,
                   mgbsCsectionid: e.sectionId,
                   mgbsClayeredsectionid: e.layeredSectionId,
