@@ -752,12 +752,12 @@
             //   更新选择得条件
             this.queryData[this.clickedCell.where].columnname = e.nameInfo
             this.queryData[this.clickedCell.where].columnid = e.codeInfo
+            this.queryData[this.clickedCell.where].typeofcolumn = e.typeInfo
             //   更新值的变换信息
             this.queryData[this.clickedCell.where].mastertablename = e.masterInfo
             //   清空之前的值信息
             this.queryData[this.clickedCell.where].displayvalue = ''
             this.queryData[this.clickedCell.where].value = ''
-            this.queryData[this.clickedCell.where].typeofcolumn = e.typeInfo
             this.poptipStyle.display = 'none'
             return
           }
@@ -1403,26 +1403,22 @@
             onOk: () => {
               const selectedNodes = this.$refs.sectionTree.getCheckedNodes().map(e => e.uni_id)
               // 同样这里是只考虑单法人
-              this.sectionPostList[0].children.forEach((e, i) => {
-                if (selectedNodes.includes(e.uni_id)) {
-                  // 因为删除后索引会变，需要找到正确的索引
-                  this.sectionPostList[0].children.splice(this.sectionPostList[0].children.findIndex(t => t.uni_id === e.uni_id), 1)
-                }
+              this.sectionPostList[0].children = this.sectionPostList[0].children.filter((e, i)=> {
                 if (e.children && e.children.length > 0) {
-                  e.children.forEach(t => {
-                    if (selectedNodes.includes(t.uni_id)) {
-                      this.sectionPostList[0].children[i].indeterminate = false
-                      this.sectionPostList[0].children[i].children.splice(this.sectionPostList[0].children[i].children.findIndex(n => n.uni_id === t.uni_id), 1)
-                    }
+                  e.children = e.children.filter(t=> {
+                    this.sectionPostList[0].children[i].indeterminate = false
+                    return !selectedNodes.includes(t.uni_id)
                   })
                 }
-              })
-              this.bossList.forEach(e => {
-                if (this.bossListSelected.includes(e.uni_id)) this.bossList.splice(this.bossList.findIndex(t => t.uni_id === e.uni_id), 1)
+                return !selectedNodes.includes(e.uni_id)
               })
 
-              this.postList.forEach(e => {
-                if (this.postListSelected.includes(e.uni_id)) this.postList.splice(this.postList.findIndex(t => t.uni_id === e.uni_id), 1)
+              this.bossList = this.bossList.filter(e => {
+                return !this.bossListSelected.includes(e.uni_id)
+              })
+
+              this.postList = this.postList.filter(e => {
+                return !this.postListSelected.includes(e.uni_id)
               })
               // 将半选的root清除
               this.sectionPostList[0].indeterminate = false
