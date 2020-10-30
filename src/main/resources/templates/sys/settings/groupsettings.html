@@ -87,7 +87,7 @@
         現在使われていないグループ
       </div>
       <!-- 該当条件編集画面 start-->
-      <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面">
+      <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面" :mask-closable="false">
         <div class="mb10 tr">
           <i-button type="primary" ghost @click="updateGroup()" icon="md-create" :loading="drawerBtnLoading" v-if="!isAdding">
             登録
@@ -279,7 +279,7 @@
       <!-- 該当条件編集画面 end-->
 
       <!--  条件式による定義 选择group和 役職 start-->
-      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'"
+      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
         v-model="showGroupOrPositionDrawer">
         <span v-show="curdisplayPanel === 'QPOST'">
           <div class="titlenorm mb5">
@@ -349,8 +349,8 @@
               :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
             </i-table>
           </i-col>
-          <Spin size="large" fix v-if="empSearchLoading"></Spin>
         </Row>
+        <Spin size="large" fix v-if="empSearchLoading"></Spin>
       </Drawer>
       <!--  条件式による定義 选择group和 役職 end-->
     </div>
@@ -680,7 +680,7 @@
           sectionPostList: [], //組織・役職選択による定義
           bossList: [],
           bossListSelected: [],
-          sectionPostList_bak:{},
+          sectionPostList_bak: {},
           postList: [],
           postListSelected: [],
           clickedCell: {},
@@ -779,12 +779,12 @@
           this.isAdding = true
           this.isShow = true
           this.searchEmpt = ''
-          if(!resetByChangeCompanyId) {
+          if (!resetByChangeCompanyId) {
             this.groupInfoData = [{
-              mgDenddate:'',
-              mgDstartdate:'',
+              mgDenddate: '',
+              mgDstartdate: '',
               companyName: '',
-              companyId:'01',
+              companyId: '01',
               mgCtext: '',
               mgCgroupdescription: '',
               mgNpartinentnumber: ''
@@ -793,20 +793,20 @@
           }
           // this.updateValue = {}
           this.baseTreeData = [{
-            title: resetByChangeCompanyId ? '全社区分' :`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
-            expand:true,
+            title: resetByChangeCompanyId ? '全社区分' : `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
+            expand: true,
             disabled: true,
-            children:[]
+            children: []
           }]
           // 条件式による定義
           this.queryData = [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
           this.sectionPostList = [{
-            companyId:this.legalPersonList[0].macCcompanyidCk,
-            companyName:this.legalPersonList[0].macCcompanyname,
-            title: resetByChangeCompanyId ? '全社区分' :`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
-            expand:true,
+            companyId: this.legalPersonList[0].macCcompanyidCk,
+            companyName: this.legalPersonList[0].macCcompanyname,
+            title: resetByChangeCompanyId ? '全社区分' : `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
+            expand: true,
             disabled: true,
-            children:[],
+            children: [],
             isCompany: true
           }]
           this.bossList = []
@@ -821,8 +821,8 @@
             onOk: () => {
               this.add(true)
             },
-            onCancel:() => {
-              if(this.groupInfoData[0].companyId === '*') this.groupInfoData[0].companyId = '01'
+            onCancel: () => {
+              if (this.groupInfoData[0].companyId === '*') this.groupInfoData[0].companyId = '01'
               else this.groupInfoData[0].companyId = '*'
             }
           })
@@ -847,15 +847,15 @@
             this.showGroupOrPositionDrawer = true
             try {
               this.empSearchLoading = true
-            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
-            this.searchEmpData = data.map(e => {
-              // 点开后将默认勾选勾上
-              if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
-                return { ...e, _checked: true }
-              } else {
-                return e
-              }
-            })
+              const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
+              this.searchEmpData = data.map(e => {
+                // 点开后将默认勾选勾上
+                if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
+                  return { ...e, _checked: true }
+                } else {
+                  return e
+                }
+              })
             } catch (error) {
             } finally {
               this.empSearchLoading = false
@@ -935,7 +935,7 @@
                   delete: false,
                   title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
                 }
-              }), expand: true,disabled: true,
+              }), expand: true, disabled: true,
             }]
 
             // 組織・役職選択による定義
@@ -1030,7 +1030,7 @@
             if (this.curdisplayPanel === 'QPOST') {
               this.showGroupOrPositionDrawer = true
               const selectionIndex = this.positonColumns.findIndex(e => e.type === 'selection')
-              if (selectionIndex) {
+              if (selectionIndex > -1) {
                 this.positonColumns.splice(selectionIndex, 1)
               }
               this.selectTreeType = ''
@@ -1102,15 +1102,15 @@
             const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { targetDept: e[0].sectionId, type: 2 })
             try {
               this.empSearchLoading = true
-            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
-            this.searchEmpData = data.map(e => {
-              // 点开后将默认勾选勾上
-              if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
-                return { ...e, _checked: true }
-              } else {
-                return e
-              }
-            })
+              const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
+              this.searchEmpData = data.map(e => {
+                // 点开后将默认勾选勾上
+                if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
+                  return { ...e, _checked: true }
+                } else {
+                  return e
+                }
+              })
             } catch (error) {
             } finally {
               this.empSearchLoading = false
@@ -1201,12 +1201,12 @@
         },
         conditionAddTop() {
           // 条件式表格顶部加一行
-          this.queryData.unshift({ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete:false })
+          this.queryData.unshift({ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false })
           this.poptipStyle.display = 'none'
         },
         conditionAdd(i) {
           // 条件式表格中间加一行
-          this.queryData.splice(i + 1, 0, { isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete:false })
+          this.queryData.splice(i + 1, 0, { isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false })
           this.poptipStyle.display = 'none'
         },
         handleSearchDept: Debounce(function () {
@@ -1537,60 +1537,60 @@
             baseSectionList: [{ sectionList: this.baseTreeData[0].children }],
 
           }
-          if(isAdd) {
+          if (isAdd) {
             delete updateValue.mgpId
             delete updateValue.mgId
-            if(!updateValue.startDate) return this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
-            if(!updateValue.endDate) updateValue.endDate =　'2222/12/31'
+            if (!updateValue.startDate) return this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
+            if (!updateValue.endDate) updateValue.endDate = '2222/12/31'
             updateValue.startDate = Utils.formatDate(updateValue.startDate, 'yyyy/mm/dd')
             updateValue.endDate = Utils.formatDate(updateValue.endDate, 'yyyy/mm/dd')
-            if(updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
-            if(!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください。', duration: 6.5 })
+            if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
+            if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください。', duration: 6.5 })
           }
-          if(this.sectionPostList_bak.companyId) {
-          // 組織・役職選択による定義
-          // 組織的处理
-          const sectionIdList = updateValue.sectionPostList.sectionList.map(e => e.sectionId)
-          this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList.forEach(e => {
-            // 如果之前的数组中存在此条組織，则对比postlist
-            if (sectionIdList.includes(e.sectionId)) {
-              const sectionIndex = updateValue.sectionPostList.sectionList.findIndex(n => n.sectionId === e.sectionId)
-              const postIdList = updateValue.sectionPostList.sectionList[sectionIndex].postList.map(t => t.postId)
-              e.postList.forEach(t => {
-                // 既有组织删除了役職, 则将它加回去
-                if (!postIdList.includes(t.postId)) {
-                  updateValue.sectionPostList.sectionList[sectionIndex].postList.push({ id: t.id, delete: true })
-                }
-              })
-            } else {
-              // 如果之前的数组中不存在此条組織, 则将它加回去
-              updateValue.sectionPostList.sectionList.push({ id: e.id, delete: true })
-            }
+          if (this.sectionPostList_bak.companyId) {
+            // 組織・役職選択による定義
+            // 組織的处理
+            const sectionIdList = updateValue.sectionPostList.sectionList.map(e => e.sectionId)
+            this.sectionPostList_bak.orgJobConditions.companyList[0].sectionList.forEach(e => {
+              // 如果之前的数组中存在此条組織，则对比postlist
+              if (sectionIdList.includes(e.sectionId)) {
+                const sectionIndex = updateValue.sectionPostList.sectionList.findIndex(n => n.sectionId === e.sectionId)
+                const postIdList = updateValue.sectionPostList.sectionList[sectionIndex].postList.map(t => t.postId)
+                e.postList.forEach(t => {
+                  // 既有组织删除了役職, 则将它加回去
+                  if (!postIdList.includes(t.postId)) {
+                    updateValue.sectionPostList.sectionList[sectionIndex].postList.push({ id: t.id, delete: true })
+                  }
+                })
+              } else {
+                // 如果之前的数组中不存在此条組織, 则将它加回去
+                updateValue.sectionPostList.sectionList.push({ id: e.id, delete: true })
+              }
             })
 
-          // 所属长
-          const bossIdList = updateValue.sectionPostList.bossSectionList.map(e => e.sectionId)
-          this.sectionPostList_bak.orgJobConditions.companyList[0].bossSectionList.forEach(e => {
-            if (!bossIdList.includes(e.sectionId)) {
-              updateValue.sectionPostList.bossSectionList.push({ id: e.id, delete: true })
-            }
-          })
+            // 所属长
+            const bossIdList = updateValue.sectionPostList.bossSectionList.map(e => e.sectionId)
+            this.sectionPostList_bak.orgJobConditions.companyList[0].bossSectionList.forEach(e => {
+              if (!bossIdList.includes(e.sectionId)) {
+                updateValue.sectionPostList.bossSectionList.push({ id: e.id, delete: true })
+              }
+            })
 
-          // 役職
-          const postIdList = updateValue.sectionPostList.postList.map(e => e.postId)
-          this.sectionPostList_bak.orgJobConditions.companyList[0].postList.forEach(e => {
-            if (!postIdList.includes(e.postId)) {
-              updateValue.sectionPostList.postList.push({ id: e.id, delete: true })
-            }
-          })
+            // 役職
+            const postIdList = updateValue.sectionPostList.postList.map(e => e.postId)
+            this.sectionPostList_bak.orgJobConditions.companyList[0].postList.forEach(e => {
+              if (!postIdList.includes(e.postId)) {
+                updateValue.sectionPostList.postList.push({ id: e.id, delete: true })
+              }
+            })
 
-          // 基点組織
-          const baseIdList = updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid)
-          this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
-            if (!baseIdList.includes(e.mgbsCsectionid)) {
-              updateValue.baseSectionList[0].sectionList.push({ mgbsId: e.mgbsId, delete: true })
-            }
-          })
+            // 基点組織
+            const baseIdList = updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid)
+            this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
+              if (!baseIdList.includes(e.mgbsCsectionid)) {
+                updateValue.baseSectionList[0].sectionList.push({ mgbsId: e.mgbsId, delete: true })
+              }
+            })
           }
 
           // 条件式による定義
@@ -1634,10 +1634,10 @@
         },
         sortTableByDrag(from, to) {
           this.hasDragTable = true
-          this.$set(this.tableData, from, [this.tableData[to], this.tableData[to]=this.tableData[from]][0])
+          this.$set(this.tableData, from, [this.tableData[to], this.tableData[to] = this.tableData[from]][0])
         },
         async sortingTableData() {
-           try {
+          try {
             this.sortingLoading = true
             const { data } = await this.http.post(`sys/groupmanager/sort?psSite=${this.psSite}`, this.tableData.map(e => e.mgId))
             this.$Message.success('優先順位更新完了')
