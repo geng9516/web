@@ -1349,9 +1349,10 @@
             },
             changeData(e) {
                 let query = e
+                console.log(this.detailsData)
                 query.typeNew = this.detailsData.tntfCtypeCode
                 query.ntfNo = this.detailsData.tntfCntfno
-                query.finalApprovalLevel = this.detailsData.finalApprovelLevel
+                query.finalApprovalLevel = this.detailsData.capprovalLevel
 
                 // 时间部分
                 query.tntfDbegin = this.detailsData.tntfDbegin

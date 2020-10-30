@@ -1768,7 +1768,7 @@ public class TmgNotificationBean {
 
         if (param.getAction().equals(ACT_EDITPERM_UPERMIT)) {   // 承認
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
+            if (Boolean.valueOf(hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),tnDo.getTntfCemployeeid(),param.getFinalApprovalLevel(),param.getSiteId()))) {
                 tncDo.setTntfCapprovalLevel(null);
             } else {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(param,0));

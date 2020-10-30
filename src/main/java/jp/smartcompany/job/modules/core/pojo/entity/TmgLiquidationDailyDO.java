@@ -108,6 +108,17 @@ public class TmgLiquidationDailyDO {
     private String tlddCrestendtime;
 
     /**
+     * 休暇申請type
+     */
+    @TableField("tldd_cnotificationtype")
+    private String tlddCnotificationtype;
+    /**
+     * パータン
+     */
+    @TableField("tldd_cpattern")
+    private String tlddCpattern;
+
+    /**
      * 予備文字列1
      */
     @TableField("tldd_csparechar1")
