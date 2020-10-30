@@ -23,7 +23,7 @@
           <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5" format="yyyy/MM/dd"
             @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
           </date-picker>
-          <i-button type="success" icon="md-add" @click="add" :loading="editLoading">新規</i-button>
+          <i-button type="success" icon="md-add" @click="add()" :loading="editLoading">新規</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -89,17 +89,17 @@
       <!-- 該当条件編集画面 start-->
       <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面">
         <div class="mb10 tr">
-          <i-button type="primary" ghost @click="updateGroup" icon="md-create" :loading="drawerBtnLoading" v-if="!isAdding">
+          <i-button type="primary" ghost @click="updateGroup()" icon="md-create" :loading="drawerBtnLoading" v-if="!isAdding">
             登録
           </i-button>
-          <i-button type="success" ghost @click="addGroup" icon="md-add" :loading="drawerBtnLoading" v-if="isAdding">
+          <i-button type="success" ghost @click="updateGroup(true)" icon="md-add" :loading="drawerBtnLoading" v-if="isAdding">
             登録
           </i-button>
         </div>
         <div class="mt10 mb10">
           <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
             <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">法人</span>
-            <i-select v-model="groupInfoData[0].companyId">
+            <i-select v-model="groupInfoData[0].companyId" @on-change="handleChangeCompanyId">
               <i-option value="*" label="全社区分"></i-option>
               <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">
                 {{ item.macCcompanyname }}</i-option>
@@ -107,7 +107,7 @@
           </div>
           <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
             <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">備考</span>
-            <i-input class="tl" v-model="groupInfoData[0].mgCtext"></i-input>
+            <i-input class="tl" v-model="groupInfoData[0].mgCtext" :maxlength="100"></i-input>
           </div>
           <Row :gutter="10" v-if="!isAdding">
             <i-col span="12">
@@ -129,16 +129,16 @@
 
             <template slot-scope="{ row }" slot="mgCgroupidPk">
               <span v-if="!isAdding"> {{ row.mgCgroupidPk }}</span>
-              <i-input v-if="isAdding" v-model="groupInfoData[0].mgCgroupidPk"></i-input>
+              <i-input v-if="isAdding" v-model="groupInfoData[0].mgCgroupidPk" :maxlength="10"></i-input>
             </template>
 
             <template slot-scope="{ row }" slot="name">
-              <i-input class="tl" v-model="groupInfoData[0].mgCgroupdescription"><span slot="prepend">日本語</span>
+              <i-input class="tl" v-model="groupInfoData[0].mgCgroupdescription" :maxlength="100"><span slot="prepend">日本語</span>
               </i-input>
             </template>
 
             <template slot-scope="{ row }" slot="count">
-              <i-input class="tr" v-model="groupInfoData[0].mgNpartinentnumber"><span slot="append">人</span></i-input>
+              <i-input class="tr" v-model="groupInfoData[0].mgNpartinentnumber" :maxlength="6" number><span slot="append">人</span></i-input>
             </template>
           </i-table>
           <!-- <div class="tl mt10">
@@ -349,6 +349,7 @@
               :disabled-hover="true" :data="searchEmpData" :loading="loading" no-data-text="" ref="empTable">
             </i-table>
           </i-col>
+          <Spin size="large" fix v-if="empSearchLoading"></Spin>
         </Row>
       </Drawer>
       <!--  条件式による定義 选择group和 役職 end-->
@@ -488,6 +489,7 @@
           hasDragTable: false,
           editLoading: false,
           drawLoading: false,
+          empSearchLoading: false,
           sortingLoading: false,
           isAdding: false,
           isShow: false,
@@ -678,6 +680,7 @@
           sectionPostList: [], //組織・役職選択による定義
           bossList: [],
           bossListSelected: [],
+          sectionPostList_bak:{},
           postList: [],
           postListSelected: [],
           clickedCell: {},
@@ -772,36 +775,57 @@
           this.queryconditionsList = this.queryconditionsList_bak
           this.hasSearchedQueryconditions = false
         },
-        async add() {
+        async add(resetByChangeCompanyId) {
           this.isAdding = true
           this.isShow = true
-          this.groupInfoData = [{
-            mgDenddate:'',
-            mgDstartdate:'',
-            companyName: '',
-            mgCtext: '',
-            mgCgroupdescription: '',
-            mgNpartinentnumber: ''
+          this.searchEmpt = ''
+          if(!resetByChangeCompanyId) {
+            this.groupInfoData = [{
+              mgDenddate:'',
+              mgDstartdate:'',
+              companyName: '',
+              companyId:'01',
+              mgCtext: '',
+              mgCgroupdescription: '',
+              mgNpartinentnumber: ''
+            }]
+            this.updateValue.baseFlag = '0'
+          }
+          // this.updateValue = {}
+          this.baseTreeData = [{
+            title: resetByChangeCompanyId ? '全社区分' :`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
+            expand:true,
+            disabled: true,
+            children:[]
           }]
-          this.updateValue = {}
-          this.baseTreeData = [{title: `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,expand:true,children:[]}]
           // 条件式による定義
           this.queryData = [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
-          this.sectionPostList = []
+          this.sectionPostList = [{
+            companyId:this.legalPersonList[0].macCcompanyidCk,
+            companyName:this.legalPersonList[0].macCcompanyname,
+            title: resetByChangeCompanyId ? '全社区分' :`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
+            expand:true,
+            disabled: true,
+            children:[],
+            isCompany: true
+          }]
           this.bossList = []
           this.postList = []
-          // 基点組織
-          // this.loading = true
-          // let OPTS = { permList: [...new Set(this.updateValue)] }
-          // if (this.opts.date) {
-          //   OPTS.changeDate = this.opts.date
-          // }
-          // const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
-          // this.getTableData()
-          // this.updateValue = []
         },
-        addGroup() {
-
+        handleChangeCompanyId(e) {
+          this.$Modal.confirm({
+            inDrawer: true,
+            title: '法人を変更すると設定した条件は一度クリアされます。よろしいですか？？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              this.add(true)
+            },
+            onCancel:() => {
+              if(this.groupInfoData[0].companyId === '*') this.groupInfoData[0].companyId = '01'
+              else this.groupInfoData[0].companyId = '*'
+            }
+          })
         },
         async handleSearchEmpt(isByDept) {
           // searchWord
@@ -821,6 +845,8 @@
           } else {
             this.curdisplayPanel = 'searchEmp'
             this.showGroupOrPositionDrawer = true
+            try {
+              this.empSearchLoading = true
             const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
             this.searchEmpData = data.map(e => {
               // 点开后将默认勾选勾上
@@ -830,6 +856,10 @@
                 return e
               }
             })
+            } catch (error) {
+            } finally {
+              this.empSearchLoading = false
+            }
           }
         },
         // 将选择中的社员加到社員を指定表格里
@@ -881,6 +911,7 @@
           const OPTS = { ...this.opts }
           OPTS.psSite = this.psSite
           OPTS.groupId = e
+          this.searchEmpt = ''
           try {
             this.drawLoading = true
             this.isShow = true
@@ -897,14 +928,14 @@
             // 所以这里直接取第一个法人的全部
             // 基点組織
             this.baseTreeData = [{
-              title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
+              title: data.companyId === '*' ? '全社区分' : `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0] && data.baseSectionList[0].sectionList.map((e, i) => {
                 return {
                   ...e,
                   sectionId: e.mgbsCsectionid,
                   delete: false,
                   title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
                 }
-              }), expand: true
+              }), expand: true,disabled: true,
             }]
 
             // 組織・役職選択による定義
@@ -914,6 +945,7 @@
               return {
                 title: t.companyId === '*' ? '全社区分' : `【${t.companyId}】 ${t.companyName}`,
                 expand: true,
+                disabled: true,
                 companyId: data.companyId,
                 companyName: data.companyName,
                 isCompany: true, // 法人
@@ -1068,6 +1100,9 @@
           if (!e[0]) return
           if (this.curdisplayPanel === 'searchDept') {
             const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { targetDept: e[0].sectionId, type: 2 })
+            try {
+              this.empSearchLoading = true
+            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
             this.searchEmpData = data.map(e => {
               // 点开后将默认勾选勾上
               if (this.emptData.find(t => t.employeeId === e.meCuserid)) {
@@ -1076,6 +1111,10 @@
                 return e
               }
             })
+            } catch (error) {
+            } finally {
+              this.empSearchLoading = false
+            }
             return
           }
           this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
@@ -1459,7 +1498,7 @@
             }
           })
         },
-        async updateGroup() {
+        async updateGroup(isAdd) {
           const updateValue = {
             ...this.updateValue,
             mgpId: this.groupInfoData[0].mgpId,
@@ -1498,6 +1537,17 @@
             baseSectionList: [{ sectionList: this.baseTreeData[0].children }],
 
           }
+          if(isAdd) {
+            delete updateValue.mgpId
+            delete updateValue.mgId
+            if(!updateValue.startDate) return this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
+            if(!updateValue.endDate) updateValue.endDate =　'2222/12/31'
+            updateValue.startDate = Utils.formatDate(updateValue.startDate, 'yyyy/mm/dd')
+            updateValue.endDate = Utils.formatDate(updateValue.endDate, 'yyyy/mm/dd')
+            if(updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
+            if(!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください。', duration: 6.5 })
+          }
+          if(this.sectionPostList_bak.companyId) {
           // 組織・役職選択による定義
           // 組織的处理
           const sectionIdList = updateValue.sectionPostList.sectionList.map(e => e.sectionId)
@@ -1516,7 +1566,7 @@
               // 如果之前的数组中不存在此条組織, 则将它加回去
               updateValue.sectionPostList.sectionList.push({ id: e.id, delete: true })
             }
-          })
+            })
 
           // 所属长
           const bossIdList = updateValue.sectionPostList.bossSectionList.map(e => e.sectionId)
@@ -1541,13 +1591,15 @@
               updateValue.baseSectionList[0].sectionList.push({ mgbsId: e.mgbsId, delete: true })
             }
           })
+          }
+
           // 条件式による定義
           if (this.updateValue.baseFlag === '1') {
             updateValue.queryConditionList.some(e => {
               if (!e.columnname) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
               if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { return this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください。', duration: 6.5 }) }
             })
-            if (this.sectionPostList_bak.queryConditions.rowList.length > 0) {
+            if (this.sectionPostList_bak.companyId && this.sectionPostList_bak.queryConditions.rowList.length > 0) {
               const queryIdList = updateValue.queryConditionList.map(e => e.id)
               this.sectionPostList_bak.queryConditions.rowList.forEach(e => {
                 if (!queryIdList.includes(e.id)) {
@@ -1561,14 +1613,24 @@
           if (this.updateValue.baseFlag === '0') {
             if (updateValue.employList.length === 0) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
             const empIdList = updateValue.employList.map(e => e.id)
-            this.sectionPostList_bak.empList.empList.length > 0 && this.sectionPostList_bak.empList.empList.forEach(e => {
+            this.sectionPostList_bak.companyId && this.sectionPostList_bak.empList.empList.length > 0 && this.sectionPostList_bak.empList.empList.forEach(e => {
               if (!empIdList.includes(e.id)) {
                 updateValue.employList.push({ ...e, delete: true })
               }
             })
           }
-          const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
-          this.isShow = false
+          try {
+            this.drawLoading = true
+            // const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
+            console.log(updateValue)
+            this.isShow = false
+            this.sectionPostList_bak = {}
+            // this.getData()
+          } catch (error) {
+            this.$Notice.error({ title: 'Error!', desc: error, duration: 6.5 })
+          } finally {
+            this.drawLoading = false
+          }
         },
         sortTableByDrag(from, to) {
           this.hasDragTable = true
