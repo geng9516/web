@@ -20,7 +20,7 @@ public class SendMailBO {
      */
     private String empName;
     /**
-     * 没有可不填
+     * 基准日 没有可不填
      */
     private Date standardDate;
     /**
