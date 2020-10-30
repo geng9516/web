@@ -1460,6 +1460,7 @@
             this.sectionPostList[0].children.some((e, i) => {
               if (e.sectionId === this.postUnderWhichDept) {
                 // 将役職正确的塞到组织中去
+                this.sectionPostList[0].children[i].expand = true
                 this.sectionPostList[0].children[i].children = this.$refs.postTable.getSelection().map(t => {
                   return {
                     id: t.mapId,
@@ -1475,6 +1476,7 @@
               }
             })
           }
+          this.showGroupOrPositionDrawer = false
         },
         async openPostTree(underDeptInfo) {
           this.postUnderWhichDept = ''
