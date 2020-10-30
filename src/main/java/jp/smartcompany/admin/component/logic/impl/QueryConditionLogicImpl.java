@@ -1,12 +1,15 @@
 package jp.smartcompany.admin.component.logic.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.admin.component.logic.QueryConditionLogic;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO;
 import jp.smartcompany.job.modules.core.service.IMastDatadictionaryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class QueryConditionLogicImpl implements QueryConditionLogic {
 
     private final IMastDatadictionaryService iMastDatadictionaryService;
@@ -109,6 +113,8 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
             oInsert.setHgdDenddate(ptEndDate);
         }
         oInsert.setHgdCcompanyid(psCompanyid);
+        oInsert.setHgdDmodifieddate(DateUtil.date());
+        oInsert.setHgdCmodifieruserid(SecurityUtil.getUserId());
         // IDの有るもの(DBに存在するデータ)は、IDとVersionNoを格納
         if (poDto.getId() != null) {
             oInsert.setHgdId(poDto.getId());
@@ -120,6 +126,7 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
     @Override
     public String createQueryCondition(String psCustomerId, String psCompanyId,
                                 String psSystemId, String psGroupId, Date pdSearchDate,List<QueryConditionRowDTO> oInfo) {
+        log.info("创建条件式参数：customerId:{},companyId:{},systemId:{},groupId:{},oInfo:{}",psCustomerId,psCompanyId,psSystemId,psGroupId,oInfo);
         StringBuilder sbQuery = new StringBuilder();
         // 現在、定義されている条件定義情報を取得する
         List <QueryConditionRowDTO> oJoinQuery = CollUtil.newArrayList();
@@ -144,7 +151,6 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
                 }
             }
         }
-
         // グループ判定用クエリのヘッダ部を作成する
         // (SELECT句 + 取得カラム + FROM句 + テーブル + WHERE句)
         sbQuery.append(" SELECT ");
@@ -178,6 +184,7 @@ public class QueryConditionLogicImpl implements QueryConditionLogic {
             sbQuery.append(PT_EQUAL);
             sbQuery.append(escDBString(psCompanyId));
         }
+
 
         // グループ判定用クエリの結合式を作成する
         if (oJoinQuery.size() > 0) {

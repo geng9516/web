@@ -6,7 +6,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
-import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
+import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
 import jp.smartcompany.admin.appmanager.handler.MastTemplateHandler;
 import jp.smartcompany.admin.appmanager.logic.AppManagerMainLogic;
@@ -40,8 +40,8 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     private final TimedCache<String,Object> timedCache;
 
     @Override
-    public List<MastAppTreeDTO> getAppTree() {
-       return appTreeService.selectMastAppTree();
+    public List<MastAppDTO> getAppList() {
+       return appTreeService.selectMastAppList();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public String updateMenuList(List<MastAppTreeDTO> paramList) {
+    public String updateMenuList(List<MastAppDTO> paramList) {
         HttpSession session = ContextUtil.getSession();
         appTreeService.removeAll();
         Date date = DateUtil.date();
@@ -68,7 +68,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         List<MastApptreeDO> updateList = CollUtil.newArrayList();
 
         for (int i = 0; i < paramList.size(); i++) {
-            MastAppTreeDTO dto = paramList.get(i);
+            MastAppDTO dto = paramList.get(i);
             MastApptreeDO treeDO = new MastApptreeDO();
             BeanUtil.copyProperties(dto,treeDO);
             treeDO.setMtrDmodifieddate(date);

@@ -3,8 +3,11 @@ package jp.smartcompany.admin.groupmanager.logic.impl;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import jp.smartcompany.admin.component.dto.*;
 import jp.smartcompany.admin.component.logic.BaseSectionLogic;
 import jp.smartcompany.admin.component.logic.QueryConditionLogic;
@@ -14,9 +17,7 @@ import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.SectionPostLogic;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.ScCacheUtil;
-import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.boot.util.*;
 import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
@@ -37,8 +38,9 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -418,10 +420,13 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         String companyId = "01";
         String systemId = "01";
         String groupId = dto.getGroupId();
-        Date startDate = dto.getStartDate();
-        Date endDate = dto.getEndDate();
+        DateTime psStartDate = DateUtil.date(dto.getStartDate());
+        DateTime psEndDate = DateUtil.date(dto.getEndDate());
         String baseFlag = dto.getBaseFlag();
         String belowSingle = dto.getBelowSingle();
+        Date startDate = SysDateUtil.of(psStartDate.year(),psStartDate.month()+1,psStartDate.dayOfMonth());
+        Date endDate = SysDateUtil.of(psEndDate.year(),psEndDate.month()+1,psEndDate.dayOfMonth());
+
 
         SectionPostDTO sectionPostDTO = new SectionPostDTO();
         QueryConditionDTO queryConditionDTO = new QueryConditionDTO();
@@ -825,6 +830,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         }
         // 作成されたグループ判定クエリを設定
         peInsertData.setMgpCquery(groupCheckQuery);
+        peInsertData.setMgpDmodifieddate(DateUtil.date());
+        peInsertData.setMgpCmodifieruserid(SecurityUtil.getUserId());
         if (peInsertData.getMgpDenddate()==null) {
             peInsertData.setMgpDenddate(SysUtil.getMaxDateObject());
         }
@@ -1046,6 +1053,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (peInsertData.getMgDenddate()==null) {
             peInsertData.setMgDenddate(SysUtil.getMaxDateObject());
         }
+        peInsertData.setMgDmodifieddate(DateUtil.date());
+        peInsertData.setMgCmodifieruserid(SecurityUtil.getUserId());
         // 更新処理
         if (peInsertData.getMgId() == null) {
             // IDの無いもの(DBに存在しないデータ)は、新規登録処理
@@ -1113,11 +1122,13 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         List<MastGroupbasesectionDO> saveRows = CollUtil.newArrayList();
         List<MastGroupbasesectionDO> updateRows = CollUtil.newArrayList();
         // 入れ替え処理(表示用DTO ⇒ 更新用Entity)を行い、登録
+        Date now = DateUtil.date();
         if (CollUtil.isNotEmpty(baseSectionList)) {
             for (BaseSectionRowDTO baseSectionRowDTO : baseSectionList) {
                 for (BaseSectionRowListDTO rowListDTO : baseSectionRowDTO.getSectionList()) {
                     MastGroupbasesectionDO ent = baseSectionLogic.insertBaseSection(rowListDTO);
                     ent.setMgbsCmodifieruserid(session.getLoginUser());    // 更新者
+                    ent.setMgbsDmodifieddate(now);
                     // IDの無いもの(DBに存在しないデータ)は追加する
                     if (ent.getMgbsId() == null) {
                         // データベースへ更新(新規登録)
@@ -1169,7 +1180,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      */
     public int isCheckValidQuery(String psQuery) {
         // 汎用DBアクセス処理にてSQL実行
-        int nQueryCount = 0;
+        int nQueryCount;
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
@@ -1177,13 +1188,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         } catch (SQLException e) {
             nQueryCount = -1;
         } finally {
-            if (conn!=null) {
-                try {
-                    conn.close();
-                }catch(SQLException e){
-                    e.printStackTrace();
-                }
-            }
+            DbUtil.close(conn);
         }
         return nQueryCount;
     }

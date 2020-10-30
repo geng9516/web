@@ -1,8 +1,8 @@
 package jp.smartcompany.admin.component.logic;
 
-import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO;
+
 import java.util.Date;
 import java.util.List;
 

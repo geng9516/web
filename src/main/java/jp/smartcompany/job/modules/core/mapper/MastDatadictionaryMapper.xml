@@ -84,8 +84,8 @@
                             MD_CCOLUMNNAME
                         FROM MAST_DATADICTIONARY
                         WHERE
-                            MD_CCUSTOMERID  = /*psCustomerId*/'01'      AND
-                            MD_CTABLENAME	= /*psTableId*/'TEST'		AND
+                            MD_CCUSTOMERID  = '01'      AND
+                            MD_CTABLENAME	= #{tableId}		AND
                             MD_CCOLUMNNAME LIKE '%CCUSTOMERID%'	    	AND
                             ROWNUM = 1
                     ) AS CUSTOMERID,
@@ -95,8 +95,8 @@
                        FROM
                            MAST_DATADICTIONARY
                        WHERE
-                           MD_CCUSTOMERID  = /*psCustomerId*/'01'      AND
-                           MD_CTABLENAME	= /*psTableId*/'TEST'		AND
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
                            MD_CCOLUMNNAME LIKE '%DSTARTDATE%'          AND
                            ROWNUM = 1
                     ) AS STARTDATE,
@@ -106,8 +106,8 @@
                        FROM
                            MAST_DATADICTIONARY
                        WHERE
-                           MD_CCUSTOMERID  = /*psCustomerId*/'01'      AND
-                           MD_CTABLENAME	= /*psTableId*/'TEST'		AND
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
                            MD_CCOLUMNNAME LIKE '%DENDDATE%'	   	AND
                            ROWNUM = 1
                     ) AS ENDDATE,
@@ -117,8 +117,8 @@
                        FROM
                            MAST_DATADICTIONARY
                        WHERE
-                           MD_CCUSTOMERID  = /*psCustomerId*/'01'      AND
-                           MD_CTABLENAME	= /*psTableId*/'TEST'		AND
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
                            MD_CCOLUMNNAME LIKE '%CUSERID%'         AND
                            ROWNUM = 1
                     ) AS USERID

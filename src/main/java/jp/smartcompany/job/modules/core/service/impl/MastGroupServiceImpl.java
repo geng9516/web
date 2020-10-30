@@ -81,8 +81,6 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
             if (StrUtil.isBlank(searchDate)){
                 searchDate = "2007/07/07";
             }
-            //
-            companyList.add("*");
            return baseMapper.selectValidGroup(customerCode,systemId,language,searchDate,companyList);
         }
 

@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
+import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.mapper.MastApptreeMapper;
@@ -40,8 +40,8 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
         }
 
         @Override
-        public List<MastAppTreeDTO> selectMastAppTree() {
-                return baseMapper.selectMastAppTree();
+        public List<MastAppDTO> selectMastAppList() {
+                return baseMapper.selectMastAppList();
         }
 
         @Override

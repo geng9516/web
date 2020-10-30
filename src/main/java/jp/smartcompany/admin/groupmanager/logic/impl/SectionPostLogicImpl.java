@@ -170,57 +170,58 @@ public class SectionPostLogicImpl implements SectionPostLogic {
                               String psGroupId, Date ptStartDate, Date ptEndDate, List<SectionPostListDTO> sectionPostCompanyList, String companyId) {
         /** グループ判定クエリ(組織・役職定義) */
         StringBuilder querySecPost = new StringBuilder();
-
-        SectionPostListDTO companyList = sectionPostCompanyList.get(0);
-        // 組織リスト
-        List<SectionPostRowListDTO> lSectionList = companyList.getSectionList();
-        // 組織分ループさせる
-        if (lSectionList != null) {
-            for (SectionPostRowListDTO sectionPostRowListDTO : lSectionList) {
-                // グループ判定結果クエリ組み立て処理(法人＆組織＆役職)
-                int nPostListCnt = 0;
-                if (CollUtil.isNotEmpty(sectionPostRowListDTO.getPostList())){
-                   nPostListCnt = sectionPostRowListDTO.getPostList().size();
-                }
-                getQueryData(querySecPost, sectionPostRowListDTO.getPostList(), FG_COMP_SEC_POST,companyId);
-                // グループ判定結果クエリ組み立て処理(法人＆組織＆職員番号)
-                int nEmpListCnt = 0;
-                if (CollUtil.isNotEmpty(sectionPostRowListDTO.getEmployList())){
-                    nEmpListCnt = sectionPostRowListDTO.getEmployList().size();
-                }
-                getQueryData(querySecPost, sectionPostRowListDTO.getEmployList(), FG_COMP_SEC_EMP,companyId);
-                // グループ判定結果クエリ組み立て処理(組織配下データ)
-                if (nPostListCnt + nEmpListCnt < 1) {
-                    // グループ判定結果クエリ組み立て処理(法人＆組織)
-                    querySecPost.append(
-                            createQuerySectionPost(FG_COMP_SEC, sectionPostRowListDTO.getSectionId(),companyId));
+        if (CollUtil.isNotEmpty(sectionPostCompanyList)) {
+            SectionPostListDTO companyList = sectionPostCompanyList.get(0);
+            // 組織リスト
+            List<SectionPostRowListDTO> lSectionList = companyList.getSectionList();
+            // 組織分ループさせる
+            if (lSectionList != null) {
+                for (SectionPostRowListDTO sectionPostRowListDTO : lSectionList) {
+                    // グループ判定結果クエリ組み立て処理(法人＆組織＆役職)
+                    int nPostListCnt = 0;
+                    if (CollUtil.isNotEmpty(sectionPostRowListDTO.getPostList())) {
+                        nPostListCnt = sectionPostRowListDTO.getPostList().size();
+                    }
+                    getQueryData(querySecPost, sectionPostRowListDTO.getPostList(), FG_COMP_SEC_POST, companyId);
+                    // グループ判定結果クエリ組み立て処理(法人＆組織＆職員番号)
+                    int nEmpListCnt = 0;
+                    if (CollUtil.isNotEmpty(sectionPostRowListDTO.getEmployList())) {
+                        nEmpListCnt = sectionPostRowListDTO.getEmployList().size();
+                    }
+                    getQueryData(querySecPost, sectionPostRowListDTO.getEmployList(), FG_COMP_SEC_EMP, companyId);
+                    // グループ判定結果クエリ組み立て処理(組織配下データ)
+                    if (nPostListCnt + nEmpListCnt < 1) {
+                        // グループ判定結果クエリ組み立て処理(法人＆組織)
+                        querySecPost.append(
+                                createQuerySectionPost(FG_COMP_SEC, sectionPostRowListDTO.getSectionId(), companyId));
+                    }
                 }
             }
+            // グループ判定結果クエリ組み立て処理(法人＆組織＆所属長リスト)
+            getQueryData(querySecPost, companyList.getBossSectionList(), FG_COMP_SEC_BOSS, companyId);
+            // グループ判定結果クエリ組み立て処理(法人＆役職リスト)
+            getQueryData(querySecPost, companyList.getPostList(), FG_COMP_POST, companyId);
+            // グループ判定結果クエリ組み立て処理(法人＆職員リスト)
+            getQueryData(querySecPost, companyList.getEmployList(), FG_COMP_EMP, companyId);
+            // 設定が未定義の場合
+            if (querySecPost.length() == 0) {
+                // グループ判定結果クエリ組み立て処理(法人)
+                querySecPost.append(createQuerySectionPost(FG_COMP, null, companyId));
+            } else {
+                // 内部変数に一旦格納
+                String sTempQuery = checkWhereList(querySecPost.toString());
+                querySecPost = new StringBuilder();
+                querySecPost.append(sTempQuery);
+                // 組み立てたクエリをAND結合する
+                querySecPost.insert(0, PT_OPEN_PAR);
+                querySecPost.append(PT_CLOSE_PAR);
+                querySecPost.append(PT_AND);
+            }
+            // グループ判定結果クエリ組み立て処理(ヘッダ部)
+            querySecPost.insert(0, createQueryHeader());
+            // グループ判定結果クエリ組み立て処理(フッタ部)
+            querySecPost.append(createQueryFooter(psCustomerId, psSystemId, psGroupId));
         }
-        // グループ判定結果クエリ組み立て処理(法人＆組織＆所属長リスト)
-        getQueryData(querySecPost,companyList.getBossSectionList(), FG_COMP_SEC_BOSS,companyId);
-        // グループ判定結果クエリ組み立て処理(法人＆役職リスト)
-        getQueryData(querySecPost,companyList.getPostList(), FG_COMP_POST,companyId);
-        // グループ判定結果クエリ組み立て処理(法人＆職員リスト)
-        getQueryData(querySecPost,companyList.getEmployList(), FG_COMP_EMP,companyId);
-        // 設定が未定義の場合
-        if (querySecPost.length() == 0) {
-            // グループ判定結果クエリ組み立て処理(法人)
-            querySecPost.append(createQuerySectionPost(FG_COMP, null,companyId));
-        } else {
-            // 内部変数に一旦格納
-            String sTempQuery = checkWhereList(querySecPost.toString());
-            querySecPost = new StringBuilder();
-            querySecPost.append(sTempQuery);
-            // 組み立てたクエリをAND結合する
-            querySecPost.insert(0, PT_OPEN_PAR);
-            querySecPost.append(PT_CLOSE_PAR);
-            querySecPost.append(PT_AND);
-        }
-        // グループ判定結果クエリ組み立て処理(ヘッダ部)
-        querySecPost.insert(0, createQueryHeader());
-        // グループ判定結果クエリ組み立て処理(フッタ部)
-        querySecPost.append(createQueryFooter(psCustomerId, psSystemId, psGroupId));
         return querySecPost.toString();
     }
 

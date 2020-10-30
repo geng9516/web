@@ -111,7 +111,7 @@
             MTR_COBJNAME ORDER BY MTR_NSEQ
     </select>
 
-    <select id="selectMastAppTree" resultType="jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO">
+    <select id="selectMastAppList" resultType="jp.smartcompany.admin.appmanager.dto.MastAppDTO">
         SELECT
             MTR_COBJECTID as object_id,
             MTR_CSITEID as site_id,
