@@ -1,9 +1,7 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
+import com.baomidou.mybatisplus.annotation.*;
+import jp.smartcompany.job.modules.core.enums.MailType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +24,8 @@ public class MastMailInfoDO implements Serializable  {
 
     @TableId
     private Long mmId;
-    private String mmCid;
+    @TableField(value="mm_cid")
+    private MailType sendType;
     private String mmCmailname;
     private String mmCaddress;
     private String mmCname;

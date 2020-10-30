@@ -57,6 +57,7 @@ mybatis-plus:
     banner: false
   configuration:
     jdbc-type-for-null: NULL
+  type-enums-package: jp.smartcompany.job.modules.*.enums
 management:
   endpoints:
     web:
