@@ -105,7 +105,7 @@
                     <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
                 </i-select>
             </div>
-            <Alert class="primary-info" >日付をクリックすると、命令画面を表示します。<span class="red" v-show="!isEditable">※確定済のため編集できません</span></Alert>
+            <Alert class="primary-info" >日付をクリックすると、命令画面を表示します。<span class="red" v-show="!isEditable">※確定済のため編集できません。</span></Alert>
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
                 :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">

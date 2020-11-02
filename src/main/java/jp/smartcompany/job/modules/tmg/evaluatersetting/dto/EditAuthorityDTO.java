@@ -35,7 +35,7 @@ public class EditAuthorityDTO {
             if (!editAuthorityItemDTO.getDelete() && !editAuthorityItemDTO.getNewLine()) {
 
                 if (StrUtil.isBlank(editAuthorityItemDTO.getBeforeStartDate())||StrUtil.isBlank(editAuthorityItemDTO.getBeforeEndDate())) {
-                     throw new GlobalException("beforeStartDateとbeforeEndDateを入社してください。");
+                     throw new GlobalException("beforeStartDateとbeforeEndDateを入社してください");
                 }
 
             }

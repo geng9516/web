@@ -298,13 +298,13 @@
                                     <!-- 是有氏名的-->
                                     <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
-                                        <i-input class="mb15" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
+                                        <i-input class="mb15" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください"/>
                                     </section>
 
                                     <!-- 是有続柄的-->
                                     <section v-show="selectedRestInfo.relation" class="tl">
                                         <p class="mb5">続柄</p>
-                                        <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
+                                        <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください"/>
                                     </section>
 
                                     <!-- 是有対象の人数的-->
@@ -323,7 +323,7 @@
                                     <!-- 有伤病-->
                                     <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
-                                        <i-input v-model="restApply.txtSickName" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
+                                        <i-input v-model="restApply.txtSickName" maxlength="50" placeholder="傷病名は50文字以内で入力してください"/>
                                     </section>
 
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
@@ -351,7 +351,7 @@
                             </i-col>
                         </Row>
                         <Divider size="small" orientation="left">申請事由</Divider>
-                        <i-input v-model="restApply.owncomment" class="tl" :maxlength="100" type="textarea" :autosize="{ minRows: 5 }" placeholder="申請事由は100文字以内で入力してください。"></i-input>
+                        <i-input v-model="restApply.owncomment" class="tl" :maxlength="100" type="textarea" :autosize="{ minRows: 5 }" placeholder="申請事由は100文字以内で入力してください"></i-input>
                         <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply()" icon="md-create" :loading="loading">申請
                         </i-button>
                         <i-button v-show="this.isReApplyIng" class="btn width75 mr15"  style="display: inline-block"  type="primary" ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
@@ -645,13 +645,13 @@
                     }
                     if(!this.restApply.typeNew) {
                         this.errorInfo = true
-                        this.errorMsg = '申請区分を選んでください。'
+                        this.errorMsg = '申請区分を選んでください'
                         return
                     }
 
                     if(!this.restApply.begin || !this.restApply.end) {
                         this.errorInfo = true
-                        this.errorMsg = '期間を選んでください。'
+                        this.errorMsg = '期間を選んでください'
                         return
                     }
 
@@ -663,12 +663,12 @@
                       }
                       if (!this.restApply.begin && this.restApply.end) {
                         this.errorInfo = true
-                        this.errorMsg = '終了期間を入力してください。'
+                        this.errorMsg = '終了期間を入力してください'
                        return
                       }
                       if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
                         this.errorInfo = true
-                        this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+                        this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください'
                        return
                       }
                     }
@@ -676,7 +676,7 @@
                     if(this.selectedRestInfo.timeZone) {
                         if(!this.restApply.timezoneOpen) {
                             this.errorInfo = true
-                            this.errorMsg = '開始時間を入力してください。'
+                            this.errorMsg = '開始時間を入力してください'
                             return
                         }
                         if(!this.restApply.timezoneClose) {
@@ -686,7 +686,7 @@
                         }
                         if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
                             this.errorInfo = true
-                            this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+                            this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください'
                             return
                         }
                     }
@@ -709,42 +709,42 @@
                     }
                     if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
                         this.errorInfo = true
-                        this.errorMsg = '起算日を入力してください。'
+                        this.errorMsg = '起算日を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.name && !this.restApply.txtName ) {
                         this.errorInfo = true
-                        this.errorMsg = '氏名を入力してください。'
+                        this.errorMsg = '氏名を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
                         this.errorInfo = true
-                        this.errorMsg = '続柄を入力してください。'
+                        this.errorMsg = '続柄を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
                         this.errorInfo = true
-                        this.errorMsg = '対象の人数を入力してください。'
+                        this.errorMsg = '対象の人数を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
                         this.errorInfo = true
-                        this.errorMsg = '生年月日を入力してください。'
+                        this.errorMsg = '生年月日を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
                         this.errorInfo = true
-                        this.errorMsg = '傷病名を入力してください。'
+                        this.errorMsg = '傷病名を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
                         this.errorInfo = true
-                        this.errorMsg = '申請事由を入力してください。'
+                        this.errorMsg = '申請事由を入力してください'
                         return
                     }
                     if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
                         this.errorInfo = true
-                        this.errorMsg = '添付ファイルを入力してください。'
+                        this.errorMsg = '添付ファイルを入力してください'
                         return
                     }
                     this.$Modal.confirm({

@@ -282,7 +282,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
     if (CollUtil.isEmpty(lTable)) {
-      throw new GlobalException("リストの有効期限が切れています。更新してもう一度お試しください");
+      throw new GlobalException("リストの有効期限が切れています、更新してもう一度お試しください");
     }
 
     // 今回改定日取得

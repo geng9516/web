@@ -103,7 +103,7 @@
 
         <Drawer title="未承認者状況" class="tc" width="45" v-model="notAprEmp">
             <Alert class="primary-info lb tl">月次承認が行われていない職員が存在します。
-                月次締めを実行するには、全職員の月次承認を行ってください</Alert>
+                月次締めを実行するには、全職員の月次承認を行ってください。</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
                 :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" simple/>
