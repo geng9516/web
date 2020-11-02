@@ -73,7 +73,7 @@ public class SearchRangeManagerController {
     @PostMapping("update")
     public String updateSearchPermission(@Valid @NotEmpty @RequestBody List<SearchRangeManagerDataDTO> updateList) {
         searchRangeManagerLogic.executeUpdate(updateList);
-        return "変更しました。";
+        return "変更しました";
     }
 
 

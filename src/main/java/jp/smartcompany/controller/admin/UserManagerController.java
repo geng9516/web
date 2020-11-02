@@ -40,7 +40,7 @@ public class UserManagerController {
     @PostMapping("unlock")
     public String unLock(@RequestBody @Valid @NotEmpty List<String> userIds) {
         userManagerMainLogic.unLock(userIds);
-        return "パスワードを変更しました。";
+        return "パスワードを変更しました";
     }
     /* ============ 旧代码： UserManagerMainAction 结束 ===========*/
 
@@ -52,7 +52,7 @@ public class UserManagerController {
     @PostMapping("policy")
     public String updatePolicy(@RequestBody @Valid @NotEmpty List<ConfSyscontrolDO> controlList) {
         userManagerMainLogic.updatePolicy(controlList);
-        return "パスワードを変更しました。";
+        return "パスワードを変更しました";
     }
     /* ============ 旧代码： UserManagerEditPolicyAction 结束 ===========*/
 
@@ -66,7 +66,7 @@ public class UserManagerController {
     @PostMapping("change/endDate")
     public String changeEndDate(@RequestBody @Valid UserManagerEditEndForm form) {
        userManagerEditEndLogic.changeEndDate(form);
-       return "利用終了日を変更しました。";
+       return "利用終了日を変更しました";
     }
     /* ============ 旧代码： UserManagerEditEndAction 结束 ===========*/
 

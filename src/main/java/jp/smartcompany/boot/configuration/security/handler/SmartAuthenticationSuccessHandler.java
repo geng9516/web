@@ -32,7 +32,7 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
     if (SysUtil.isAjaxRequest(req)) {
       resp.setCharacterEncoding("UTF-8");
       resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
-      GlobalResponse r = GlobalResponse.ok("ログインしました。");
+      GlobalResponse r = GlobalResponse.ok("ログインしました");
       resp.getWriter().write(JSONUtil.toJsonStr(r));
     } else {
       resp.sendRedirect(securityProperties.getLoginSuccessUrl());

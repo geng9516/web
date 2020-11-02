@@ -29,7 +29,7 @@ axios.interceptors.response.use(
     }
     Vue.prototype.$Notice.error({
       title: 'Error!',
-      desc: error.code === 'ECONNABORTED' ? 'タイムアウトしました。' : `${error.response && error.response.data.msg}`,
+      desc: error.code === 'ECONNABORTED' ? 'タイムアウトしました' : `${error.response && error.response.data.msg}`,
       duration: 6.5
     })
     return Promise.reject(error.response || error)

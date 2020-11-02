@@ -638,7 +638,7 @@
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
-                            this.$Notice.info({title: '登録しました。', desc: ""})
+                            this.$Notice.info({title: '登録しました', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.getTableData()
@@ -662,7 +662,7 @@
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
-                            this.$Notice.info({title: '削除しました。', desc: ""})
+                            this.$Notice.info({title: '削除しました', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.getTableData()
@@ -695,7 +695,7 @@
                         onOk: async () => {
                             this.empattrLoading = true
                             await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
-                            this.$Notice.info({title: '削除しました。', desc: ""})
+                            this.$Notice.info({title: '削除しました', desc: ""})
                             this.empattrLoading = false
                             this.isShow = false
                             this.workDaySettingData.splice(index, 1)
@@ -833,7 +833,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
-                            this.$Notice.info({title: '登録しました。', desc: ""})
+                            this.$Notice.info({title: '登録しました', desc: ""})
                             this.isEditable = false
                             this.getTableData()
                         }

@@ -717,11 +717,11 @@
                                 if (pAction === "ACT_EXEC_OPEN") {
                                     this.clockData.startTime = data.clockTime
                                     this.clockBtn.clock = '出勤(' + data.clockTime + ')'
-                                    this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                                    this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                                 } else {
                                     this.clockData.endTime = data.clockTime
                                     this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                                    this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                                    this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                                 }
                             } else {
                                 //打刻失敗(10,20,30)
@@ -729,7 +729,7 @@
                             }
                         } else {
                             //チェック不合格
-                            this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました。"})
+                            this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
                         }
                     } catch (error) {
                         this.clocking = false
@@ -1122,14 +1122,14 @@
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
 
                 if (this.tmgResultsDto.tdaCowncommentR !== null && this.getLengthB(this.tmgResultsDto.tdaCowncommentR) > 100) {
-                    this.$Notice.error({desc: "中断備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+                    this.$Notice.error({desc: "中断備考が設定値を超えています、全角・半角カナ50字以内、半角英数100字以内"})
                     return false
                 }
                 this.$Modal.confirm({
                     inDrawer: true,
                     title: '注意',
                     width: 480,
-                    content: 'コメントのみを登録します。よろしいですか？',
+                    content: 'コメントのみを登録します、よろしいですか',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: () => {
@@ -1190,7 +1190,7 @@
                 this.$Modal.confirm({
                     inDrawer: true,
                     title: '注意',
-                    content: 'この内容で登録します。よろしいですか？',
+                    content: 'この内容で登録します、よろしいですか？',
                     width: 400,
                     okText: 'OK',
                     cancelText: 'キャンセル',
@@ -1283,13 +1283,13 @@
                 }
                 // 修正出社時刻形式
                 if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
-                    this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                    this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません、(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください"})
                     return false;
                 }
 
                 // 修正退社時刻形式
                 if (this.workData[2].workEnd && !this.time_check(this.workData[2].workEnd)) {
-                    this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                    this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません、(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください"})
                     return false;
                 }
 
@@ -1302,11 +1302,11 @@
                 const checkNonDuty = this.detailNonDutyVOList.some(e => {
 
                     if (e.tdadNopen === null || !this.time_check(e.tdadNopen)) {
-                        this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                        this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません、(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください"})
                         return true;
                     }
                     if (e.tdadNclose === null || !this.time_check(e.tdadNclose)) {
-                        this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                        this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません、(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください"})
                         return true;
                     }
                     if (e.tdadCsparechar1 !== null && this.getLengthB(e.tdadCsparechar1) > 100) {
@@ -1319,7 +1319,7 @@
                 const checkOverhour = this.detailOverhoursVOList.some(e => {
 
                     if (e.tdadCsparechar1 !== null && e.tdadCsparechar1.length > 100) {
-                        this.$Notice.error({desc: "超過勤務備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+                        this.$Notice.error({desc: "超過勤務備考が設定値を超えています、全角・半角カナ50字以内、半角英数100字以内"})
                         return true
                     }
                 })

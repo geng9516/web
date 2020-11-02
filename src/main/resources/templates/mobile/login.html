@@ -294,11 +294,11 @@
                                     if (pAction === "ACT_EXEC_OPEN") {
                                         this.clockData.startTime = data.clockTime
                                         this.clockBtn.clock = '出勤(' + data.clockTime + ')'
-                                        //this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                                        //this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                                         this.$Message.success(data.resultMsg);
                                         /*this.$Modal.confirm({
                                                    title: '操作確認',
-                                                   content: '打刻は終わりました、ホームページへ遷移しますか？',
+                                                   content: '打刻は終わりました、ホームページへ遷移しますか',
                                                    okText: '遷移',
                                                    cancelText: 'いいえ',
                                                    onOk: async () => {
@@ -311,7 +311,7 @@
                                     } else {
                                         this.clockData.endTime = data.clockTime
                                         this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                                        //this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                                        //this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                                         this.$Message.success(data.resultMsg);
                                     }
                                 } else {
@@ -321,8 +321,8 @@
                                 }
                             } else {
                                 //チェック不合格
-                                //this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました。"})
-                               this.$Message.error('内部エラーが発生しました。');
+                                //this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
+                               this.$Message.error('内部エラーが発生しました');
                             }
                         } catch (error) {
                             this.clocking = false

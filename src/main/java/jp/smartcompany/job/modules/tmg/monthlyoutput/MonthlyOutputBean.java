@@ -492,7 +492,7 @@ public class MonthlyOutputBean {
             // SALARY_FIX="0"は、そもそもこの処理をコールできないはずなので、想定外のエラーとしておく
         else{
             //確定処理で例外が発生しました。システム管理者へ連絡してください。。
-            return GlobalResponse.ok("確定処理で例外が発生しました。システム管理者へ連絡してください。");
+            return GlobalResponse.ok("確定処理で例外が発生しました、システム管理者へ連絡してください");
         }
 
         return GlobalResponse.ok();

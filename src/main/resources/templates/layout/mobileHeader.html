@@ -155,19 +155,19 @@
         }),
         updatePassword: Debounce(async function () {
           if (!this.password.oldPassword) {
-            return this.$Notice.warning({ title: '注意', desc: '現在のパスワードを入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '現在のパスワードを入力してください', duration: 6.5 })
           }
           if (!this.password.newPassword) {
-            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワードを入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワードを入力してください', duration: 6.5 })
           }
           if (!this.password.repeatPassword) {
-            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワード(確認用)を入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワード(確認用)を入力してください', duration: 6.5 })
           }
           if(!/^[a-z0-9A-Z]+$/.test(this.password.newPassword) || !/^[a-z0-9A-Z]+$/.test(this.password.repeatPassword)) {
-            return this.$Notice.warning({ title: '注意', desc: 'パスワードに使用できる文字は英数字のみです。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: 'パスワードに使用できる文字は英数字のみです', duration: 6.5 })
           }
           if (this.password.newPassword !== this.password.repeatPassword) {
-            return this.$Notice.warning({ title: '注意', desc: '新パスワード(確認用)には、新パスワードと同じパスワードを入力してください。', duration: 6.5 })
+            return this.$Notice.warning({ title: '注意', desc: '新パスワード(確認用)には、新パスワードと同じパスワードを入力してください', duration: 6.5 })
           }
           this.passwordLoading = true
           try {
@@ -210,12 +210,12 @@
                   if (pAction === "ACT_EXEC_OPEN") {
                     this.clockData.startTime = data.clockTime
                     this.clockBtn.clock = '出勤(' + data.clockTime + ')'
-                    //this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                    //this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                     this.$Message.success(data.resultMsg);
                   } else {
                     this.clockData.endTime = data.clockTime
                     this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                    //this.$Notice.info({title: '打刻しました。', desc: data.resultMsg})
+                    //this.$Notice.info({title: '打刻しました', desc: data.resultMsg})
                     this.$Message.success(data.resultMsg);
                   }
                 } else {
@@ -225,8 +225,8 @@
                 }
               } else {
                 //チェック不合格
-                //this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました。"})
-                this.$Message.error('内部エラーが発生しました。');
+                //this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
+                this.$Message.error('内部エラーが発生しました');
               }
             } catch (error) {
               this.clocking = false

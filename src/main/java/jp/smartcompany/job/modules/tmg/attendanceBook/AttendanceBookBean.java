@@ -290,7 +290,7 @@ public class AttendanceBookBean {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("権限処理の際にエラーが発生しました。", e);
+            logger.error("権限処理の際にエラーが発生しました", e);
             return false;
         }
     }

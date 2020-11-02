@@ -8,8 +8,8 @@ public enum SuccessMessage implements ResponseMessage {
     /**
      * Success
      */
-    SUCCESS(0, "リクエストしました。"),
-    LOGIN(0,"ログインしました。");
+    SUCCESS(0, "リクエストしました"),
+    LOGIN(0,"ログインしました");
 
     private final int code;
     private final String msg;
