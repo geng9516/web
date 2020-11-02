@@ -113,7 +113,7 @@ const Utils = {
     // el.focus() 取消focus
     Vue.prototype.$Notice.error({
       title: '注意',
-      desc: '時刻をHH:MM形式で入力してください。',
+      desc: '時刻をHH:MM形式で入力してください',
       duration: 6.5
     })
     return false

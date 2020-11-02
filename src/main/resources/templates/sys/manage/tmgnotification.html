@@ -1235,7 +1235,7 @@
                     onOk: async () => {
                         const ntfNoList = this.$refs.table.getSelection().map(e => e.tntfCntfNo)
                         if (ntfNoList.length === 0) {
-                            return this.$Notice.warning({title: '注意', desc: '少なくとも一つの項目を選んでください。', duration: 6.5})
+                            return this.$Notice.warning({title: '注意', desc: '少なくとも一つの項目を選んでください', duration: 6.5})
                         }
                         this.confirmLoading = true
                         try {
@@ -1478,13 +1478,13 @@
                 }
                 if (!this.restApply.typeNew) {
                     this.errorInfo = true
-                    this.errorMsg = '申請区分を選んでください。'
+                    this.errorMsg = '申請区分を選んでください'
                     return
                 }
 
                 if (!this.restApply.begin || !this.restApply.end) {
                     this.errorInfo = true
-                    this.errorMsg = '期間を選んでください。'
+                    this.errorMsg = '期間を選んでください'
                     return
                 }
 

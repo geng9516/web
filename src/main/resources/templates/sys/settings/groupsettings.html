@@ -1540,12 +1540,12 @@
           if (isAdd) {
             delete updateValue.mgpId
             delete updateValue.mgId
-            if (!updateValue.startDate) return this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
+            if (!updateValue.startDate) return this.$Notice.warning({ title: '注意', desc: '開始日を入力してください', duration: 6.5 })
             if (!updateValue.endDate) updateValue.endDate = '2222/12/31'
             updateValue.startDate = Utils.formatDate(updateValue.startDate, 'yyyy/mm/dd')
             updateValue.endDate = Utils.formatDate(updateValue.endDate, 'yyyy/mm/dd')
-            if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
-            if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください。', duration: 6.5 })
+            if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください', duration: 6.5 })
+            if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください', duration: 6.5 })
           }
           if (this.sectionPostList_bak.companyId) {
             // 組織・役職選択による定義
@@ -1596,8 +1596,8 @@
           // 条件式による定義
           if (this.updateValue.baseFlag === '1') {
             updateValue.queryConditionList.some(e => {
-              if (!e.columnname) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
-              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { return this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください。', duration: 6.5 }) }
+              if (!e.columnname) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
+              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { return this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 }) }
             })
             if (this.sectionPostList_bak.companyId && this.sectionPostList_bak.queryConditions.rowList.length > 0) {
               const queryIdList = updateValue.queryConditionList.map(e => e.id)
@@ -1611,7 +1611,7 @@
 
           // 社員選択による定義
           if (this.updateValue.baseFlag === '0') {
-            if (updateValue.employList.length === 0) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません。必ず1つ以上設定してください。', duration: 6.5 })
+            if (updateValue.employList.length === 0) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
             const empIdList = updateValue.employList.map(e => e.id)
             this.sectionPostList_bak.companyId && this.sectionPostList_bak.empList.empList.length > 0 && this.sectionPostList_bak.empList.empList.forEach(e => {
               if (!empIdList.includes(e.id)) {

@@ -601,29 +601,29 @@
             async avgWorkTimeUpload() {
 
                 if (parseFloat(this.nowWork.avgWorkTime1).toString() == "NaN") {
-                    this.$Notice.error({title: '注意', desc: "時間は数字で入力してください。", duration: 6.5});
+                    this.$Notice.error({title: '注意', desc: "時間は数字で入力してください", duration: 6.5});
                     return
                 }
                 if (parseFloat(this.nowWork.avgWorkTime2).toString() == "NaN") {
-                    this.$Notice.error({title: '注意', desc: "分は数字で入力してください。", duration: 6.5});
+                    this.$Notice.error({title: '注意', desc: "分は数字で入力してください", duration: 6.5});
                     return
                 }
                 if (parseFloat(this.nowWork.workingdaysWeek).toString() == "NaN") {
-                    this.$Notice.error({title: '注意', desc: "週は数字で入力してください。", duration: 6.5});
+                    this.$Notice.error({title: '注意', desc: "週は数字で入力してください", duration: 6.5});
                     return
                 }
                 if (parseFloat(this.nowWork.avgWorkTime2) > 59 || 0 > parseFloat(this.nowWork.avgWorkTime2)) {
-                    this.$Notice.error({title: '注意', desc: "分は59分以内で入力してください。", duration: 6.5});
+                    this.$Notice.error({title: '注意', desc: "分は59分以内で入力してください", duration: 6.5});
                     return
                 }
                 if (parseFloat(this.nowWork.workingdaysWeek) > 6 || 0 > parseFloat(this.nowWork.workingdaysWeek)) {
-                    this.$Notice.error({title: '注意', desc: "週勤務日数は6日以内で入力してください。", duration: 6.5});
+                    this.$Notice.error({title: '注意', desc: "週勤務日数は6日以内で入力してください", duration: 6.5});
                     return
                 }
                 let hours = +this.nowWork.avgWorkTime1
                 let mins = +this.nowWork.avgWorkTime2
                 if (hours * 60 + mins > +(this.limitTime)) {
-                    this.$Notice.error({desc: "平均勤務時間は" + Math.trunc(this.limitTime / 60) + ":" + this.limitTime % 60 + "分以内で入力してください。"})
+                    this.$Notice.error({desc: "平均勤務時間は" + Math.trunc(this.limitTime / 60) + ":" + this.limitTime % 60 + "分以内で入力してください"})
                     return
                 }
                 let params = {"sAvgWorkingHours": this.nowWork.avgWorkTime1, "sAvgWorkingMinutes": this.nowWork.avgWorkTime2, "sWorkingdaysWeek": this.nowWork.workingdaysWeek}

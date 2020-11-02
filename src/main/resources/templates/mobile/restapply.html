@@ -562,30 +562,30 @@
                   }
                }
                if (!this.restApply.typeNew) {
-                  return this.$Notice.warning({ title: '注意', desc: '申請区分を選んでください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '申請区分を選んでください', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmComment != '0' && !this.restApply.owncomment) {
-                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください', duration: 6.5 })
                }
 
                if (!this.restApply.begin || !this.restApply.end) {
-                  return this.$Notice.warning({ title: '注意', desc: '期間を選んでください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '期間を選んでください', duration: 6.5 })
                }
                if (this.restApply.begin || this.restApply.end) {
                   if (this.restApply.begin && !this.restApply.end) {
-                     return this.$Notice.warning({ title: '注意', desc: '開始期間を入力してください。', duration: 6.5 })
+                     return this.$Notice.warning({ title: '注意', desc: '開始期間を入力してください', duration: 6.5 })
                   }
                   if (!this.restApply.begin && this.restApply.end) {
-                     return this.$Notice.warning({ title: '注意', desc: '終了期間を入力してください。', duration: 6.5 })
+                     return this.$Notice.warning({ title: '注意', desc: '終了期間を入力してください', duration: 6.5 })
                   }
                   if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
-                     return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください。', duration: 6.5 })
+                     return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください', duration: 6.5 })
                   }
                }
                if(this.selectedRestInfo.timeZone) {
                   if(!this.restApply.timezoneOpen) {
                      this.errorInfo = true
-                     this.errorMsg = '開始時間を入力してください。'
+                     this.errorMsg = '開始時間を入力してください'
                      return
                   }
                   if(!this.restApply.timezoneClose) {
@@ -595,45 +595,45 @@
                   }
                   if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
                      this.errorInfo = true
-                     this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+                     this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください'
                      return
                   }
                }
                if (!this.hasPassedTimeCheck) {
-                  return this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください', duration: 6.5 })
                }
                if(this.selectedRestInfo.workTime) {
                   if (!this.restApply.timeOpen) {
-                     return this.$Notice.warning({ title: '注意', desc: '始業後時刻を入力してください。', duration: 6.5 })
+                     return this.$Notice.warning({ title: '注意', desc: '始業後時刻を入力してください', duration: 6.5 })
 
                   }
                   if (!this.restApply.timeClose) {
-                     return this.$Notice.warning({ title: '注意', desc: '終業前時刻を入力してください。', duration: 6.5 })
+                     return this.$Notice.warning({ title: '注意', desc: '終業前時刻を入力してください', duration: 6.5 })
                   }
                }
                if (this.selectedRestInfo.period && !this.restApply.txtPeriod) {
-                  return this.$Notice.warning({ title: '注意', desc: '起算日を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '起算日を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.name && !this.restApply.txtName) {
-                  return this.$Notice.warning({ title: '注意', desc: '氏名を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '氏名を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.relation && !this.restApply.txtRelation) {
-                  return this.$Notice.warning({ title: '注意', desc: '続柄を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '続柄を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber) {
-                  return this.$Notice.warning({ title: '注意', desc: '対象の人数を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '対象の人数を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
-                  return this.$Notice.warning({ title: '注意', desc: '生年月日を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '生年月日を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
-                  return this.$Notice.warning({ title: '注意', desc: '傷病名を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '傷病名を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
-                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '申請事由を入力してください', duration: 6.5 })
                }
                if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
-                  return this.$Notice.warning({ title: '注意', desc: '添付ファイルを入力してください。', duration: 6.5 })
+                  return this.$Notice.warning({ title: '注意', desc: '添付ファイルを入力してください', duration: 6.5 })
                }
                this.deleteFiles = [...new Set(this.deleteFiles)]
                try {

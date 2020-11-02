@@ -725,7 +725,7 @@
                         background: true,
                         closable: true,
                         duration: 6,
-                        content: '検索内容が未設定です。検索内容を入力してください。'
+                        content: '検索内容が未設定です、検索内容を入力してください'
                     });
                     return
                 }
@@ -1180,52 +1180,52 @@
                             let checkArr = []
                             let result = e.updateOverTimeDtoList.some(t => {
                                 if (!t.sNOpen && t.sNClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '開始時間を入力してください。', duration: 6.5 })
+                                    that.$Notice.warning({ title: '注意', desc: '開始時間を入力してください', duration: 6.5 })
                                     return true
                                 }
                                 if (t.sNOpen && !t.sNClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。', duration: 6.5 })
+                                    that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください', duration: 6.5 })
                                     return true
                                 }
                                 if (t.sNOpen && t.sNClose && !t.sCComment) {
-                                    that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください。', duration: 6.5 })
+                                    that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください', duration: 6.5 })
                                     return true
                                 }
                                 if (t.sNOpen && t.sNClose) {
                                     if (Utils.timeToMinute(t.sNOpen) >= Utils.timeToMinute(t.sNClose)) {
-                                        that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                                        that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください', duration: 6.5 })
                                         return true
                                     }
                                     // check 超勤时间是否与勤务时间重复
                                     if (e.openN && e.closeN && Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
-                                        that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
+                                        that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください', duration: 6.5 })
                                         return true
                                     }
                                 }
                             })
                             if (result) return true
                             if(e.updateOverTimeDtoList.length === 1 && !e.updateOverTimeDtoList.sNOpen) return false
-                            if(Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')) return true
+                            if(Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています')) return true
                         }
                         // if (e.updateRestTimeDtoList.length > 0) {
                         //     let result = false
                         //     if (!e.updateOverTimeDtoList.length > 0) {
-                        //         that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。', duration: 6.5 })
+                        //         that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません', duration: 6.5 })
                         //         return true
                         //     }
                         //     let checkArr = []
                         //     result = e.updateRestTimeDtoList.some(t => {
                         //         if (!t.sNRestOpen && t.sNRestClose) {
-                        //             that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。', duration: 6.5 })
+                        //             that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください', duration: 6.5 })
                         //             return true
                         //         }
                         //         if (t.sNRestOpen && !t.sNRestClose) {
-                        //             that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。', duration: 6.5 })
+                        //             that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください', duration: 6.5 })
                         //             return true
                         //         }
                         //         if (t.sNRestOpen && t.sNRestClose) {
                         //             if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
-                        //                 that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                        //                 that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください', duration: 6.5 })
                         //                 return true
                         //             }
                         //         }
