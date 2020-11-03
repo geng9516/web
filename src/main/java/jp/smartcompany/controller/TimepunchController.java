@@ -133,10 +133,10 @@ public class TimepunchController {
         //打刻
         clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
         if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
-            clockResultVO.setResultMsg("今日も一日頑張りましょう。");
+            clockResultVO.setResultMsg("今日も一日頑張りましょう");
         }
         if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
-            clockResultVO.setResultMsg("今日も一日お疲れ様でした。");
+            clockResultVO.setResultMsg("今日も一日お疲れ様でした");
         }
         return clockResultVO;
     }
