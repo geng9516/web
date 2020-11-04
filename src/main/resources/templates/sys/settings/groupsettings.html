@@ -728,8 +728,8 @@
           try {
             const { data } = await this.http.get('sys/groupmanager/groups', OPTS)
             this.systemList = data.systemList
-            this.beforeDate = data.modifiedDateList[0].previousdate.slice(0, 10)
-            this.limitDate = data.modifiedDateList[0].validdate
+            this.beforeDate = data.modifiedDateList[0].previousdate.slice(0, 10).replace(/-/g, '/')
+            this.limitDate = data.modifiedDateList[0].validdate.slice(0, 10).replace(/-/g, '/')
             this.tableData = data.validGroupList
           } catch (error) {
 
