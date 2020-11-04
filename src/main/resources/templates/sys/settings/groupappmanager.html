@@ -330,6 +330,7 @@
             this.limitDate = data.latestDate
             if (data.afterDate) {
               this.dataDate = `${data.changeDate} 改定分`
+              this.curDate = data.changeDate
             } else {
               this.dataDate = '現在有効な設定'
             }

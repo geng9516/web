@@ -308,7 +308,8 @@
             this.beforeDate = data.beforeDate
             this.limitDate = data.latestDate
             if (data.afterDate) {
-              this.dataDate = `${data.changeDate} 改定分`
+              this.dataDate = `${data.nowDate} 改定分`
+              this.curDate = data.nowDate
             } else {
               this.dataDate = '現在有効な設定'
             }

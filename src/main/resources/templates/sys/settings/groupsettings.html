@@ -509,7 +509,6 @@
           curDate: new Date(),
           opts: {
             systemId: '01',
-            date: ''
           },
           poptipStyle: {
             display: 'none',
@@ -730,6 +729,7 @@
             this.systemList = data.systemList
             this.beforeDate = data.modifiedDateList[0].previousdate.slice(0, 10).replace(/-/g, '/')
             this.limitDate = data.modifiedDateList[0].validdate.slice(0, 10).replace(/-/g, '/')
+            this.curDate = data.modifiedDateList[0].validdate.slice(0, 10).replace(/-/g, '/')
             this.tableData = data.validGroupList
           } catch (error) {
 
@@ -889,7 +889,7 @@
         },
         handleDatePicker(e) {
           if (!e) return
-          this.opts.date = e
+          this.opts.searchDate = e
           this.getData()
         },
         async getLegalPersonList() {
@@ -898,7 +898,7 @@
           this.opts.companyId = data[0] && data[0].macCcompanyidCk
         },
         getPreData() {
-          this.opts.date = this.beforeDate
+          this.opts.searchDate = this.beforeDate
           this.getData()
         },
         handleCancel() {
