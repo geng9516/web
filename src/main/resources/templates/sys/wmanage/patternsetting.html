@@ -870,6 +870,31 @@
                 }
                 return true
             },
+            //勤務及び休憩時間は空かことをチェックする
+            valid_start_end_isnull(dutyTime,planRest1, planRest2, planRest3, planRest4){
+                this.hiddenAlert()
+                var times = [dutyTime,planRest1, planRest2, planRest3, planRest4]
+                var msg = ''
+                for (var i = 0; i < times.length; i++) {
+                    if ((!times[i][0] && times[i][1])||(times[i][0] && !times[i][1])) {
+                        //一つ中で空ですなら、
+                        if(i==0){
+                            msg = '[勤務時間]'
+                        }else{
+                            msg = '[休憩時間'+i+']'
+                        }
+                        if(!times[i][0]){
+                            msg += '開始時間'
+                        }
+                        if(!times[i][1]){
+                            msg += '終了時間'
+                        }
+                        this.showAlert(msg+'を入力してください')
+                        return false
+                    }
+                }
+                return true
+            },
             //休憩時間が重複してるか
             valid_rest_time_isRepeat(planRest1, planRest2, planRest3, planRest4) {
                 var planRests = [planRest1, planRest2, planRest3, planRest4]
@@ -998,6 +1023,9 @@
                     return
                 } else {
                     this.hiddenAlert();
+                }
+                if (!this.valid_start_end_isnull(dutyDate,planRest1, planRest2, planRest3, planRest4)) {
+                    return
                 }
                 if (!this.valid_rest_time_isTrue(planRest1, planRest2, planRest3, planRest4)) {
                     return
