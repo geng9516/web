@@ -567,24 +567,31 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     }
 
     public void assembleEmploy(SectionPostDTO sectionPostDTO,List<SectionPostRowDTO> rowList) {
-        List<SectionPostListDTO> companyList = sectionPostDTO.getCompanyList();
-        if (CollUtil.isEmpty(companyList)) {
-            return;
-        }
         List<MastGroupsectionpostmappingDO> lDelTemp = CollUtil.newArrayList();
         List<SectionPostRowDTO> addEmpList = CollUtil.newArrayList();
-        for (SectionPostRowDTO employDTO : rowList) {
-            // 如果是要删除的项
-            if (employDTO.getDelete()) {
-                MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
-                egp.setMagId(employDTO.getId());
-                lDelTemp.add(egp);
-            } else {
-                addEmpList.add(employDTO);
+        if (CollUtil.isNotEmpty(rowList)) {
+            List<SectionPostListDTO> companyList = sectionPostDTO.getCompanyList();
+            if (CollUtil.isEmpty(companyList)){
+                companyList = CollUtil.newArrayList();
+                SectionPostListDTO sectionPostListDTO = new SectionPostListDTO();
+                sectionPostListDTO.setDelete(false);
+                sectionPostListDTO.setCompanyId("01");
+                companyList.add(sectionPostListDTO);
+                sectionPostDTO.setCompanyList(companyList);
             }
+            for (SectionPostRowDTO employDTO : rowList) {
+                // 如果是要删除的项
+                if (employDTO.getDelete()) {
+                    MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                    egp.setMagId(employDTO.getId());
+                    lDelTemp.add(egp);
+                } else {
+                    addEmpList.add(employDTO);
+                }
+            }
+            sectionPostDTO.setDeleteEmployList(lDelTemp);
+            companyList.get(0).setEmployList(addEmpList);
         }
-        sectionPostDTO.setDeleteEmployList(lDelTemp);
-        companyList.get(0).setEmployList(addEmpList);
     }
 
     private void assembleGroupSectionPost(SectionPostDTO sectionPostDTO,SectionPostListDTO sectionPostListDTO) {
@@ -894,35 +901,38 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      */
     public void insertSectionPost(String psCustomerId, String psSystem, String psGroup,
                                    Date ptStartDate, Date ptEndDate,List<SectionPostListDTO> companyList) {
+        if (CollUtil.isNotEmpty(companyList)) {
+            SectionPostListDTO companyRowListDTO = companyList.get(0);
+            List<SectionPostRowListDTO> sectionList = companyRowListDTO.getSectionList();
 
-        SectionPostListDTO companyRowListDTO = companyList.get(0);
-        List<SectionPostRowListDTO> sectionList = companyRowListDTO.getSectionList();
+            /** 定義情報取得(法人＆組織指定リスト(登録更新用))　*/
+            insertSectionList(sectionList, psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate);
 
-        /** 定義情報取得(法人＆組織指定リスト(登録更新用))　*/
-        insertSectionList(sectionList, psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate);
-
-        /** 定義情報取得(法人＆組織＆役職リスト(登録更新用))　*/
-        for (SectionPostRowListDTO sectionPostRowListDTO : sectionList) {
             /** 定義情報取得(法人＆組織＆役職リスト(登録更新用))　*/
-            insertList(sectionPostRowListDTO.getPostList(),
-                    FG_COMP_SEC_POST, psCustomerId, psSystem,
+            if (CollUtil.isNotEmpty(sectionList)) {
+                for (SectionPostRowListDTO sectionPostRowListDTO : sectionList) {
+                    /** 定義情報取得(法人＆組織＆役職リスト(登録更新用))　*/
+                    insertList(sectionPostRowListDTO.getPostList(),
+                            FG_COMP_SEC_POST, psCustomerId, psSystem,
+                            psGroup, ptStartDate, ptEndDate);
+                }
+            }
+
+            /** 定義情報取得(法人＆組織＆所属長リスト(登録更新用))　*/
+            insertList(companyRowListDTO.getBossSectionList(),
+                    FG_COMP_SEC_BOSS, psCustomerId, psSystem,
+                    psGroup, ptStartDate, ptEndDate);
+
+            /** 定義情報取得(法人＆役職リスト(登録更新用))　*/
+            insertList(companyRowListDTO.getPostList(),
+                    FG_COMP_POST, psCustomerId, psSystem,
+                    psGroup, ptStartDate, ptEndDate);
+
+            /** 定義情報取得(法人＆職員リスト(登録更新用))　*/
+            insertSelectEmpList(companyRowListDTO.getEmployList(),
+                    FG_COMP_EMP, psCustomerId, psSystem,
                     psGroup, ptStartDate, ptEndDate);
         }
-
-        /** 定義情報取得(法人＆組織＆所属長リスト(登録更新用))　*/
-        insertList(companyRowListDTO.getBossSectionList(),
-                FG_COMP_SEC_BOSS, psCustomerId, psSystem,
-                psGroup, ptStartDate, ptEndDate);
-
-        /** 定義情報取得(法人＆役職リスト(登録更新用))　*/
-        insertList(companyRowListDTO.getPostList(),
-                FG_COMP_POST, psCustomerId, psSystem,
-                psGroup, ptStartDate, ptEndDate);
-
-        /** 定義情報取得(法人＆職員リスト(登録更新用))　*/
-        insertSelectEmpList(companyRowListDTO.getEmployList(),
-                FG_COMP_EMP, psCustomerId, psSystem,
-                psGroup, ptStartDate, ptEndDate);
     }
 
     /**
@@ -975,12 +985,14 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                                   Date ptStartDate, Date ptEndDate) {
         // 入れ替え処理(表示用DTO ⇒ 更新用Entity)を行い、登録
         List<MastGroupsectionpostmappingDO> saveList = CollUtil.newArrayList();
-        for (int i = 0; i < poList.size(); i++) {
-            // IDの無いもの(DBに存在しないデータ)のみ、更新する
-            if (poList.get(i).getId() == null) {
-                // データベースへ更新(新規登録)
-                saveList.add(sectionPostLogic.insertSection(poList, psCustomerId,
-                        psSystem, psGroup, ptStartDate, ptEndDate, i));
+        if (CollUtil.isNotEmpty(poList)) {
+            for (int i = 0; i < poList.size(); i++) {
+                // IDの無いもの(DBに存在しないデータ)のみ、更新する
+                if (poList.get(i).getId() == null) {
+                    // データベースへ更新(新規登録)
+                    saveList.add(sectionPostLogic.insertSection(poList, psCustomerId,
+                            psSystem, psGroup, ptStartDate, ptEndDate, i));
+                }
             }
         }
         if (CollUtil.isNotEmpty(saveList)){
@@ -1005,11 +1017,13 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                             Date ptStartDate, Date ptEndDate) {
         // 入れ替え処理(表示用DTO ⇒ 更新用Entity)を行い、登録
         List<MastGroupsectionpostmappingDO> saveList = CollUtil.newArrayList();
-        for (int i = 0; i < poList.size(); i++) {
-            // IDの無いもの(DBに存在しないデータ)のみ、更新する
-            if (poList.get(i).getId() == null) {
-                saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
-                        psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+        if (CollUtil.isNotEmpty(poList)) {
+            for (int i = 0; i < poList.size(); i++) {
+                // IDの無いもの(DBに存在しないデータ)のみ、更新する
+                if (poList.get(i).getId() == null) {
+                    saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
+                            psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+                }
             }
         }
         if (CollUtil.isNotEmpty(saveList)){

@@ -43,6 +43,7 @@ public class ExceptionAdvice {
     private String env;
 
     @ExceptionHandler(GlobalException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public GlobalResponse systemException(GlobalException e) {
         printStackTrace(e);
         return GlobalResponse.error(e.getCode(), e.getMessage());

@@ -66,6 +66,7 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
                         validGroupList.stream().map(GroupManagerGroupListDTO::getMgCgroupidPk).collect(Collectors.toList()),
                         companyList
                 );
+
         List<GroupManagerModifiedDateDTO> modifiedDateList = iMastGroupService.selectHistoryDate(session.getLoginCustomer(), systemId, companyList,searchDateStr);
         List<MastSystemDO> systemList =  groupAppManagerMainLogic.getSystemList(psDBBean.getLanguage());
         return MapUtil.<String,Object>builder()

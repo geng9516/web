@@ -1,10 +1,12 @@
 package jp.smartcompany.admin.groupmanager.logic.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.admin.component.dto.SectionPostListDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.admin.groupmanager.logic.SectionPostLogic;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupsectionpostmappingDO;
 import org.springframework.stereotype.Service;
@@ -162,6 +164,8 @@ public class SectionPostLogicImpl implements SectionPostLogic {
         oInsert.setMagCsectionid(poList.get(pnCnt).getSectionId());
         oInsert.setMagCpostid(poList.get(pnCnt).getPostId());
         oInsert.setMagCemployeeid(poList.get(pnCnt).getEmployeeId());
+        oInsert.setMagCmodifieruserid(SecurityUtil.getUserId());
+        oInsert.setMagDmodifieddate(DateUtil.date());
         return oInsert;
     }
 
