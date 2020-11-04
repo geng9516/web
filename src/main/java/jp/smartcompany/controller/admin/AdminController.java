@@ -26,6 +26,15 @@ public class AdminController {
     }
 
     /**
+     * 跳转到アプリケーション設定界面
+     */
+    @GetMapping("appmanager")
+    public String toAppManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/settings/appmanager";
+    }
+
+    /**
      * 跳转到グループ定義界面
      */
     @GetMapping("groupmanager")

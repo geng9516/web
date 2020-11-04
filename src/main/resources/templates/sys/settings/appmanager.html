@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='アプリケーション設定',cssPaths='/pages/content.min.css')">
+</head>
+<body>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content startregistersettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `アプリケーション設定` }}
+            <span class="blue"> : {{dataDate}}</span>
+          </h1>
+        </div>
+        <div class="btnbox">
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
+        </div>
+      </div>
+    </div>
+    <div class="content_body">
+      <Alert v-show="this.updateList.length > 0" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
+        :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
+        ref="table">
+        <!-- hgpCappid サイト ml20   <Icon type="md-compass" />
+        !hgpCappid アプリケーション  <Icon type="md-desktop" /> -->
+
+        <template slot-scope="{ row }" slot="objectName">
+          <span v-if="row.m1 && row.m1.hgpCappid" class="mr10 mt5 mb5 ml20 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-compass" class="mr5"></Icon>{{row.m1 && row.m1.mtrCobjname}}
+          </span>
+          <span v-if="row.m1 && !row.m1.hgpCappid" class="mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-desktop" class="mr5"></Icon>{{row.m1 && row.m1.mtrCobjname}}
+          </span>
+        </template>
+
+
+        <!-- <template slot-scope="{ row }" slot="action">
+          <i-button type="success" ghost size="small" icon="ios-arrow-forward" long></i-button>
+        </template> -->
+
+        <!-- 循环slotList -->
+        <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+         
+        </template>
+      </i-table>
+    </div>
+    <Modal class="tc" v-model="isShow" title="対象範囲設定" width="650" :mask-closable="false" @on-ok="joinUpdate">
+      <Alert class="error-info tl">入力内容は登録するまで保持されます。</Alert>
+      <radio-group class="tl width100" v-model="updateValue.type" @on-change="handleRadio($event)" vertical>
+        <Radio label="0">未設定</Radio>
+        <span class="ml30" style="color: var(--primary-info);">自分自身の情報のみ参照可能です</span>
+        <Radio label="1">すべて</Radio>
+        <span class="ml30" style="color: var(--primary-info);">すべての情報が参照可能です。</span>
+        <div class="titlenorm mb5 mt10" style="font-size:15px">
+          <Icon type="logo-buffer"></Icon>
+          条件を選択
+        </div>
+        <Alert class="primary-info tl">指定範囲内での情報が参照可能です。</Alert>
+        <Radio style="display: inline-block;width: 50px;" label="2">OR</Radio>
+        <Radio style="display: inline-block;width: 50px;" label="3">AND</Radio>
+     </radio-group>
+
+     <i-select class="mt10" v-model="updateValue.selected" :disabled="updateValue.selectedDisable" @on-change="handleSelect($event)" placeholder="選択ください">
+     <i-option>&nbsp;</i-option>
+      <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.mdpCpermissionname" :value="item.mdpCpermissionid">
+      </i-option>
+    </i-select>
+
+     <Checkbox v-model="updateValue.checked" class="width100 tl mt15" style="margin-left: 0;" @on-change="handleCheckBox">基点組織設定を使用する</Checkbox>
+     <div class="titlenorm mb5 mt10" style="font-size:15px">
+      <Icon type="logo-buffer"></Icon>
+      退職者検索対象範囲
+    </div>
+
+    <radio-group class="tl width100" v-model="updateValue.hgpCpermRetired" vertical>
+      <Radio label="0">参照しない</Radio>
+      <span class="ml30" style="color: var(--primary-info);">退職者の情報は参照出来ません。</span>
+      <Radio label="1">自社のみ</Radio>
+      <span class="ml30" style="color: var(--primary-info);">自社の退職者の情報が参照可能です。</span>
+      <Radio label="2">すべて</Radio>
+      <span class="ml30" style="color: var(--primary-info);">すべての退職者の情報が参照可能です。</span>
+   </radio-group>
+    </Modal>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    const START_REGISTER_SETTINGS = new Vue({
+      el: '.startregistersettings-warp',
+      data() {
+        return {
+          // 预设最多20个权限
+          slotList: Utils.getNumArray(1, 20).map(e => `m${e}`),
+          isShow: false,
+          loading: true,
+          editLoading: false,
+          dataDate: '現在有効な設定',
+          beforeDate: '',
+          needChange: '',
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href,'psApp'),
+          tableDataUnused:[],
+          beforeClickedCell: {},
+          clickedCell: {},
+          updateValue: {},
+          updateValueIndex: {},
+          updateList:[],
+          groupList: [],
+          tableHead: [],
+          curDate: new Date(),
+          opts: {
+            systemId: '01',
+            appId: '0',
+            siteId: '0',
+            companyId: '0',
+            date: '',
+            groupId: '0',
+            isAll: false,
+          },
+          tableData: [],
+          conditionsList: [],
+          limitDate: '',
+          rangeOptions: {
+            disabledDate: date => {
+              return date.valueOf() < new Date(this.limitDate).getTime()
+            }
+          },
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        this.getConditionsList()
+        this.getTableData()
+        window.addEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 220) return true
+          else return false
+        },
+        columns() {
+          let result = [{
+            title: 'アプリケーション名',
+            minWidth: 200,
+            slot: 'objectName',
+            tree: true
+          }]
+          this.tableHead.forEach((e, i) => {
+            result = result.concat({
+              title: e.title,
+              slot: `m${i + 1}`,
+              align: 'left'
+            })
+          })
+          return result
+        }
+
+      },
+      methods: {
+        async getTableData() {
+          const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
+          Object.keys(OPTS).forEach(key => {
+            if (OPTS[key] === '0') {
+              delete OPTS[key]
+            }
+          })
+          this.loading = true
+          try {
+            const { data } = await this.http.get('sys/searchrangemanager', OPTS)
+            this.beforeDate = data.beforeDate
+            this.limitDate = data.latestDate
+            if (data.afterDate) {
+              this.dataDate = `${data.changeDate} 改定分`
+            } else {
+              this.dataDate = '現在有効な設定'
+            }
+            // 法人全部的时候需要显示公司名
+            let showFullName = false
+            if (this.opts.companyId === '0') {
+              showFullName = true
+            }
+            // 有几种hgpCobjectid，就有几种权限，也就是表头有多少个
+            const tableHeadHelper = data.dataList[0].hgpCobjectid
+            let tableHead = []
+            this.tableHead = data.dataList.some(e => {
+                if(e.hgpCobjectid !== tableHeadHelper) return true
+                tableHead = tableHead.concat({title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription})
+            })
+            this.tableHead = tableHead
+
+            let result = [{}]
+            let j = 0
+            let k = 1
+            let curTypeId = tableHeadHelper
+            data.dataList.forEach((e, i) => {
+              // 如果id相同就放在同一个对象里面加一个属性
+              if(curTypeId === e.hgpCobjectid) {
+                result[j][`m${k}`] = {...e}
+                k += 1
+              } else {
+                // 如果id不同就自增一个对象继续
+                curTypeId = e.hgpCobjectid
+                // 初始化对象以防下方为空
+                result[j+1] = {}
+                result[j+1].m1 = {...e}
+                j += 1
+                k = 2
+              }
+            })
+            console.log(result)
+            this.tableData = result
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
+        },
+        async getConditionsList() {
+          const { data } = await this.http.get('sys/searchrangemanager/conditions')
+          this.conditionsList = data
+        },
+        handleRadio(e) {
+          
+        },
+        handleSelect(e) {
+          
+        },
+        handleCheckBox(bol) {
+          if(bol) {
+            if(this.updateValue.type === '2') {
+              this.updateValue.hgpCbasesectionFlagNeed     = '1'
+              this.updateValue.hgpCbasesectionFlagMust     = '0'
+            } else {
+              this.updateValue.hgpCbasesectionFlagNeed     = '0'
+              this.updateValue.hgpCbasesectionFlagMust     = '1'
+            }
+          } else {
+            this.updateValue.hgpCbasesectionFlagNeed     = '0'
+            this.updateValue.hgpCbasesectionFlagMust     = '0'
+          }
+        },
+        async update() {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '入力内容を保存します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              if(this.updateList.length === 0) {
+                return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を変更しでください。', duration: 6.5 })
+              }
+              this.loading = true
+              console.log(this.updateValue)
+              const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
+              this.$Message.success('更新完了')
+              this.getTableData()
+              this.updateValue = {}
+              this.updateList = []
+            }
+          })
+        },
+        joinUpdate() {
+          this.tableData.some(e=> {
+            if(e[this.updateValueIndex].hgpId ===this.updateValue.hgpId) {
+              e[this.updateValueIndex] = this.updateValue
+              this.updateList = this.updateList.concat(this.updateValue)
+              return true
+            }
+          })
+        },
+        handleCellClick(row, column, data, event) {
+          // 点到名字的第一列是也不要弹出操作浮层
+          if (!this.isEditing ||  column.slot === 'objectName') {
+            return
+          }
+          this.isShow = true
+        },
+        handleLegalPersonChange(e) {
+          if (e === '0') {
+            // 法人全部的时候，需要将isAll设为true, 还要将法人id置空
+            this.opts.isAll = true
+          } else {
+            this.opts.isAll = false
+          }
+          this.getGroupList()
+          this.getTableData()
+        },
+        getPreData() {
+          this.opts.date = this.beforeDate
+          this.getTableData()
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+        }, 50)
+      }
+    })
+  </script>
+</body>
+</html>
