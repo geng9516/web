@@ -228,14 +228,15 @@
                    MAST_GROUP
                 WHERE
                    MG_CCUSTOMERID = '01'
-                   AND MG_CSYSTEMID_CK_FK = '02'
+                   AND MG_CSYSTEMID_CK_FK = '01'
                    <if test="companyList neq null and companyList.size() gt 0">
                      AND MG_CCOMPANYID IN
                      <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
                         #{companyId}
                      </foreach>
                    </if>
-                AND MG_DSTARTDATE <![CDATA[<]]> a.MG_DSTARTDATE
+                   AND MG_CLANGUAGE = 'ja'
+                   AND MG_DSTARTDATE <![CDATA[<]]> a.MG_DSTARTDATE
              ) as PREVIOUSDATE,
              a.MG_DSTARTDATE,
              (
@@ -252,8 +253,8 @@
                             #{companyId}
                         </foreach>
                     </if>
-                    AND MG_CLANGUAGE 		=  'ja'
-                    AND MG_DSTARTDATE		> a.MG_DSTARTDATE
+                    AND MG_CLANGUAGE = 'ja'
+                    AND MG_DSTARTDATE > a.MG_DSTARTDATE
              ) as NEXTDATE,
             (
                 SELECT
