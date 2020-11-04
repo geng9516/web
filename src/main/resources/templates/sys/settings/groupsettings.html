@@ -87,6 +87,11 @@
         <Icon type="logo-buffer"></Icon>
         現在使われていないグループ
       </div>
+      <i-table border class="mb10" v-if="tableDataUnused.length > 0" :columns="columnsUnuse" :data="tableDataUnused" :loading="loading" disabled-hover>
+        <template slot-scope="{ row }" slot="date">
+            <span class="ml15">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
+        </template>
+      </i-table>
       <!-- 該当条件編集画面 start-->
       <Drawer class="tc" placement="right" width="900" v-model="isShow" title="該当条件編集画面" :mask-closable="false">
         <div class="mb10 tr">
@@ -546,6 +551,26 @@
               width: 80,
             }
           ],
+          tableDataUnused:[],
+          columnsUnuse: [
+            {
+              title: '期間',
+              slot: 'date'
+            },
+            {
+              title: 'ID',
+              key: 'mgCgroupidPk',
+              width: 150,
+            },
+            {
+              title: '名称',
+              key: 'mgCgroupdescription',
+            },
+            {
+              title: '法人',
+              key: 'companyName'
+            }
+          ],
           groupInfoColumns: [
             {
               title: '期間',
@@ -737,6 +762,7 @@
               this.dataDate = '現在有効な設定'
             }
             this.tableData = data.validGroupList
+            this.tableDataUnused = data.invalidGroupList
           } catch (error) {
             console.log(error)
           } finally {
@@ -1602,10 +1628,16 @@
 
           // 条件式による定義
           if (this.updateValue.baseFlag === '1') {
-            updateValue.queryConditionList.some(e => {
-              if (!e.columnname) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
-              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { return this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 }) }
-            })
+            if(updateValue.queryConditionList.some(e => {
+              if (!e.columnname) {
+                this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
+                return true
+              }
+              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { 
+                this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
+                return true
+               }
+            })) return
             if (this.sectionPostList_bak.companyId && this.sectionPostList_bak.queryConditions.rowList.length > 0) {
               const queryIdList = updateValue.queryConditionList.map(e => e.id)
               this.sectionPostList_bak.queryConditions.rowList.forEach(e => {
@@ -1625,6 +1657,14 @@
                 updateValue.employList.push({ ...e, delete: true })
               }
             })
+          }
+
+          // 組織・役職選択による定義
+          if (this.updateValue.baseFlag === '2') {
+            if (updateValue.sectionPostList.bossSectionList.length === 0 &&
+                updateValue.sectionPostList.postList.length === 0 &&
+                updateValue.sectionPostList.sectionList.length === 0
+            ) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
           }
           try {
             this.drawLoading = true
