@@ -125,7 +125,9 @@ public class SectionPostLogicImpl implements SectionPostLogic {
         oInsert.setMagCsectionid(poList.get(pnCnt).getSectionId());
         oInsert.setMagCpostid(poList.get(pnCnt).getPostId());
         oInsert.setMagCemployeeid(poList.get(pnCnt).getEmployeeId());
-        return null;
+        oInsert.setMagCmodifieruserid(SecurityUtil.getUserId());
+        oInsert.setMagDmodifieddate(DateUtil.date());
+        return oInsert;
     }
 
     /**
