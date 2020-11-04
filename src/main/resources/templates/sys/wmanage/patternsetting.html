@@ -1025,6 +1025,9 @@
                 } else {
                     this.hiddenAlert();
                 }
+                if(!this.valid_ifnull('日付切替時刻',changeTime)){
+                    return
+                }
                 if (!this.valid_start_end_isnull(dutyDate,planRest1, planRest2, planRest3, planRest4)) {
                     return
                 }

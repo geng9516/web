@@ -836,7 +836,6 @@
                 }
                 return true
             },
-
             //休憩時間は勤務時間の範囲内かどうかをチェックする
             valid_time(item, dutyStart, dutyEnd, restStart, restEnd) {
                 this.hiddenAlert()
@@ -1024,6 +1023,9 @@
                     return
                 } else {
                     this.hiddenAlert();
+                }
+                if(!this.valid_ifnull('日付切替時刻',changeTime)){
+                    return
                 }
                 if (!this.valid_start_end_isnull(dutyDate,planRest1, planRest2, planRest3, planRest4)) {
                     return
