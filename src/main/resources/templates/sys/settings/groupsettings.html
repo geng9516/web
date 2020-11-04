@@ -1552,6 +1552,7 @@
             updateValue.endDate = Utils.formatDate(updateValue.endDate, 'yyyy/mm/dd')
             if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください', duration: 6.5 })
             if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください', duration: 6.5 })
+            if (!updateValue.groupName) return this.$Notice.warning({ title: '注意', desc: '名称を入力してください', duration: 6.5 })
           }
           if (this.sectionPostList_bak.companyId) {
             // 組織・役職選択による定義
