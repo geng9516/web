@@ -221,80 +221,79 @@
 
     <select id="selectHistoryDate" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO">
         SELECT
-          a.MG_DSTARTDATE,
-          (
-              SELECT
-                 MAX(MG_DSTARTDATE)
-              FROM
-                 MAST_GROUP
-              WHERE
-                 MG_CCUSTOMERID	= #{customerCode}
-                 AND MG_CSYSTEMID_CK_FK	= #{systemId}
-                 <if test="companyList!=null and companyList.size>0">
+            (
+                SELECT
+                   MAX(MG_DSTARTDATE)
+                FROM
+                   MAST_GROUP
+                WHERE
+                   MG_CCUSTOMERID = '01'
+                   AND MG_CSYSTEMID_CK_FK = '02'
+                   <if test="companyList neq null and companyList.size() gt 0">
+                     AND MG_CCOMPANYID IN
+                     <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
+                        #{companyId}
+                     </foreach>
+                   </if>
+                AND MG_DSTARTDATE <![CDATA[<]]> a.MG_DSTARTDATE
+             ) as PREVIOUSDATE,
+             a.MG_DSTARTDATE,
+             (
+                 SELECT
+                    MIN(MG_DSTARTDATE)
+                 FROM
+                    MAST_GROUP
+                 WHERE
+                    MG_CCUSTOMERID = '01'
+                    AND MG_CSYSTEMID_CK_FK = '01'
+                    <if test="companyList neq null and companyList.size() gt 0">
+                        AND MG_CCOMPANYID IN
+                        <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
+                            #{companyId}
+                        </foreach>
+                    </if>
+                    AND MG_CLANGUAGE 		=  'ja'
+                    AND MG_DSTARTDATE		> a.MG_DSTARTDATE
+             ) as NEXTDATE,
+            (
+                SELECT
+                   MAX(MG_DSTARTDATE)
+                FROM
+                   MAST_GROUP
+                WHERE
+                   MG_CCUSTOMERID = '01'
+                   AND MG_CSYSTEMID_CK_FK = '01'
+                   <if test="companyList neq null and companyList.size() gt 0">
                     AND MG_CCOMPANYID IN
                     <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
                         #{companyId}
                     </foreach>
-                 </if>
-                 AND MG_CLANGUAGE = 'ja'
-                 AND MG_DSTARTDATE <![CDATA[<]]> a.MG_DSTARTDATE
-          ) as PREVIOUSDATE,
-          (
-            SELECT
-                MIN(MG_DSTARTDATE)
-            FROM
-                MAST_GROUP
-            WHERE
-                MG_CCUSTOMERID = #{customerCode}
-                AND MG_CSYSTEMID_CK_FK = #{systemId}
-                <if test="companyList!=null and companyList.size>0">
-                    AND MG_CCOMPANYID IN
-                    <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
-                        #{companyId}
-                    </foreach>
-                </if>
-                AND MG_CLANGUAGE = 'ja'
-                AND MG_DSTARTDATE > a.MG_DSTARTDATE
-          ) as NEXTDATE,
-          (
-            SELECT
-                MAX(MG_DSTARTDATE)
-            FROM
-               MAST_GROUP
-            WHERE
-               MG_CCUSTOMERID = #{customerCode}
-               AND MG_CSYSTEMID_CK_FK = #{systemId}
-                <if test="companyList!=null and companyList.size>0">
-                    AND MG_CCOMPANYID IN
-                    <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
-                        #{companyId}
-                    </foreach>
-                </if>
-            AND MG_CLANGUAGE = 'ja'
-            AND MG_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
-          ) as VALIDDATE
+                   </if>
+                   AND MG_CLANGUAGE = 'ja'
+                   AND MG_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
+            ) as VALIDDATE
         FROM
-          (
-            SELECT
-                MAX(MG_DSTARTDATE) AS MG_DSTARTDATE
-            FROM
-                MAST_GROUP
-            WHERE
-                MG_CCUSTOMERID = #{customerCode}
-                AND MG_CSYSTEMID_CK_FK = #{systemId}
-                <if test="companyList!=null and companyList.size>0">
+            (
+                SELECT
+                  MAX(MG_DSTARTDATE) AS MG_DSTARTDATE
+                FROM
+                  MAST_GROUP
+                WHERE
+                  MG_CCUSTOMERID = '01'
+                  AND MG_CSYSTEMID_CK_FK = '01'
+                  <if test="companyList neq null and companyList.size() gt 0">
                     AND MG_CCOMPANYID IN
                     <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
                         #{companyId}
                     </foreach>
-                </if>
-                AND MG_CLANGUAGE = 'ja'
-                AND MG_DSTARTDATE <![CDATA[<=]]> #{searchDate}
-          ) a
-          WHERE
-              MG_DSTARTDATE IS NOT NULL
-          ORDER BY
-              MG_DSTARTDATE
+                  </if>
+                  AND MG_CLANGUAGE = 'ja'
+                  AND MG_DSTARTDATE	<![CDATA[<=]]> #{searchDate}
+            ) a
+        WHERE
+          MG_DSTARTDATE IS NOT NULL
+        ORDER BY
+          MG_DSTARTDATE
     </select>
 
     <select id="selectGroupHistoryList" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO">
