@@ -262,4 +262,21 @@
            #{programId}
         )
     </insert>
+
+    <insert id="stamp" parameterType="map">
+        insert into tmg_timepunch (TTP_NID,TTP_CCUSTOMERID,TTP_CCOMPANYID,TTP_CEMPLOYEEID,TTP_DSTARTDATE,TTP_DENDDATE,TTP_CMODIFIERUSERID,
+                                   TTP_DMODIFIEDDATE,TTP_CMODIFIERPROGRAMID,  TTP_DTPDATE, TTP_DTPTIME,TTP_CTPTYPEID)
+        values (
+                   TMG_TIMEPUNCH_SEQ.NEXTVAL,
+                   '01',
+                   '01',
+                   #{empId},
+                   #{minDate},
+                   #{maxDate},
+                   #{empId},
+                   sysdate,
+                   #{programId},TRUNC(SYSDATE, 'DD'),sysdate,#{typeId}
+        )
+    </insert>
+
 </mapper>

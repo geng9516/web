@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,6 +9,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
@@ -35,20 +35,7 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
 
     @Override
     public void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid, String ctpTypeid) {
-        DateTime now = DateUtil.date();
-        TmgTimepunchDO tmgTimepunchDO = new TmgTimepunchDO();
-        tmgTimepunchDO.setTtpCtptypeid(ctpTypeid);
-        tmgTimepunchDO.setTtpCcompanyid(compCode);
-        tmgTimepunchDO.setTtpCcustomerid(custId);
-        tmgTimepunchDO.setTtpCemployeeid(employeeId);
-        tmgTimepunchDO.setTtpCmodifierprogramid(modifierprogramid);
-        tmgTimepunchDO.setTtpDstartdate(SysUtil.transStringToDate(minDate));
-        tmgTimepunchDO.setTtpDenddate(SysUtil.transStringToDate(maxDate));
-        tmgTimepunchDO.setTtpCmodifieruserid(employeeId);
-        tmgTimepunchDO.setTtpDmodifieddate(now);
-        tmgTimepunchDO.setTtpDtpdate(now);
-        tmgTimepunchDO.setTtpDtptime(now);
-        save(tmgTimepunchDO);
+        tmgTriggerService.stamp(ctpTypeid,employeeId,modifierprogramid, SysUtil.transStringToDate(PsConst.MINDATE) , SysUtil.transStringToDate(PsConst.MAXDATE));
     }
 
     @Override
@@ -59,6 +46,7 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         tmgTriggerDO.setTtrCemployeeid(employeeId);
         tmgTriggerDO.setTtrCprogramid(modifierprogramid);
         tmgTriggerDO.setTtrDmodifieddate(DateUtil.date());
+        tmgTriggerDO.setTtrCmodifieruserid(employeeId);
         tmgTriggerDO.setTtrCmodifierprogramid(modifierprogramid);
         tmgTriggerDO.setTtrDstartdate(SysUtil.transStringToDate(minDate));
         tmgTriggerDO.setTtrDenddate(SysUtil.transStringToDate(maxDate));

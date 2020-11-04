@@ -6,8 +6,10 @@ import jp.smartcompany.job.modules.core.mapper.TmgTriggerMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -182,6 +184,11 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
     @Override
     public int buildSQLForInsertTmgTrgger(String custID, String compCode, String userCode, String programId){
        return baseMapper.buildSQLForInsertTmgTrgger(custID, compCode, userCode, programId);
+    }
+
+    @Override
+    public int stamp(String ctpTypeid, String employeeId, String modifierprogramid, Date minDate, Date maxDate) {
+       return baseMapper.stamp(ctpTypeid,employeeId,modifierprogramid, minDate,maxDate);
     }
 
 }

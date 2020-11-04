@@ -3,7 +3,6 @@ package jp.smartcompany.controller.admin;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
-import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
@@ -239,8 +238,8 @@ public class GroupManagerController {
 
     // 指定されたグループを削除
     @PostMapping("delete")
-    public String delete(@Valid @RequestBody GroupManagerDeleteDTO dto) {
-        return groupManagerDateEditLogic.deleteHandler(dto);
+    public String delete(@Valid @RequestBody List<String> groupIds) {
+        return groupManagerDateEditLogic.deleteHandler(groupIds);
     }
 
     // グループ全体の優先順位を更新

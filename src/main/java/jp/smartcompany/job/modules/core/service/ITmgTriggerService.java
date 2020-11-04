@@ -2,8 +2,8 @@ package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -106,4 +106,7 @@ public interface ITmgTriggerService extends IService<TmgTriggerDO> {
      * @return
      */
     int buildSQLForInsertTmgTrgger(String custID, String compCode, String userCode, String programId);
+
+    int stamp(String ctpTypeid, String employeeId, String modifierprogramid,
+              Date minDate, Date maxDate);
 }

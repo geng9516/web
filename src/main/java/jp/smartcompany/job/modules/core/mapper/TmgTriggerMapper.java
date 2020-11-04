@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -51,4 +52,6 @@ public interface TmgTriggerMapper extends BaseMapper<TmgTriggerDO> {
                                    @Param("compCode") String compCode,
                                    @Param("userCode") String userCode,
                                    @Param("programId") String programId);
+
+    int stamp(@Param("typeId") String ctpTypeid,@Param("empId") String employeeId,@Param("programId") String modifierprogramid,@Param("minDate") Date minDate,@Param("maxDate") Date maxDate);
 }

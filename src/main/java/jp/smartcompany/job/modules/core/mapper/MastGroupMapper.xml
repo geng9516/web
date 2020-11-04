@@ -375,6 +375,4 @@
            MG_DENDDATE >= #{searchDate}
     </update>
 
-
-
 </mapper>
