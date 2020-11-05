@@ -285,7 +285,7 @@
       <!-- 該当条件編集画面 end-->
 
       <!--  条件式による定義 选择group和 役職 start-->
-      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
+      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択" :mask-closable="false"
         v-model="showGroupOrPositionDrawer">
         <span v-show="curdisplayPanel === 'QPOST'">
           <div class="titlenorm mb5">
@@ -1426,6 +1426,7 @@
             })
           })
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
+          this._treeData = Utils.deepClone(this.treeData)
         },
         deleteSectionTree() {
           this.$Modal.confirm({
@@ -1470,6 +1471,7 @@
             selectedBase = selectedBase.concat(e.sectionId)
           })
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
+          this._treeData = Utils.deepClone(this.treeData)
         },
         async addPostTree() {
           // console.log(this.$refs.postTable.getSelection())
@@ -1479,6 +1481,7 @@
               return {
                 id: e.mapId,
                 companyId: '01',
+                delete: false,
                 title: `【${e.mapCpostidCk}】 ${e.mapCpostname}`,
                 postId: e.mapCpostidCk,
                 isPost: true, // 役職,
@@ -1495,6 +1498,7 @@
                   return {
                     id: t.mapId,
                     companyId: '01',
+                    delete: false,
                     sectionId: e.sectionId,
                     title: `【${t.mapCpostidCk}】 ${t.mapCpostname}`,
                     postId: t.mapCpostidCk,
