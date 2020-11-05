@@ -693,6 +693,7 @@
         sectionInTreeData(data, father) {
           const _this = this
           data.forEach((e, i) => {
+            e.searchWords = ''
             if(e.title.indexOf(this.searchDept) > -1 ) {
               if(father) father.expand = true
               e.searchWords = this.searchDept
