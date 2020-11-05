@@ -8,6 +8,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.component.dto.*;
 import jp.smartcompany.admin.component.logic.BaseSectionLogic;
 import jp.smartcompany.admin.component.logic.QueryConditionLogic;
@@ -444,6 +445,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (StrUtil.equals(baseFlag,BASE_FLG_EMPLOYEES)) {
             assembleEmploy(sectionPostDTO,dto.getEmployList());
         }
+
         // 基点組織による定義の情報取得
         BaseSectionDTO baseSectionDTO = new BaseSectionDTO();
         assembleBaseSectionList(baseSectionDTO,dto.getBaseSectionList(),startDate,endDate,groupId,belowSingle);
@@ -962,8 +964,11 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (CollUtil.isNotEmpty(poList)) {
             for (int i = 0; i < poList.size(); i++) {
                 // データベースへ更新(新規登録)
-                saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
-                        psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+                SectionPostRowDTO tempItem = poList.get(i);
+                if (iMastGroupsectionpostmappingService.getById(tempItem.getId()) ==null) {
+                    saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
+                            psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+                }
             }
         }
         if (CollUtil.isNotEmpty(saveList)){
@@ -991,10 +996,13 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (CollUtil.isNotEmpty(poList)) {
             for (int i = 0; i < poList.size(); i++) {
                 // IDの無いもの(DBに存在しないデータ)のみ、更新する
-                if (isAdd) {
-                    // データベースへ更新(新規登録)
-                    saveList.add(sectionPostLogic.insertSection(poList, psCustomerId,
-                            psSystem, psGroup, ptStartDate, ptEndDate, i));
+                SectionPostRowListDTO tempItem = poList.get(i);
+                if (isAdd || !tempItem.getDelete()) {
+                    if (iMastGroupsectionpostmappingService.getById(tempItem.getId()) ==null) {
+                        // データベースへ更新(新規登録)
+                        saveList.add(sectionPostLogic.insertSection(poList, psCustomerId,
+                                psSystem, psGroup, ptStartDate, ptEndDate, i));
+                    }
                 }
             }
         }
@@ -1023,9 +1031,14 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         if (CollUtil.isNotEmpty(poList)) {
             for (int i = 0; i < poList.size(); i++) {
                 // IDの無いもの(DBに存在しないデータ)のみ、更新する
-                if (isAdd) {
-                    saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
-                            psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+                SectionPostRowDTO tempItem = poList.get(i);
+                // 如果group是新增的或者此项不是删除项
+                if (isAdd || !tempItem.getDelete()) {
+                    // 如果还未添加过才添加
+                    if (iMastGroupsectionpostmappingService.getById(tempItem.getId()) ==null) {
+                        saveList.add(sectionPostLogic.insertSectionPost(poList, psTypeId,
+                                psCustomerId, psSystem, psGroup, ptStartDate, ptEndDate, i));
+                    }
                 }
             }
         }
@@ -1147,7 +1160,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                     ent.setMgbsCmodifieruserid(session.getLoginUser());    // 更新者
                     ent.setMgbsDmodifieddate(now);
                     // IDの無いもの(DBに存在しないデータ)は追加する
-                    if (ent.getMgbsId() == null) {
+                    if (ent.getMgbsId() == null || (ent.getMgbsId()!=null && iMastGroupbasesectionService.getById(ent.getMgbsId()) == null)) {
                         // データベースへ更新(新規登録)
 //                    ent.setVersionno(1L);
                         saveRows.add(ent);
