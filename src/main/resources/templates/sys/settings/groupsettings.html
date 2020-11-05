@@ -338,7 +338,7 @@
               </i-col>
             </Row>
             <!-- 这颗树在基点组织时，需要开启checkbox相关 -->
-            <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" empty-text="所属データなし"
+            <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" empty-text="所属データなし" :render="renderSearchTree"
               :show-checkbox="curdisplayPanel === 'base'" :check-strictly="curdisplayPanel === 'base'"
               :check-directly="curdisplayPanel === 'base'" ref="selectTree"></Tree>
           </i-col>
@@ -873,7 +873,6 @@
             const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
             this.treeData = this.convertTreeData(data)
             this.treeData[0].expand = true
-            this._treeData = Utils.deepClone(this.treeData)
             this.searchEmpData = []
 
           } else {
@@ -1078,7 +1077,6 @@
               const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
               this.treeData = this.convertTreeData(data)
               this.treeData[0].expand = true
-              this._treeData = Utils.deepClone(this.treeData)
               return
             }
             // this.curdisplayPanel
@@ -1244,22 +1242,15 @@
           this.poptipStyle.display = 'none'
         },
         handleSearchDept: Debounce(function () {
-          if (!this.searchDept) {
-            this.treeData = this._treeData
-            return
-          }
-
           this.treeDataForSearch = []
-          this.sectionInTreeData(this._treeData)
-          this.treeData = this.treeDataForSearch
+          this.sectionInTreeData(this.treeData)
+          this.treeData = Utils.deepClone(this.treeData)
         }),
         sectionInTreeData(data) {
           const _this = this
-          // todo: 这里还是应该存路径解
+          // 这里再有已勾选项时会消失，所以只应该打上记号
           data.forEach((e, i) => {
-            if (e.title.indexOf(_this.searchDept) > -1) {
-              _this.treeDataForSearch = _this.treeDataForSearch.concat({ ...e, children: [] })
-            }
+            e.searchWords = this.searchDept
             if (e.children && e.children.length > 0) {
               _this.sectionInTreeData(e.children);
             }
@@ -1385,6 +1376,27 @@
           }
           return h('span', data.title)
         },
+        renderSearchTree(h, { root, node, data }) {
+          const searchWords = data.searchWords
+          if(searchWords && data.title.indexOf(searchWords) > -1) {
+            const title = data.title.split(searchWords)
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', title[0]),
+              h('span',{
+                style: {
+                    color: 'var(--row-label-primary)',
+                    fontWeight: 'bold'
+                  },},searchWords),
+              h('span', title[1])
+            ])
+          }
+          return h('span', data.title)
+        },
         async addBaseTree(i) {
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
@@ -1395,7 +1407,6 @@
           const selectedBase = this.baseTreeData[i].children.map(e => e.sectionId)
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
           this.treeData[0].expand = true
-          this._treeData = Utils.deepClone(this.treeData)
         },
         deleteBasetree() {
           this.$Modal.confirm({
@@ -1426,7 +1437,6 @@
             })
           })
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
-          this._treeData = Utils.deepClone(this.treeData)
         },
         deleteSectionTree() {
           this.$Modal.confirm({
@@ -1471,7 +1481,6 @@
             selectedBase = selectedBase.concat(e.sectionId)
           })
           this.treeData = this.convertTreeData(data, selectedBase, 'sectionId')
-          this._treeData = Utils.deepClone(this.treeData)
         },
         async addPostTree() {
           // console.log(this.$refs.postTable.getSelection())
