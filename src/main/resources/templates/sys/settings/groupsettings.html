@@ -867,6 +867,7 @@
           if (!isByDept && !this.searchEmpt.trim()) {
             return this.$Notice.warning({ title: '注意', desc: '検索文字列を入力してください', duration: 6.5 })
           }
+          this.searchDept = ''
           if (isByDept) {
             this.curdisplayPanel = 'searchDept'
             this.showGroupOrPositionDrawer = true
@@ -1060,6 +1061,7 @@
             where: row._index,
             which: column.slot
           }
+          this.searchDept = ''
           if (this.poptipType === 'displayvalue') {
             if (this.curdisplayPanel === 'QPOST') {
               this.showGroupOrPositionDrawer = true
@@ -1398,6 +1400,7 @@
           return h('span', data.title)
         },
         async addBaseTree(i) {
+          this.searchDept = ''
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
           this.selectTreeType = 'base'
@@ -1424,6 +1427,7 @@
           })
         },
         async openSectionTree() {
+          this.searchDept = ''
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
           this.selectTreeType = 'section'
@@ -1470,6 +1474,7 @@
           })
         },
         async openBossTree() {
+          this.searchDept = ''
           this.showGroupOrPositionDrawer = true
           this.curdisplayPanel = 'base'
           this.selectTreeType = 'boss'
