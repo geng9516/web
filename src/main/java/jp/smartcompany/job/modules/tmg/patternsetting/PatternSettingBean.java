@@ -386,7 +386,7 @@ public class PatternSettingBean {
             //翌日勤務パターン変更時間
             tmgPatternInsertDTO.setChangeTime(pstParam.getDateChangeTime());
             //翌日変更する勤務パターン
-            tmgPatternInsertDTO.setNextptn(pstParam.getNextPatternId());
+            tmgPatternInsertDTO.setNextptn(pstParam.getNextPatternId()==null?"":pstParam.getNextPatternId());
             //MIN DATE
             tmgPatternInsertDTO.setMinDate(PatternSettingConst.SQL_MIN_DATE);
             //MAX DATE
@@ -933,7 +933,7 @@ public class PatternSettingBean {
                             // バイト数
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_COMPANYID_BYTE));
                         }
-                        logger.warn("-------------->companyid:" + sColumn);
+                        //logger.warn("-------------->companyid:" + sColumn);
                         // 項目をセット
                         pstParam.setCompanyId(sColumn);
 
@@ -1223,7 +1223,7 @@ public class PatternSettingBean {
             // ▼▼ 翌日勤務パターン存在チェック Start ▼▼
             if (0 == lMsgChild.size() && (null != pstParam.getNextPatternId() && !this.isPatternId(pstParam.getNextPatternId()))) {
                 // エラーがない場合は、DBに存在する勤務パターンかどうかチェックする
-                lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_IS_NEXTPTN));
+               // lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_IS_NEXTPTN));
             }
             // ▲▲ 翌日勤務パターン存在チェック End ▲▲
 
