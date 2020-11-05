@@ -450,12 +450,12 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         BaseSectionDTO baseSectionDTO = new BaseSectionDTO();
         assembleBaseSectionList(baseSectionDTO,dto.getBaseSectionList(),startDate,endDate,groupId,belowSingle);
 
-        // 更新前妥当性チェック
-        // クエリ作成処理(組織・役職結合式)
-        sectionPostLogic.createQuery(customerId,systemId,groupId,startDate,endDate,sectionPostDTO.getCompanyList(),"01");
-        // グループ判定結果クエリ組み立て処理
-        queryConditionLogic.createQueryCondition(
-                customerId, "01", systemId, groupId, startDate, queryConditionDTO.getRowList());
+//        // 更新前妥当性チェック
+//        // クエリ作成処理(組織・役職結合式)
+//        sectionPostLogic.createQuery(customerId,systemId,groupId,startDate,endDate,sectionPostDTO.getCompanyList(),"01");
+//        // グループ判定結果クエリ組み立て処理
+//        queryConditionLogic.createQueryCondition(
+//                customerId, "01", systemId, groupId, startDate, queryConditionDTO.getRowList());
 
         // 条件式妥当性チェック(条件式設定のみ)
         boolean checkFlag = isQueryCondition(baseFlag,queryConditionDTO.getRowList());
