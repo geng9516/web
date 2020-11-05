@@ -83,7 +83,7 @@
               </i-col>
             </Row>
             <div style="position: relative;">
-              <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+              <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree" :render="renderSearchTree"
                 empty-text="所属データなし"></Tree>
               <Spin size="large" fix v-if="empDeptLoading"></Spin>
             </div>
@@ -348,8 +348,6 @@
           searchDept: '',
           tableData: [],
           treeData: [],
-          treeDataForSearch: [],
-          _treeData: [],
           passwordSetting: [{}, {}, {}, {}, {}],
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -404,7 +402,6 @@
             const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
             this.treeData = this.convertTreeData(data)
             this.treeData[0].expand = true
-            this._treeData = Utils.deepClone(this.treeData)
           } catch (error) {
             return
           } finally {
@@ -690,23 +687,18 @@
           }
         },
         handleSearchDept: Debounce(function () {
-          if(!this.searchDept) {
-            this.treeData = this._treeData
-            return
-          }
-
-          this.treeDataForSearch = []
-          this.sectionInTreeData(this._treeData)
-          this.treeData = this.treeDataForSearch
+          this.sectionInTreeData(this.treeData)
+          this.treeData = Utils.deepClone(this.treeData)
         }),
-        sectionInTreeData(data) {
+        sectionInTreeData(data, father) {
           const _this = this
           data.forEach((e, i) => {
-            if (e.title.indexOf(_this.searchDept) > -1) {
-              _this.treeDataForSearch = _this.treeDataForSearch.concat({...e, children:[]})
+            if(e.title.indexOf(this.searchDept) > -1 ) {
+              if(father) father.expand = true
+              e.searchWords = this.searchDept
             }
             if (e.children && e.children.length > 0) {
-              _this.sectionInTreeData(e.children);
+              _this.sectionInTreeData(e.children, e);
             }
           })
         },
@@ -717,6 +709,27 @@
           } else {
             this.detailData[disableName] = false
           }
+        },
+        renderSearchTree(h, { root, node, data }) {
+          const searchWords = data.searchWords
+          if(searchWords && data.title.indexOf(searchWords) > -1) {
+            const title = data.title.split(searchWords)
+            return h('span', {
+              style: {
+                display: 'inline-block',
+                width: '100%'
+              }
+            }, [
+              h('span', title[0]),
+              h('span',{
+                style: {
+                    color: 'var(--row-label-primary)',
+                    fontWeight: 'bold'
+                  },},searchWords),
+              h('span', title[1])
+            ])
+          }
+          return h('span', data.title)
         },
         convertTreeData(treeData, fristDisable) {
           if (!treeData) {

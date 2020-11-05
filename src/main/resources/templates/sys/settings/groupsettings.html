@@ -711,8 +711,6 @@
           postListSelected: [],
           clickedCell: {},
           tableData: [{}],
-          _treeData: [],
-          treeDataForSearch: [],
           searchDept: '',
           queryconditionsList: [],
           queryconditionsList_bak: [],
@@ -1244,17 +1242,19 @@
           this.poptipStyle.display = 'none'
         },
         handleSearchDept: Debounce(function () {
-          this.treeDataForSearch = []
           this.sectionInTreeData(this.treeData)
           this.treeData = Utils.deepClone(this.treeData)
         }),
-        sectionInTreeData(data) {
+        sectionInTreeData(data, father) {
           const _this = this
           // 这里再有已勾选项时会消失，所以只应该打上记号
           data.forEach((e, i) => {
-            e.searchWords = this.searchDept
+            if(e.title.indexOf(this.searchDept) > -1 ) {
+              if(father) father.expand = true
+              e.searchWords = this.searchDept
+            }
             if (e.children && e.children.length > 0) {
-              _this.sectionInTreeData(e.children);
+              _this.sectionInTreeData(e.children, e);
             }
           })
         },
