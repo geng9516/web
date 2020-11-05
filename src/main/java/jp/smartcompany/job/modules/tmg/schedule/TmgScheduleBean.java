@@ -83,6 +83,11 @@ public class TmgScheduleBean {
     private final String Cs_MGD_HOLFLG_0 = "TMG_HOLFLG|0";
 
     /**
+     * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、`休日フラグ`を表すマスターコードです
+     */
+    private final String Cs_MGD_HOLFLG = "TMG_HOLFLG";
+
+    /**
      * 日付形式2
      */
     private static final String Cs_FORMAT_SLASH = "/";
@@ -1348,7 +1353,7 @@ public class TmgScheduleBean {
             boolean bNoWorking = isNoWorkingId(monthlyScheduleEmpInfoDTO.getWorkId());
             //logger.info("nopen:" + monthlyScheduleEmpInfoDTO.getNopen() + " ---- nclose:" + monthlyScheduleEmpInfoDTO.getNclose());
             //[勤怠]日別情報を更新する
-            iTmgScheduleService.insertTmgDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, bClearResult, Cs_MGD_HOLFLG_0, monthlyScheduleEmpInfoDTO.getWorkId(),
+            iTmgScheduleService.insertTmgDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, bClearResult, Cs_MGD_HOLFLG, monthlyScheduleEmpInfoDTO.getWorkId(),
                     monthlyScheduleEmpInfoDTO.getNopen() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNopen(), monthlyScheduleEmpInfoDTO.getNclose() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNclose(), bNoWorking, monthlyScheduleEmpInfoDTO.getBussinessTripid(), monthlyScheduleEmpInfoDTO.getComment(), monthlyUScheduleEditParaDTO.getTargetUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd(), _targetCompCode, _targetCustCode, _loginLanguageCode);
 
             // 複数休憩分ループする
