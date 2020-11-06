@@ -142,7 +142,7 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '1'" label="サイトID">
-          <i-input v-model="updateValue.siteId" placeholder="サイトID" :disbaled="updateValue.isAdd"></i-input>
+          <i-input v-model="updateValue.siteId" placeholder="サイトID" :disabled="!updateValue.isAdd"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '1'" label="サイトの名称(日本語)">
@@ -183,20 +183,16 @@
           </i-select>
         </form-item>
 
-        <form-item v-if="updateValue._type === '3'" label="登録モード">
-          <i-input v-model="updateValue.oldPassword"></i-input>
-        </form-item>
-
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションID">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.appId" :disabled="!updateValue.isAdd"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションの名称(日本語)">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.name"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションURL">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.url"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面ID">
@@ -211,7 +207,7 @@
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue._type === '3'" label="使用レイアウト">
+        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="使用レイアウト">
           <i-select v-model="updateValue.templateId" placeholder="選択ください">
             <i-option>&nbsp;</i-option>
             <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname"
@@ -220,8 +216,17 @@
           </i-select>
         </form-item>
 
+        <form-item v-if="updateValue._type === '2'" label="システム">
+          <i-select v-model="updateValue.systemId" placeholder="選択ください">
+            <i-option label="SmartCompany" value="01"></i-option>
+          </i-select>
+        </form-item>
+
         <form-item v-if="updateValue._type === '3' || updateValue._type === '5'" label="検索対象範囲適用種別">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-select v-model="updateValue.datapermission" placeholder="選択ください">
+            <i-option label="アプリケーションでチェック" value="0"></i-option>
+            <i-option label="起動時にチェック" value="1"></i-option>
+          </i-select>
         </form-item>
 
         <form-item v-if="updateValue._type === '1' || updateValue._type === '3'" label="ドメイン">
@@ -344,11 +349,10 @@
         },
         handleBtn(row, type, isAdd) {
           if (type === '0') {
-            this.updateValue = row
+            this.updateValue = {...row}
           }
           if (type === '1') {
             if (isAdd) {
-              console.log(row)
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
                 systemId: '01',
@@ -358,19 +362,31 @@
                 appautoload: '0'
               }
             } else {
-              this.updateValue = row
+              this.updateValue = {...row}
             }
           }
 
           if (type === '3') {
-            if (type === '0') {
-              return 'アプリ編集'
+            if(isAdd) {
+              this.updateValue = {
+                useSubAppFlag:'00',
+                templateId: 'ContentSearchResultEmp',
+                systemId: '01',
+              }
+            } else {
+              this.updateValue = {...row}
             }
-            return '画面追加'
           }
 
           if (type === '2') {
-            return 'ダイアログアプリ編集'
+            if(isAdd) {
+              this.updateValue = {
+                templateId: 'ContentSearchResultEmp',
+                systemId: '01'
+              }
+            } else {
+              this.updateValue = {...row}
+            }
           }
 
           if (type === '5') {
