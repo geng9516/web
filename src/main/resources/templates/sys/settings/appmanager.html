@@ -3,6 +3,7 @@
 
 <head th:replace="layout/header::common_header(title='アプリケーション設定',cssPaths='/pages/content.min.css')">
 </head>
+
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <!-- 菜单导航栏 -->
@@ -24,9 +25,9 @@
     </div>
     <div class="content_body">
       <Alert v-show="this.updateList.length > 0" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
-        :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading"
-        ref="table">
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+        :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+        :loading="loading" ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
         type: "1" サイト   <Icon type="md-compass" />
         type: "3" アプリケーション ml10 <Icon type="md-desktop" />
@@ -68,52 +69,58 @@
           <span v-if="row.type === '1'" style="color: var(--row-label-primary)">
             <Icon type="md-compass" class="mr5"></Icon>サイト
           </span>
-          <span v-if="row.type === '3'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '3'" style="color: var(--row-label-primary)">
             <Icon type="md-desktop" class="mr5"></Icon>アプリケーション
           </span>
-          <span v-if="row.type === '4'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '4'" style="color: var(--row-label-primary)">
             <Icon type="md-easel" class="mr5"></Icon>サブアプリケーション
           </span>
-          <span v-if="row.type === '2'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '2'" style="color: var(--row-label-primary)">
             <Icon type="ios-photos" class="mr5"></Icon>ダイアログアプリケーション
           </span>
-          <span v-if="row.type === '5'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '5'" style="color: var(--row-label-primary)">
             <Icon type="md-browsers" class="mr5"></Icon>画面
           </span>
-          <span v-if="row.type === '6'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '6'" style="color: var(--row-label-primary)">
             <Icon type="md-disc" class="mr5"></Icon>機能ボタン
           </span>
         </template>
 
         <template slot-scope="{ row }" slot="action">
           <span v-if="row.type === '0'" style="color: var(--row-label-primary)">
-            <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '0')">トップページ編集</i-button>
-            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '1', true)">サイト追加</i-button>
-            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '2', true)">ダイアログアプリ追加</i-button>
+            <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '0')">トップページ編集
+            </i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '1', true)">サイト追加
+            </i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '2', true)">ダイアログアプリ追加
+            </i-button>
           </span>
           <span v-if="row.type === '1'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '1')">サイト編集</i-button>
-            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '3', true)">アプリ追加</i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '3', true)">アプリ追加
+            </i-button>
             <i-button type="error" ghost icon="md-trash" size="small">サイト削除</i-button>
           </span>
-          <span v-if="row.type === '3'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '3'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '3')">アプリ編集</i-button>
             <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '5', true)">画面追加</i-button>
             <i-button type="error" ghost icon="md-trash" size="small">アプリ削除</i-button>
           </span>
-          <span v-if="row.type === '4'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '4'" style="color: var(--row-label-primary)">
             サブアプリケーション
           </span>
-          <span v-if="row.type === '2'"style="color: var(--row-label-primary)">
-            <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '2')">ダイアログアプリ編集</i-button>
+          <span v-if="row.type === '2'" style="color: var(--row-label-primary)">
+            <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '2')">ダイアログアプリ編集
+            </i-button>
             <i-button type="error" ghost icon="md-trash" size="small">ダイアログアプリ削除</i-button>
           </span>
-          <span v-if="row.type === '5'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '5'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '5')">画面編集</i-button>
-            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '6', true)">ボタン追加</i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '6', true)">ボタン追加
+            </i-button>
             <i-button type="error" ghost icon="md-trash" size="small">画面削除</i-button>
           </span>
-          <span v-if="row.type === '6'"style="color: var(--row-label-primary)">
+          <span v-if="row.type === '6'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '6')">ボタン編集</i-button>
             <i-button type="error" ghost icon="md-trash" size="small">ボタン削除</i-button>
           </span>
@@ -124,117 +131,118 @@
     <Modal class="tc" v-model="isShow" title="対象範囲設定" width="650" :mask-closable="false" @on-ok="joinUpdate">
       <Alert class="error-info tl">入力内容は登録するまで保持されます。</Alert>
       <i-form :label-width="200" :model="updateValue" class="tl" style="margin: 10px 10px 0;">
-        <form-item v-if="updateValue.type === '0'" label="ホームページURL">
-            <i-input v-model="updateValue.url" placeholder="ホームページURL"></i-input>
+        <form-item v-if="updateValue._type === '0'" label="ホームページURL">
+          <i-input v-model="updateValue.url" placeholder="ホームページURL"></i-input>
         </form-item>
         <!-- 单法人 -->
-        <form-item v-if="updateValue.type === '0'" label="システム">
+        <form-item v-if="updateValue._type === '0'" label="システム">
           <i-select v-model="updateValue.systemId" placeholder="選択ください">
             <i-option label="SmartCompany" value="01"></i-option>
-           </i-select>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="サイトID">
-          <i-input v-model="updateValue.siteId" placeholder="サイトID" :disbaled="row.isAdd"></i-input>
+        <form-item v-if="updateValue._type === '1'" label="サイトID">
+          <i-input v-model="updateValue.siteId" placeholder="サイトID" :disbaled="updateValue.isAdd"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="サイトの名称(日本語)">
+        <form-item v-if="updateValue._type === '1'" label="サイトの名称(日本語)">
           <i-input v-model="updateValue.name" placeholder="サイトの名称(日本語)"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="サイトURL">
+        <form-item v-if="updateValue._type === '1'" label="サイトURL">
           <i-input v-model="updateValue.url" placeholder="サイトURL"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="サイト画像URL">
+        <form-item v-if="updateValue._type === '1'" label="サイト画像URL">
           <i-input v-model="updateValue.icon" placeholder="サイト画像URL"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="サイトの説明(日本語)">
+        <form-item v-if="updateValue._type === '1'" label="サイトの説明(日本語)">
           <i-input v-model="updateValue.remark" placeholder="サイトの説明(日本語)"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="使用レイアウト">
+        <form-item v-if="updateValue._type === '1'" label="使用レイアウト">
           <i-select v-model="updateValue.templateId" placeholder="選択ください">
-            <i-option>&nbsp;</i-option>
-             <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname" :value="item.matCtemplateid">
-             </i-option>
-           </i-select>
+            <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname"
+              :value="item.matCtemplateid">
+            </i-option>
+          </i-select>
         </form-item>
-        <form-item v-if="updateValue.type === '1'" label="デフォルト検索対象者">
+        <form-item v-if="updateValue._type === '1'" label="デフォルト検索対象者">
           <i-select v-model="updateValue.defaultSearchob" placeholder="選択ください">
             <i-option label="先頭の部下（評価対象者）" value="1"></i-option>
             <i-option label="ログインユーザ" value="2"></i-option>
             <i-option label="デフォルトなし" value="3"></i-option>
-           </i-select>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="適用基準日">
+        <form-item v-if="updateValue._type === '1'" label="適用基準日">
           <i-select v-model="updateValue.criterialDate" placeholder="選択ください">
             <i-option label="指定基準日" value="1"></i-option>
             <i-option label="システム日付" value="2"></i-option>
-           </i-select>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '3'" label="登録モード">
+        <form-item v-if="updateValue._type === '3'" label="登録モード">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '2' || updateValue.type === '3'" label="アプリケーションID">
+        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションID">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '2' || updateValue.type === '3'" label="アプリケーションの名称(日本語)">
+        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションの名称(日本語)">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '2' || updateValue.type === '3'" label="アプリケーションURL">
+        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションURL">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '5'" label="画面ID">
+        <form-item v-if="updateValue._type === '5'" label="画面ID">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '5'" label="画面の名称(日本語)">
+        <form-item v-if="updateValue._type === '5'" label="画面の名称(日本語)">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '5'" label="画面URL">
+        <form-item v-if="updateValue._type === '5'" label="画面URL">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '3'" label="使用レイアウト">
+        <form-item v-if="updateValue._type === '3'" label="使用レイアウト">
           <i-select v-model="updateValue.templateId" placeholder="選択ください">
             <i-option>&nbsp;</i-option>
-             <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname" :value="item.matCtemplateid">
-             </i-option>
-           </i-select>
+            <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname"
+              :value="item.matCtemplateid">
+            </i-option>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '3' || updateValue.type === '5'" label="検索対象範囲適用種別">
+        <form-item v-if="updateValue._type === '3' || updateValue._type === '5'" label="検索対象範囲適用種別">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1' || updateValue.type === '3'" label="ドメイン">
+        <form-item v-if="updateValue._type === '1' || updateValue._type === '3'" label="ドメイン">
           <i-select v-model="updateValue.domainId" placeholder="選択ください">
             <i-option label="従業員" value="01"></i-option>
             <i-option label="組織" value="02"></i-option>
-           </i-select>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '1'" label="アプリケーション自動起動">
+        <form-item v-if="updateValue._type === '1'" label="アプリケーション自動起動">
           <i-select v-model="updateValue.appautoload" placeholder="選択ください">
             <i-option label="自動起動しない" value="0"></i-option>
             <i-option label="自動起動する" value="1"></i-option>
-           </i-select>
+          </i-select>
         </form-item>
 
-        <form-item v-if="updateValue.type === '6'" label="ボタンID">
+        <form-item v-if="updateValue._type === '6'" label="ボタンID">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue.type === '6'" label="ボタンの名称(日本語)">
+        <form-item v-if="updateValue._type === '6'" label="ボタンの名称(日本語)">
           <i-input v-model="updateValue.oldPassword"></i-input>
         </form-item>
       </i-form>
@@ -252,10 +260,10 @@
           editLoading: false,
           needChange: '',
           psSite: Utils.getUrlParam(location.href, 'psSite'),
-          psApp: Utils.getUrlParam(location.href,'psApp'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
           updateValue: {},
-          updateList:[],
-          columns:[
+          updateList: [],
+          columns: [
             {
               title: 'アプリケーション名',
               minWidth: 400,
@@ -293,10 +301,10 @@
       async created() {
         this.getConditionsList()
         this.getTableData()
-        window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        window.addEventListener('scroll', this.handleScroll, { passive: true })
       },
-        beforeDestroy() {
-            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+      beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll, { passive: true })
       },
       computed: {
         tableHeadFixed() {
@@ -308,7 +316,7 @@
         async getTableData() {
           const OPTS = { ...this.opts }
           OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
+          OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
           Object.keys(OPTS).forEach(key => {
             if (OPTS[key] === '0') {
               delete OPTS[key]
@@ -335,42 +343,44 @@
 
         },
         handleBtn(row, type, isAdd) {
-          if(type === '0') {
+          if (type === '0') {
             this.updateValue = row
           }
-          if(row.type === '1') {
-            if(isAdd) {
+          if (type === '1') {
+            if (isAdd) {
+              console.log(row)
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
-                systemId:'01',
-                defaultSearchob:'1',
+                systemId: '01',
+                defaultSearchob: '1',
                 criterialDate: '1',
                 domainId: '01',
                 appautoload: '0'
               }
+            } else {
+              this.updateValue = row
             }
-            this.updateValue = row
           }
 
-          if(row.type === '3') {
-            if(type === '0') {
+          if (type === '3') {
+            if (type === '0') {
               return 'アプリ編集'
             }
             return '画面追加'
           }
 
-          if(row.type === '2') {
+          if (type === '2') {
             return 'ダイアログアプリ編集'
           }
 
-          if(row.type === '5') {
-            if(type === '0') {
+          if (type === '5') {
+            if (type === '0') {
               return '画面編集'
             }
             return 'ボタン追加'
           }
           this.updateValue.isAdd = isAdd
-          this.updateValue.type = type
+          this.updateValue._type = type
           this.isShow = true
         },
         async update() {
@@ -380,7 +390,7 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              if(this.updateList.length === 0) {
+              if (this.updateList.length === 0) {
                 return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を変更しでください。', duration: 6.5 })
               }
               this.loading = true
@@ -409,4 +419,5 @@
     })
   </script>
 </body>
+
 </html>
