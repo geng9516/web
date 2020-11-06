@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.searchrangemanager.logic.impl;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateField;
@@ -13,6 +14,7 @@ import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDate
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
@@ -37,6 +39,7 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     private final GroupAppManagerMainLogic groupAppManagerMainLogic;
     private final IHistGroupdatapermissionService histGroupdatapermissionService;
     private final IMastDatapermissionService mastDatapermissionService;
+    private final LRUCache<Object,Object> lruCache;
 
     public static final String REQ_SCOPE_NAME = "searchRangeTableDtoList";
 
@@ -118,6 +121,9 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
             }
         }
 
+        lruCache.remove(ScCacheUtil.APP_SEARCH_RANGE_INFO);
+        lruCache.remove(ScCacheUtil.GHM_DATA_PERMISSION_DEFS);
+        lruCache.remove(ScCacheUtil.GHM_DATA_SECTION_POST);
 
     }
 

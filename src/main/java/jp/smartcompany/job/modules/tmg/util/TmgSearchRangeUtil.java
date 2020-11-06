@@ -73,37 +73,6 @@ public class TmgSearchRangeUtil  {
         }
     }
 
-
-    /**
-     * 検索対象範囲EXISTS句取得処理
-     * @param pSession
-     * @param psCompanyColumn
-     * @return
-     * @throws Exception
-     */
-    public String getExistsQueryOrganisation(HttpSession pSession, String psCompanyColumn, String psSectionColumn) throws Exception {
-        // 動作フレームワーク判定
-        // V3の処理
-        String frameVersion = getFrameVersion();
-        if (frameVersion.equals("3")) {
-            // 検索対象範囲情報を取得してEXISTS句を組み立てる
-            //return createExistsQuery(pRequestHash, pSession, psCompanyColumn, psEmployeeColumn);
-            return " and 1 = 0 ";//V3のときは適当
-        }
-        // V4の処理
-        else {
-            // パラメータの法人、職員番号カラムからユーザIDカラムを取得する
-            //String sUserIdColumn = getUserIdColumn(psEmployeeColumn);
-
-            // 検索対象範囲APIを呼び出してEXISTS句を取得する
-            String sExists = psBuildTargetSql.getExistsQueryOrganisation(psCompanyColumn, psSectionColumn);
-            // 再取得判定用にEXISTS句を保存
-            pSession.setAttribute(TmgReferList.SESSION_KEY_SEARCHRANGE, sExists);
-
-            return sExists;
-        }
-    }
-
     /**
      * 検索対象範囲EXISTS句取得処理
      * @param psDBBean
@@ -212,37 +181,37 @@ public class TmgSearchRangeUtil  {
         return (String)psDBBean.getRequestHash().get("PageName");
     }
 
-    /**
-     * 組織ツリーデータのセッションキーを作成
-     * @param psDate
-     * @return
-     */
-    public String getOrgTreeCondition(String psDate, PsDBBean psDBBean) {
-        // V3の処理
-        if (getFrameVersion().equals("3")) {
-            return psDate;
-        }
-        // V4の処理
-        else {
-            return psDate + "_" + getCurrentApp(psDBBean);
-        }
-    }
-
-    /**
-     * 部局ツリーデータのセッションキーを作成
-     * @param psDate
-     * @return
-     */
-    public String getDivisionTreeCondition(String psDate, PsDBBean psDBBean) {
-        // V3の処理
-        if (getFrameVersion().equals("3")) {
-            return psDate;
-        }
-        // V4の処理
-        else {
-            return psDate + "_" + getCurrentApp(psDBBean);
-        }
-    }
+//    /**
+//     * 組織ツリーデータのセッションキーを作成
+//     * @param psDate
+//     * @return
+//     */
+//    public String getOrgTreeCondition(String psDate, PsDBBean psDBBean) {
+//        // V3の処理
+//        if (getFrameVersion().equals("3")) {
+//            return psDate;
+//        }
+//        // V4の処理
+//        else {
+//            return psDate + "_" + getCurrentApp(psDBBean);
+//        }
+//    }
+//
+//    /**
+//     * 部局ツリーデータのセッションキーを作成
+//     * @param psDate
+//     * @return
+//     */
+//    public String getDivisionTreeCondition(String psDate, PsDBBean psDBBean) {
+//        // V3の処理
+//        if (getFrameVersion().equals("3")) {
+//            return psDate;
+//        }
+//        // V4の処理
+//        else {
+//            return psDate + "_" + getCurrentApp(psDBBean);
+//        }
+//    }
 
     /**
      * 職員リストデータのセッションキーを作成
