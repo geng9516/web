@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
-public class LiquidationDetailDto {
-    private String yyyymm;
-    private String standard;
-    private String result;
+public class LiquidationMonthDto {
+    private List<LiquidationDailyDto> monthInfo;
 }

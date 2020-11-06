@@ -61,13 +61,13 @@ public class TmgLiquidationPeriodController {
      * @return　エラー
      */
     @GetMapping("EditDisp")
-    public List<EditDispVo> getEditDisp(
-            @RequestParam(value = "tlpId",required = false) String tlpId,
+    public EditDispVo getEditDisp(
+            @RequestParam(value = "empId",required = false) String empId,
             @RequestParam(value = "startDate",required = false) String startDate,
             @RequestParam(value = "endDate",required = false) String endDate,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return tmgLiquidationPeriodBean.getEditDisop(tlpId,startDate,endDate,psDBBean);
+        return tmgLiquidationPeriodBean.getEditDisop(empId,startDate,endDate,psDBBean);
     }
 
 

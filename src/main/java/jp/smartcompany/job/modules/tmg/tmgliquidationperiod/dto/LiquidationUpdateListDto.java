@@ -14,5 +14,4 @@ public class LiquidationUpdateListDto {
     private String worktypeId;
     private String startDate;
     private String endDate;
-    private List<LiquidationDetailDto> tldDtos;
 }

@@ -20,8 +20,8 @@
         te.TEM_CCUSTOMERID,
         'ja'
         ) AS WORKTYPENAME,
-        NVL( tlp.TLP_DSTARTDATE, '' ) AS startdate,
-        NVL( tlp.TLP_DENDDATE, '' ) AS enddate,
+        NVL( TO_CHAR(tlp.TLP_DSTARTDATE,'yyyy/mm/dd'), '' ) AS startdate,
+        NVL( TO_CHAR(tlp.TLP_DENDDATE,'yyyy/mm/dd'), '' ) AS enddate,
         NVL( tlp.TLP_CMODIFIERUSERID, '' ) AS modifieduser,
         NVL( to_char(tlp.TLP_DMODIFIEDDATE,'yyyy/mm/dd'), '' ) AS modifieddate,
         DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG
@@ -80,8 +80,8 @@
                 te.TEM_CCUSTOMERID,
                 'ja'
             ) AS WORKTYPENAME,
-            NVL( tlp.TLP_DSTARTDATE, '' ) AS startdate,
-            NVL( tlp.TLP_DENDDATE, '' ) AS enddate,
+            NVL( TO_CHAR(tlp.TLP_DSTARTDATE,'yyyy/mm/dd'), '' ) AS startdate,
+            NVL( TO_CHAR(tlp.TLP_DENDDATE,'yyyy/mm/dd'), '' ) AS enddate,
             NVL( tlp.TLP_CMODIFIERUSERID, '' ) AS modifieduser,
             NVL( to_char(tlp.TLP_DMODIFIEDDATE,'yyyy/mm/dd'), '' ) AS modifieddate,
             DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG

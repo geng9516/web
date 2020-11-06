@@ -6,13 +6,11 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDailyCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDetailDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPeriodDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
-import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
-import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
-import jp.smartcompany.job.modules.core.service.ITmgliquidationDetailService;
-import jp.smartcompany.job.modules.core.service.ITmgliquidationPeriodService;
+import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
@@ -38,6 +36,8 @@ public class TmgLiquidationPeriodBean {
     private final ITmgEmployeesService iTmgEmployeesService;
     private final ITmgliquidationPeriodService iTmgliquidationPeriodService;
     private final ITmgliquidationDetailService iTmgliquidationDetailService;
+    private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
+    private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
 
     // 职种
@@ -85,26 +85,35 @@ public class TmgLiquidationPeriodBean {
 
 
     //详细页面api
-    public List<EditDispVo> getEditDisop(String tlpId , String startDate , String endDate , PsDBBean psDBBean) throws Exception {
-        List<EditDispVo> vos=new ArrayList<>();
-        if(StrUtil.hasEmpty(tlpId)){
-            vos= iTmgliquidationDetailService.getLiquidationDetailNew(startDate,String.valueOf(DateUtil.betweenMonth(DateUtil.parse(startDate),DateUtil.parse(endDate),true)+1));
-        }else{
-            vos = iTmgliquidationDetailService.getLiquidationDetail(psDBBean.getCustID(),psDBBean.getCompCode(),tlpId,startDate,endDate);
+    public EditDispVo getEditDisop(String empId,String startDate , String endDate , PsDBBean psDBBean) throws Exception {
+        EditDispVo editVo=new EditDispVo();
+        //清算期间月列表获取
+        List<String> monthlist = iTmgliquidationDailyService.getMonthList(empId,startDate,endDate);
+        for (String yyyymm:monthlist) {
+            LiquidationMonthDto dto=new LiquidationMonthDto();
+            //清算月数据获取
+            List<LiquidationDailyDto> monthDtos=iTmgliquidationDailyService.getMonthInfo(empId,yyyymm);
+            dto.setMonthInfo(monthDtos);
+            editVo.getMonthDtoList().add(dto);
         }
-        return vos;
+        //当前数据存在的errmsg获取
+        List<TmgLiquidationDailyCheckDO> errList= iTmgliquidationDailyCheckService.getBaseMapper().selectList(
+                SysUtil.<TmgLiquidationDailyCheckDO>query().eq("TLDC_CEMPLOYEEID",empId)
+                        .eq("TLDC_DSTARTDATE",startDate)
+                        .eq("TLDC_DENDDATE",endDate));
+        editVo.setErrList(LiquidationCheck(errList));
+        return editVo;
     }
 
 
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse insertLiquidation(LiquidationUpdateListDto updateDto, PsDBBean psDBBean){
-        //todo
         //sequence 获取
         String seq=iTmgliquidationPeriodService.getSeq();
         //一览数据新规
         insertTlp(seq,updateDto.getEmpId(),updateDto.getWorktypeId(),updateDto.getStartDate(),updateDto.getEndDate(),psDBBean);
         //详细数据新规
-        insertTlD(seq,updateDto.getEmpId(),updateDto.getTldDtos(),psDBBean);
+        insertTlDD();
         return GlobalResponse.ok();
     }
 
@@ -130,30 +139,31 @@ public class TmgLiquidationPeriodBean {
         return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);
     }
     //详细数据新规
-    private void insertTlD(String seq,String empId,List<LiquidationDetailDto> tldDtos, PsDBBean psDBBean){
-        for (LiquidationDetailDto dto: tldDtos) {
-            TmgLiquidationDetailDO tldDo=new TmgLiquidationDetailDO();
-            tldDo.setTldCcustomerid(psDBBean.getCustID());
-            tldDo.setTldCcompanyid(psDBBean.getCompCode());
-            tldDo.setTldCemployeeid(empId);
-            tldDo.setTldCmodifieruserid(psDBBean.getUserCode());
-            tldDo.setTldDmodifieddate(DateTime.now());
-            tldDo.setTldDstartdate(TmgUtil.minDate);
-            tldDo.setTldDenddate(TmgUtil.maxDate);
-            tldDo.setTldDyyyymm(dto.getYyyymm());
-            tldDo.setTldCstandardtime(dto.getStandard());
-            tldDo.setTldCresulttime(dto.getResult());
-            tldDo.setTldCtldid(seq);
-            iTmgliquidationDetailService.getBaseMapper().insert(tldDo);
-        }
+    private void insertTlDD(){
+
     }
 
 
-    private String LiquidationCheck(){
+    private List<String> LiquidationCheck(List<TmgLiquidationDailyCheckDO> errDo){
+        List<String> errList = new ArrayList<>();
+        //1 日check。每天最大工作时间10小时
+        for (TmgLiquidationDailyCheckDO errCheckDo:errDo) {
+            String errMsg;
+            errCheckDo.getTldcCerrmsg();
+        }
+        //2	周check。每周最大工作小时52小时
 
+        //3	连续工作日数 不能超过6天
 
+        //4	不能连续3周超过48小时
 
-        return "";
+        //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
+
+        //6	期间内最大工作日数		280* （日数/365）
+
+        //7	期间内平均每周不能超过 周法定
+
+        return errList;
     }
 
 

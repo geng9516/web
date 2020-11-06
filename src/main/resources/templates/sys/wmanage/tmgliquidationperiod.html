@@ -71,7 +71,7 @@
             精算一覧
         </div>
         <Alert class="primary-info mt10">123</Alert>
-        <i-table class="long-table" :disabled-hover="true"
+        <i-table :disabled-hover="true"
                  border :row-class-name="() => 'select-col'"
                 :data="tableData" :loading="loading" :columns="columns"
                  no-data-text="123">
@@ -155,7 +155,7 @@
 
 
             <i-table
-                    class="long-table cross-hover-table mt10"
+                    class="mt10"
                     @on-row-click="handleClickRow(arguments)"
                     max-height="730"
                     border
@@ -244,7 +244,7 @@ d
                     searchText:'',
                 },
                 optsEmp:{
-                    tlpId:'',
+                    empId:'',
                     startDate:'',
                     endDate:'',
                 },
@@ -741,53 +741,25 @@ d
                 }
             },
             async showDetails(e) {
+                console.log(e)
                 if(e.newflag){
                     try {
                         this.empInfo.empId=e.employeeid
                         this.empInfo.empWorkTypeId=e.worktypeid
-                        this.optsEmp.tlpId = e.newflag
-                        this.optsEmp.startDate = e.startDate
-                        this.optsEmp.endDate = e.endDate
+                        this.optsEmp.empId = e.employeeid
+                        this.optsEmp.startDate = e.startdate
+                        this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
-                        this.editTableDate = data
+                        this.editTableDate = data.monthDtoList
+
                     } catch (error) {
                         return
                     } finally {
                     }
-                }else{
-                    this.curDateFrom=`${new Date().getFullYear()}/01/01`
-                    this.curDateTo=`${new Date().getFullYear()}/12/01`
-                    this.handleDatePicker()
                 }
-
                 this.editFlag = true;
             },
 
-            //edit画面
-            async handleDatePicker() {
-                if (!this.curDateFrom || !this.curDateTo || this.curDateFrom > this.curDateTo) {
-                    Vue.prototype.$Message.error({
-                        background: true,
-                        closable: true,
-                        duration: 6.5,
-                        content: '出错啦'
-                    });
-                    return
-                }
-                try {
-                    this.editTableDate=[]
-                    this.optsEmp.tlpId =''
-                    this.optsEmp.startDate =Utils.formatDate(this.curDateFrom)
-                    this.optsEmp.endDate = Utils.formatDate(this.curDateTo)
-                    const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
-                    this.editTableDate = data
-                } catch (error) {
-                    return
-                } finally {
-                }
-                this.editFlag = true;
-
-            },
             async insertLiquidation() {
                 console.log(this.$refs.table.rebuildData)
                 const OPTS = {

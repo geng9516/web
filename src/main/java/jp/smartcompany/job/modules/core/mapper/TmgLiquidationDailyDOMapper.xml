@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationDailyMapper">
+    <select id="getMonthList" resultType="java.lang.String">
+        SELECT DISTINCT
+            TO_CHAR(trunc(tldd_dyyyymmdd, 'mm'),'yyyy/mm/dd')
+        FROM
+            tmg_liquidation_daily
+        where
+            tldd_cemployeeid = #{empId}
+            and tldd_dstartdate = #{startDate}
+            and tldd_denddate =#{endDate}
+    </select>
+    <select id="getMonthInfo"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto">
+        SELECT
+            TO_CHAR(tldd_dyyyymmdd,'yyyy/mm/dd')     AS yyyymmdd,
+            tldd_cweeks           AS week,
+            tldd_cworkhours       AS workhours,
+            tldd_ckuben           AS kubun,
+            tldd_cstarttime       AS starttime,
+            tldd_cendtime         AS endtime,
+            tldd_creststarttime   AS resttimestart,
+            tldd_crestendtime     AS resttimeend
+        FROM
+            tmg_liquidation_daily a
+        WHERE
+            tldd_cemployeeid = #{empId}
+            and TO_CHAR(trunc(tldd_dyyyymmdd, 'mm'),'yyyy/mm/dd') = #{yyyymm}
+    </select>
 </mapper>
