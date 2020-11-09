@@ -29,5 +29,9 @@ public class MastAppDTO implements Serializable {
     private String systemId;
     private String domainId;
     private String helpDocUrl;
+    private String permissionType;
+    private String autoUpload;
+    private String defaultTargetUser;
+    private String baseDateType;
 
 }

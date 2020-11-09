@@ -1,7 +1,6 @@
 package jp.smartcompany.admin.appmanager.logic.impl;
 
 import cn.hutool.cache.impl.TimedCache;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.db.DbUtil;
@@ -70,7 +69,28 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         for (int i = 0; i < paramList.size(); i++) {
             MastAppDTO dto = paramList.get(i);
             MastApptreeDO treeDO = new MastApptreeDO();
-            BeanUtil.copyProperties(dto,treeDO);
+            treeDO.setMtrCurl(dto.getUrl());
+            treeDO.setMtrCtype(dto.getType());
+            treeDO.setMtrCtemplateid(dto.getTemplateId());
+            treeDO.setMtrCappautoload(dto.getAutoUpload());
+            treeDO.setMtrCappid(dto.getAppId());
+            treeDO.setMtrCbuttonid(dto.getButtonId());
+            treeDO.setMtrCcriterialdatetype(dto.getBaseDateType());
+            treeDO.setMtrCdatapermissiontype(dto.getPermissionType());
+            treeDO.setMtrCdefaulttargetuser(dto.getDefaultTargetUser());
+            treeDO.setMtrCdomainid(dto.getDomainId());
+            treeDO.setMtrCimageurl(dto.getIcon());
+            treeDO.setMtrCobjectid(dto.getObjectId());
+            treeDO.setMtrCobjname(dto.getName());
+            treeDO.setMtrCobjnameja(dto.getName());
+            treeDO.setMtrConlinehelpurl(dto.getHelpDocUrl());
+            treeDO.setMtrCsitecaption(dto.getRemark());
+            treeDO.setMtrCsitecaptionja(dto.getRemark());
+            treeDO.setMtrCsiteid(dto.getSiteId());
+            treeDO.setMtrCscreenid(dto.getScreenId());
+            treeDO.setMtrCsubappid(dto.getSubAppId());
+            treeDO.setMtrCsystemid("01");
+
             treeDO.setMtrDmodifieddate(date);
             treeDO.setVersionno(1L);
             treeDO.setMtrNseq((long)i);

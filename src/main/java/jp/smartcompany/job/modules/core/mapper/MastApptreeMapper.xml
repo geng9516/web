@@ -133,7 +133,10 @@
             MTR_CSITECAPTIONJA as remark,
             MTR_NSEQ as sort,
             MTR_CSYSTEMID as system_id,
-            MTR_CAPPAUTOLOAD,
+            MTR_CAPPAUTOLOAD as auto_upload,
+            MTR_CDATAPERMISSIONTYPE as permission_type,
+            MTR_CDEFAULTTARGETUSER as defaultTargetUser,
+            MTR_CCRITERIALDATETYPE as baseDateType,
             MTR_CONLINEHELPURL as help_doc_url,
             MTR_CONLINEHELPATTR as help_attribute,
             MTR_CDOMAINID as domain_id
