@@ -118,7 +118,7 @@
           <Row :gutter="10" v-if="!isAdding">
             <i-col span="12">
               <div class="label pl10">法人</div>
-              <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].companyName }}</div>
+              <div class="person-info">{{ groupInfoData[0].mgCcompanyid === '*' ? '全社区分' : groupInfoData[0].companyName }}</div>
             </i-col>
             <i-col span="12">
               <div class="label pl10">備考</div>
@@ -592,7 +592,7 @@
               width: 120,
             },
           ],
-          groupInfoData: [],
+          groupInfoData: [{}],
           emptColumns: [
             {
               title: '法人',
@@ -963,12 +963,12 @@
               this.baseTreeData = []
             } else {
               this.baseTreeData = [{
-                title: data.companyId === '*' ? '全社区分' : `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0].sectionList.map((e, i) => {
+                title: `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0].sectionList.map((e, i) => {
                   return {
                     ...e,
                     sectionId: e.mgbsCsectionid,
                     delete: false,
-                    title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
+                    title: `【${e.mgbsCsectionid}】 ${e.sectionName ? e.sectionName : ''}`
                   }
                 }), expand: true
               }]
