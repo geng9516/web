@@ -968,7 +968,7 @@
                   delete: false,
                   title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
                 }
-              }) : [], expand: true, disabled: true,
+              }) : [], expand: true
             }]
 
             // 組織・役職選択による定義
@@ -1421,6 +1421,7 @@
             cancelText: 'キャンセル',
             onOk: () => {
               const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e => e.sectionId)
+              console.log(selectedNodes)
               // 同样这里是只考虑单法人
               this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e => !selectedNodes.includes(e.sectionId))
               // 将半选的root清除
@@ -1689,12 +1690,6 @@
           }
 
           // 組織・役職選択による定義
-          if (this.updateValue.baseFlag === '2') {
-            if (updateValue.sectionPostList.bossSectionList.length === 0 &&
-                updateValue.sectionPostList.postList.length === 0 &&
-                updateValue.sectionPostList.sectionList.length === 0
-            ) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
-          }
           try {
             this.drawLoading = true
             const { data } = await this.http.post(`sys/groupmanager/update?psSite=${this.psSite}`, updateValue)
