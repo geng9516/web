@@ -1640,8 +1640,13 @@
             // 基点組織
             const baseIdList = updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid)
             this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
+              // 现在的id中不存在老的id
               if (!baseIdList.includes(e.mgbsCsectionid)) {
                 updateValue.baseSectionList[0].sectionList.push({ mgbsId: e.mgbsId, delete: true })
+              } else {
+                // 现在的id中存在则替换为老的
+                const UpdateIndex = updateValue.baseSectionList[0].sectionList.findIndex(n => n.mgbsCsectionid === e.mgbsCsectionid)
+                updateValue.baseSectionList[0].sectionList[UpdateIndex] = {...e, delete: false}
               }
             })
           }
@@ -1653,7 +1658,7 @@
                 this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
                 return true
               }
-              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') { 
+              if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') {
                 this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
                 return true
                }
@@ -1675,6 +1680,10 @@
             this.sectionPostList_bak.companyId && this.sectionPostList_bak.empList.empList.length > 0 && this.sectionPostList_bak.empList.empList.forEach(e => {
               if (!empIdList.includes(e.id)) {
                 updateValue.employList.push({ ...e, delete: true })
+              } else {
+                // 现在的id中存在则替换为老的
+                const UpdateIndex = updateValue.employList.findIndex(n => n.id === e.id)
+                updateValue.employList[UpdateIndex] = {...e, delete: false}
               }
             })
           }
