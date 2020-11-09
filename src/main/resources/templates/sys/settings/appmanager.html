@@ -25,7 +25,17 @@
     </div>
     <div class="content_body">
       <Alert v-show="this.updateList.length > 0" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+      <div class="table-top">
+        <Row :gutter="16">
+          <i-col span="24" class="tr">
+            <span class="mr10">ドラッグ機能:  </span><i-switch v-model="isDraggable" size="large">
+              <span slot="open">ON</span>
+              <span slot="close">OFF</span>
+            </i-switch>
+          </i-col>
+        </Row>
+      </div>
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :draggable="isDraggable" @on-drag-drop="sortTableByDrag"
         :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
         :loading="loading" ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
@@ -169,7 +179,7 @@
           </i-select>
         </form-item>
         <form-item v-if="updateValue._type === '1'" label="デフォルト検索対象者">
-          <i-select v-model="updateValue.defaultSearchob" placeholder="選択ください">
+          <i-select v-model="updateValue.defaultTargetUser" placeholder="選択ください">
             <i-option label="先頭の部下（評価対象者）" value="1"></i-option>
             <i-option label="ログインユーザ" value="2"></i-option>
             <i-option label="デフォルトなし" value="3"></i-option>
@@ -177,7 +187,7 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '1'" label="適用基準日">
-          <i-select v-model="updateValue.criterialDate" placeholder="選択ください">
+          <i-select v-model="updateValue.baseDateType" placeholder="選択ください">
             <i-option label="指定基準日" value="1"></i-option>
             <i-option label="システム日付" value="2"></i-option>
           </i-select>
@@ -224,8 +234,8 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '3' || updateValue._type === '5'" label="検索対象範囲適用種別">
-          <i-select v-model="updateValue.datapermission" placeholder="選択ください">
-            <i-option label="デフォルト設定" value="2" v-if="defaultOption"></i-option>
+          <i-select v-model="updateValue.permissionType" placeholder="選択ください">
+            <i-option label="デフォルト設定" value="null" v-if="defaultOption"></i-option>
             <i-option label="アプリケーションでチェック" value="0"></i-option>
             <i-option label="起動時にチェック" value="1"></i-option>
           </i-select>
@@ -239,7 +249,7 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '1'" label="アプリケーション自動起動">
-          <i-select v-model="updateValue.appautoload" placeholder="選択ください">
+          <i-select v-model="updateValue.autoUpload" placeholder="選択ください">
             <i-option label="自動起動しない" value="0"></i-option>
             <i-option label="自動起動する" value="1"></i-option>
           </i-select>
@@ -263,6 +273,7 @@
       data() {
         return {
           isShow: false,
+          isDraggable: true,
           loading: true,
           editLoading: false,
           needChange: '',
@@ -360,10 +371,13 @@
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
                 systemId: '01',
-                defaultSearchob: '1',
-                criterialDate: '1',
+                objectId: row.objectId,
+                _index: row._index,
+                defaultTargetUser: '1',
+                baseDateType: '1',
+                type: '1',
                 domainId: '01',
-                appautoload: '0'
+                autoUpload: '0'
               }
             } else {
               this.updateValue = { ...row }
@@ -375,8 +389,11 @@
               this.updateValue = {
                 useSubAppFlag: '00',
                 templateId: 'ContentSearchResultEmp',
+                _index: row._index,
+                objectId: row.objectId,
+                type: '3',
                 systemId: '01',
-                datapermission: '0',
+                permissionType: '0',
                 domainId: '01'
               }
             } else {
@@ -388,6 +405,9 @@
             if (isAdd) {
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
+                objectId: row.objectId,
+                _index: row._index,
+                type: '2',
                 systemId: '01'
               }
             } else {
@@ -400,16 +420,19 @@
             if (isAdd) {
               this.updateValue = {
                 templateId: 'null',
+                objectId: row.objectId,
+                _index: row._index,
                 systemId: '01',
-                datapermission: '2'
+                type: '5',
+                permissionType: 'null'
               }
             } else {
-              this.updateValue = { ...row }
+              this.updateValue = { ...row, templateId: row.templateId ?  row.templateId : 'null',permissionType: row.permissionType ?  row.permissionType : 'null'}
             }
           }
           if (type === '6') {
             if (isAdd) {
-              this.updateValue = { systemId: '01' }
+              this.updateValue = { systemId: '01', _index: row._index, type: '6', objectId: row.objectId }
             } else {
               this.updateValue = { ...row }
             }
@@ -425,27 +448,73 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              if (this.updateList.length === 0) {
-                return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を変更しでください。', duration: 6.5 })
-              }
+              // if (this.updateList.length === 0) {
+              //   return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を変更しでください。', duration: 6.5 })
+              // }
               this.loading = true
-              console.log(this.updateValue)
-              const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
-              this.$Message.success('更新完了')
-              this.getTableData()
-              this.updateValue = {}
-              this.updateList = []
+              const update = this.tableData.map((e, i)=> {
+                return {
+                  ...e,
+                  templateId: e.templateId === 'null' ? null : e.templateId,
+                  permissionType: e.permissionType === 'null' ? null : e.permissionType
+                }
+              })
+              // const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
+              // this.$Message.success('更新完了')
+              // this.getTableData()
+              // this.updateValue = {}
+              // this.updateList = []
             }
           })
         },
         joinUpdate() {
-          // this.tableData.some(e=> {
-          //   if(e[this.updateValueIndex].hgpId ===this.updateValue.hgpId) {
-          //     e[this.updateValueIndex] = this.updateValue
-          //     this.updateList = this.updateList.concat(this.updateValue)
-          //     return true
-          //   }
-          // })
+          const index = this.updateValue._index
+          // 添加site
+          if(this.updateValue.type === '1') {
+            if(!this.updateValue.siteId.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトIDをしてください', duration: 6.5 })
+            if(!this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトの名称(日本語)をしてください', duration: 6.5 })
+            if(!this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトURLをしてください', duration: 6.5 })
+            if(!this.updateValue.icon.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイト画像URLをしてください', duration: 6.5 })
+            if(!this.updateValue.remark.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトの説明(日本語)をしてください', duration: 6.5 })
+
+            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.siteId}`)
+          }
+
+          // 添加アプリ
+          if(this.updateValue.type === '2' || this.updateValue.type === '3') {
+            if(!this.updateValue.appId.trim()) return this.$Notice.warning({ title: '注意', desc: 'アプリケーションIDをしてください', duration: 6.5 })
+            if(!this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'アプリケーションの名称(日本語)をしてください', duration: 6.5 })
+            if(!this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: 'アプリケーションURLをしてください', duration: 6.5 })
+
+            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.appId}`)
+          }
+
+          // 添加画面編集
+          if(this.updateValue.type === '5') {
+            if(!this.updateValue.appId.trim()) return this.$Notice.warning({ title: '注意', desc: '画面IDをしてください', duration: 6.5 })
+            if(!this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: '画面の名称(日本語)をしてください', duration: 6.5 })
+            if(!this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: '画面URLをしてください', duration: 6.5 })
+
+            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.appId}`)
+          }
+
+          // 添加ボタン追加
+          if(this.updateValue.type === '6') {
+            if(!this.updateValue.buttonId.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンIDをしてください', duration: 6.5 })
+            if(!this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンの名称(日本語)をしてください', duration: 6.5 })
+
+            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.buttonId}`)
+          }
+          console.log(this.updateValue)
+          if(this.updateValue.isAdd) {
+            this.tableData.splice(index + 1, 0, {...this.updateValue})
+          } else {
+            this.$set(this.tableData, index, {...this.updateValue})
+          }
+        },
+        sortTableByDrag(from, to) {
+          // todo: 判断是不是同一级，否则不可以拖
+          this.$set(this.tableData, from, [this.tableData[to], this.tableData[to] = this.tableData[from]][0])
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
