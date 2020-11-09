@@ -959,16 +959,20 @@
             // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
             // 所以这里直接取第一个法人的全部
             // 基点組織
-            this.baseTreeData = [{
-              title: data.companyId === '*' ? '全社区分' : `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList.length > 0 ? data.baseSectionList[0].sectionList.map((e, i) => {
-                return {
-                  ...e,
-                  sectionId: e.mgbsCsectionid,
-                  delete: false,
-                  title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
-                }
-              }) : [], expand: true
-            }]
+            if (data.baseSectionList.length === 0) {
+              this.baseTreeData = []
+            } else {
+              this.baseTreeData = [{
+                title: data.companyId === '*' ? '全社区分' : `【${data.companyId}】 ${data.companyName}`, children: data.baseSectionList[0].sectionList.map((e, i) => {
+                  return {
+                    ...e,
+                    sectionId: e.mgbsCsectionid,
+                    delete: false,
+                    title: `【${e.mgbsCsectionid}】 ${e.sectionName}`
+                  }
+                }), expand: true
+              }]
+            }
 
             // 組織・役職選択による定義
             let childIndex = 0
@@ -1736,8 +1740,8 @@
             width: 480,
             render: (h, params) => {
               return h('Radio', {
-                props:{value: true}
-              },`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}` )
+                props: { value: true }
+              }, `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`)
             },
             okText: 'OK',
             cancelText: 'キャンセル',

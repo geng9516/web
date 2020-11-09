@@ -346,7 +346,7 @@
                 k = 2
               }
             })
-            console.log(result)
+            // console.log(result)
             this.tableData = result
           } catch (error) {
           } finally {
@@ -467,8 +467,7 @@
                 return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を変更しでください。', duration: 6.5 })
               }
               this.loading = true
-              this.isEditing = false,
-              console.log(this.updateValue)
+              this.isEditing = false
               const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
               this.$Message.success('更新完了')
               this.getTableData()
@@ -491,7 +490,7 @@
           if (!this.isEditing ||  column.slot === 'objectName') {
             return
           }
-          console.log(row[column.slot])
+          // console.log(row[column.slot])
           this.updateValue = {...row[column.slot]}
           this.updateValueIndex = column.slot
 
