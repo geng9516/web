@@ -196,20 +196,21 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面ID">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.appId"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面の名称(日本語)">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.name"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面URL">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.url"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="使用レイアウト">
+        <form-item v-if="updateValue._type === '2' || updateValue._type === '3'|| updateValue._type === '5'"
+          label="使用レイアウト">
           <i-select v-model="updateValue.templateId" placeholder="選択ください">
-            <i-option>&nbsp;</i-option>
+            <i-option label="デフォルトなし" value="null" v-if="defaultOption"></i-option>
             <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.matCname"
               :value="item.matCtemplateid">
             </i-option>
@@ -224,6 +225,7 @@
 
         <form-item v-if="updateValue._type === '3' || updateValue._type === '5'" label="検索対象範囲適用種別">
           <i-select v-model="updateValue.datapermission" placeholder="選択ください">
+            <i-option label="デフォルト設定" value="2" v-if="defaultOption"></i-option>
             <i-option label="アプリケーションでチェック" value="0"></i-option>
             <i-option label="起動時にチェック" value="1"></i-option>
           </i-select>
@@ -244,11 +246,11 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '6'" label="ボタンID">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.buttonId" :disabled="!updateValue.isAdd"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '6'" label="ボタンの名称(日本語)">
-          <i-input v-model="updateValue.oldPassword"></i-input>
+          <i-input v-model="updateValue.name"></i-input>
         </form-item>
       </i-form>
     </Modal>
@@ -264,6 +266,7 @@
           loading: true,
           editLoading: false,
           needChange: '',
+          defaultOption: false,
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
           updateValue: {},
@@ -348,8 +351,9 @@
 
         },
         handleBtn(row, type, isAdd) {
+          this.defaultOption = false
           if (type === '0') {
-            this.updateValue = {...row}
+            this.updateValue = { ...row }
           }
           if (type === '1') {
             if (isAdd) {
@@ -362,38 +366,53 @@
                 appautoload: '0'
               }
             } else {
-              this.updateValue = {...row}
+              this.updateValue = { ...row }
             }
           }
 
           if (type === '3') {
-            if(isAdd) {
+            if (isAdd) {
               this.updateValue = {
-                useSubAppFlag:'00',
+                useSubAppFlag: '00',
                 templateId: 'ContentSearchResultEmp',
                 systemId: '01',
+                datapermission: '0',
+                domainId: '01'
               }
             } else {
-              this.updateValue = {...row}
+              this.updateValue = { ...row }
             }
           }
 
           if (type === '2') {
-            if(isAdd) {
+            if (isAdd) {
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
                 systemId: '01'
               }
             } else {
-              this.updateValue = {...row}
+              this.updateValue = { ...row }
             }
           }
 
           if (type === '5') {
-            if (type === '0') {
-              return '画面編集'
+            this.defaultOption = true
+            if (isAdd) {
+              this.updateValue = {
+                templateId: 'null',
+                systemId: '01',
+                datapermission: '2'
+              }
+            } else {
+              this.updateValue = { ...row }
             }
-            return 'ボタン追加'
+          }
+          if (type === '6') {
+            if (isAdd) {
+              this.updateValue = { systemId: '01' }
+            } else {
+              this.updateValue = { ...row }
+            }
           }
           this.updateValue.isAdd = isAdd
           this.updateValue._type = type
