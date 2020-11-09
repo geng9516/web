@@ -273,10 +273,10 @@
           <!-- <div class="tr mt5 mb10"><i-button type="error" ghost size="small">選択行を削除</i-button></div> -->
           <!-- 那颗树 -->
           <div class="tl tree mt5">
-            <span class="row-label-primary pl10 pr10 mt5 ml5 cursor">＋ このグループに該当する法人を追加</span>
+            <span class="row-label-primary pl10 pr10 mt5 ml5 cursor" @click="addLegalPerson">＋ このグループに該当する法人を追加</span>
             <i-button class="mt5" icon="md-trash" style="position:absolute; right: 35px;" type="error" ghost
               size="small" @click="deleteBasetree">選択行を削除</i-button>
-            <Tree :data="baseTreeData" :render="renderBaseTree" @on-select-change="" empty-text="" check-directly
+            <Tree :data="baseTreeData" :render="renderBaseTree" @on-check-change="handleDeptChange" empty-text="" check-directly check-strictly
               show-checkbox ref="baseTree"></Tree>
           </div>
         </div>
@@ -551,7 +551,7 @@
               width: 80,
             }
           ],
-          tableDataUnused:[],
+          tableDataUnused: [],
           columnsUnuse: [
             {
               title: '期間',
@@ -827,7 +827,6 @@
           this.baseTreeData = [{
             title: resetByChangeCompanyId ? '全社区分' : `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
             expand: true,
-            disabled: true,
             children: []
           }]
           // 条件式による定義
@@ -1251,8 +1250,8 @@
           // 这里再有已勾选项时会消失，所以只应该打上记号
           data.forEach((e, i) => {
             e.searchWords = ''
-            if(e.title.indexOf(this.searchDept) > -1 ) {
-              if(father) father.expand = true
+            if (e.title.indexOf(this.searchDept) > -1) {
+              if (father) father.expand = true
               e.searchWords = this.searchDept
             }
             if (e.children && e.children.length > 0) {
@@ -1382,7 +1381,7 @@
         },
         renderSearchTree(h, { root, node, data }) {
           const searchWords = data.searchWords
-          if(searchWords && data.title.indexOf(searchWords) > -1) {
+          if (searchWords && data.title.indexOf(searchWords) > -1) {
             const title = data.title.split(searchWords)
             return h('span', {
               style: {
@@ -1391,11 +1390,12 @@
               }
             }, [
               h('span', title[0]),
-              h('span',{
+              h('span', {
                 style: {
-                    color: 'var(--row-label-primary)',
-                    fontWeight: 'bold'
-                  },},searchWords),
+                  color: 'var(--row-label-primary)',
+                  fontWeight: 'bold'
+                },
+              }, searchWords),
               h('span', title[1])
             ])
           }
@@ -1421,7 +1421,8 @@
             cancelText: 'キャンセル',
             onOk: () => {
               const selectedNodes = this.$refs.baseTree.getCheckedNodes().map(e => e.sectionId)
-              console.log(selectedNodes)
+              // 如果全选了
+              if (!selectedNodes[0]) return this.baseTreeData = []
               // 同样这里是只考虑单法人
               this.baseTreeData[0].children = this.baseTreeData[0].children.filter(e => !selectedNodes.includes(e.sectionId))
               // 将半选的root清除
@@ -1454,9 +1455,9 @@
             onOk: () => {
               const selectedNodes = this.$refs.sectionTree.getCheckedNodes().map(e => e.uni_id)
               // 同样这里是只考虑单法人
-              this.sectionPostList[0].children = this.sectionPostList[0].children.filter((e, i)=> {
+              this.sectionPostList[0].children = this.sectionPostList[0].children.filter((e, i) => {
                 if (e.children && e.children.length > 0) {
-                  e.children = e.children.filter(t=> {
+                  e.children = e.children.filter(t => {
                     this.sectionPostList[0].children[i].indeterminate = false
                     return !selectedNodes.includes(t.uni_id)
                   })
@@ -1587,7 +1588,7 @@
             },
             employList: this.updateValue.baseFlag === '0' ? this.emptData : [], // 社員選択による定義
             queryConditionList: this.updateValue.baseFlag === '1' ? this.queryData : [],
-            baseSectionList: [{ sectionList: this.baseTreeData[0].children }],
+            baseSectionList: [{ sectionList: this.baseTreeData.length > 0 ? this.baseTreeData[0].children : [] }],
 
           }
           if (isAdd) {
@@ -1639,7 +1640,7 @@
             })
 
             // 基点組織
-            const baseIdList = updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid)
+            const baseIdList = updateValue.baseSectionList.length > 0 ? updateValue.baseSectionList[0].sectionList.map(e => e.mgbsCsectionid) : []
             this.sectionPostList_bak.baseSectionList.length > 0 && this.sectionPostList_bak.baseSectionList[0].sectionList.forEach(e => {
               // 现在的id中不存在老的id
               if (!baseIdList.includes(e.mgbsCsectionid)) {
@@ -1647,14 +1648,14 @@
               } else {
                 // 现在的id中存在则替换为老的
                 const UpdateIndex = updateValue.baseSectionList[0].sectionList.findIndex(n => n.mgbsCsectionid === e.mgbsCsectionid)
-                updateValue.baseSectionList[0].sectionList[UpdateIndex] = {...e, delete: false}
+                updateValue.baseSectionList[0].sectionList[UpdateIndex] = { ...e, delete: false }
               }
             })
           }
 
           // 条件式による定義
           if (this.updateValue.baseFlag === '1') {
-            if(updateValue.queryConditionList.some(e => {
+            if (updateValue.queryConditionList.some(e => {
               if (!e.columnname) {
                 this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
                 return true
@@ -1662,7 +1663,7 @@
               if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') {
                 this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
                 return true
-               }
+              }
             })) return
             if (this.sectionPostList_bak.companyId && this.sectionPostList_bak.queryConditions.rowList.length > 0) {
               const queryIdList = updateValue.queryConditionList.map(e => e.id)
@@ -1684,7 +1685,7 @@
               } else {
                 // 现在的id中存在则替换为老的
                 const UpdateIndex = updateValue.employList.findIndex(n => n.id === e.id)
-                updateValue.employList[UpdateIndex] = {...e, delete: false}
+                updateValue.employList[UpdateIndex] = { ...e, delete: false }
               }
             })
           }
@@ -1726,7 +1727,46 @@
           } catch (error) {
           } finally {
           }
-        }
+        },
+        addLegalPerson() {
+          if (this.baseTreeData.length > 0) return
+          this.$Modal.confirm({
+            inDrawer: true,
+            title: '法人選択',
+            width: 480,
+            render: (h, params) => {
+              return h('Radio', {
+                props:{value: true}
+              },`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}` )
+            },
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              this.baseTreeData = [{
+                title: `【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`,
+                expand: true,
+                children: []
+              }]
+            }
+          })
+        },
+        handleDeptChange(e, current) {
+          if (!e[0]) return
+          if (current.children && current.children.length > 0) {
+            this.treeCheckHack(current.children, current.checked)
+          }
+        },
+        // 使得check-strictly的情况下， 勾选/取消 checkbox父也会遍历全部子集
+        treeCheckHack(treeNode, checked) {
+          let _this = this
+          treeNode.forEach((e, i) => {
+            _this.$set(e, 'checked', checked)
+            if (e.children && e.children.length > 0) {
+              _this.treeCheckHack(e.children, checked);
+
+            }
+          })
+        },
       }
     })
   </script>
