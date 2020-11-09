@@ -70,8 +70,8 @@ public class BaseSectionRowDTO implements Serializable {
     private String mgbsCbeloworsingle;
 //
 //
-//    /** 法人名称 */
-//    private String companyName;
+    /** 法人名称 */
+    private String companyName;
 //    /** 組織名称 */
 //    private String sectionName;
     /** 組織一覧(指定法人) */

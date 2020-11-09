@@ -126,6 +126,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             oBaseSectionRowList = iMastGroupbasesectionService.
                     selectGroupBaseSectionCompanyList(psSession.getLoginCustomer(), systemId,
                             groupId, psSession.getLanguage(), searchDate, oCompanyValidList);
+            if (CollUtil.isNotEmpty(oBaseSectionRowList) && StrUtil.isBlank(companyName)) {
+                companyName = oBaseSectionRowList.get(0).getCompanyName();
+            }
             sBelowSingle = dispBaseSectionInfo(psSession.getLoginCustomer(), searchDate, oBaseSectionRowList, systemId, groupId, psSession.getLanguage());
 
             // 該当条件(組織・役職選択)情報を取得
