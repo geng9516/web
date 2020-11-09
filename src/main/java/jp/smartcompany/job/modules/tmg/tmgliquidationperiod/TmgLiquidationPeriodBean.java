@@ -6,10 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDailyCheckDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDetailDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPeriodDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
+import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
@@ -118,9 +115,13 @@ public class TmgLiquidationPeriodBean {
     }
 
     @Transactional(rollbackFor = GlobalException.class)
-    public GlobalResponse deleteLiquidation(String seq){
-        iTmgliquidationDetailService.getBaseMapper().delete(SysUtil.<TmgLiquidationDetailDO>query().eq("TLD_CTLDID",seq));
-        iTmgliquidationPeriodService.getBaseMapper().delete(SysUtil.<TmgLiquidationPeriodDO>query().eq("TLP_CTLPID",seq));
+    public GlobalResponse deleteLiquidation(String empId,String startDate,String endDate){
+        iTmgliquidationDailyService.getBaseMapper().delete( SysUtil.<TmgLiquidationDailyDO>query().eq("TLDD_CEMPLOYEEID",empId)
+                .eq("TLDD_DSTARTDATE",startDate)
+                .eq("TLDD_DENDDATE",endDate));
+        iTmgliquidationPeriodService.getBaseMapper().delete(SysUtil.<TmgLiquidationPeriodDO>query().eq("TLP_CEMPLOYEEID",empId)
+                .eq("TLP_DSTARTDATE",startDate)
+                .eq("TLP_DENDDATE",endDate));
         return GlobalResponse.ok();
     }
 

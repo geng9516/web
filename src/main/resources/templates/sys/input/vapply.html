@@ -187,7 +187,7 @@
                                                         <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.tnalDmodifieddate }}</p>
                                                     </i-col>
                                                     <i-col span="8">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList" style="white-space: pre-line;" >{{ e.tnalCupdateccomment }}</p>
+                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList"  :style="getDisplayValue(e.tnalCupdateccomment)" >{{ e.tnalCupdateccomment }}</p>
                                                     </i-col>
                                                 </Row>
                                                 <!-- <div class="mb2 blue" v-for="(e, i) of item.tmgNtfactionlogDOList">{{ `${e.empname} ${e.ntfactionname} ${e.statusname}` }}</div> -->
@@ -1014,6 +1014,13 @@
                         this.hasPassedTimeCheck = Utils.checkTime(object, value,el)
                     }
                 },
+                getDisplayValue(e){
+                    if (e){
+                        return  'display:block;white-space: pre-line;'
+                    }else {
+                        return  'display:inline-block;white-space: pre-line;'
+                    }
+                }
             }
         })
     </script>

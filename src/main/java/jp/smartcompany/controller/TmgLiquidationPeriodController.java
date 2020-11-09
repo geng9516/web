@@ -89,8 +89,10 @@ public class TmgLiquidationPeriodController {
      */
     @PostMapping("deleteLiquidation")
     public GlobalResponse deleteLiquidation(
-            @RequestParam("tlpId") String tlpId,
+            @RequestParam(value = "empId",required = false) String empId,
+            @RequestParam(value = "startDate",required = false) String startDate,
+            @RequestParam(value = "endDate",required = false) String endDate,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        return tmgLiquidationPeriodBean.deleteLiquidation(tlpId);
+        return tmgLiquidationPeriodBean.deleteLiquidation(empId,startDate,endDate);
     }
 }
