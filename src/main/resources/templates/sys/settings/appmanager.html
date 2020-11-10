@@ -109,12 +109,10 @@
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '1')">サイト編集</i-button>
             <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '3', true)">アプリ追加
             </i-button>
-            <i-button type="error" ghost icon="md-trash" size="small">サイト削除</i-button>
           </span>
           <span v-if="row.type === '3'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '3')">アプリ編集</i-button>
             <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '5', true)">画面追加</i-button>
-            <i-button type="error" ghost icon="md-trash" size="small">アプリ削除</i-button>
           </span>
           <span v-if="row.type === '4'" style="color: var(--row-label-primary)">
             サブアプリケーション
@@ -122,19 +120,16 @@
           <span v-if="row.type === '2'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '2')">ダイアログアプリ編集
             </i-button>
-            <i-button type="error" ghost icon="md-trash" size="small">ダイアログアプリ削除</i-button>
           </span>
           <span v-if="row.type === '5'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '5')">画面編集</i-button>
             <i-button type="success" ghost icon="md-add" size="small" @click="handleBtn(row, '6', true)">ボタン追加
             </i-button>
-            <i-button type="error" ghost icon="md-trash" size="small">画面削除</i-button>
           </span>
           <span v-if="row.type === '6'" style="color: var(--row-label-primary)">
             <i-button type="primary" ghost icon="md-create" size="small" @click="handleBtn(row, '6')">ボタン編集</i-button>
-            <i-button type="error" ghost icon="md-trash" size="small">ボタン削除</i-button>
           </span>
-          <!-- <i-button type="success" ghost size="small" icon="ios-arrow-forward" long></i-button> -->
+          <i-button v-if="'12356'.indexOf(row.type) > -1" type="error" ghost icon="md-trash" size="small" @click="handleDelete(row.objectId)">{{ handleDeleteTitle(row.type) }}</i-button>
         </template>
       </i-table>
     </div>
@@ -360,12 +355,6 @@
           console.log(data)
           this.conditionsList = data
         },
-        handleSelect(e) {
-
-        },
-        handleCheckBox(bol) {
-
-        },
         handleBtn(row, type, isAdd) {
           this.defaultOption = false
           if (type === '0') {
@@ -517,6 +506,7 @@
           } else {
             this.$set(this.tableData, index, {...this.updateValue})
           }
+          this.isShow = false
         },
         sortTableByDrag(from, to) {
           const fromUnits = this.tableData[from].objectId.split('_')
@@ -566,6 +556,36 @@
           } else {
             this.$Notice.warning({ title: '注意', desc: 'これ以上、上に移動することはできません', duration: 6.5 })
           }
+        },
+        handleDelete(id) {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '削除します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              const index = this.tableData.findIndex(e => e.objectId === id)
+              const units = this.tableData[index].objectId.split('_')
+              let num = 1
+              // 需要将子集全删除
+              this.tableData.some((e, i) => {
+                const len = e.objectId.split('_').length
+                if (i > index && len > units.length) {
+                  num += 1
+                }
+                if (i > index && len === units.length) return true
+              })
+              this.tableData.splice(index, num)
+              this.hasChange = true
+            }
+          })
+        },
+        handleDeleteTitle(type) {
+          if(type === '1') return 'サイト削除'
+          if(type === '2') return 'ダイアログアプリ削除'
+          if(type === '3') return 'アプリ削除'
+          if(type === '5') return '画面削除'
+          if(type === '6') return 'ボタン削除'
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
