@@ -201,7 +201,7 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面ID">
-          <i-input v-model="updateValue.appId"></i-input>
+          <i-input v-model="updateValue.screenId"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面の名称(日本語)">
@@ -388,7 +388,8 @@
                 type: '3',
                 systemId: '01',
                 permissionType: '0',
-                domainId: '01'
+                domainId: '01',
+                siteId: row.siteId, appId: row.appId, screenId: row.screenId
               }
             } else {
               this.updateValue = { ...row }
@@ -402,7 +403,8 @@
                 objectId: row.objectId,
                 _index: row._index,
                 type: '2',
-                systemId: '01'
+                systemId: '01',
+                siteId: row.siteId, appId: row.appId, screenId: row.screenId
               }
             } else {
               this.updateValue = { ...row }
@@ -418,7 +420,8 @@
                 _index: row._index,
                 systemId: '01',
                 type: '5',
-                permissionType: 'null'
+                permissionType: 'null',
+                siteId: row.siteId, appId: row.appId, screenId: row.screenId
               }
             } else {
               this.updateValue = { ...row, templateId: row.templateId ?  row.templateId : 'null',permissionType: row.permissionType ?  row.permissionType : 'null'}
@@ -426,7 +429,7 @@
           }
           if (type === '6') {
             if (isAdd) {
-              this.updateValue = { systemId: '01', _index: row._index, type: '6', objectId: row.objectId }
+              this.updateValue = {  systemId: '01', _index: row._index, type: '6', objectId: row.objectId, siteId: row.siteId, appId: row.appId, screenId: row.screenId }
             } else {
               this.updateValue = { ...row }
             }
@@ -491,7 +494,7 @@
             if(!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: '画面の名称(日本語)を入力してください', duration: 6.5 })
             if(!this.updateValue.url || !this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: '画面URLを入力してください', duration: 6.5 })
 
-            this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.appId}`)
+            this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.screenId}`)
           }
 
           // 添加ボタン追加
