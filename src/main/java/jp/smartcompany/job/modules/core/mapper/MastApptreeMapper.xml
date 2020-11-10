@@ -147,7 +147,7 @@
     </select>
 
     <delete id="removeAll">
-        truncate table MAST_APPTREE
+        delete from MAST_APPTREE
     </delete>
 
 </mapper>

@@ -1,10 +1,8 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -23,6 +21,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("mast_apptree")
+@KeySequence("MAST_APPTREE_SEQ")
 public class MastApptreeDO implements Serializable {
 
 private static final long serialVersionUID=1L;
@@ -30,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-                @TableId(value = "mtr_id", type = IdType.AUTO)
+                @TableId(value = "mtr_id")
                 private Long mtrId;
 
         /**
