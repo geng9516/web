@@ -1590,9 +1590,9 @@
               postList: [...this.postList],
               bossSectionList: [...this.bossList],
             },
-            employList: this.updateValue.baseFlag === '0' ? this.emptData : [], // 社員選択による定義
-            queryConditionList: this.updateValue.baseFlag === '1' ? this.queryData : [],
-            baseSectionList: [{ sectionList: this.baseTreeData.length > 0 ? this.baseTreeData[0].children : [] }],
+            employList: this.updateValue.baseFlag === '0' ? [...this.emptData] : [], // 社員選択による定義
+            queryConditionList: this.updateValue.baseFlag === '1' ? [...this.queryData]: [],
+            baseSectionList: [{ sectionList: this.baseTreeData.length > 0 ? [...this.baseTreeData[0].children] : [] }],
 
           }
           if (isAdd) {
@@ -1659,9 +1659,10 @@
 
           // 条件式による定義
           if (this.updateValue.baseFlag === '1') {
+            if(updateValue.queryConditionList.length === 0) return this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
             if (updateValue.queryConditionList.some(e => {
               if (!e.columnname) {
-                this.$Notice.warning({ title: '注意', desc: '定義内容が設定されていません、必ず1つ以上設定してください', duration: 6.5 })
+                this.$Notice.warning({ title: '注意', desc: '項目内容が設定されていません、必ず設定してください', duration: 6.5 })
                 return true
               }
               if (!e.value && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') {
