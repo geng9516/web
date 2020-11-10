@@ -494,10 +494,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             insertSectionPost(customerId, systemId, groupId, startDate, endDate,sectionPostDTO.getCompanyList(),isAdd);
         }
         // 条件式選択情報を更新
-        // 対象テーブル(HIST_GROUPDEFINITIONS)
-        // 削除対象データをデータベースへ反映
-        deleteGroupDefinitions(queryConditionDTO.getDeleteDefinitions());
-        // 新規追加対象データをデータベースへ反映
         if (StrUtil.equals(baseFlag,BASE_FLG_DEF)) {
             insertHistGroupDefinitions(customerId,systemId,groupId, startDate, endDate, companyId,dto.getQueryConditionList());
         }
@@ -865,33 +861,46 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      * @param ptEndDate     終了日
      */
     public void insertHistGroupDefinitions(String psCustomerId, String psSystem, String psGroup,Date ptStartDate,Date ptEndDate, String psCompanyId,List<QueryConditionRowDTO> queryConditionList) {
-        // 更新件数
-        int nCnt = queryConditionList.size();
-
-        // #3826 V4.2不具合対応 UPDATEからDELETE→INSERTに変更
-
         // 入れ替え処理(表示用DTO ⇒ 更新用Entity)を行い、登録
-        List<Long> ids = CollUtil.newArrayList();
+        List<Long> removeIds = CollUtil.newArrayList();
+        List<QueryConditionRowDTO> saveQueryConditions = CollUtil.newArrayList();
+        List<QueryConditionRowDTO> updateQueryConditions = CollUtil.newArrayList();
         for (QueryConditionRowDTO queryConditionRowDTO : queryConditionList) {
-            if (queryConditionRowDTO.getId() != null) {
-                // IDの有るもの(DBに存在するデータ)は、削除処理
-                ids.add(queryConditionRowDTO.getId());
+            Long id = queryConditionRowDTO.getId();
+            if (id == null) {
+                saveQueryConditions.add(queryConditionRowDTO);
+            } else {
+                if (queryConditionRowDTO.getDelete()) {
+                    removeIds.add(id);
+                } else {
+                    updateQueryConditions.add(queryConditionRowDTO);
+                }
             }
         }
-        if (CollUtil.isNotEmpty(ids)) {
-            iHistGroupdefinitionsService.removeByIds(ids);
+        if (CollUtil.isNotEmpty(removeIds)) {
+            iHistGroupdefinitionsService.removeByIds(removeIds);
         }
-        // DELETEの後にINSERT実行
-        List<HistGroupdefinitionsDO> groupdefinitionsDOList = CollUtil.newArrayList();
-        for (int j = 0; j < nCnt; j++) {
-            groupdefinitionsDOList.add(
+        // DELETEの後にINSERT and UPDATE実行
+        List<HistGroupdefinitionsDO> insertDefinitionsDOList = CollUtil.newArrayList();
+        for (int j = 0; j < saveQueryConditions.size(); j++) {
+            insertDefinitionsDOList.add(
                     queryConditionLogic.insertGroupDefinitions(
                             psCustomerId, psSystem, psGroup, ptStartDate,
-                            ptEndDate, queryConditionList.get(j), j, psCompanyId));
-
+                            ptEndDate, saveQueryConditions.get(j), j, psCompanyId));
         }
-        if (CollUtil.isNotEmpty(groupdefinitionsDOList)){
-            iHistGroupdefinitionsService.saveBatch(groupdefinitionsDOList);
+        if (CollUtil.isNotEmpty(insertDefinitionsDOList)){
+            iHistGroupdefinitionsService.saveBatch(insertDefinitionsDOList);
+        }
+        List<HistGroupdefinitionsDO> updateDefinitionsDOList = CollUtil.newArrayList();
+        for (int i = 0; i < updateQueryConditions.size(); i++) {
+            updateDefinitionsDOList.add(
+                    queryConditionLogic.insertGroupDefinitions(
+                            psCustomerId, psSystem, psGroup, ptStartDate,
+                            ptEndDate, updateQueryConditions.get(i), i, psCompanyId)
+            );
+        }
+        if (CollUtil.isNotEmpty(updateDefinitionsDOList)) {
+            iHistGroupdefinitionsService.updateBatchById(updateDefinitionsDOList);
         }
     }
 
