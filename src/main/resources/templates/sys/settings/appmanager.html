@@ -475,7 +475,7 @@
             if(!this.updateValue.url || !this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトURLを入力してください', duration: 6.5 })
             if(!this.updateValue.icon || !this.updateValue.icon.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイト画像URLを入力してください', duration: 6.5 })
             if(!this.updateValue.remark || !this.updateValue.remark.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトの説明(日本語)を入力してください', duration: 6.5 })
-
+            if(this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.siteId}`)
             this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.siteId}`)
           }
 
@@ -485,7 +485,7 @@
             if(!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'アプリケーションの名称(日本語)を入力してください', duration: 6.5 })
             if(!this.updateValue.url || !this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: 'アプリケーションURLを入力してください', duration: 6.5 })
 
-            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.appId}`)
+            if(this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.appId}`)
           }
 
           // 添加画面編集
@@ -494,7 +494,7 @@
             if(!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: '画面の名称(日本語)を入力してください', duration: 6.5 })
             if(!this.updateValue.url || !this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: '画面URLを入力してください', duration: 6.5 })
 
-            this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.screenId}`)
+            if(this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.screenId}`)
           }
 
           // 添加ボタン追加
@@ -502,7 +502,7 @@
             if(!this.updateValue.buttonId || !this.updateValue.buttonId.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンIDを入力してください', duration: 6.5 })
             if(!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンの名称(日本語)を入力してください', duration: 6.5 })
 
-            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.buttonId}`)
+            if(this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.buttonId}`)
           }
           if(this.updateValue.isAdd) {
             this.tableData.splice(index + 1, 0, {...this.updateValue})
