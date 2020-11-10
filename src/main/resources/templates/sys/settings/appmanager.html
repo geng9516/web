@@ -476,7 +476,6 @@
             if(!this.updateValue.icon || !this.updateValue.icon.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイト画像URLを入力してください', duration: 6.5 })
             if(!this.updateValue.remark || !this.updateValue.remark.trim()) return this.$Notice.warning({ title: '注意', desc: 'サイトの説明(日本語)を入力してください', duration: 6.5 })
             if(this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.siteId}`)
-            this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.siteId}`)
           }
 
           // 添加アプリ
