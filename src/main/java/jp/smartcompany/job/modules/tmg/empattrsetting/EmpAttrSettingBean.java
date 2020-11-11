@@ -388,6 +388,9 @@ public class EmpAttrSettingBean {
         if(params.getPsOldEndDate() == null){
             params.setPsOldEndDate("2222/12/31");
         }
+        if(params.getPsEndDate() == null){
+            params.setPsEndDate("2222/12/31");
+        }
         // 登録内容をログテーブルに保存
         int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
