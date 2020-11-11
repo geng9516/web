@@ -385,6 +385,9 @@ public class EmpAttrSettingBean {
         // 名称マスタを更新
         int updateMgd = updateMgd(empId,psDBBean,params);
 
+        if(params.getPsOldEndDate() == null){
+            params.setPsOldEndDate("2222/12/31");
+        }
         // 登録内容をログテーブルに保存
         int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
