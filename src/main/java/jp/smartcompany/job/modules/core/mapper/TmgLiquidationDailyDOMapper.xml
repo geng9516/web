@@ -28,4 +28,7 @@
             tldd_cemployeeid = #{empId}
             and TO_CHAR(trunc(tldd_dyyyymmdd, 'mm'),'yyyy/mm/dd') = #{yyyymm}
     </select>
+    <insert id="execTLDDInsert" statementType="CALLABLE">
+        CALL TMG_P_LIQUIDATION_DAILY_INSERT (#{empId},#{startDate},#{endDate},#{userCode},#{custID},#{compCode})
+    </insert>
 </mapper>

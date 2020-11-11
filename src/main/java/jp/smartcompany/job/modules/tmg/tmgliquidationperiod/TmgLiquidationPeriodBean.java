@@ -110,7 +110,7 @@ public class TmgLiquidationPeriodBean {
         //一览数据新规
         insertTlp(seq,updateDto.getEmpId(),updateDto.getWorktypeId(),updateDto.getStartDate(),updateDto.getEndDate(),psDBBean);
         //详细数据新规
-        insertTlDD();
+        insertTlDD(updateDto.getEmpId(),updateDto.getStartDate(),updateDto.getEndDate(),psDBBean);
         return GlobalResponse.ok();
     }
 
@@ -140,8 +140,8 @@ public class TmgLiquidationPeriodBean {
         return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);
     }
     //详细数据新规
-    private void insertTlDD(){
-
+    private void insertTlDD(String empId,String startDate,String endDate ,PsDBBean psDBBean){
+        iTmgliquidationDailyService.execTLDDInsert(empId,startDate,endDate,psDBBean.getUserCode(),psDBBean.getCustID(),psDBBean.getCompCode());
     }
 
 

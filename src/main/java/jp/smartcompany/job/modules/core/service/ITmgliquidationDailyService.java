@@ -10,4 +10,6 @@ public interface ITmgliquidationDailyService extends IService<TmgLiquidationDail
     List<String> getMonthList(String empId, String startDate, String endDate);
 
     List<LiquidationDailyDto> getMonthInfo(String empId,String yyyymm);
+
+    void execTLDDInsert(String empId, String startDate, String endDate, String userCode, String custID, String compCode);
 }
