@@ -431,6 +431,9 @@ public class EmpAttrSettingBean {
                 .eq("MGD_CLANGUAGE_CK",psDBBean.getLanguage())
                 .eq("MGD_DSTART_CK",params.getPsOldStartDate()));
 
+        if(params.getPsOldEndDate() == null){
+            params.setPsOldEndDate("2222/12/31");
+        }
         // 登録内容をログテーブルに保存
         int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
