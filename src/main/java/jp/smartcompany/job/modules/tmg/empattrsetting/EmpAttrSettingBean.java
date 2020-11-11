@@ -547,7 +547,7 @@ public class EmpAttrSettingBean {
         // 更新時・・・更新 [(旧)適用開始日 - (旧)適用終了日:(旧)勤務開始日] → [適用開始日 - 適用終了日:勤務開始日]
         else if (params.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_U)) {
             sMessage =  WRD_BD_UPDATE + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS + SPACE +
+                    params.getPsOldEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS + SPACE +
                     WRD_BD_RIGHT_ARROW + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
                     params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
         }
