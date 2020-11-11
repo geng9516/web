@@ -17,4 +17,11 @@ public interface TmgLiquidationDailyMapper extends BaseMapper<TmgLiquidationDail
 
     List<LiquidationDailyDto> getMonthInfo(@Param("empId")String empId,
                                            @Param("yyyymm")String yyyymm);
+
+    void execTLDDInsert(@Param("empId")String empId,
+                       @Param("startDate")String startDate,
+                       @Param("endDate")String endDate,
+                       @Param("userCode")String userCode,
+                       @Param("custID")String custID,
+                       @Param("compCode")String compCode);
 }

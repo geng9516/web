@@ -20,4 +20,9 @@ public class TmgLiquidationDailyServiceImpl extends ServiceImpl<TmgLiquidationDa
     public List<LiquidationDailyDto> getMonthInfo(String empId, String yyyymm){
         return baseMapper.getMonthInfo( empId,yyyymm);
     }
+
+    @Override
+    public void execTLDDInsert(String empId, String startDate, String endDate, String userCode, String custID, String compCode){
+        baseMapper.execTLDDInsert( empId,  startDate,  endDate,  userCode,  custID,  compCode);
+    }
 }
