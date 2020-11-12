@@ -12,6 +12,10 @@ import java.util.Date;
 public class SendMailBO {
 
     /**
+     * 接收人地址
+     */
+    private String sender;
+    /**
      * 接收人邮箱地址
       */
     private String receiver;

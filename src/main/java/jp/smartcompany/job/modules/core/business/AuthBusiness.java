@@ -243,6 +243,7 @@ public class AuthBusiness {
         List<GroupAppManagerPermissionDTO> tmgAdminList = CollUtil.newArrayList();
         List<GroupAppManagerPermissionDTO> tmgInpList =CollUtil.newArrayList();
         List<GroupAppManagerPermissionDTO> adminList = CollUtil.newArrayList();
+        List<GroupAppManagerPermissionDTO> tmgSettingsList = CollUtil.newArrayList();
         try {
             conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
@@ -290,12 +291,24 @@ public class AuthBusiness {
             List<Entity> adminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),admParams);
             convertDbData(adminList,adminEntityList);
 
+            List<Object> tmgSettingsParams = CollUtil.newArrayList();
+            tmgSettingsParams.addAll(commonParams);
+            tmgSettingsParams.add("TMG_SETTINGS");
+            Object[] settingsParams = new String[tmgSettingsParams.size()];
+            for (int i = 0; i < tmgSettingsParams.size(); i++) {
+                settingsParams[i] = tmgSettingsParams.get(i);
+            }
+            List<Entity> tmgSettingsEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),settingsParams);
+            convertDbData(tmgSettingsList,tmgSettingsEntityList);
+
         } catch (SQLException e) {
             e.printStackTrace();
             throw new GlobalException("获取用户菜单信息失败");
         } finally {
             DbUtil.close(conn);
         }
+
+        System.out.println(tmgSettingsList);
 
 //        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM,null,language);
 //        List<GroupAppManagerPermissionDTO> tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
@@ -392,6 +405,29 @@ public class AuthBusiness {
                 topMenus.add(permissionItem);
             }
         }
+
+        if (CollUtil.isNotEmpty(tmgSettingsList)) {
+            List<GroupAppManagerPermissionDTO> tmgSettingsPermissionList = CollUtil.newArrayList();
+            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgSettingsList) {
+                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),"TMG_SETTINGS")) {
+                    tmgSettingsPermissionList.add(groupAppManagerPermissionDTO);
+                }
+            }
+            GroupAppManagerPermissionDTO permissionItem = null;
+            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgSettingsPermissionList) {
+                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
+                    permissionItem = null;
+                    break;
+                }
+                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
+                    permissionItem = groupAppManagerPermissionDTO;
+                }
+            }
+            if (permissionItem!=null) {
+                topMenus.add(permissionItem);
+            }
+        }
+
         // 加载topMenu End
         // 加载前端显示菜单
         List<MenuGroupBO> menuGroupList = CollUtil.newArrayList();
@@ -429,6 +465,9 @@ public class AuthBusiness {
             }
             if (StrUtil.equals(topMenu.getMgpCsite(), "Admin")) {
                 appList = adminList;
+            }
+            if (StrUtil.equals(topMenu.getMgpCsite(),"TMG_SETTINGS")) {
+                appList = tmgSettingsList;
             }
             List<MenuBO> secondMenuList = CollUtil.newArrayList();
             List<GroupAppManagerPermissionDTO> secondAppList = appList.stream().filter(item -> StrUtil.equals(item.getType(), "3")).collect(Collectors.toList());

@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(of={"mgpCsystemid","mgpCgroupid","mgpCobjectid","mgpDstartdate"})
 @Accessors(chain = true)
 @TableName("mast_groupapppermission")
 @KeySequence("MAST_GROUPAPPPERMISSION_SEQ")

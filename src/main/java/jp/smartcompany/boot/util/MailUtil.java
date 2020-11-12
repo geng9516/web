@@ -37,12 +37,9 @@ public class MailUtil {
     private final TemplateEngine templateEngine;
     private final ITmgHistMaildataService tmgHistMaildataService;
 
-    private String from;
-
     @PostConstruct
     public void getSender() {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        from = "sp_wm_dev";
         javaMailSenderImpl.setUsername("sp_wm_dev");
         javaMailSenderImpl.setPassword("password0");
         javaMailSenderImpl.setPort(587);
@@ -57,9 +54,9 @@ public class MailUtil {
     }
 
     @Async
-    public void sendMail(MailType mailType, String empId, Date standardDate, String toAddress, String title, String content) {
-        sendText(toAddress,title,content);
-        saveSendMailHistory(mailType.getDesc(),empId,standardDate,toAddress,title,content,1);
+    public void sendMail(MailType mailType, String sender,String empId, Date standardDate, String toAddress, String title, String content) {
+        sendText(sender,toAddress,title,content);
+        saveSendMailHistory(sender,mailType.getDesc(),empId,standardDate,toAddress,title,content,1);
     }
 
     /**
@@ -68,7 +65,7 @@ public class MailUtil {
      * @param title 标题
      * @param content 内容
      */
-    private void sendText(String to,String title,String content) {
+    private void sendText(String from,String to,String title,String content) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setFrom(from);
@@ -83,7 +80,7 @@ public class MailUtil {
      * @param to 收件人
      * @param title 邮件内容
      */
-    private void sendHtml(List<String> to, String title, String templateName, List<Map<String,Object>> vars) {
+    private void sendHtml(String from,List<String> to, String title, String templateName, List<Map<String,Object>> vars) {
             for (int i = 0; i < to.size(); i++) {
                 Context context = new Context();
                 Map<String,Object> map = vars.get(i);
@@ -115,7 +112,7 @@ public class MailUtil {
      * @param content　送信メールメッセージ
      * @param status　送信ステータス ０：未送信　１：送信済　２：送信エラー
      */
-    public void saveSendMailHistory(String cid,String empId,Date standardDate,String toAddress,String title,String content,int status) {
+    public void saveSendMailHistory(String from,String cid,String empId,Date standardDate,String toAddress,String title,String content,int status) {
         Date now =DateUtil.date();
         TmgHistMaildataDO tmgHistMaildataDO = new TmgHistMaildataDO();
         tmgHistMaildataDO.setThmdCcompanyid("01");

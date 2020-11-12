@@ -47,18 +47,19 @@ public class AsyncTaskConfiguration implements AsyncConfigurer {
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return (ex, method, params) -> {
             if (ex instanceof MailException){
-                MailType mailType = (MailType) params[0];
-                String empId = (String)params[1];
-                Date standardDate = (Date)params[2];
-                String toAddress = (String)params[3];
-                String title = (String)params[4];
-                String content = (String)params[5];
+                String from = (String)params[0];
+                MailType mailType = (MailType) params[1];
+                String empId = (String)params[2];
+                Date standardDate = (Date)params[3];
+                String toAddress = (String)params[4];
+                String title = (String)params[5];
+                String content = (String)params[6];
                 for (Object param : params) {
                     if (param instanceof MailType){
                         mailType = (MailType)param;
                     }
                 }
-                mailUtil.saveSendMailHistory(mailType.getDesc(),empId,standardDate,toAddress,title,content,2);
+                mailUtil.saveSendMailHistory(from,mailType.getDesc(),empId,standardDate,toAddress,title,content,2);
             } else {
                 Date now = DateUtil.date();
                 ErrorAuditService errorAuditService = SpringUtil.getBean(ErrorAuditService.class);
