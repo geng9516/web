@@ -22,8 +22,8 @@ public class SmartParameterInterceptor implements HandlerInterceptor {
         UserAgent ua = UserAgentUtil.parse(uaStr);
         Platform platform = ua.getPlatform();
         req.setAttribute("isMobile",platform.isMobile());
-        req.setAttribute("isIPhoneOrIPod", platform.isIPhoneOrIPod());
-        req.setAttribute("isIPad",platform.isIPad());
+        req.setAttribute("isIPhoneOrIPod", uaStr.contains("iPhone"));
+        req.setAttribute("isIPad",uaStr.contains("iPad"));
         req.setAttribute("isAndroid",platform.isAndroid());
 
         String origin = req.getHeader("Origin");
