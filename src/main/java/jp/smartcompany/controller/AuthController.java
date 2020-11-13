@@ -32,14 +32,15 @@ public class AuthController {
      * @return String
      */
     @GetMapping("login")
-    public String toLogin(@RequestAttribute("isMobile")Boolean isMobile) {
+    public String toLogin(@RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                          @RequestAttribute("isAndroid") Boolean isAndroid) {
         if (SecurityUtil.isAuthenticated()) {
             return "redirect:/";
         }
-        if (!isMobile) {
-            return "login";
+        if (isIPhoneOrIPod || isAndroid) {
+            return "mobile/login";
         }
-        return "mobile/login";
+        return "login";
     }
 
     /**
@@ -128,8 +129,9 @@ public class AuthController {
 
 
     @GetMapping("expirePassword")
-    public String expirePassword(@RequestAttribute("isMobile")Boolean isMobile) {
-        if (isMobile) {
+    public String expirePassword(@RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                                 @RequestAttribute("isAndroid") Boolean isAndroid) {
+        if (isIPhoneOrIPod || isAndroid) {
             return "mobile/expirePassword";
         }
         return "expirePassword";

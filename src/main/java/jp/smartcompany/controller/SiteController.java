@@ -21,8 +21,9 @@ public class SiteController {
     private final ScCacheUtil cacheUtil;
 
     @GetMapping
-    public String index(@RequestAttribute("isMobile")Boolean isMobile) {
-        if (isMobile) {
+    public String index(@RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                        @RequestAttribute("isAndroid") Boolean isAndroid) {
+        if (isIPhoneOrIPod || isAndroid) {
             return "mobile/index";
         }
         String homeUrl = cacheUtil.getSystemProperty("DEFAULT_HOME_URL");

@@ -28,15 +28,19 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
         registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/logout","/expirePassword","/favicon.ico","/sys/log/**","/static/**","/error");
         registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/static/**");
 
-        String[] loginInterceptorUrlPattern = {"/",
-                "/index", "/sys/**",
+        String[] loginInterceptorUrlPattern = {
+                "/",
+                "/index",
+                "/sys/**",
                 "/tmg_admin/**",
                 "/tmg_inp/**",
                 "/admin/**",
                 "/expirePassword",
                 "/changeExpirePassword",
                 "/changePassword",
-                "/tmg_perm/**"};
+                "/tmg_perm/**",
+                "/tmg_settings/**"
+        };
         registry.addInterceptor(loginInfoInterceptor).addPathPatterns(loginInterceptorUrlPattern);
     }
 

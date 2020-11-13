@@ -1,11 +1,10 @@
 package jp.smartcompany.boot.interceptor;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.useragent.Platform;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,18 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SmartParameterInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) {
         String uaStr = req.getHeader("User-Agent");
         UserAgent ua = UserAgentUtil.parse(uaStr);
-        boolean isMobile = false;
-        if (ua!=null) {
-            isMobile = ua.isMobile();
-        }
-        req.setAttribute("isMobile",isMobile);
+        Platform platform = ua.getPlatform();
+        req.setAttribute("isMobile",platform.isMobile());
+        req.setAttribute("isIPhoneOrIPod", platform.isIPhoneOrIPod());
+        req.setAttribute("isIPad",platform.isIPad());
+        req.setAttribute("isAndroid",platform.isAndroid());
+
         String origin = req.getHeader("Origin");
         if(StrUtil.isBlank(origin)) {
             origin = req.getHeader("Referer");

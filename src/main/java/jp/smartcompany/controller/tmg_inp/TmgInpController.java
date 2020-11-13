@@ -33,9 +33,10 @@ public class TmgInpController {
      */
     @GetMapping("TmgResults")
     public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
-                                 @RequestAttribute("isMobile")Boolean isMobile) {
+                               @RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                               @RequestAttribute("isAndroid") Boolean isAndroid) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        if (isMobile) {
+        if (isIPhoneOrIPod || isAndroid) {
             return "mobile/index";
         }
         return "sys/input/addwork";
@@ -46,9 +47,10 @@ public class TmgInpController {
      */
     @GetMapping("TmgNotification")
     public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
-                                @RequestAttribute("isMobile")Boolean isMobile) {
+                                    @RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                                    @RequestAttribute("isAndroid") Boolean isAndroid) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        if (isMobile) {
+        if (isIPhoneOrIPod || isAndroid) {
             return "mobile/restapply";
         }
         return "sys/input/vapply";
@@ -69,9 +71,10 @@ public class TmgInpController {
      */
     @GetMapping("TmgScheduleCheck")
     public String toTmgScheduleCheck(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
-                           @RequestAttribute("isMobile")Boolean isMobile) {
+                                     @RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                                     @RequestAttribute("isAndroid") Boolean isAndroid) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        if (isMobile) {
+        if (isIPhoneOrIPod || isAndroid) {
             return "mobile/scheduleconfirm";
         }
         return "sys/input/oconfirm";
