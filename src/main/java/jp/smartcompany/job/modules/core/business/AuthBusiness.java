@@ -200,7 +200,8 @@ public class AuthBusiness {
 
         // 加载topMenu Start
         List<GroupAppManagerPermissionDTO> topMenus = CollUtil.newArrayList();
-        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_ADMIN, topMenus, tmgPermList);
+        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_PERM, topMenus, tmgPermList);
+        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_ADMIN,topMenus,tmgAdminList);
         conventMenuList(TmgUtil.Cs_SITE_ID_TMG_INP,topMenus,tmgInpList);
         conventMenuList(ADMIN,topMenus,adminList);
         conventMenuList(TMG_SETTINGS,topMenus,tmgSettingsList);
