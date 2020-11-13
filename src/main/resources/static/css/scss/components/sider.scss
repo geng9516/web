@@ -133,6 +133,7 @@
 .navbar-wrap {
   display: flex;
   position: fixed;
+  height: 100%;
   text-align: left;
   z-index: 999;
   .navbar-nav {
@@ -141,7 +142,6 @@
     background: var(--sider-background);
     transition: width 200ms ease;
     text-align: left;
-    height: calc(100vh - 51px);
     flex-direction: column;
     .nav-item {
       display: flex;
