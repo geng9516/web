@@ -1384,7 +1384,7 @@
                     inDrawer: true,
                     title: '注意',
                     width: 480,
-                    content: msg? msg+'\nこの内容で承認します。よろしいですか？' : 'この内容で承認します。よろしいですか',
+                    content: msg? msg+'\nこの内容で承認します。よろしいですか？' : 'この内容で承認します。よろしいですか？',
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
@@ -1585,7 +1585,6 @@
                 // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
                 if (nOverTimeTotal > this.overHourLimit) {
                     // 警告メッセージの表示および、応答の確認
-                    console.log(111)
                     return [true, '超過勤務命令の時間数が' +this.otDaily +'時間を超えています。']
                 }
                 return [true];
