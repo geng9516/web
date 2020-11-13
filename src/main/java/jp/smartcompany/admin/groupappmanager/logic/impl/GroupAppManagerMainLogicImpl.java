@@ -125,9 +125,6 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       sortGroupIds.add(groupDTO);
     });
 
-    System.out.println("--");
-    sortGroupIds.forEach(System.out::println);
-
     // 権限一覧が取得できない場合はnullを返却
     if (CollUtil.isEmpty(lPermissionList)){
       return null;

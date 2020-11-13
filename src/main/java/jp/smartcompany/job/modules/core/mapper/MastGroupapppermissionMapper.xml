@@ -25,22 +25,24 @@
             MTR_CTYPE TYPE,
             MG_NWEIGHTAGE,
             MTR_NSEQ,
-            MTR_ID
+            MTR_ID,
+            MTR_CURL,
+            MTR_CIMAGEURL
         FROM
              MAST_APPTREE
              LEFT OUTER JOIN MAST_GROUPAPPPERMISSION ON	MTR_COBJECTID = MGP_COBJECTID
                 AND	MTR_CSYSTEMID = MGP_CSYSTEMID
-                <if test="groupIds!=null and groupIds.size()>0">
+                <if test="groupIds neq null and groupIds.size() gt 0">
                     AND	MGP_CGROUPID IN
                     <foreach collection="groupIds" index="index" item="groupId" separator="," open="(" close=")">
                       #{groupId}
                     </foreach>
                 </if>
-                AND	MGP_DSTARTDATE <![CDATA[ <= ]]> #{date}
+                AND	MGP_DSTARTDATE <![CDATA[<=]]> #{date}
                 AND	MGP_DENDDATE >= #{date}
              LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID
                 AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID
-                AND MG_DSTARTDATE <![CDATA[ <= ]]> #{date}
+                AND MG_DSTARTDATE <![CDATA[<=]]> #{date}
                 AND MG_DENDDATE >= #{date}
         WHERE
             MTR_CSYSTEMID = #{systemId}
@@ -48,16 +50,17 @@
             <if test='siteId!=null and siteId!=""'>
                 AND	MTR_CSITEID = #{siteId}
             </if>
-            <if test='appId!=null and appId!=""'>
+            <if test='appId neq null and appId neq ""'>
                 AND (
                     MTR_COBJECTID IN (
                         SELECT DISTINCT
-                        MTR_CSITEID
+                          MTR_CSITEID
                         FROM
-                        MAST_APPTREE
+                          MAST_APPTREE
                         WHERE
-                        MTR_CSYSTEMID = #{systemId}
-                        AND	MTR_CAPPID = #{appId}
+                          MTR_CSYSTEMID = #{systemId}
+                          AND
+                            MTR_CAPPID = #{appId}
                     )
                     OR	MTR_CAPPID = #{appId}
                 )

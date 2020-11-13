@@ -6,15 +6,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import cn.hutool.db.DbUtil;
-import cn.hutool.db.Entity;
-import cn.hutool.db.handler.EntityListHandler;
-import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.enums.ErrorMessage;
-import jp.smartcompany.boot.util.*;
+import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.IpUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.CoreError;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
@@ -38,19 +37,12 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -67,22 +59,10 @@ public class AuthBusiness {
     private final LoginAuditService loginAuditService;
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
     private final ScCacheUtil scCacheUtil;
-    private final DataSource dataSource;
     private final LRUCache<Object,Object> lruCache;
     private final TimedCache<String,Object> timedCache;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
-
-    /**
-     * 登录方法
-     * @param loginDTO
-     */
-//    public void login(LoginDTO loginDTO) {
-//        String username = loginDTO.getUsername();
-//        UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
-//        Subject subject = SecurityUtils.getSubject();
-//        subject.login(token);
-//    }
 
     /**
      * 登录密码
@@ -198,237 +178,34 @@ public class AuthBusiness {
         loginAuditService.save(loginAuditDO);
     }
 
+    private static final String ADMIN = "Admin";
+    private static final String TMG_SETTINGS = "TMG_SETTINGS";
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
     public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds,boolean isApprover) {
 
-        List<Object> commonParams = CollUtil.newArrayList();
-        String sql = "SELECT DISTINCT MGP_CGROUPID,NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP," +
-                "NVL(MGP_CBUTTON, MTR_CBUTTONID) MGP_CBUTTON,NVL(MGP_CSCREEN, MTR_CSCREENID) MGP_CSCREEN,DECODE(MGP_CPERMISSION, '1', DECODE(MGP_CREJECT, '1', '2', '1'), '0') PERMISSION," +
-                "PSMASTER.FUNC_GET_OBJ_NAME (MTR_CSITEID,MTR_CAPPID,MTR_CSUBAPPID,MTR_CSCREENID,MTR_CBUTTONID,'"+language+"') OBJECTNAME, MTR_CTYPE TYPE,MG_NWEIGHTAGE,MTR_NSEQ,MTR_ID,MTR_CURL,MTR_CIMAGEURL " +
-                "FROM " +
-                "(" +
-                    "MAST_APPTREE " +
-                    "LEFT OUTER JOIN MAST_GROUPAPPPERMISSION ON MTR_COBJECTID = MGP_COBJECTID " +
-                    "AND MTR_CSYSTEMID = MGP_CSYSTEMID "+
-                    "AND MGP_CGROUPID IN (";
-                        String groupStr = "";
-                        if (CollUtil.isNotEmpty(groupIds)) {
-                            for (String groupId : groupIds) {
-                                commonParams.add(groupId);
-                                groupStr+="?,";
-                            }
-                        }
-                        sql+=groupStr.substring(0,groupStr.length()-1);
-                    sql+=") ";
-                    sql+="AND MGP_DSTARTDATE <= ? " +
-                    "AND MGP_DENDDATE >= ?" +
-                    "LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID " +
-                    "AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID " +
-                    "AND MG_DSTARTDATE <= ?" +
-                    "AND MG_DENDDATE >= ?" +
-                ") " +
-                "WHERE " +
-                "MTR_CSYSTEMID = ? " +
-                "AND MTR_CTYPE <> '0' " +
-                "AND MTR_CSITEID = ? "+
-                "ORDER BY MTR_NSEQ,MG_NWEIGHTAGE,MGP_CGROUPID";
-
-        Connection conn = null;
-        String date = SysUtil.transDateToString(DateUtil.date());
-        commonParams.add(date);
-        commonParams.add(date);
-        commonParams.add(date);
-        commonParams.add(date);
-        commonParams.add(systemId);
         List<GroupAppManagerPermissionDTO> tmgPermList = CollUtil.newArrayList();
-        List<GroupAppManagerPermissionDTO> tmgAdminList = CollUtil.newArrayList();
-        List<GroupAppManagerPermissionDTO> tmgInpList =CollUtil.newArrayList();
-        List<GroupAppManagerPermissionDTO> adminList = CollUtil.newArrayList();
-        List<GroupAppManagerPermissionDTO> tmgSettingsList = CollUtil.newArrayList();
-        try {
-            conn = dataSource.getConnection();
-            PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            conn.setReadOnly(true);
+        List<GroupAppManagerPermissionDTO> tmgAdminList;
+        List<GroupAppManagerPermissionDTO> tmgInpList;
+        List<GroupAppManagerPermissionDTO> adminList;
+        List<GroupAppManagerPermissionDTO> tmgSettingsList;
 
-            if (isApprover) {
-                List<Object> tmgPermParams = CollUtil.newArrayList();
-                tmgPermParams.addAll(commonParams);
-                tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);
-                Object[] permParams = new String[tmgPermParams.size()];
-                for (int i = 0; i < tmgPermParams.size(); i++) {
-                    permParams[i] = tmgPermParams.get(i);
-                }
-                List<Entity> tmgPermEntityList = SqlExecutor.query(preparedStatement, new EntityListHandler(), permParams);
-                convertDbData(tmgPermList, tmgPermEntityList);
-            }
-
-            List<Object> tmgAdminParams = CollUtil.newArrayList();
-            tmgAdminParams.addAll(commonParams);
-            tmgAdminParams.add( TmgUtil.Cs_SITE_ID_TMG_ADMIN);
-            Object[] adminParams = new String[tmgAdminParams.size()];
-            for (int i = 0; i < tmgAdminParams.size(); i++) {
-                adminParams[i] = tmgAdminParams.get(i);
-            }
-            List<Entity> tmgAdminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),adminParams);
-            convertDbData(tmgAdminList, tmgAdminEntityList);
-
-            List<Object> tmgInpParams = CollUtil.newArrayList();
-            tmgInpParams.addAll(commonParams);
-            tmgInpParams.add(TmgUtil.Cs_SITE_ID_TMG_INP);
-            Object[] inpParams = new String[tmgInpParams.size()];
-            for (int i = 0; i < tmgInpParams.size(); i++) {
-                inpParams[i] = tmgInpParams.get(i);
-            }
-            List<Entity> tmgInpEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),inpParams);
-            convertDbData(tmgInpList,tmgInpEntityList);
-
-            List<Object> administratorParams = CollUtil.newArrayList();
-            administratorParams.addAll(commonParams);
-            administratorParams.add("Admin");
-            Object[] admParams = new String[administratorParams.size()];
-            for (int i = 0; i < administratorParams.size(); i++) {
-                admParams[i] = administratorParams.get(i);
-            }
-            List<Entity> adminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),admParams);
-            convertDbData(adminList,adminEntityList);
-
-            List<Object> tmgSettingsParams = CollUtil.newArrayList();
-            tmgSettingsParams.addAll(commonParams);
-            tmgSettingsParams.add("TMG_SETTINGS");
-            Object[] settingsParams = new String[tmgSettingsParams.size()];
-            for (int i = 0; i < tmgSettingsParams.size(); i++) {
-                settingsParams[i] = tmgSettingsParams.get(i);
-            }
-            List<Entity> tmgSettingsEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),settingsParams);
-            convertDbData(tmgSettingsList,tmgSettingsEntityList);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new GlobalException("获取用户菜单信息失败");
-        } finally {
-            DbUtil.close(conn);
+        if (isApprover) {
+            tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId, DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM, null, language);
         }
-
-        System.out.println(tmgSettingsList);
-
-//        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM,null,language);
-//        List<GroupAppManagerPermissionDTO> tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
-//        List<GroupAppManagerPermissionDTO> tmgInpList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_INP,null,language);
-//        List<GroupAppManagerPermissionDTO> adminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,"Admin",null,language);
+        tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
+        tmgInpList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_INP,null,language);
+        adminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,ADMIN,null,language);
+        tmgSettingsList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,TMG_SETTINGS ,null,language);
 
         // 加载topMenu Start
         List<GroupAppManagerPermissionDTO> topMenus = CollUtil.newArrayList();
-
-        if (CollUtil.isNotEmpty(tmgPermList)) {
-            List<GroupAppManagerPermissionDTO> permPermissionList = CollUtil.newArrayList();
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgPermList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
-                    permPermissionList.add(groupAppManagerPermissionDTO);
-                }
-            }
-            GroupAppManagerPermissionDTO permissionItem = null;
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : permPermissionList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
-                    permissionItem = null;
-                    break;
-                }
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
-                    permissionItem = groupAppManagerPermissionDTO;
-                }
-            }
-            if (permissionItem!=null) {
-                topMenus.add(permissionItem);
-            }
-        }
-
-        if (CollUtil.isNotEmpty(tmgAdminList)) {
-            List<GroupAppManagerPermissionDTO> tmgAdminPermissionList = CollUtil.newArrayList();
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgAdminList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
-                    tmgAdminPermissionList.add(groupAppManagerPermissionDTO);
-                }
-            }
-            GroupAppManagerPermissionDTO permissionItem = null;
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgAdminPermissionList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
-                    permissionItem = null;
-                    break;
-                }
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
-                    permissionItem = groupAppManagerPermissionDTO;
-                }
-            }
-            if (permissionItem!=null) {
-                topMenus.add(permissionItem);
-            }
-        }
-
-        if (CollUtil.isNotEmpty(adminList)) {
-            List<GroupAppManagerPermissionDTO> adminPermissionList = CollUtil.newArrayList();
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : adminList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),"Admin")) {
-                    adminPermissionList.add(groupAppManagerPermissionDTO);
-                }
-            }
-            GroupAppManagerPermissionDTO permissionItem = null;
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : adminPermissionList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
-                    permissionItem = null;
-                    break;
-                }
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
-                    permissionItem = groupAppManagerPermissionDTO;
-                }
-            }
-            if (permissionItem!=null) {
-                topMenus.add(permissionItem);
-            }
-        }
-
-        if (CollUtil.isNotEmpty(tmgInpList)) {
-            List<GroupAppManagerPermissionDTO> tmgInpPermissionList = CollUtil.newArrayList();
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgInpList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),TmgUtil.Cs_SITE_ID_TMG_INP)) {
-                    tmgInpPermissionList.add(groupAppManagerPermissionDTO);
-                }
-            }
-            GroupAppManagerPermissionDTO permissionItem = null;
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgInpPermissionList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
-                    permissionItem = null;
-                    break;
-                }
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
-                    permissionItem = groupAppManagerPermissionDTO;
-                }
-            }
-            if (permissionItem!=null) {
-                topMenus.add(permissionItem);
-            }
-        }
-
-        if (CollUtil.isNotEmpty(tmgSettingsList)) {
-            List<GroupAppManagerPermissionDTO> tmgSettingsPermissionList = CollUtil.newArrayList();
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgSettingsList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getType(),"1") && StrUtil.equals(groupAppManagerPermissionDTO.getMgpCobjectid(),"TMG_SETTINGS")) {
-                    tmgSettingsPermissionList.add(groupAppManagerPermissionDTO);
-                }
-            }
-            GroupAppManagerPermissionDTO permissionItem = null;
-            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : tmgSettingsPermissionList) {
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
-                    permissionItem = null;
-                    break;
-                }
-                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
-                    permissionItem = groupAppManagerPermissionDTO;
-                }
-            }
-            if (permissionItem!=null) {
-                topMenus.add(permissionItem);
-            }
-        }
-
+        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_ADMIN, topMenus, tmgPermList);
+        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_INP,topMenus,tmgInpList);
+        conventMenuList(ADMIN,topMenus,adminList);
+        conventMenuList(TMG_SETTINGS,topMenus,tmgSettingsList);
         // 加载topMenu End
+
         // 加载前端显示菜单
         List<MenuGroupBO> menuGroupList = CollUtil.newArrayList();
 
@@ -463,10 +240,10 @@ public class AuthBusiness {
             if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_PERM)) {
                 appList = tmgPermList;
             }
-            if (StrUtil.equals(topMenu.getMgpCsite(), "Admin")) {
+            if (StrUtil.equals(topMenu.getMgpCsite(), ADMIN)) {
                 appList = adminList;
             }
-            if (StrUtil.equals(topMenu.getMgpCsite(),"TMG_SETTINGS")) {
+            if (StrUtil.equals(topMenu.getMgpCsite(),TMG_SETTINGS)) {
                 appList = tmgSettingsList;
             }
             List<MenuBO> secondMenuList = CollUtil.newArrayList();
@@ -538,6 +315,28 @@ public class AuthBusiness {
         return perms;
     }
 
+    private void conventMenuList(String siteId, List<GroupAppManagerPermissionDTO> topMenus, List<GroupAppManagerPermissionDTO> list) {
+            List<GroupAppManagerPermissionDTO> permissionList = CollUtil.newArrayList();
+            for (GroupAppManagerPermissionDTO permissionDTO : list) {
+                if (StrUtil.equals(permissionDTO.getType(),"1") && StrUtil.equals(permissionDTO.getMgpCobjectid(),siteId)) {
+                    permissionList.add(permissionDTO);
+                }
+            }
+            GroupAppManagerPermissionDTO permissionItem = null;
+            for (GroupAppManagerPermissionDTO groupAppManagerPermissionDTO : permissionList) {
+                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"2")) {
+                    permissionItem = null;
+                    break;
+                }
+                if (StrUtil.equals(groupAppManagerPermissionDTO.getPermission(),"1") && permissionItem==null){
+                    permissionItem = groupAppManagerPermissionDTO;
+                }
+            }
+            if (permissionItem!=null) {
+                topMenus.add(permissionItem);
+            }
+    }
+
     /**
      * 登録データをEntityへ設定する.
      * @param sUserid ユーザID
@@ -554,30 +353,6 @@ public class AuthBusiness {
         passwdEntity.setMapCmodifieruserid(sUserid);                       // 更新者
         passwdEntity.setMapDmodifieddate(dDate);  // 更新日
         return passwdEntity;
-    }
-
-    private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {
-        tmgPermEntityList.forEach(entity -> {
-                GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
-                dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
-                dto.setPermission((String)entity.get("PERMISSION"));
-                dto.setMtrCimageurl((String)entity.get("MTR_CIMAGEURL"));
-                dto.setMtrCurl((String)entity.get("MTR_CURL"));
-                dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
-                if (entity.get("MG_NWEIGHTAGE")!=null) {
-                    dto.setMgNweightage(((BigDecimal) entity.get("MG_NWEIGHTAGE")).longValue());
-                }
-                dto.setType((String)entity.get("TYPE"));
-                dto.setObjectName((String)entity.get("OBJECTNAME"));
-                dto.setMgpCscreen((String)entity.get("MGP_CSCREEN"));
-                dto.setMgpCbutton((String)entity.get("MGP_CBUTTON"));
-                dto.setMgpCsubapp((String)entity.get("MGP_CSUBAPP"));
-                dto.setMgpCapp((String)entity.get("MGP_CAPP"));
-                dto.setMgpCsite((String)entity.get("MGP_CSITE"));
-                dto.setMgpCobjectid((String)entity.get("MGP_COBJECTID"));
-                dto.setMgpCgroupid((String)entity.get("MGP_CGROUPID"));
-                tmgPermList.add(dto);
-        });
     }
 
     /**
