@@ -1,5 +1,5 @@
 <nav th:fragment="sider" class="navbar-wrap" xmlns:th="http://www.thymeleaf.org" style="margin-top: 51px;">
-    <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/sider.min.css`">
+    <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/sider.min.css?t=${Date.now()}`">
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
