@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgLiquidationDailyMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDailyDO;
 import jp.smartcompany.job.modules.core.service.ITmgliquidationDailyService;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,5 +25,16 @@ public class TmgLiquidationDailyServiceImpl extends ServiceImpl<TmgLiquidationDa
     @Override
     public void execTLDDInsert(String empId, String startDate, String endDate, String userCode, String custID, String compCode){
         baseMapper.execTLDDInsert( empId,  startDate,  endDate,  userCode,  custID,  compCode);
+    }
+
+
+    @Override
+    public List<MonthSumTimeDto> getMonthSumTime(String empId, String startDate, String endDate,String custID, String compCode){
+        return baseMapper.getMonthSumTime( empId,  startDate,  endDate,custID,compCode);
+    }
+
+    @Override
+    public int checkLiquidationDaily(String custID, String compCode, String empid, String yyyymmdd) {
+        return  baseMapper.checkLiquidationDaily(  custID,  compCode,  empid,  yyyymmdd);
     }
 }

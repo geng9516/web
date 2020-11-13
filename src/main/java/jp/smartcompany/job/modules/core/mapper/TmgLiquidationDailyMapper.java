@@ -4,6 +4,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDailyDO;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,4 +25,15 @@ public interface TmgLiquidationDailyMapper extends BaseMapper<TmgLiquidationDail
                        @Param("userCode")String userCode,
                        @Param("custID")String custID,
                        @Param("compCode")String compCode);
+
+    List<MonthSumTimeDto> getMonthSumTime(@Param("empId")String empId,
+                                          @Param("startDate")String startDate,
+                                          @Param("endDate")String endDate,
+                                          @Param("custID")String custID,
+                                          @Param("compCode")String compCode);
+
+    int checkLiquidationDaily(@Param("custID")String custID,
+                              @Param("compCode")String compCode,
+                              @Param("empId")String empId,
+                              @Param("yyyymmdd")String yyyymmdd);
 }

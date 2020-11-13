@@ -18,5 +18,6 @@ public class LiquidationPeriodListDto {
     private String modifieduser;
     private String modifieddate;
     private String newflag;
+    private String status;
 
 }
