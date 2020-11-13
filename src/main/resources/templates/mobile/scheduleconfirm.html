@@ -76,13 +76,11 @@
     <back-top></back-top>
   </main>
   <div th:replace="layout/mobileHeader::header"></div>
-
+  <script th:inline="javascript">
+    var KANJINAME = [[${ session.psSession.loginKanjiName }]]
+    var LOGIN_EMPOLYEE = [[${ session.psSession.loginEmployee }]]
+    var SECTION_NAME = [[${ session.psSession.loginDesignation[0].sectionName }]]
+  </script>
+  <script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ new java.util.Date().getTime()}"></script>
 </body>
-<script th:inline="javascript">
-var KANJINAME = [[${ session.psSession.loginKanjiName }]]
-var LOGIN_EMPOLYEE = [[${ session.psSession.loginEmployee }]]
-var SECTION_NAME = [[${ session.psSession.loginDesignation[0].sectionName }]]
-</script>
-<script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ new java.util.Date().getTime()}"></script>
-
 </html>
