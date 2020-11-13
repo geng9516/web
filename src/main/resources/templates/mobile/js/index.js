@@ -93,25 +93,25 @@ new Vue({
           {
             title: '内容',
             align: 'center',
-            width: '100',
+            minWidth: '100',
             key: 'itemName'
           },
           {
             title: '開始',
-            width: '90',
+            minWidth: '90',
             slot: 'tdadNopen',
             align: 'center'
           },
           {
             title: '終了',
             slot: 'tdadNclose',
-            width: '90',
+            minWidth: '90',
             align: 'center'
           },
           {
             title: '削除',
             slot: 'tdadNdeleteflg',
-            width: '60',
+            minWidth: '60',
             align: 'center'
           }
         ],
@@ -120,25 +120,25 @@ new Vue({
           {
             title: '内容',
             align: 'center',
-            width: '100',
+            minWidth: '100',
             key: 'itemName'
           },
           {
             title: '開始',
-            width: '90',
+            minWidth: '90',
             slot: 'tdadNopen',
             align: 'center'
           },
           {
             title: '終了',
             slot: 'tdadNclose',
-            width: '90',
+            minWidth: '90',
             align: 'center'
           },
           {
             title: '削除',
             slot: 'tdadNdeleteflg',
-            width: '60',
+            minWidth: '60',
             align: 'center'
           }
         ],
