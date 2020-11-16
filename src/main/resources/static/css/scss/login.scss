@@ -31,7 +31,8 @@ body {
   line-height: 48px;
 }
 .login {
-  max-width: 1920px;
+  // 去除最大限制
+  // max-width: 1920px;
   min-width: 800px;
   height: 100vh;
   margin: 0 auto;

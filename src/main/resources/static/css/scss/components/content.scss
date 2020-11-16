@@ -7,7 +7,8 @@
 .content {
   min-height: 100vh;
   min-width: 1280px;
-  max-width: 1920px;
+  // 去除最大限制
+  // max-width: 1920px;
   padding: 51px 0 0 60px;
   background-color: var(--content-bg);
   overflow-y: auto;
