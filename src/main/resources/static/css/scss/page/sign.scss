@@ -183,12 +183,6 @@
     color: #a9a9a9;
   }
 }
-// pad等比缩放
-@media (max-width: 1279px) {
-  .stamp-warp {
-    margin: 0;
-  }
-}
 
 @media (max-width: 1600px) {
   .hour-style {
@@ -225,5 +219,35 @@
   }
   .real-schedule {
     line-height: 100px;
+  }
+}
+
+// pad等比缩放
+@media (max-width: 1279px) {
+  .stamp-warp {
+    margin: 0;
+  }
+}
+
+@media (max-width: 1280px) {
+  .hour-style {
+    font-size: 45px;
+    height: 80px;
+  }
+  .shadow {
+    margin-bottom: 0;
+  }
+  .gowork-btn, .offwork-btn, .addwork-btn {
+    height: 40px;
+  }
+  .schedule {
+    height: 235px;
+    .title-wrap .plan-title {
+      height: 198px;
+    }
+  }
+
+  .card {
+    height: 113px;
   }
 }
