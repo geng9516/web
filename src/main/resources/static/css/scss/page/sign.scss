@@ -42,7 +42,7 @@
       display: inline-block;
       font-size: 13px;
       position: relative;
-      width: 46.5px;
+      width: 55.44px;
       // 23px在响应式中非常重要
       padding: 10px 23px;
       &:before {
@@ -50,7 +50,7 @@
         display: inline-block;
         position: absolute;
         top: 39px;
-        left: 45px;
+        left: 52px;
         width: 1px;
         height: 100%;
         background-image: linear-gradient(to bottom, var(--login-title-border-b) 0%, var(--login-title-border-b) 50%, transparent 50%);
