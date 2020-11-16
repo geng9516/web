@@ -237,8 +237,10 @@
   .shadow {
     margin-bottom: 0;
   }
-  .gowork-btn, .offwork-btn, .addwork-btn {
-    height: 40px;
+  .stamp-warp {
+    .gowork-btn, .offwork-btn, .addwork-btn {
+      height: 40px;
+    }
   }
   .schedule {
     height: 235px;
@@ -248,6 +250,10 @@
   }
 
   .card {
-    height: 113px;
+    height: 109px;
+    .num {
+      margin-top: 10px;
+      font-size: 30px;
+    }
   }
 }
