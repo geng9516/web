@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
@@ -11,6 +12,7 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  清算期間設定bean
@@ -37,7 +40,7 @@ public class TmgLiquidationPeriodBean {
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
 
-    // 职种
+    // 职种获取
     public List<WorkTypeGroupDto> getWorkTypeList(PsDBBean psDBBean) throws Exception {
 
         //变形
@@ -119,6 +122,7 @@ public class TmgLiquidationPeriodBean {
     }
 
     @Transactional(rollbackFor = GlobalException.class)
+    //清算期间删除
     public GlobalResponse deleteLiquidation(String empId, String startDate, String endDate) {
         iTmgliquidationDailyService.getBaseMapper().delete(SysUtil.<TmgLiquidationDailyDO>query().eq("TLDD_CEMPLOYEEID", empId)
                 .eq("TLDD_DSTARTDATE", startDate)
@@ -149,40 +153,45 @@ public class TmgLiquidationPeriodBean {
         iTmgliquidationDailyService.execTLDDInsert(empId, startDate, endDate, psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode());
     }
 
-
+    //errmsg 生成
     private List<String> LiquidationCheck(List<TmgLiquidationDailyCheckDO> errDo) {
         List<String> errList = new ArrayList<>();
-        //1 日check。每天最大工作时间10小时
+
         for (TmgLiquidationDailyCheckDO errCheckDo : errDo) {
             String errMsg;
-            errCheckDo.getTldcCerrmsg();
+            errList.add(errCheckDo.getTldcCerrmsg());
+            //1 日check。每天最大工作时间10小时
+
+            //2	周check。每周最大工作小时52小时
+
+            //3	连续工作日数 不能超过6天
+
+            //4	不能连续3周超过48小时
+
+            //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
+
+            //6	期间内最大工作日数		280* （日数/365）
+
+            //7	期间内平均每周不能超过 周法定
         }
-        //2	周check。每周最大工作小时52小时
 
-        //3	连续工作日数 不能超过6天
-
-        //4	不能连续3周超过48小时
-
-        //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
-
-        //6	期间内最大工作日数		280* （日数/365）
-
-        //7	期间内平均每周不能超过 周法定
 
         return errList;
     }
 
-
+    //月数据更新
     public int UpdateLiquidationDaily(List<LiquidationDailyDto> monthList,String empid,String startDate,String endDate,PsDBBean psDBBean) {
         int updateNum=0;
         int errNum=0;
         for (LiquidationDailyDto dailyDto: monthList) {
             TmgLiquidationDailyDO tlddDo= new TmgLiquidationDailyDO();
+            //定休日调整
             if(dailyDto.getKubun().indexOf("TMG_HOLFLG")> -1){
                 tlddDo.setTlddCsparechar3(dailyDto.getKubun());
                 tlddDo.setTlddCkuben(dailyDto.getKubun());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
             }
+            //出勤或者休出 选用pattern
             if(dailyDto.getKubun().indexOf("TMG_PATTERN")> -1){
                 tlddDo.setTlddCpattern(dailyDto.getKubun());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
@@ -192,12 +201,14 @@ public class TmgLiquidationPeriodBean {
                 tlddDo.setTlddCrestendtime(dailyDto.getResttimeend());
 
             }
+            //原值
             if(dailyDto.getKubun().indexOf("TMG_WORK")> -1){
                 break;
             }
             tlddDo.setTlddCmodifieruserid(psDBBean.getUserCode());
             tlddDo.setTlddDmodifieddate(DateTime.now());
-             updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
+            //数据插入
+            updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
                     SysUtil.<TmgLiquidationDailyDO>query()
                             .eq("TLDD_CCUSTOMERID", psDBBean.getCustID())
                             .eq("TLDD_CCOMPANYID", psDBBean.getCompCode())
@@ -205,22 +216,48 @@ public class TmgLiquidationPeriodBean {
                             .eq("TLDD_DENDDATE", endDate)
                             .eq("TLDD_CEMPLOYEEID", empid)
                             .eq("TLDD_DYYYYMMDD", dailyDto.getYyyymmdd()) );
-
-
         }
         if (updateNum>0){
+            //check LiquidationDaily 执行
             errNum=iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empid,monthList.get(0).getYyyymmdd());
         }
         return  errNum;
     }
 
-
-    public void EditMonthDisp(String empId, String yyyymm, PsDBBean psDBBean) {
+    //月編集画面表示
+    public Map<String, Object> EditMonthDisp(String empId, String yyyymm, PsDBBean psDBBean) {
+        Map<String, Object> monthlyMap = MapUtil.newHashMap();
         //月data
+        List<LiquidationDailyInfoVo> liquidationDailyInfoVoList = iTmgliquidationDailyService.selectDailyInfo(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
 
 
-        //pattern list（选取用）
+        monthlyMap.put("liquidationDailyInfoVoList", liquidationDailyInfoVoList);
+        //todo:pattern list（选取用）
 
 
+
+
+
+        return monthlyMap;
+    }
+
+
+    //最後登録
+    public GlobalResponse upload(String empId,String startDate, String endDate,PsDBBean psDBBean){
+        //procedure 执行
+        iTmgliquidationDailyService.execTDAInsert(empId, startDate, endDate, psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode());
+        // procedure 执行时 err发生有无
+        TmgLiquidationPeriodDO tlpDo= iTmgliquidationPeriodService.getBaseMapper().selectOne(SysUtil.<TmgLiquidationPeriodDO>query()
+                .eq("TLP_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TLP_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TLP_DSTARTDATE", startDate)
+                .eq("TLP_DENDDATE", endDate)
+                .eq("TLP_CEMPLOYEEID", empId));
+        String stutas=tlpDo.getTlpCsparechar1();
+        if (!StrUtil.hasEmpty(stutas) && stutas.equals("TLD_STATUS|3")){
+            return GlobalResponse.ok("error");
+        }else{
+            return GlobalResponse.ok();
+        }
     }
 }

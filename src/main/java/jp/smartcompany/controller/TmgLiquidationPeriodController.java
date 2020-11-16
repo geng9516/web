@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.TmgLiquidationPeriodBean;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationUpdateListDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeGroupDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
@@ -79,7 +80,7 @@ public class TmgLiquidationPeriodController {
     @ResponseBody
     public GlobalResponse insertLiquidation(
             @RequestBody LiquidationUpdateListDto liquidationUpdateListDto,
-            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+            @RequestAttribute("BeanName") PsDBBean psDBBean){
         return tmgLiquidationPeriodBean.insertLiquidation(liquidationUpdateListDto,psDBBean);
     }
 
@@ -92,7 +93,64 @@ public class TmgLiquidationPeriodController {
             @RequestParam(value = "empId",required = false) String empId,
             @RequestParam(value = "startDate",required = false) String startDate,
             @RequestParam(value = "endDate",required = false) String endDate,
-            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+            @RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgLiquidationPeriodBean.deleteLiquidation(empId,startDate,endDate);
+    }
+
+
+    /**
+     * 月編集画面
+     * @return　エラー
+     */
+    @GetMapping("getEditDisop")
+    public EditDispVo getEditDisop(
+            @RequestParam("empId") String empId,
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgLiquidationPeriodBean.getEditDisop(empId,startDate,endDate,psDBBean);
+    }
+
+
+
+    /**
+     * 月編集画面
+     * @return　エラー
+     */
+    @GetMapping("EditMonthDisp")
+    public Map<String, Object> EditMonthDisp(
+            @RequestParam("empId") String empId,
+            @RequestParam("yyyymm") String yyyymm,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgLiquidationPeriodBean.EditMonthDisp(empId,yyyymm,psDBBean);
+    }
+
+
+    /**
+     * 月データを変更する
+     * @return　エラー
+     */
+    @PostMapping("UpdateLiquidationDaily")
+    @ResponseBody
+    public int UpdateLiquidationDaily(
+            @RequestParam(value = "empId",required = false) String empId,
+            @RequestParam(value = "startDate",required = false) String startDate,
+            @RequestParam(value = "endDate",required = false) String endDate,
+            List<LiquidationDailyDto> monthList,
+            @RequestAttribute("BeanName") PsDBBean psDBBean){
+        return tmgLiquidationPeriodBean.UpdateLiquidationDaily(monthList,empId,startDate,endDate,psDBBean);
+    }
+
+    /**
+     * 最後登録
+     * @return　エラー
+     */
+    @PostMapping("upload")
+    public GlobalResponse upload(
+            @RequestParam(value = "empId",required = false) String empId,
+            @RequestParam(value = "startDate",required = false) String startDate,
+            @RequestParam(value = "endDate",required = false) String endDate,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgLiquidationPeriodBean.upload(empId,startDate,endDate,psDBBean);
     }
 }
