@@ -34,6 +34,12 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
         }
 
         @Override
+        public List<GroupAppManagerPermissionDTO> selectPermissionList(String systemId, Date date,List<String> groupIds,List<String> siteList,String language) {
+                String strDate = SysUtil.transDateToString(date);
+                return baseMapper.selectPermissionListBySiteList(systemId,strDate,groupIds,siteList,language);
+        }
+
+        @Override
         public GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId) {
                 String strDate = SysUtil.transDateToString(pdDate);
                 return baseMapper.selectDate(systemId,strDate,groupId);
@@ -60,6 +66,11 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
         @Override
         public int deleteOtherSysObj(String systemId,String objectId) {
                 return baseMapper.deleteOtherSysObj(systemId,objectId);
+        }
+
+        @Override
+        public List<String> selectSiteList(Boolean isApprover) {
+                return baseMapper.selectSiteList(isApprover);
         }
 
 }

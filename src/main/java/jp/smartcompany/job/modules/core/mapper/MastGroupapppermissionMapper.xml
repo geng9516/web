@@ -71,6 +71,63 @@
                 MGP_CGROUPID
     </select>
 
+    <select id="selectPermissionListBySiteList" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO">
+        -- 起動権限一覧取得
+        -- MAST_APPTREEとの差異が無いよう、外部結合する
+        SELECT DISTINCT
+            MGP_CGROUPID,
+            NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,
+            NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,
+            NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,
+            NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP,
+            NVL(MGP_CBUTTON, MTR_CBUTTONID) MGP_CBUTTON,
+            NVL(MGP_CSCREEN, MTR_CSCREENID) MGP_CSCREEN,
+            DECODE(MGP_CPERMISSION, '1', DECODE(MGP_CREJECT, '1', '2', '1'), '0') PERMISSION,
+            PSMASTER.FUNC_GET_OBJ_NAME (
+            MTR_CSITEID,
+            MTR_CAPPID,
+            MTR_CSUBAPPID,
+            MTR_CSCREENID,
+            MTR_CBUTTONID,
+            '${language}'
+            ) OBJECTNAME,
+            MTR_CTYPE TYPE,
+            MG_NWEIGHTAGE,
+            MTR_NSEQ,
+            MTR_ID,
+            MTR_CURL,
+            MTR_CIMAGEURL
+        FROM
+           MAST_APPTREE
+           LEFT OUTER JOIN MAST_GROUPAPPPERMISSION ON	MTR_COBJECTID = MGP_COBJECTID
+           AND	MTR_CSYSTEMID = MGP_CSYSTEMID
+           <if test="groupIds neq null and groupIds.size() gt 0">
+            AND	MGP_CGROUPID IN
+            <foreach collection="groupIds" index="index" item="groupId" separator="," open="(" close=")">
+                #{groupId}
+            </foreach>
+           </if>
+           AND	MGP_DSTARTDATE <![CDATA[<=]]> #{date}
+           AND	MGP_DENDDATE >= #{date}
+           LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID
+             AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID
+             AND MG_DSTARTDATE <![CDATA[<=]]> #{date}
+             AND MG_DENDDATE >= #{date}
+        WHERE
+            MTR_CSYSTEMID = #{systemId}
+            AND	MTR_CTYPE <![CDATA[ <> ]]> '0'
+            <if test="siteList neq null and siteList.size() gt 0">
+                AND	MTR_CSITEID IN
+                <foreach collection="siteList" index="index" item="siteId" separator="," open="(" close=")">
+                    #{siteId}
+                </foreach>
+            </if>
+            ORDER BY
+                MTR_NSEQ,
+                MG_NWEIGHTAGE,
+                MGP_CGROUPID
+    </select>
+
     <select id="selectDate" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO">
         -- 有効改定日と前後の改定日を取得するSQL
         SELECT
@@ -183,5 +240,15 @@
           mgp_csystemid <![CDATA[<>]]> #{systemId}
           and	mgp_cobjectid = #{objectId}
     </delete>
+
+    <select id="selectSiteList" resultType="java.lang.String">
+        select MTR_CSITEID from mast_apptree
+        <where>
+            and mtr_ctype = '1'
+            <if test="!value">
+                and MTR_COBJECTID <![CDATA[<>]]> 'TMG_PERM'
+            </if>
+        </where>
+    </select>
 
 </mapper>

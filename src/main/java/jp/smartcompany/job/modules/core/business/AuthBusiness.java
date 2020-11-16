@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.multi.ListValueMap;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
@@ -28,7 +29,6 @@ import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import jp.smartcompany.job.modules.core.service.LoginAuditService;
 import jp.smartcompany.job.modules.core.util.PsSession;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -178,34 +180,28 @@ public class AuthBusiness {
         loginAuditService.save(loginAuditDO);
     }
 
-    private static final String ADMIN = "Admin";
-    private static final String TMG_SETTINGS = "TMG_SETTINGS";
-
     @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
     public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds,boolean isApprover) {
-
-        List<GroupAppManagerPermissionDTO> tmgPermList = CollUtil.newArrayList();
-        List<GroupAppManagerPermissionDTO> tmgAdminList;
-        List<GroupAppManagerPermissionDTO> tmgInpList;
-        List<GroupAppManagerPermissionDTO> adminList;
-        List<GroupAppManagerPermissionDTO> tmgSettingsList;
-
-        if (isApprover) {
-            tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId, DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM, null, language);
-        }
-        tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
-        tmgInpList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_INP,null,language);
-        adminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,ADMIN,null,language);
-        tmgSettingsList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,TMG_SETTINGS ,null,language);
-
         // 加载topMenu Start
+        List<String> siteList = iMastGroupapppermissionService.selectSiteList(isApprover);
+        List<GroupAppManagerPermissionDTO> tmgPermissionList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, siteList,language);
         List<GroupAppManagerPermissionDTO> topMenus = CollUtil.newArrayList();
-        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_PERM, topMenus, tmgPermList);
-        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_ADMIN,topMenus,tmgAdminList);
-        conventMenuList(TmgUtil.Cs_SITE_ID_TMG_INP,topMenus,tmgInpList);
-        conventMenuList(ADMIN,topMenus,adminList);
-        conventMenuList(TMG_SETTINGS,topMenus,tmgSettingsList);
-        // 加载topMenu End
+
+        // 获取当前用户可访问的site列表
+        siteList.forEach(siteId ->  conventMenuList(siteId, topMenus, tmgPermissionList));
+        ListValueMap<String,GroupAppManagerPermissionDTO> listValueMap = new ListValueMap<>(topMenus.size());
+        for (GroupAppManagerPermissionDTO permissionDTO : tmgPermissionList) {
+           List<GroupAppManagerPermissionDTO> list = CollUtil.newArrayList();
+           String siteId = permissionDTO.getMgpCsite();
+           List<GroupAppManagerPermissionDTO> userSitePermissionList = listValueMap.get(siteId);
+           if (CollUtil.isNotEmpty(userSitePermissionList)) {
+               list = userSitePermissionList;
+           }
+           if (!CollUtil.contains(list,permissionDTO)) {
+               list.add(permissionDTO);
+           }
+           listValueMap.put(siteId,list);
+        }
 
         // 加载前端显示菜单
         List<MenuGroupBO> menuGroupList = CollUtil.newArrayList();
@@ -231,22 +227,8 @@ public class AuthBusiness {
             menuGroupBO.setSiteId(topMenu.getMgpCsite());
 
             // 加载二级导航
-            List<GroupAppManagerPermissionDTO> appList = CollUtil.newArrayList();
-            if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_INP)) {
-                appList = tmgInpList;
-            }
-            if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
-                appList = tmgAdminList;
-            }
-            if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_PERM)) {
-                appList = tmgPermList;
-            }
-            if (StrUtil.equals(topMenu.getMgpCsite(), ADMIN)) {
-                appList = adminList;
-            }
-            if (StrUtil.equals(topMenu.getMgpCsite(),TMG_SETTINGS)) {
-                appList = tmgSettingsList;
-            }
+            List<GroupAppManagerPermissionDTO> appList = listValueMap.get(topMenu.getMgpCsite());
+
             List<MenuBO> secondMenuList = CollUtil.newArrayList();
             List<GroupAppManagerPermissionDTO> secondAppList = appList.stream().filter(item -> StrUtil.equals(item.getType(), "3")).collect(Collectors.toList());
 
@@ -292,29 +274,6 @@ public class AuthBusiness {
         return CollUtil.sort(menuGroupList,Comparator.comparingLong(MenuGroupBO::getOrderNum));
     }
 
-    public Set<String> getAllUserPerms(String systemId, String language, List<String> groupIds) {
-        Set<String> perms =(Set<String>)lruCache.get(LOGIN_PERMISSIONS);
-        if (CollUtil.isEmpty(perms)) {
-            List<GroupAppManagerPermissionDTO> permissionList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, null,null,language);
-            List<List<GroupAppManagerPermissionDTO>> secondGroupAppList = CollUtil.groupByField(permissionList,"mgpCobjectid");
-            for (List<GroupAppManagerPermissionDTO> groupPerms : secondGroupAppList) {
-                for (GroupAppManagerPermissionDTO groupPerm : groupPerms) {
-                    String permission = groupPerm.getPermission();
-                    if (StrUtil.equals(permission,"2")) {
-                        break;
-                    }
-                    if (StrUtil.equals(permission,"0")) {
-                        continue;
-                    }
-                    if (StrUtil.equals(permission,"1")) {
-                        perms.add(permission);
-                    }
-                }
-            }
-            lruCache.put(LOGIN_PERMISSIONS,perms);
-        }
-        return perms;
-    }
 
     private void conventMenuList(String siteId, List<GroupAppManagerPermissionDTO> topMenus, List<GroupAppManagerPermissionDTO> list) {
             List<GroupAppManagerPermissionDTO> permissionList = CollUtil.newArrayList();

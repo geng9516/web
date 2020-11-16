@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
@@ -24,6 +25,8 @@ public interface IMastGroupapppermissionService extends IService<MastGroupappper
                 String systemId, Date date, List<String> groupIds, String siteId, String appId, String language
         );
 
+        List<GroupAppManagerPermissionDTO> selectPermissionList(String systemId, Date date,List<String> groupIds,List<String> siteList,String language);
+
         GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId);
 
         Page<MastGroupapppermissionDO> pagePermissionList(IPage<MastGroupapppermissionDO> page);
@@ -34,4 +37,5 @@ public interface IMastGroupapppermissionService extends IService<MastGroupappper
 
         int deleteOtherSysObj(String systemId, String objectId);
 
+        List<String> selectSiteList(Boolean isApprover);
 }

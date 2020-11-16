@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of={"mgpCsite","mgpCsubapp"})
+@EqualsAndHashCode(of={"mgpCgroupid","mgpCobjectid"})
 public class GroupAppManagerPermissionDTO {
 
     private String mtrCimageurl;

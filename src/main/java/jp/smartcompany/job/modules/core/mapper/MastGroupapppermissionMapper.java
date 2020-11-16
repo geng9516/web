@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +43,14 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
                 @Param("appId") String appId,
                 @Param("language") String language);
 
+        List<GroupAppManagerPermissionDTO> selectPermissionListBySiteList(
+                @Param("systemId") String systemId,
+                @Param("date") String date,
+                @Param("groupIds") List<String> groupIds,
+                @Param("siteList") List<String> siteList,
+                @Param("language") String language
+        );
+
         GroupAppManagerChangeDateDTO selectDate(@Param("systemId") String systemId,
                                                 @Param("systemDate") String pdDate,
                                                 @Param("groupId") String groupId);
@@ -61,4 +70,5 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
 
         int deleteOtherSysObj(@Param("systemId") String systemId,@Param("objectId") String objectId);
 
+        List<String> selectSiteList(Boolean isApprover);
 }
