@@ -399,11 +399,11 @@
 .cube-picker-confirm {
   position: absolute;
   right: 0;
-  color: #fc9153
+  color: var(--login-svg-fill)
 }
 
 .cube-picker-confirm:active {
-  color: #fdc2a5
+  color: var(--form-label)
 }
 
 .cube-picker-cancel {
@@ -490,7 +490,7 @@
   width: 1%;
   height: 173px;
   overflow: hidden;
-  font-size: 20px
+  font-size: 13px
 }
 
 .cube-picker-wheel-scroll {
@@ -514,7 +514,8 @@
 
 .cube-select {
   box-sizing: border-box;
-  padding: 10px 20px 10px 10px;
+  padding: 5px 20px 5px 10px;
+  text-align: left;
   border-radius: 2px;
   font-size: 14px;
   line-height: 1.429;
@@ -578,7 +579,7 @@
   top: 0;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
-  border: 1px solid #fc9153;
+  border: 1px solid var(--form-label);
   border-radius: 2px;
   box-sizing: border-box;
   width: 100%;
