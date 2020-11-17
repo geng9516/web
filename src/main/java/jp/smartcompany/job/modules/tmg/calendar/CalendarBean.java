@@ -172,8 +172,6 @@ public class CalendarBean {
 
                 List<CalendarColumnDto> calendarColumnDtoList=new ArrayList<CalendarColumnDto>();
 
-
-
                     // 全学判定
                     if (parentId == null){
                         // UPDATE     Calendar
@@ -204,8 +202,6 @@ public class CalendarBean {
                         updateCalendar = iTmgCalendarSectionService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
                                 ,referList.getTargetSec(),referList.getTargetGroup(),psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
                     }
-
-
             }
         }catch(GlobalException e){
             return GlobalResponse.error(e.getMessage());

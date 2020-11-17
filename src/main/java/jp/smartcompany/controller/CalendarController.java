@@ -72,8 +72,6 @@ public class CalendarController {
         }else{
             return GlobalResponse.ok("更新なし");
         }
-
-
     }
 
     /**

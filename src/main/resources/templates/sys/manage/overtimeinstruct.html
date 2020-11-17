@@ -954,6 +954,7 @@
                         }else{
                             this.columns3=this.columns3bak
                         }
+                        console.log(this.columns3)
                         this.value = data.dailyOverTimeVoList.map(e => {
                             const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
                                 return {
@@ -985,7 +986,6 @@
                         return
                     } finally {
                         this.dailyTableLoading = false
-                        console.log(this.value)
                     }
                 },
                 async getTableData() {
