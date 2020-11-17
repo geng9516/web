@@ -241,6 +241,11 @@ public class TmgLiquidationPeriodBean {
         return monthlyMap;
     }
 
+    //新规pattern
+    public void insertPattern(PatternInfoDto patternInfoDto){
+
+    }
+
 
     //最後登録
     public GlobalResponse upload(String empId,String startDate, String endDate,PsDBBean psDBBean){

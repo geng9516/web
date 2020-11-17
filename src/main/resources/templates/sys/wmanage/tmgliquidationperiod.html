@@ -76,7 +76,7 @@
                 :data="tableData" :loading="loading" :columns="columns"
                  no-data-text="123">
             <template slot-scope="{ row }" slot="detail">
-                <i-button class="width100" size="small" v-if="row.newflag" @click="showDetails(row)">編集</i-button>
+                <i-button class="width100" size="small" v-if="row.newflag" @click="showDetails(row)">{{row.statusname}}</i-button>
                 <i-button class="width100" size="small" v-else @click="showDetails(row)">新規</i-button>
             </template>
         </i-table>
@@ -178,7 +178,100 @@
 
         </Modal>
 
+        <Modal title="新規精算期間"  width="30" :mask-closable="false" footer-hide v-model="newFlg">
+            <Row :gutter="10">
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">所属</div>
+                    <div class="person-info">{{ empInfo.deptName }}</div>
+                </i-col>
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">氏名</div>
+                    <div class="person-info">{{ empInfo.empName }}</div>
+                </i-col>
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">種別</div>
+                    <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
+                </i-col>
+            </Row>
+            <Row>
+                <i-col>
+                    <date-picker class="mar"  type="month" v-model="curDateFrom" :editable="false" :clearable="false"
+                                 format="yyyy年MM月"></date-picker>
+                    -
+                    <date-picker class="mar"  type="month" v-model="curDateTo" :editable="false" :clearable="false"
+                                 format="yyyy年MM月"></date-picker>
+                </i-col>
+            </Row>
+            <div>
+                <i-button type="primary" @click="makeNewLiquidation" ghost>期間作成</i-button>-->
+            </div>
+        </Modal>
 
+        <!-- 勤務パターンSTART -->
+        <Modal v-model="patternFlg" title="新規パターン" footer-hide :mask-closable="false">
+            <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
+            <i-form :label-width="120" ref="localValue">
+                <form-item label="所属">
+                    <span class="input-like-span">
+                        {{ empInfo.deptName }}
+                    </span>
+                </form-item>
+                <form-item label="パターンコード">
+                    <i-input v-model="rawData.tpa_cpatternid"　placeholder="入力してください"></i-input>
+                </form-item>
+
+                <form-item label="名称">
+                    <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください"></i-input>
+                </form-item>
+
+                <form-item label="勤務時間">
+                    <Row>
+                        <i-col span="8">
+                            <i-input v-model="rawData.tpa_nopen" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.TPA_NOPEN,0,$event.target)"></i-input>
+                        </i-col>
+                        <i-col span="4">
+                            <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        </i-col>
+                        <i-col span="8">
+                            <i-input v-model="rawData.tpa_nclose" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.nclose,1,$event.target)"></i-input>
+                        </i-col>
+                    </Row>
+                </form-item>
+
+                <form-item label="休憩時間1">
+                    <Row>
+                        <i-col span="8">
+                            <i-input v-model="rawData.restopen1" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.restopen1,0,$event.target)"></i-input>
+                        </i-col>
+                        <i-col span="4">
+                            <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        </i-col>
+                        <i-col span="8">
+                            <i-input v-model="rawData.restclose1" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.restclose1,1,$event.target)"></i-input>
+                        </i-col>
+                    </Row>
+                </form-item>
+                <form-item label="休憩時間2">
+                    <Row>
+                        <i-col span="8">
+                            <i-input v-model="rawData.restopen2" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.restopen2,0,$event.target)"></i-input>
+                        </i-col>
+                        <i-col span="4">
+                            <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                        </i-col>
+                        <i-col span="8">
+                            <i-input v-model="rawData.restclose2" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(rawData.restclose2,1,$event.target)"></i-input>
+                        </i-col>
+                    </Row>
+                </form-item>
+            </i-form>
+        </Modal>
     </div>
 </main>
 d
@@ -188,8 +281,7 @@ d
         el: '.tmgliquidationperiod-warp',
         data() {
             return {
-                curDateFrom:'',
-                curDateTo:'',
+
                 workTypeDrawShow:false,
                 loading:false,
                 workTypeLoading:false,
@@ -201,6 +293,12 @@ d
                         key: 'employeename',
                         minWidth: 100,
                         align: 'left'
+                    },
+                    {
+                        title: '所属',
+                        key: 'deptname',
+                        minWidth: 100,
+                        align: 'center'
                     },
                     {
                         title: '種別',
@@ -254,6 +352,7 @@ d
                     empName:'',
                     empWorkTypeName:'',
                     empWorkTypeId:'',
+                    deptName:'',
                 },
                 editColumns:[
                     {
@@ -304,10 +403,12 @@ d
 
 
 
+                //新規画面
+                newFlg:false,
+                curDateFrom:'',
+                curDateTo:'',
 
-
-
-                //新規
+                //編集画面
                 show3:true,
                 button4Pattern:['1','2'],
                 tableData4Year: [
@@ -579,6 +680,15 @@ d
                 leftTable: [],
                 centerTable: [],
                 rightTable: [],
+
+
+
+
+                //pattern編集画面
+
+                rawData:[],
+                patternFlg:false,
+                patternErrorMsg:'',
             }
         },
         async mounted() {
@@ -756,6 +866,8 @@ d
                         return
                     } finally {
                     }
+                }else{
+
                 }
                 this.editFlag = true;
             },
@@ -815,7 +927,17 @@ d
                 } else if(column.title != '1日'  && rowIndex % 3 === 2 &&   columnIndex < 2  ){
                     return [0, 0];
                 }
+            },
+            handleInputChange(object, index, el) {
+                if (object) {
+                    this.hasPassedTimeCheck = Utils.checkTime(object, index)
+                    this.$set(object, index, object[index])
+                }
+            },
+            makeNewLiquidation{
+
             }
+
         }
     })
 </script>
