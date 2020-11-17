@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationDaily.TmgLiquidationDailyMapper">
+    <select id="getMonthInfo"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto">
+        SELECT
+            TO_CHAR(A.TLDD_DYYYYMMDD, 'yyyy/mm/dd') AS YYYYMMDD,
+            A.TLDD_CWEEKS           AS WEEK,
+            A.TLDD_CWORKHOURS       AS WORKHOURS,
+            A.TLDD_CKUBEN           AS KUBUN,
+            A.TLDD_CSTARTTIME       AS STARTTIME,
+            A.TLDD_CENDTIME         AS ENDTIME,
+            A.TLDD_CRESTSTARTTIME   AS RESTTIMESTART,
+            A.TLDD_CRESTENDTIME     AS RESTTIMEEND,
+            B.WEEKWORKTIME          AS WEEKWORKTIME
+        FROM
+            TMG_LIQUIDATION_DAILY A,
+            (
+                SELECT
+                    SUM(TLDD_CWORKHOURS) AS WEEKWORKTIME,
+                    TLDD_CWEEKS AS WEEKS
+                FROM
+                    TMG_LIQUIDATION_DAILY
+                WHERE
+                    TLDD_CEMPLOYEEID = #{empId}
+                    AND TO_CHAR(TRUNC(TLDD_DYYYYMMDD, 'mm'), 'yyyy/mm/dd') = #{yyyymm}
+                GROUP BY
+                    TLDD_CWEEKS
+            ) B
+        WHERE
+            B.WEEKS = A.TLDD_CWEEKS
+            AND TLDD_CEMPLOYEEID = #{empId}
+            AND TO_CHAR(TRUNC(TLDD_DYYYYMMDD, 'mm'), 'yyyy/mm/dd') = #{yyyymm}
+        ORDER BY
+            A.TLDD_DYYYYMMDD
+
+    </select>
+</mapper>

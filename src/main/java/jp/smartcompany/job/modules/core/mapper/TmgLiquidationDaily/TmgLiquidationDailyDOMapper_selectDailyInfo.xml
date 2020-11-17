@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationDaily.TmgLiquidationDailyMapper">
+    <select id="selectDailyInfo"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo">
+        SELECT
+            TO_CHAR(TLDD_DYYYYMMDD, 'yyyy/mm/dd') AS YYYYMMDD,
+            TMG_F_GET_MGD(TLDD_CKUBEN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBEN,
+            TMG_F_CONV_MIN2HHMI(TLDD_CWORKHOURS) AS WORKHOURS,
+            TLDD_CWEEKS              AS WEEK,
+            NVL(TMG_F_CONV_MIN2HHMI(TLDD_CSTARTTIME), '') AS STARTTIME,
+            NVL(TMG_F_CONV_MIN2HHMI(TLDD_CENDTIME), '') AS ENDTIME,
+            NVL(TMG_F_CONV_MIN2HHMI(TLDD_CRESTSTARTTIME), '') AS RESTSTARTTIME,
+            NVL(TMG_F_CONV_MIN2HHMI(TLDD_CRESTENDTIME), '') AS RESTENDTIME,
+            TLDD_CSPARECHAR1         AS STATUS,
+            TLDD_CSPARECHAR2         AS NTFSTATUS,
+            TLDD_CSPARECHAR3         AS HOLFLG,
+            TLDD_CNOTIFICATIONTYPE   AS NTFTYPE,
+            TLDD_CPATTERN            AS PATTERNID
+        FROM
+            TMG_LIQUIDATION_DAILY
+        WHERE
+            TRUNC(TLDD_DYYYYMMDD, 'mm') = #{yyyymm}
+            AND TLDD_CEMPLOYEEID = #{empId}
+            AND TLDD_CCUSTOMERID = #{custID}
+            AND TLDD_CCOMPANYID = #{compCode}
+        ORDER BY
+            TLDD_DYYYYMMDD
+    </select>
+</mapper>

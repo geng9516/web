@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationDaily.TmgLiquidationDailyMapper">
+    <select id="getMonthSumTime"
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto">
+        SELECT
+            SUM(tldd_cworkhours) as sumtime,
+            TO_CHAR(trunc(tldd_dyyyymmdd, 'mm'),'yyyy/mm/dd') as yyyymm
+        FROM
+            tmg_liquidation_daily
+        WHERE
+                tldd_cemployeeid = #{empId}
+            AND tldd_dyyyymmdd between #{startDate} and #{endDate}
+            AND TLDD_CCUSTOMERID = #{custID}
+        GROUP BY
+            trunc(tldd_dyyyymmdd, 'mm')
+        ORDER by yyyymm
+    </select>
+</mapper>
