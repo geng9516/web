@@ -1,10 +1,11 @@
-package jp.smartcompany.job.modules.core.mapper.TmgLiquidation;
+package jp.smartcompany.job.modules.core.mapper.TmgLiquidationPeriod;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPeriodDO;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationPeriodListDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -20,5 +21,6 @@ public interface TmgLiquidationPeriodMapper extends BaseMapper<TmgLiquidationPer
                                                                   @Param("compId") String compId,
                                                                   @Param("workType") String workType);
 
+    @Select("select TMG_LIQUIDATION_PERIOD_SEQ.nextval from dual")
     String getSeq();
 }
