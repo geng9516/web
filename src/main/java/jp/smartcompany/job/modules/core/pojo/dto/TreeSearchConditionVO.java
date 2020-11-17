@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.base.pojo.vo;
+package jp.smartcompany.job.modules.core.pojo.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

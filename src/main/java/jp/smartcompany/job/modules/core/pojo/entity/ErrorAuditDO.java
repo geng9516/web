@@ -1,14 +1,13 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import jp.smartcompany.job.modules.base.pojo.entity.BaseBean;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * @author Xiao Wenpeng
@@ -19,8 +18,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-@EqualsAndHashCode(of = "auditId",callSuper = true)
-public class ErrorAuditDO extends BaseBean {
+@EqualsAndHashCode(of = "auditId")
+public class ErrorAuditDO {
 
   @TableId
   private Long auditId;
@@ -32,5 +31,9 @@ public class ErrorAuditDO extends BaseBean {
   private String ip;
   private String userAgent;
   private String message;
+  @TableField(fill = FieldFill.INSERT)
+  private Date createTime;
+  @TableField(fill = FieldFill.INSERT_UPDATE)
+  private Date updateTime;
 
 }

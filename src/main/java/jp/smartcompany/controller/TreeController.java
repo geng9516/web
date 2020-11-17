@@ -16,7 +16,7 @@ import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
-import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
+import jp.smartcompany.job.modules.core.pojo.dto.TreeSearchConditionVO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
