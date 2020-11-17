@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgGreennutsTplogDO;
-import jp.smartcompany.job.modules.core.mapper.TmgGreennutsTplogMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgGreennutsTplog.TmgGreennutsTplogMapper;
 import jp.smartcompany.job.modules.core.service.ITmgGreennutsTplogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

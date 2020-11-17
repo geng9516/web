@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectLedgerSheetList" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo">
+        SELECT
+            MGD_LEDGER_SHEET_ID,
+            MGD_LEDGER_SHEET_NAME,
+            MGD_OUTPUT_TARGET_TYPE,
+            MGD_OUTPUT_TERM_TYPE,
+            MGD_PDF_DLFLG,
+            MGD_CSV_DLFLG,
+            MGD_SORT-1 AS MGD_SORT
+        FROM
+            TMG_V_MGD_LEDGER_SHEET
+        WHERE
+                MGD_CCUSTOMERID = #{custID}
+            AND MGD_CCOMPANYID_CK_FK = #{compCode}
+            AND MGD_CLANGUAGE_CK = #{language}
+            AND SYSDATE BETWEEN MGD_DSTART_CK
+            AND MGD_DEND
+        ORDER BY
+            MGD_SORT ASC
+    </select>
+
+</mapper>

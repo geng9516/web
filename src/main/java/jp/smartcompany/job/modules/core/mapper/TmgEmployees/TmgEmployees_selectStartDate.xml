@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgEmployees.TmgEmployeesMapper">
+
+    <select id="selectStartDate" resultType="java.util.Date">
+        select
+            min(e.tem_dstartdate)
+        from
+            tmg_employees e
+        where
+            e.tem_ccustomerid =  #{customerId}
+          and e.tem_ccompanyid  = #{companyId}
+          and e.tem_cemployeeid = #{employeeId}
+          and e.tem_dstartdate <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+          and e.tem_dstartdate > #{endDate,jdbcType=DATE}
+    </select>
+
+</mapper>

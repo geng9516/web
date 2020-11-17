@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectTargetFiscalYear" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit">
+        SELECT
+            TO_CHAR(
+                    TMG_F_GET_THE_YEARZONE (
+                            TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
+                            0,
+                            TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ),
+                            #{custID},
+                            #{compID}
+                        ),
+                    'YYYY/MM/DD'
+                )
+                TARGET_START_DATE,
+            TO_CHAR(
+                    TMG_F_GET_THE_YEARZONE (
+                            TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
+                            1,
+                            TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ),
+                            #{custID},
+                            #{compID}
+                        ),
+                    'YYYY/MM/DD'
+                )
+                TARGET_END_DATE
+        FROM
+            DUAL
+    </select>
+
+</mapper>

@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfAttachedfileDO;
-import jp.smartcompany.job.modules.core.mapper.TmgNtfAttachedfileMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgNtfAttachedfile.TmgNtfAttachedfileMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNtfAttachedfileService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

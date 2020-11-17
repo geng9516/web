@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayAttribute.TmgPaidHolidayAttributeMapper">
+
+    <select id="selectAvgWorkTime60" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.AvgWorkTimeVo">
+        SELECT
+            TRUNC( A.TPHA_NAVGWORKTIME / 60 ) AS AVGWORKTIME1,
+            MOD( A.TPHA_NAVGWORKTIME, 60 ) AS AVGWORKTIME2,
+            A.TPHA_NWORKINGDAYS_WEEK AS WORKINGDAYS_WEEK
+        FROM
+            TMG_PAID_HOLIDAY_ATTRIBUTE A
+        WHERE
+            A.TPHA_CCUSTOMERID = #{customerId}
+          AND A.TPHA_CCOMPANYID = #{companyId}
+          AND A.TPHA_CEMPLOYEEID = #{employeeId}
+          AND A.TPHA_DSTARTDATE <![CDATA[<=]]> TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
+          AND A.TPHA_DENDDATE >= TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
+    </select>
+
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper">
+
+    <select id="selectMastAppList" resultType="jp.smartcompany.admin.appmanager.dto.MastAppDTO">
+        SELECT
+            MTR_COBJECTID as object_id,
+            MTR_CSITEID as site_id,
+            MTR_CAPPID as app_id,
+            MTR_CSUBAPPID as sub_app_id,
+            MTR_CSCREENID as screen_id,
+            MTR_CBUTTONID as button_id,
+            PSMASTER.FUNC_GET_OBJ_NAME(
+                MTR_CSITEID,
+                MTR_CAPPID,
+                MTR_CSUBAPPID,
+                MTR_CSCREENID,
+                MTR_CBUTTONID,
+                'ja') name,
+            MTR_CTYPE as type,
+            MTR_CTEMPLATEID as template_id,
+            MTR_CURL as url,
+            MTR_CIMAGEURL as icon,
+            MTR_CSITECAPTIONJA as remark,
+            MTR_NSEQ as sort,
+            MTR_CSYSTEMID as system_id,
+            MTR_CAPPAUTOLOAD as auto_upload,
+            MTR_CDATAPERMISSIONTYPE as permission_type,
+            MTR_CDEFAULTTARGETUSER as defaultTargetUser,
+            MTR_CCRITERIALDATETYPE as baseDateType,
+            MTR_CONLINEHELPURL as help_doc_url,
+            MTR_CONLINEHELPATTR as help_attribute,
+            MTR_CDOMAINID as domain_id
+        FROM
+            MAST_APPTREE
+        ORDER BY
+            MTR_NSEQ ASC
+    </select>
+
+</mapper>

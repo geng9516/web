@@ -6,7 +6,7 @@ import jp.smartcompany.boot.util.SysDateUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
-import jp.smartcompany.job.modules.core.mapper.MastCompanyMapper;
+import jp.smartcompany.job.modules.core.mapper.MastCompany.MastCompanyMapper;
 import jp.smartcompany.job.modules.core.service.IMastCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

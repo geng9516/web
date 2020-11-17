@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectMgdTimeLimit" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo">
+        SELECT
+            MGD_NSPARENUM1 AS ALLMINUTES,
+            trunc(MGD_NSPARENUM1 / 60) AS HOURS,
+            mod(MGD_NSPARENUM1, 60)  AS MINUTES
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE  MGD_CMASTERCODE = 'TMG_LEGAL_HOURS|DAY'
+    </select>
+
+</mapper>

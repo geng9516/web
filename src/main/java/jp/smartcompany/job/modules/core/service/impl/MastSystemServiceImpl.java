@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
 import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
-import jp.smartcompany.job.modules.core.mapper.MastSystemMapper;
+import jp.smartcompany.job.modules.core.mapper.MastSystem.MastSystemMapper;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;

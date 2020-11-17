@@ -38,16 +38,6 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
 
 
     /**
-     * 指定組織の検索（パタンが存在する）
-     *
-     * @param customerId
-     * @param companyId
-     * @param yyyymmdd
-     * @return
-     */
-    List<MastOrganisationDO> selectPatternOrganisation(String customerId, String companyId, Date yyyymmdd);
-
-    /**
      * 根据层级选择基点组织下的组织列表
      *
      * @param customerId

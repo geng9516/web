@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!--  ディフォルト表示時間 -->
+    <resultMap id="selectDateInfoMap2" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO">
+        <result column="mgd_ndefault_month" property="mgd_ndefault_month"/>
+        <result column="dispterm_start" property="dispterm_start"/>
+        <result column="dispterm_end" property="dispterm_end"/>
+    </resultMap>
+
+    <!-- 表示時間を取得する  -->
+    <select id="selectTargetDateInfo" resultType="java.util.HashMap" resultMap="selectDateInfoMap2">
+        select #{month} as mgd_ndefault_month
+             ,to_char(tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid)), '1', to_date(#{firstDayOfYear}, 'yyyy/mm/dd'), mgd_ccustomerid,mgd_ccompanyid), 'yyyy') || '/' || lpad(#{month}, 2, '0') ||'/01' as dispterm_start
+             ,to_char(add_months(to_date(to_char(tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid)), '1',to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid), 'yyyy') ||'/' || lpad(#{month}, 2, '0') || '/01'), 11), 'yyyy/mm/dd') as dispterm_end
+        from tmg_v_mgd_first_month v
+        where v.mgd_ccustomerid = #{custId}
+          and v.mgd_ccompanyid = #{compCode}
+          and v.mgd_dstart <![CDATA[<=]]>  to_date(#{dyyyymmdd}, 'yyyy/mm/dd')
+          and v.mgd_dend <![CDATA[>=]]> to_date(#{dyyyymmdd}, 'yyyy/mm/dd')
+          and v.mgd_clanguage = #{language}
+          and v.mgd_cworkertype = tmg_f_get_workertype(#{employeeId}, to_date(#{dyyyymmdd}, 'yyyy/mm/dd'), mgd_ccustomerid,mgd_ccompanyid)
+    </select>
+
+</mapper>

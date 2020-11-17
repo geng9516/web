@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="selectTmgStatus" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.StatusDto">
+        SELECT
+            ${range}(TMG_F_IS_FIXED_MONTHLY(e.EMPID,#{recordDate},e.CUST,e.COMP))AS FIXED_MONTHLY,
+            ${range}(TMG_F_IS_FIXED_SALARY(e.EMPID,#{recordDate},e.CUST,e.COMP)) AS FIXED_SALARY
+        FROM
+            (${employees}) e
+    </select>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectDetailNonDuty" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO">
+        SELECT
+        ATTRIBUTE_URL,                                                          <!-- URL-->
+        ITEM_CODE TDAD_CNOTWORKID,                                              <!-- 非勤務区分-->
+        TMG_F_CONV_MIN2HHMI(TDA_NRESTOPEN_R, 0) TDAD_NOPEN,                     <!-- 開始時刻-->
+        TMG_F_CONV_MIN2HHMI(TDA_NRESTCLOSE_R, 0) TDAD_NCLOSE,                   <!-- 終了時刻-->
+        0 TDAD_NDELETEFLG,                                                      <!-- 削除フラグ-->
+        0 TDAD_SEQ,                                                             <!-- SEQ-->
+        '' TDAD_CSPARECHAR1 ,                                                   <!-- 予備文字列1-->
+        0 TDAD_NSPARENUM1 ,                                                     <!-- 予備数値1-->
+        '' TDAD_CCODE01 ,                                                       <!-- 予備コード1-->
+        '' TDAD_CCODE01_NAME,                                                   <!-- 予備コード名-->
+        ITEM_NAME                                                               <!-- マスタ名称-->
+        FROM
+        TMG_DAILY,
+        TABLE(
+        TMG_F_GET_RESULTATTRIBUTE(
+        #{custId},
+        #{compCode},
+        #{targetUser},
+        #{siteId},
+        'TMG_CATEGORY|NonDuty',
+        #{day}
+        )
+        )
+        WHERE
+        TDA_CEMPLOYEEID    = #{targetUser}
+        AND TDA_DYYYYMMDD      = #{day}
+        AND TDA_CCOMPANYID     = #{compCode}
+        AND TDA_CCUSTOMERID    = #{custId}
+        AND TDA_DSTARTDATE     <![CDATA[<=]]>  #{day}
+        AND TDA_DENDDATE       >= #{day}
+        AND TDA_NRESTOPEN_R IS NOT NULL
+        AND TDA_NRESTCLOSE_R IS NOT NULL
+        AND ITEM_CODE = 'TMG_ITEMS|ResultRest'
+
+        UNION
+
+        SELECT
+        ATTRIBUTE_URL,                                                          <!-- URL-->
+        TDAD_CNOTWORKID,                                                        <!-- 非勤務区分-->
+        TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) TDAD_NOPEN,                          <!-- 開始時刻-->
+        TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) TDAD_NCLOSE,                        <!-- 終了時刻-->
+        TDAD_NDELETEFLG,                                                        <!-- 削除フラグ-->
+        TDAD_SEQ,                                                               <!-- SEQ-->
+        NVL(TDAD_CSPARECHAR1,'') TDAD_CSPARECHAR1,                              <!-- 予備文字列1-->
+        TDAD_NSPARENUM1 TDAD_NSPARENUM1 ,                                       <!-- 予備数値1-->
+        NVL(TDAD_CCODE01,'') TDAD_CCODE01,                                      <!-- 予備コード1-->
+        TMG_F_GET_MGD(
+        TDAD_CCODE01,
+        TDAD_DYYYYMMDD,
+        TDAD_CCUSTOMERID,
+        TDAD_CCOMPANYID,
+        #{language}
+        ) TDAD_CCODE01_NAME,                                                      <!-- 予備コード1名-->
+        ITEM_NAME                                                                 <!-- マスタ名称-->
+        FROM
+        TMG_DAILY_DETAIL,
+        TABLE(
+        TMG_F_GET_RESULTATTRIBUTE(
+        #{custId},
+        #{compCode},
+        #{targetUser},
+        #{siteId},
+        'TMG_CATEGORY|NonDuty',
+        #{day}
+        )
+        )
+        WHERE
+        TDAD_CEMPLOYEEID   = #{targetUser}
+        AND TDAD_DYYYYMMDD     = #{day}
+        AND TDAD_CCOMPANYID    = #{compCode}
+        AND TDAD_CCUSTOMERID   = #{custId}
+        AND TDAD_CNOTWORKID    = ITEM_CODE
+        ORDER BY
+        TDAD_SEQ
+    </select>
+
+</mapper>

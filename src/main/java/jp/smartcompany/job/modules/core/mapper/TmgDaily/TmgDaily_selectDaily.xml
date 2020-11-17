@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="selectDaily" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo">
+        SELECT
+        e.EMPNAME AS TDA_CEMPLOYEEID_NAME,
+        TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_N, 0 ) AS TDA_NOPEN_N_C,
+        TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_N, 0 ) AS TDA_NCLOSE_N_C,
+        TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_O, 0 ) AS TDA_NOPEN_O,
+        TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_O, 0 ) AS TDA_NCLOSE_O,
+        TDA_CMESSAGE,
+        TDA_CCOMMENT_O,
+        TDA_CSTATUSFLG,
+        e.EMPID AS TDA_CEMPLOYEEID,
+        TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_TP, 0 ) AS TDA_NOPEN_TP_C,
+        TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_TP, 0 ) AS TDA_NCLOSE_TP_C,
+        TMG_F_GET_MGD_C ( TDA_CWORKINGID_R, #{baseDay}, 3,#{custId}, #{compId}, #{pLanguage} ) AS TDA_CWORKINGID_R,
+        TMG_F_CONV_MIN2HHMI ( TDA_NRESTOPEN_N, 0 ) AS TDA_NRESTOPEN_N,
+        TMG_F_CONV_MIN2HHMI ( TDA_NRESTCLOSE_N, 0 ) AS TDA_NRESTCLOSE_N,
+        TMG_F_IS_EXCLUDE_OVERTIME ( e.EMPID, #{baseDay}, #{custId}, #{compId} ) AS EXCLUDE_OVERTIME,
+        NVL( TDA_NOPEN_N, 0 ) AS NOPEN_N,
+        NVL( TDA_NCLOSE_N, 0 ) AS NCLOSE_N,
+        NVL( TDA_NOPEN_P, 0 ) AS NOPEN_P,
+        NVL( TDA_NCLOSE_P, 0 ) AS NCLOSE_P,
+        (
+        SELECT
+        NVL( SUM( TDAD_NCLOSE - TDAD_NOPEN ), 0 )
+        FROM
+        TMG_DAILY_DETAIL TDD
+        WHERE
+        TDAD_CEMPLOYEEID = TDA_CEMPLOYEEID
+        AND TDAD_DYYYYMMDD = #{baseDay}
+        AND TDAD_CCOMPANYID = TDA_CCOMPANYID
+        AND TDAD_CCUSTOMERID = TDA_CCUSTOMERID
+        AND TDAD_CNOTWORKID = 'TMG_ITEMS|NoticeRest'
+        ) AS SUM_REST,
+        (
+        SELECT
+        NVL( SUM( TDAD_NCLOSE - TDAD_NOPEN ), 0 )
+        FROM
+        TMG_DAILY_DETAIL TDD
+        WHERE
+        TDAD_CEMPLOYEEID = TDA_CEMPLOYEEID
+        AND TDAD_DYYYYMMDD = #{baseDay}
+        AND TDAD_CCOMPANYID = TDA_CCOMPANYID
+        AND TDAD_CCUSTOMERID = TDA_CCUSTOMERID
+        AND TDAD_CNOTWORKID LIKE 'TMG_NOTWORK%'
+        AND (   ( NVL( TDA_NOPEN_N, 0 ) <![CDATA[<=]]> NVL( TDAD_NOPEN, 0 )
+        AND NVL( TDA_NCLOSE_N, 0 ) > NVL( TDAD_NOPEN, 0 ) )
+        AND ( NVL( TDA_NOPEN_N, 0 ) <![CDATA[<]]> NVL( TDAD_NCLOSE, 0 )
+        AND NVL( TDA_NCLOSE_N, 0 ) >= NVL( TDAD_NCLOSE, 0 ) )
+        )
+        ) AS SUM_NOTICE,
+        (   SELECT
+        COUNT( TDAD_CNOTWORKID )
+        FROM
+        TMG_DAILY_DETAIL TDD
+        WHERE
+        TDAD_CEMPLOYEEID = TDA_CEMPLOYEEID
+        AND TDAD_DYYYYMMDD = #{baseDay}
+        AND TDAD_CCOMPANYID = TDA_CCOMPANYID
+        AND TDAD_CCUSTOMERID = TDA_CCUSTOMERID
+        AND TDAD_CNOTWORKID = 'TMG_ITEMS|PlanRest'
+        ) AS CNT_PLANREST,
+
+        <foreach collection="itemsSql" item="itemsSql" index="index" open="" separator="," close="">
+            ${itemsSql.mgdCsql} AS ${itemsSql.mgdCcolumnid}
+        </foreach>
+
+        FROM
+        TMG_DAILY d,
+        (${empListSql}) e
+        WHERE
+        d.TDA_CCUSTOMERID = #{custId}
+        AND d.TDA_CCOMPANYID = #{compId}
+        AND d.TDA_DYYYYMM = #{baseMonth}
+        AND d.TDA_DYYYYMMDD = #{baseDay}
+        AND d.TDA_CEMPLOYEEID = e.EMPID
+        AND d.TDA_DSTARTDATE <![CDATA[<=]]> #{baseDay}
+        AND d.TDA_DENDDATE >= #{baseDay}
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE(#{baseMonth}) ), LAST_DAY( TO_DATE( #{baseMonth} ) ), e.cust, e.comp )
+        ORDER BY
+        e.seq
+    </select>
+
+</mapper>

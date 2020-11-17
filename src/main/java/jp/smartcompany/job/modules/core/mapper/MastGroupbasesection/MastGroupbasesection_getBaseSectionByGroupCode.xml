@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupbasesection.MastGroupbasesectionMapper">
+
+    <select id="getBaseSectionByGroupCode" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO">
+        SELECT
+        MGBS_CCOMPANYID,
+        MGBS_CSECTIONID,
+        MO_CLAYEREDSECTIONID AS MGBS_CLAYEREDSECTIONID,
+        MGBS_CBELOWORSINGLE
+        FROM
+        MAST_GROUPBASESECTION,
+        MAST_ORGANISATION
+        WHERE
+        MGBS_CCUSTOMERID = #{customerId}
+        AND MGBS_CSYSTEMID = #{systemCode}
+        AND MGBS_CGROUPID = #{groupCode}
+        AND MGBS_DSTARTDATE <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND MGBS_DENDDATE >= to_date(#{date},'yyyy/mm/dd')
+        AND MO_CCUSTOMERID_CK_FK = MGBS_CCUSTOMERID
+        AND MO_CCOMPANYID_CK_FK = MGBS_CCOMPANYID
+        AND MO_CSECTIONID_CK = MGBS_CSECTIONID
+        AND MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND MO_DEND >= to_date(#{date},'yyyy/mm/dd')
+    </select>
+
+</mapper>

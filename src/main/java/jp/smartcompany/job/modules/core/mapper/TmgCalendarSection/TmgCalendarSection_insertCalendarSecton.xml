@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCalendarSection.TmgCalendarSectionMapper">
+    <insert id="insertCalendarSecton">
+            INSERT INTO TMG_CALENDAR_SECTION (
+                TCAS_CCUSTOMERID,
+                TCAS_CCOMPANYID,
+                TCAS_DSTARTDATE,
+                TCAS_DENDDATE,
+                TCAS_CSECTIONID,
+                TCAS_CMODIFIERUSERID,
+                TCAS_DMODIFIEDDATE,
+                TCAS_CMODIFIERPROGRAMID,
+                TCAS_CGROUPID,
+                TCAS_DYYYYMM,
+                TCAS_EDITFLAG,
+                TCAS_CHOLFLG01,
+                TCAS_CHOLFLG02,
+                TCAS_CHOLFLG03,
+                TCAS_CHOLFLG04,
+                TCAS_CHOLFLG05,
+                TCAS_CHOLFLG06,
+                TCAS_CHOLFLG07,
+                TCAS_CHOLFLG08,
+                TCAS_CHOLFLG09,
+                TCAS_CHOLFLG10,
+                TCAS_CHOLFLG11,
+                TCAS_CHOLFLG12,
+                TCAS_CHOLFLG13,
+                TCAS_CHOLFLG14,
+                TCAS_CHOLFLG15,
+                TCAS_CHOLFLG16,
+                TCAS_CHOLFLG17,
+                TCAS_CHOLFLG18,
+                TCAS_CHOLFLG19,
+                TCAS_CHOLFLG20,
+                TCAS_CHOLFLG21,
+                TCAS_CHOLFLG22,
+                TCAS_CHOLFLG23,
+                TCAS_CHOLFLG24,
+                TCAS_CHOLFLG25,
+                TCAS_CHOLFLG26,
+                TCAS_CHOLFLG27,
+                TCAS_CHOLFLG28,
+                TCAS_CHOLFLG29,
+                TCAS_CHOLFLG30,
+                TCAS_CHOLFLG31
+            )
+            VALUES
+            (
+                #{custID},
+                #{compCode},
+                '1900/01/01',
+                '2222/12/31',
+                #{targetSec},
+                #{userCode},
+                SYSDATE,
+                'TMG_CALANDER_EDIT',
+                <choose>
+                    <when test=" targetGroup == null ">
+                        #{targetSec} || '|000000',
+                    </when>
+                    <otherwise>
+                        #{targetGroup,jdbcType=VARCHAR},
+                    </otherwise>
+                </choose>
+                #{month},
+                '1',
+                <foreach collection="monthDto" item="item" index="index" open="" close="" separator=",">
+                    '${item}'
+                </foreach>
+            )
+    </insert>
+
+</mapper>

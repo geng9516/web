@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectDaily" resultType="hashmap">
+        SELECT
+        to_char(TDA_DYYYYMMDD, 'yyyy/MM/dd') AS TDA_DYYYYMMDD,             <!-- 日付 -->
+        to_char(TDA_DYYYYMMDD, 'dd') AS TDA_DYYYYMMDD_DD,                  <!-- 日 -->
+        to_char(TDA_DYYYYMMDD, 'dy') AS TDA_DYYYYMMDD_DY,                  <!-- 曜日 -->
+        TDA_CSTATUSFLG,                                                    <!-- ステータス -->
+        (
+        SELECT
+        TMG_F_GET_MGD_C(TDA_CSTATUSFLG, TDA_DYYYYMMDD, 1, TDA_CCUSTOMERID,TDA_CCOMPANYID, 'ja') TDA_CSTATUSFLG
+        FROM
+        TMG_DAILY a
+        WHERE
+        a.TDA_CCUSTOMERID = b.TDA_CCUSTOMERID
+        AND a.TDA_CCOMPANYID = b.TDA_CCOMPANYID
+        AND a.TDA_CEMPLOYEEID = b.TDA_CEMPLOYEEID
+        AND a.TDA_DYYYYMMDD = b.TDA_DYYYYMMDD
+        AND TMG_F_IS_HOLIDAY( b.TDA_CWORKINGID_R ,TDA_CCUSTOMERID ,TDA_CCOMPANYID) = 0
+        ) AS TDA_CSTATUSFLG_NAME,                                          <!-- ステータス名称 -->
+        TDA_CNTFSTATUSFLG,                                                 <!-- 申請ステータス -->
+        TMG_F_GET_MGD_C(
+        TDA_CNTFSTATUSFLG,
+        TDA_DYYYYMMDD,
+        1,
+        TDA_CCUSTOMERID,
+        TDA_CCOMPANYID,
+        #{language}
+        ) AS TDA_CNTFSTATUSFLG_NAME,                                       <!-- 申請ステータス名称 -->
+        TDA_CWORKINGID_R,                                                  <!-- 就業区分 -->
+        TMG_F_TRANS_WORKNAME(
+        TDA_CEMPLOYEEID,
+        TDA_DYYYYMMDD,
+        1,
+        TDA_CCUSTOMERID,
+        TDA_CCOMPANYID,
+        #{language}
+        ) AS TDA_CWORKINGID_R_NAME,                                          <!-- 就業区分名称 -->
+        TDA_CMESSAGE || ' ' || TDA_CCOMMENT_P AS  CCOMMENT                   <!-- 備考 -->
+        <!-- 表示項目のselect句を取得し、joinでカンマ結合する -->
+        <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
+            ${params}
+        </foreach>
+        FROM
+        TMG_DAILY b
+        WHERE
+        TDA_CEMPLOYEEID    = #{targetUser}
+        AND TDA_DYYYYMM        = #{month,jdbcType=DATE}
+        AND TDA_CCOMPANYID     = #{compCode}
+        AND TDA_CCUSTOMERID    = #{custID}
+        <!-- 対象終了日の月について管理対象であるか判定 -->
+        AND #{manageFlg}  <![CDATA[<>]]>TMG_F_IS_MANAGEFLG(
+        #{targetUser},
+        TRUNC(TO_DATE(#{month,jdbcType=DATE})),
+        LAST_DAY(TO_DATE(#{month,jdbcType=DATE})),
+        #{custID},
+        #{compCode}
+        )
+        ORDER BY
+        b.TDA_DYYYYMMDD
+    </select>
+
+</mapper>

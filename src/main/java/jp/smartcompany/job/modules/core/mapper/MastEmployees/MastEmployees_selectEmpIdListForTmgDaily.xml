@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper">
+
+    <select id="selectEmpIdListForTmgDaily" resultType="java.lang.String">
+        SELECT
+            v.empid
+        FROM
+             (${empsql}) v
+             <!-- 一括承認対象日について管理対象であるか判定-->
+        WHERE
+            v.empid IN
+                <foreach item="item" collection="empIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(TO_DATE(#{yyyymmdd})), TRUNC(TO_DATE(#{yyyymmdd})), v.cust, v.comp)
+    </select>
+
+</mapper>

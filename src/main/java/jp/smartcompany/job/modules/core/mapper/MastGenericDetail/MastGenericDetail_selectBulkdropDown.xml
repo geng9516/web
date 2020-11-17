@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectBulkdropDown"
+            resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo">
+        SELECT
+            A.MGD_CMASTERCODE as  ID
+             ,A.MGD_CGENERICDETAILDESC as  NAME
+        FROM
+            MAST_GENERIC_DETAIL A
+        WHERE
+            A.MGD_CCUSTOMERID = #{custID}
+          AND A.MGD_CCOMPANYID_CK_FK = #{compCode}
+          AND A.MGD_CGENERICGROUPID = 'TMG_BULKNTFTYPE'
+          AND A.MGD_CLANGUAGE_CK = 'ja'
+          AND A.MGD_DSTART_CK <![CDATA[<=]]> TO_DATE(#{baseDate})
+          AND A.MGD_DEND >= TO_DATE(#{baseDate})
+        ORDER BY A.MGD_NSPARENUM1
+    </select>
+
+</mapper>

@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternAppliesDO;
-import jp.smartcompany.job.modules.core.mapper.TmgPatternAppliesMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgPatternApplies.TmgPatternAppliesMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPatternAppliesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

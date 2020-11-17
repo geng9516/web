@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectTmgDaily" resultType="java.util.HashMap">
+        SELECT
+        d.TDA_CEMPLOYEEID,  																										<!-- 0 職員番号-->
+        TMG_F_TRANS_DISPPERMSTATUS(d.TDA_CSTATUSFLG,d.TDA_DYYYYMMDD,TRUNC(SYSDATE)) AS TRANS_DISPPERMSTATUS,     					<!-- 1 日次ステータス-->
+        (
+        SELECT
+        DISTINCT TMG_F_GET_ME_NAME(B.TDAD_CEMPLOYEEID, B.TDAD_DYYYYMMDD, 0, B.TDAD_CCUSTOMERID, B.TDAD_CCOMPANYID)
+        FROM
+        TMG_DAILY_DETAIL B
+        WHERE
+        B.TDAD_CCUSTOMERID = d.TDA_CCUSTOMERID
+        AND B.TDAD_CCOMPANYID  = d.TDA_CCOMPANYID
+        AND B.TDAD_CEMPLOYEEID = d.TDA_CEMPLOYEEID
+        AND B.TDAD_DYYYYMMDD   = d.TDA_DYYYYMMDD
+        AND B.TDAD_CNOTWORKID  = 'TMG_ITEMS|Overhours'
+        AND B.TDAD_NOPEN      >= d.TDA_NCLOSE_P
+        AND d.TDA_CSTATUSFLG   = 'TMG_DATASTATUS|3'
+        AND d.TDA_NCLOSE_TP   IS NULL
+        ) AS NOTCLOSETPWITHOVERTIME_EMPNAME, 																			<!-- 2 「承認状態が「承認待」で、超勤命令を有する未終業打刻」状態の職員氏名（エラーメッセージ用の項目の為、該当しない職員はNULL）-->
+        TMG_F_GET_ME_NAME(d.TDA_CEMPLOYEEID, d.TDA_DYYYYMMDD, 0, d.TDA_CCUSTOMERID, d.TDA_CCOMPANYID) AS EMPNAME,		<!-- 3 職員氏名-->
+        (
+        SELECT
+        DECODE(COUNT(B.TDAD_CNOTWORKID), 0, 0, 1)
+        FROM
+        TMG_DAILY_DETAIL B
+        WHERE
+        B.TDAD_CCUSTOMERID = d.TDA_CCUSTOMERID
+        AND B.TDAD_CCOMPANYID  = d.TDA_CCOMPANYID
+        AND B.TDAD_CEMPLOYEEID = d.TDA_CEMPLOYEEID
+        AND B.TDAD_DYYYYMMDD   = d.TDA_DYYYYMMDD
+        AND B.TDAD_CNOTWORKID  = 'TMG_ITEMS|Overhours'
+        AND B.TDAD_CSPARECHAR2 = 'TMG_OVERHOUR_STATUS|0'
+        ) AS NONAPPROVALOVERHOUR_FLG  																					<!-- 4 「申請中の超過勤務申請」を持つかどうかの判定（0：持たない、1：持つ）-->
+        <!-- 表示項目のselect句を取得し、joinでカンマ結合する -->
+        <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
+            ${params}
+        </foreach>
+        FROM
+        TMG_DAILY d,
+        (${empSql}) v
+        WHERE
+        d.TDA_CEMPLOYEEID = v.EMPID
+        AND d.TDA_DYYYYMMDD   = #{targetDate}
+        <!-- 一括承認対象日について管理対象であるか判定-->
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), v.cust, v.comp)
+        ORDER BY v.SEQ
+    </select>
+
+</mapper>

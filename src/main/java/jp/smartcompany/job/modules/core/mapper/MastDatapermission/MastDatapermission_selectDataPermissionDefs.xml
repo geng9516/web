@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastDatapermission.MastDatapermissionMapper">
+
+    <select id="selectDataPermissionDefs" resultType="jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO">
+        SELECT	MDPD_CPERMISSIONID,
+                  MDPD_NSEQ,
+                  MDPD_CANDOR,
+                  MDPD_COPENEDPARENTHSIS,
+                  MDPD_CTABLEID,
+                  MDPD_CCOLUMNID,
+                  MDPD_CCOLUMNNAME,
+                  MDPD_CTYPEOFCOLUMN,
+                  MDPD_COPERATOR,
+                  MDPD_CVALUE,
+                  MDPD_CMYFLAG,
+                  MDPD_CCLOSEDPARENTHSIS,
+                  MDPD_CCOMPANYID,
+                  (	SELECT MD_CMASTERTBLNAME
+                       FROM MAST_DATADICTIONARY WHERE MD_CCOLUMNNAME = MDPD_CCOLUMNID AND MD_CTABLENAME = MDPD_CTABLEID
+                  ) AS MD_CMASTERTBLNAME
+        FROM  	MAST_DATAPERMISSIONDEFS,
+                MAST_DATAPERMISSION
+        WHERE	MDPD_CPERMISSIONID  = MDP_CPERMISSIONID
+        ORDER BY
+            MDPD_CPERMISSIONID,
+            MDPD_NSEQ
+    </select>
+
+</mapper>

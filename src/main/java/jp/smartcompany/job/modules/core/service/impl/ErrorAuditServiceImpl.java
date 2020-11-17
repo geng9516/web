@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.CoreBean;
-import jp.smartcompany.job.modules.core.mapper.ErrorAuditMapper;
+import jp.smartcompany.job.modules.core.mapper.ErrorAudit.ErrorAuditMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
 import jp.smartcompany.job.modules.core.service.ErrorAuditService;
 import jp.smartcompany.boot.util.SysUtil;

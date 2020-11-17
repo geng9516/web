@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper">
+
+    <select id="selectBegindateWork" resultType="java.util.Date">
+        select
+            me.me_ddateofemployement
+        from
+            mast_employees me
+        where
+            me.me_ccustomerid_ck  = #{customerId}
+        and me.me_ccompanyid      = #{companyId}
+        and me.me_cemployeeid_ck  = #{employeeId}
+        and me.me_dstartdate <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and me.me_denddate >= #{yyyymmdd,jdbcType=DATE}
+    </select>
+
+</mapper>

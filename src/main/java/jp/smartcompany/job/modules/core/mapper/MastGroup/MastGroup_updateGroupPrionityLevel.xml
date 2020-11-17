@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+    <update id="updateGroupPrionityLevel" parameterType="map">
+        UPDATE
+            MAST_GROUP a
+        SET
+            a.MG_NWEIGHTAGE=
+                (
+                    SELECT
+                        COUNT(MG_ID) + 1
+                    FROM
+                        MAST_GROUP b
+                    WHERE
+                        a.MG_CCUSTOMERID = b.MG_CCUSTOMERID AND
+                        a.MG_CSYSTEMID_CK_FK = b.MG_CSYSTEMID_CK_FK AND
+                        a.MG_CLANGUAGE = b.MG_CLANGUAGE AND
+                        a.MG_DSTARTDATE <![CDATA[<=]]> #{searchDate} AND
+                        a.MG_DENDDATE >= #{searchDate} AND
+                        b.MG_DSTARTDATE <![CDATA[<=]]> #{searchDate} AND
+                        b.MG_DENDDATE >= #{searchDate} AND
+                        b.MG_NWEIGHTAGE <![CDATA[<]]> a.MG_NWEIGHTAGE
+                )
+        WHERE
+            MG_CCUSTOMERID = #{custId} AND
+            MG_CSYSTEMID_CK_FK = #{systemId} AND
+            MG_CLANGUAGE = 'ja' AND
+            MG_DSTARTDATE <![CDATA[<=]]> #{searchDate} AND
+            MG_DENDDATE >= #{searchDate}
+    </update>
+
+</mapper>

@@ -8,7 +8,7 @@ import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
-import jp.smartcompany.job.modules.core.mapper.MastOrganisationMapper;
+import jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -55,24 +55,6 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
         MastOrganisationDO mastOrganisationDO = getOne(qw);
         if (mastOrganisationDO != null) {
             return mastOrganisationDO;
-        }
-        return null;
-    }
-
-    @Override
-    public List<MastOrganisationDO> selectPatternOrganisation(String customerId, String companyId, Date yyyymmdd) {
-        QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
-        qw.eq("mo_ccustomerid_ck_fk", customerId)
-                .eq("mo_ccompanyid_ck_fk", companyId)
-                .eq("mo_clanguage", "ja")
-                .isNull("mo_cparentid")
-                .le("mo_dstart", yyyymmdd)
-                .ge("mo_dend", yyyymmdd)
-
-                .orderByAsc("mo_nseq");
-        List<MastOrganisationDO> mastOrganisationDOList = list(qw);
-        if (mastOrganisationDOList != null) {
-            return mastOrganisationDOList;
         }
         return null;
     }

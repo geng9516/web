@@ -128,6 +128,4 @@ public interface IMastGroupsectionpostmappingService extends IService<MastGroups
                 String customerId,String systemId,String groupId, String typeId, Date startDate);
 
 
-        List<MastGroupsectionpostmappingDO> selectMastGroupSectionPostMapping(Date startDate, String custId, String systemId,String groupId);
-
 }

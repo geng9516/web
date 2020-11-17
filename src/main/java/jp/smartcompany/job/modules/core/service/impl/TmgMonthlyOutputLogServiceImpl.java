@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyOutputLogDO;
-import jp.smartcompany.job.modules.core.mapper.TmgMonthlyOutputLogMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgMonthlyOutputLog.TmgMonthlyOutputLogMapper;
 import jp.smartcompany.job.modules.core.service.ITmgMonthlyOutputLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

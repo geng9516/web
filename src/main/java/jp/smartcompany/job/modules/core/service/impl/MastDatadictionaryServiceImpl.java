@@ -4,10 +4,9 @@ import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.core.mapper.MastDatadictionaryMapper;
+import jp.smartcompany.job.modules.core.mapper.MastDatadictionary.MastDatadictionaryMapper;
 import jp.smartcompany.job.modules.core.service.IMastDatadictionaryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

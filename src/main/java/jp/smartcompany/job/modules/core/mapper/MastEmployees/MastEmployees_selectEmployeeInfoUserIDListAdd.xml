@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper">
+
+    <select id="selectEmployeeInfoUserIDListAdd" parameterType="jp.smartcompany.framework.component.dto.EmployInfoSearchDTO" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">
+        SELECT
+        HD_ID,
+        ME_ID,
+        HD_CUSERID AS ME_CUSERID,
+        (
+        SELECT
+        MAP_NWEIGHTAGE
+        FROM
+        MAST_POST
+        WHERE
+        MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+        AND MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+        AND MAP_CPOSTID_CK = HD_CPOSTID_FK
+        AND MAP_CLANGUAGE = 'ja'
+        AND MAP_DSTART <![CDATA[<=]]> #{searchDate}
+        AND MAP_DEND >= #{searchDate}
+        ) AS MAP_NWEIGHTAGE
+        FROM MAST_EMPLOYEES,${designation} HD
+        WHERE
+        HD_CCUSTOMERID_CK = '01'
+        AND HD_DSTARTDATE_CK <![CDATA[<=]]> #{searchDate}
+        AND HD_DENDDATE >= #{searchDate}
+        AND HD_CCOMPANYID_CK = #{targetComp}
+        AND HD_CSECTIONID_FK = #{targetDept}
+        AND ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK
+        AND ME_CUSERID = HD_CUSERID
+        AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+        AND ME_DENDDATE >= #{searchDate}
+        <if test="searchWord neq null or searchWordEnglish neq null or searchWordConve neq null">
+            AND (
+            <if test="searchWord neq null">
+                ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                OR ME_CKANJINAME LIKE #{searchWord}
+                OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
+            </if>
+            <if test="searchWordEnglish neq null">
+                OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+            </if>
+            <if test="searchWordConve neq null">
+                OR ME_CKANANAME LIKEC #{searchWordConve}
+            </if>
+            )
+        </if>
+        <if test='propValue == "yes" and searchFlg != 1'>
+            AND	ME_CIFSTILLEMPLOYEDID = 0
+        </if>
+        <if test="searchFlg != null">
+            AND	ME_CIFSTILLEMPLOYEDID = #{searchFlg}
+        </if>
+        ${exists}
+        ${orderBy}
+    </select>
+
+</mapper>

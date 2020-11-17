@@ -7,7 +7,7 @@ import jp.smartcompany.admin.component.dto.BaseSectionRowListDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
-import jp.smartcompany.job.modules.core.mapper.MastGroupbasesectionMapper;
+import jp.smartcompany.job.modules.core.mapper.MastGroupbasesection.MastGroupbasesectionMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
@@ -87,12 +87,6 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
       }
       return baseMapper.selectGroupBaseSectionList(psCustomerId, psSystemId,
               psCompanyId,psGroupId, psLanguage, strSearchDate);
-  }
-
-  @Override
-  public List<MastGroupbasesectionDO> selectMastGroupBaseSection(Date startDate, String custId, String systemId, String groupId) {
-      String sStartDate = SysUtil.transDateToString(startDate);
-      return baseMapper.selectMastGroupBaseSection(sStartDate,custId,systemId,groupId);
   }
 
 }

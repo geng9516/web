@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastSystem.MastSystemMapper">
+
+	<select id="selectSystemList" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO">
+		SELECT
+			MS_CSYSTEMID_PK,PSMASTER.FUNC_GET_SYSTEM_NAME(
+				MS_CSYSTEMID_PK,
+				TRUNC(SYSDATE),
+			    '${value}'
+			) MS_CSYSTEMNAME
+		FROM
+			MAST_SYSTEM
+		WHERE
+			MS_CLANGUAGE = 'ja'
+		  AND (
+				MS_CDELFLAG = '0'
+				OR  (
+					MS_CDELFLAG = '1' AND MS_DDELDATE >= TRUNC(SYSDATE)
+				)
+		  )
+		ORDER BY MS_CSYSTEMID_PK
+	</select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectNenkyuRuleH" resultType="int">
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd3001 d
+        on
+            e.mgd_ccompanyid_ck_fk =  d.ccompkb
+        and e.mgd_csparechar1 = substr(d.kinmu_cde,'1','1')
+        and e.mgd_csparechar2 = d.hjksyk_misy_cde
+        and e.mgd_csparechar3 = substr(d.kinmu_cde,'2','1')
+        where
+            d.ccompkb        = #{companyId}
+        and d.dstart        <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       = #{employeeId}
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck     <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+    </select>
+
+</mapper>

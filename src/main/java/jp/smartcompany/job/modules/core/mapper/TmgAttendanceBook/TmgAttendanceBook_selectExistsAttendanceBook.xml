@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!-- 対象職員の出勤簿情報が存在する年度情報を検索する -->
+    <resultMap id="selectExistsAttendanceBookMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO">
+        <result column="lastYear" property="lastYear"/>
+        <result column="thisYear" property="thisYear"/>
+        <result column="nextYear" property="nextYear"/>
+    </resultMap>
+
+    <!-- 対象職員の出勤簿情報が存在する年度情報を検索する -->
+    <select id="selectExistsAttendanceBook" parameterType="java.util.HashMap" resultMap="selectExistsAttendanceBookMap">
+        select (select decode(max(a1.tma_nyyyy), null, null, to_char(tmg_f_get_the_yearzone (max(a1.tma_nyyyy), '1',to_char(sysdate,'yyyy/MM/dd'), #{compCode}, #{custId}), 'yyyy/mm/dd')) from tmg_attendance_book a1
+                    where a1.tma_cemployeeid = #{employeeId} and a1.tma_nyyyy <![CDATA[<]]> to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode}, #{custId}))
+                        and a1.tma_ccompanyid = #{compCode} and a1.tma_ccustomerid = #{custId}) as lastyear
+              ,(select decode(a2.tma_nyyyy, null, null, to_char( tmg_f_get_the_yearzone (a2.tma_nyyyy, '1', to_char(sysdate,'yyyy/MM/dd'), #{compCode}, #{custId}), 'yyyy/mm/dd')) from tmg_attendance_book a2
+                    where a2.tma_cemployeeid = #{employeeId} and a2.tma_nyyyy = to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode}, #{custId}))
+                        and a2.tma_ccompanyid = #{compCode} and a2.tma_ccustomerid = #{custId} and rownum = 1) as thisyear
+        ,(select decode(min(a3.tma_nyyyy), null, null, to_char(tmg_f_get_the_yearzone (min(a3.tma_nyyyy), '1',to_char(sysdate,'yyyy/MM/dd'), #{compCode}, #{custId}), 'yyyy/mm/dd')) from tmg_attendance_book a3
+                    where a3.tma_cemployeeid = #{employeeId}  and a3.tma_nyyyy > to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode},#{custId}))
+                        and a3.tma_ccompanyid = #{compCode} and a3.tma_ccustomerid = #{custId}) as nextyear
+        from dual
+    </select>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="selectMonthDate" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo">
+        SELECT
+            TO_CHAR( TRUNC( TMO_DYYYYMM, 'MM' ), 'YYYY/MM/DD' ) AS VAL,
+            TO_CHAR( TMO_DYYYYMM, 'YYYY/MM' ) AS DISP
+        FROM
+            TMG_MONTHLY
+        WHERE
+            TMO_CCUSTOMERID = #{custID}
+          AND TMO_CCOMPANYID = #{compCode}
+          AND TMO_DYYYYMM <![CDATA[<]]> TRUNC( SYSDATE, 'MM' )
+        GROUP BY
+            TMO_DYYYYMM
+        ORDER BY
+            TMO_DYYYYMM DESC
+    </select>
+
+</mapper>

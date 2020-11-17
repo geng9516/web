@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastDatadictionary.MastDatadictionaryMapper">
+
+    <select id="selectGroupJoinQuery" parameterType="map" resultType="jp.smartcompany.framework.component.dto.QueryConditionRowDTO">
+        SELECT DISTINCT
+            ' AND ' ||
+            'HD_CCUSTOMERID_CK  = ' || CUSTOMERID || ' AND ' ||
+            'HD_CUSERID         = ' || USERID     || ' AND ' ||
+            'HD_DSTARTDATE_CK  <![CDATA[<=]]> TRUNC(SYSDATE)' || ' AND ' ||
+            'HD_DENDDATE       >= TRUNC(SYSDATE)' || ' AND ' ||
+            STARTDATE   ||   ' <![CDATA[<=]]> TRUNC(SYSDATE)' || ' AND ' ||
+            ENDDATE     ||   ' >= TRUNC(SYSDATE)'
+            AS JOINQUERY
+        FROM
+           (
+               SELECT
+                    (
+                        SELECT
+                            MD_CCOLUMNNAME
+                        FROM MAST_DATADICTIONARY
+                        WHERE
+                            MD_CCUSTOMERID  = '01'      AND
+                            MD_CTABLENAME	= #{tableId}		AND
+                            MD_CCOLUMNNAME LIKE '%CCUSTOMERID%'	    	AND
+                            ROWNUM = 1
+                    ) AS CUSTOMERID,
+                    (
+                       SELECT
+                           MD_CCOLUMNNAME
+                       FROM
+                           MAST_DATADICTIONARY
+                       WHERE
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
+                           MD_CCOLUMNNAME LIKE '%DSTARTDATE%'          AND
+                           ROWNUM = 1
+                    ) AS STARTDATE,
+                    (
+                       SELECT
+                           MD_CCOLUMNNAME
+                       FROM
+                           MAST_DATADICTIONARY
+                       WHERE
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
+                           MD_CCOLUMNNAME LIKE '%DENDDATE%'	   	AND
+                           ROWNUM = 1
+                    ) AS ENDDATE,
+                    (
+                       SELECT
+                           MD_CCOLUMNNAME
+                       FROM
+                           MAST_DATADICTIONARY
+                       WHERE
+                           MD_CCUSTOMERID  = '01'      AND
+                           MD_CTABLENAME	= #{tableId}		AND
+                           MD_CCOLUMNNAME LIKE '%CUSERID%'         AND
+                           ROWNUM = 1
+                    ) AS USERID
+               FROM DUAL
+           )
+    </select>
+
+</mapper>

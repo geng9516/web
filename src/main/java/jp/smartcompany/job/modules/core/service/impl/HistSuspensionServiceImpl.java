@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.HistSuspensionDO;
-import jp.smartcompany.job.modules.core.mapper.HistSuspensionMapper;
+import jp.smartcompany.job.modules.core.mapper.HistSuspension.HistSuspensionMapper;
 import jp.smartcompany.job.modules.core.service.IHistSuspensionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.HatuReiDto;

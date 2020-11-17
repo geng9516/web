@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayAttribute.TmgPaidHolidayAttributeMapper">
+
+      <select id="selectAvgWorkTime" resultType="int" >
+        SELECT
+        R1.TPHA_NAVGWORKTIME
+        FROM
+        TMG_PAID_HOLIDAY_ATTRIBUTE      R1
+        WHERE
+                R1.TPHA_CCUSTOMERID     =   #{customerId}
+        AND     R1.TPHA_CCOMPANYID      =   #{companyId}
+        AND     R1.TPHA_CEMPLOYEEID     =   #{employeeId}
+        AND     R1.TPHA_DSTARTDATE      <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     R1.TPHA_DENDDATE        <![CDATA[>=]]>  #{yyyymmdd,jdbcType=DATE}
+      </select>
+
+</mapper>

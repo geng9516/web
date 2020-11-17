@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayAttribute.TmgPaidHolidayAttributeMapper">
+
+    <select id="selectTmgEmp" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgEmpVo" parameterType="jp.smartcompany.job.modules.tmg.empattrsetting.dto.EmpAttrSettingDto" statementType="STATEMENT">
+        SELECT
+             A.ME_CEMPLOYEEID_CK ME_CEMPLOYEEID_CK
+            ,A.ME_CKANJINAME ME_CKANJINAME
+            ,TMG_F_GET_MP (A.HD_CPOSTID_FK, TO_DATE('${param.baseDate}','yyyy/MM/dd'), A.ME_CCUSTOMERID_CK, A.ME_CCOMPANYID, '${param.lang}')AS HD_CPOSTNAME
+            ,TMG_F_GET_MGD (A.TEM_CWORKTYPEID, TO_DATE('${param.baseDate}','yyyy/MM/dd'), A.ME_CCUSTOMERID_CK, A.ME_CCOMPANYID, '${param.lang}')AS TEM_CWORKTYPENAME
+            ,A.TMG_ITEMS_MANAGEFLG TMG_ITEMS_MANAGEFLG
+            ,A.TMG_ITEMS_EXCLUDE_OVERTIME TMG_ITEMS_EXCLUDE_OVERTIME
+            ,NVL(B.TPHA_NAVGWORKTIME, TMG_F_GET_AVGWORKTIME (A.ME_CEMPLOYEEID_CK,TO_DATE('${param.baseDate}', 'yyyy/MM/dd'), A.ME_CCUSTOMERID_CK,A.ME_CCOMPANYID)) AS TPHA_NAVGWORKTIME
+            ,NVL(B.TPHA_NWORKINGDAYS_WEEK, TMG_F_GET_NWORKINGDAYS_WEEK (A.ME_CEMPLOYEEID_CK,TO_DATE('${param.baseDate}', 'yyyy/MM/dd'), A.ME_CCUSTOMERID_CK,A.ME_CCOMPANYID)) AS TPHA_NWORKINGDAYS_WEEK
+            ,A.TMG_ITEMS_WORKPLACE_CODE TMG_ITEMS_WORKPLACE_CODE
+            ,A.TMG_ITEMS_WORKPLACE_NAME TMG_ITEMS_WORKPLACE_NAME
+            ,TO_CHAR(TMG_F_GET_BEGINDATE_WORK (A.ME_CEMPLOYEEID_CK, TO_DATE('${param.baseDate}','yyyy/MM/dd'), A.ME_CCUSTOMERID_CK, A.ME_CCOMPANYID),'YYYY/MM/DD') AS BEGINDATE
+        FROM
+            TMG_PAID_HOLIDAY_ATTRIBUTE B,
+            (SELECT
+                ROWNUM AS SORTED_ROW
+                ,A. *
+            FROM
+                (SELECT
+                     A.ME_CCUSTOMERID_CK
+                    ,A.ME_CCOMPANYID
+                    ,A.ME_CEMPLOYEEID_CK
+                    ,A.ME_CKANANAME
+                    ,A.ME_CKANJINAME
+                    ,B.TEM_CWORKTYPEID
+                    ,TMG_F_IS_MANAGEFLG (A.ME_CEMPLOYEEID_CK, TO_DATE('${param.baseDate}','yyyy/MM/dd'), TO_DATE('${param.baseDate}','yyyy/MM/dd'), A.ME_CCUSTOMERID_CK, A.ME_CCOMPANYID)AS TMG_ITEMS_MANAGEFLG
+                    ,TMG_F_IS_EXCLUDE_OVERTIME (A.ME_CEMPLOYEEID_CK, TO_DATE('${param.baseDate}','yyyy/MM/dd'), A.ME_CCUSTOMERID_CK, A.ME_CCOMPANYID)AS TMG_ITEMS_EXCLUDE_OVERTIME
+                    ,C.HD_CPOSTID_FK
+                    ,T.TES_CTYPE AS TMG_ITEMS_WORKPLACE_CODE
+                    ,TMG_F_GET_MGD (t.TES_CTYPE, TO_DATE('${param.baseDate}','yyyy/MM/dd'), t.TES_CCUSTOMERID, t.TES_CCOMPANYID,'${param.lang}') AS TMG_ITEMS_WORKPLACE_NAME
+                FROM
+                    MAST_POST D,
+                    HIST_DESIGNATION C,
+                    TMG_EMPLOYEES B,
+
+                    (SELECT
+                         B.ME_CCUSTOMERID_CK
+                        ,B.ME_CCOMPANYID
+                        ,B.ME_CEMPLOYEEID_CK
+                        ,B.ME_CKANANAME
+                        ,B.ME_CKANJINAME
+                    FROM
+                        MAST_EMPLOYEES B,
+                        (${param.empListsql}) A
+                    WHERE
+                        B.ME_CCUSTOMERID_CK = A.CUST
+                    AND B.ME_CCOMPANYID = A.COMP
+                    AND B.ME_CEMPLOYEEID_CK = A.EMPID
+                    AND B.ME_DSTARTDATE <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                    AND B.ME_DENDDATE >= TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                    ) A
+                LEFT JOIN TMG_EMPLOYEE_ATTRIBUTE T ON
+                    T.TES_CCUSTOMERID = A.ME_CCUSTOMERID_CK
+                AND T.TES_CCOMPANYID = A.ME_CCOMPANYID
+                AND T.TES_CEMPLOYEEID = A.ME_CEMPLOYEEID_CK
+                AND T.TES_DSTARTDATE <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND T.TES_DENDDATE >= TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND T.TES_CTYPE LIKE 'TMG_WORKPLACE%'
+                WHERE
+                    B.TEM_CCUSTOMERID = A.ME_CCUSTOMERID_CK
+                AND B.TEM_CCOMPANYID = A.ME_CCOMPANYID
+                AND B.TEM_CEMPLOYEEID = A.ME_CEMPLOYEEID_CK
+                AND B.TEM_DSTARTDATE <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND B.TEM_DENDDATE >= TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND C.HD_CCUSTOMERID_CK = B.TEM_CCUSTOMERID
+                AND C.HD_CCOMPANYID_CK = B.TEM_CCOMPANYID
+                AND C.HD_CEMPLOYEEID_CK = B.TEM_CEMPLOYEEID
+                AND C.HD_DSTARTDATE_CK <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND C.HD_DENDDATE >= TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                AND D.MAP_CCUSTOMERID_CK_FK = C.HD_CCUSTOMERID_CK
+                AND D.MAP_CCOMPANYID_CK_FK = C.HD_CCOMPANYID_CK
+                AND D.MAP_CPOSTID_CK = C.HD_CPOSTID_FK
+                AND D.MAP_DSTART <![CDATA[<=]]> TO_DATE('${param.baseDate}', 'yyyy/MM/dd')
+                AND D.MAP_DEND >= TO_DATE('${param.baseDate}', 'yyyy/MM/dd')
+                AND D.MAP_CLANGUAGE = '${param.lang}'
+
+                ORDER BY C.HD_DENDDATE DESC, C.HD_DSTARTDATE_CK, C.HD_CSECTIONID_FK,D.MAP_NWEIGHTAGE, A.ME_CEMPLOYEEID_CK
+            ) A
+            WHERE
+                EXISTS (SELECT
+                            *
+                        FROM
+                            TMG_GROUP_MEMBER GRP
+                        WHERE
+                            GRP.TGRM_CCUSTOMERID = A.ME_CCUSTOMERID_CK
+                        AND GRP.TGRM_CCOMPANYID = A.ME_CCOMPANYID
+                        AND GRP.TGRM_DSTARTDATE <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                        AND GRP.TGRM_DENDDATE >= TO_DATE('${param.baseDate}','yyyy/MM/dd')
+                        AND GRP.TGRM_CEMPLOYEEID = A.ME_CEMPLOYEEID_CK
+                        )
+            ) A
+        WHERE
+            B.TPHA_CCUSTOMERID (+) = A.ME_CCUSTOMERID_CK
+        AND B.TPHA_CCOMPANYID (+) = A.ME_CCOMPANYID
+        AND B.TPHA_CEMPLOYEEID (+) = A.ME_CEMPLOYEEID_CK
+        AND B.TPHA_DSTARTDATE (+) <![CDATA[<=]]> TO_DATE('${param.baseDate}','yyyy/MM/dd')
+        AND B.TPHA_DENDDATE (+) >= TO_DATE('${param.baseDate}', 'yyyy/MM/dd')
+        AND A.SORTED_ROW BETWEEN ${numStrat} AND ${numEnd}
+        ORDER BY
+            A.SORTED_ROW
+    </select>
+
+</mapper>

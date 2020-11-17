@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastCompany.MastCompanyMapper">
+
+    <select id="selectAllCompany" resultType="jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO">
+        -- 有効な法人リストを取得
+        SELECT MAC_CCOMPANYID_CK AS HD_CCOMPANYID_CK
+        FROM MAST_COMPANY
+        WHERE
+            MAC_CCUSTOMERID_CK_FK = #{custId}
+            AND MAC_CLANGUAGE = 'ja'
+            <if test="searchDate==null">
+                AND MAC_DSTART <![CDATA[<=]]> SYSDATE
+                AND MAC_DEND >= SYSDATE
+            </if>
+            <if test="searchDate!=null">
+                AND MAC_DSTART <![CDATA[<=]]> #{searchDate}
+                AND MAC_DEND >= #{searchDate}
+            </if>
+            AND (MAC_CDELFLAG = '0'
+            OR (
+                <if test="searchDate==null">
+                    MAC_CDELFLAG = '1' AND MAC_DDELDATE > SYSDATE)
+                </if>
+                <if test="searchDate!=null">
+                    MAC_CDELFLAG = '1' AND MAC_DDELDATE > #{searchDate})
+                </if>
+            )
+            ORDER BY MAC_NSEQ
+    </select>
+
+</mapper>

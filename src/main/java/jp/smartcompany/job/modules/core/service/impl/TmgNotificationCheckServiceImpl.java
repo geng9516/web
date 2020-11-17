@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationCheckDO;
-import jp.smartcompany.job.modules.core.mapper.TmgNotificationCheckMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgNotificationCheck.TmgNotificationCheckMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationCheckService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

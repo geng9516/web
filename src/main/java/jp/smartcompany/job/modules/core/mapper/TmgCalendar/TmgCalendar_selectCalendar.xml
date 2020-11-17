@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCalendar.TmgCalendarMapper">
+
+    <select id="selectCalendar" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto">
+        SELECT
+            TO_CHAR( MIN( TCA_DYYYYMM ), 'yyyy/MM/dd' ) MIN_MONTH,
+            TO_CHAR( MAX( TCA_DYYYYMM ), 'yyyy/MM/dd' ) MAX_MONTH,
+            TO_CHAR( TRUNC( TMG_F_GET_THE_YEARZONE ( #{year}, 0, #{baseDate}, #{custId}, #{compId} ), 'mm' ), 'yyyy/MM/dd' ) START_YEAR_DATE,
+            TO_CHAR( TRUNC( TMG_F_GET_THE_YEARZONE ( #{year}, 1, #{baseDate}, #{custId}, #{compId} ), 'mm' ), 'yyyy/MM/dd' ) END_YEAR_DATE
+        FROM
+            TMG_CALENDAR
+        WHERE
+            TCA_CCUSTOMERID = #{custId}
+          AND TCA_CCOMPANYID = #{compId}
+    </select>
+
+</mapper>

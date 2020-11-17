@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCalendarSection.TmgCalendarSectionMapper">
+    <update id="updateCalendar">
+        UPDATE
+        TMG_CALENDAR_SECTION
+        SET
+        <foreach collection="holFlgList" item="holFlgList" index="index" open="" close="," separator=",">
+            ${holFlgList.columnName} = '${holFlgList.columnValue}'
+        </foreach>
+        TCAS_CMODIFIERUSERID = #{userCode},
+        TCAS_DMODIFIEDDATE = SYSDATE,
+        TCAS_CMODIFIERPROGRAMID = 'TMG_CALANDER_EDIT',
+        TCAS_EDITFLAG = TO_NUMBER( TCAS_EDITFLAG ) + 1
+        WHERE
+        TCAS_CCUSTOMERID = #{custID}
+        AND TCAS_CCOMPANYID = #{compCode}
+        AND TCAS_CSECTIONID = #{targetSec}
+        <choose>
+            <when test=" targetGroup == null ">
+                AND TCAS_CGROUPID = #{targetSec} || '|000000'
+            </when>
+            <otherwise>
+                AND TCAS_CGROUPID = #{targetGroup,jdbcType=VARCHAR}
+            </otherwise>
+        </choose>
+        AND TCAS_DYYYYMM = #{month}
+    </update>
+</mapper>

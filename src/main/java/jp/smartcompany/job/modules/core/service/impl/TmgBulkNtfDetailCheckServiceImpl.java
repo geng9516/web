@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNtfDetailCheckDO;
-import jp.smartcompany.job.modules.core.mapper.TmgBulkNtfDetailCheckMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgBulkNtfDetailCheck.TmgBulkNtfDetailCheckMapper;
 import jp.smartcompany.job.modules.core.service.ITmgBulkNtfDetailCheckService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

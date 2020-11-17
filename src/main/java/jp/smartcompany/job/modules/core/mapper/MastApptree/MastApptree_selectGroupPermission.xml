@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper">
+
+    <select id="selectGroupPermission" parameterType="map" resultType="jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity">
+        -- アプリケーション起動権限判定 情報取得SQLファイル (グループ毎の権限)
+        select
+        MTR_ID,
+        MTR_COBJECTID,
+        NVL(MGP_CPERMISSION, '0') AS MGP_CPERMISSION,
+        NVL(MGP_CREJECT, '0') AS MGP_CREJECT
+        from MAST_APPTREE left outer join MAST_GROUPAPPPERMISSION on
+        MGP_COBJECTID = MTR_COBJECTID
+        AND MGP_CSYSTEMID = #{systemCode}
+        AND MGP_CGROUPID = #{groupCode}
+        AND MGP_DSTARTDATE <![CDATA[<=]]> trunc(sysdate)
+        AND MGP_DENDDATE >= trunc(sysdate)
+    </select>
+
+
+</mapper>

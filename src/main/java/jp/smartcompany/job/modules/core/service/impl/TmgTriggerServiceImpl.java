@@ -2,11 +2,9 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.mapper.TmgTriggerMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgTrigger.TmgTriggerMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

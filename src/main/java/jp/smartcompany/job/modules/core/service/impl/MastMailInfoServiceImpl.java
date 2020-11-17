@@ -6,7 +6,7 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.MailUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
-import jp.smartcompany.job.modules.core.mapper.MastMailInfoMapper;
+import jp.smartcompany.job.modules.core.mapper.MastMailinfo.MastMailInfoMapper;
 import jp.smartcompany.job.modules.core.pojo.bo.SendChangePasswordMailBO;
 import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastMailInfoDO;

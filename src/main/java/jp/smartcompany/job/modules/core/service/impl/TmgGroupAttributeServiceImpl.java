@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgGroupAttributeDO;
-import jp.smartcompany.job.modules.core.mapper.TmgGroupAttributeMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgGroupAttribute.TmgGroupAttributeMapper;
 import jp.smartcompany.job.modules.core.service.ITmgGroupAttributeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.HolidayTimeLimitDto;

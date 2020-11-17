@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTrigger.TmgTriggerMapper">
+
+    <insert id="buildSQLInsertTrigger">
+        INSERT INTO
+            TMG_TRIGGER
+        SELECT
+            e.cust,                                  <!--顧客コード-->
+            e.comp,                                  <!--法人コード-->
+            e.empid,                                 <!--職員番号-->
+            '1900/01/01' ,                           <!--開始日-->
+            '2222/12/31',                            <!--終了日-->
+            #{loginUserCode},                        <!--更新者-->
+            SYSDATE,                                 <!--更新日-->
+            'DeptStatList_ACT_Disp_RList',           <!--更新プログラムID-->
+            'DeptStatList_ACT_Disp_RList',           <!--プログラムID-->
+            NULL,                                    <!-- 数値型パラメータ1-->
+            NULL,                                    <!--数値型パラメータ2-->
+            NULL,                                    <!--数値型パラメータ3-->
+            NULL,                                    <!--数値型パラメータ4-->
+            NULL,                                    <!--数値型パラメータ5-->
+            'ACT_Disp_RList',                        <!--文字列型パラメータ1-->
+            NULL,                                    <!--文字列型パラメータ2-->
+            NULL,                                    <!--文字列型パラメータ3-->
+            NULL,                                    <!--文字列型パラメータ4-->
+            NULL,                                    <!--文字列型パラメータ5-->
+            d.TDA_DYYYYMMDD,                         <!--日付型パラメータ1-->
+            NULL,                                    <!--日付型パラメータ2-->
+            NULL,                                    <!--日付型パラメータ3-->
+            NULL,                                    <!--日付型パラメータ4-->
+            NULL                                     <!--日付型パラメータ5-->
+        FROM
+            TMG_DAILY d,
+            (${empsql}) e,
+            TMG_MONTHLY m
+        WHERE
+            m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM = TRUNC(TO_DATE(#{pWorkDate}),'MM')
+        AND m.TMO_CCOMPANYID = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+        AND d.TDA_CEMPLOYEEID = m.TMO_CEMPLOYEEID
+        AND d.TDA_DYYYYMM = #{baseDate}           <!--表示対象月-->
+        AND d.TDA_DYYYYMMDD <![CDATA[<=]]>  TRUNC(SYSDATE)      <!--運用日以前を対象とする-->
+        AND d.TDA_CCUSTOMERID = m.TMO_CCUSTOMERID
+        AND d.TDA_CCOMPANYID = m.TMO_CCOMPANYID
+        AND d.TDA_CSTATUSFLG = 'TMG_DATASTATUS|1'
+    </insert>
+
+</mapper>

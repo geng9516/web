@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper">
+
+    <select id="selectSiteOrAppListByType" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO">
+        -- アプリケーション（サイト）一覧取得SQL
+-- psTypeが3はアプリケーション一覧
+-- psTypeが1はサイト一覧
+        SELECT
+            <if test='type == "1"'>
+                MTR_CSITEID,
+            </if>
+            <if test='type=="3"'>
+                MTR_CAPPID,
+            </if>
+            MTR_COBJNAME,
+            MIN(MTR_NSEQ) MTR_NSEQ
+        FROM (
+          SELECT
+            <if test='type == "1"'>
+              MTR_CSITEID,
+            </if>
+            <if test='type=="3"'>
+              MTR_CAPPID,
+            </if>
+              PSMASTER.FUNC_GET_OBJ_NAME (
+                     MTR_CSITEID,
+                     MTR_CAPPID,
+                     NULL,
+                     NULL,
+                     NULL,
+                     '${language}'
+              ) MTR_COBJNAME,
+              MTR_NSEQ
+          FROM MAST_APPTREE
+        WHERE MTR_CSYSTEMID = #{systemId}
+              <if test='type == "1"'>
+                AND	MTR_CTYPE IN ('0','${type}')	-- トップページを含める
+              </if>
+              <if test='type == "3"'>
+                AND	MTR_CTYPE = #{type}
+              </if>
+              <if test="siteId!=null">
+                AND	MTR_CSITEID = #{siteId}
+              </if>
+        ) GROUP BY
+            <if test='type == "1"'>
+                MTR_CSITEID,
+            </if>
+            <if test='type == "3"'>
+                MTR_CAPPID,
+            </if>
+            MTR_COBJNAME ORDER BY MTR_NSEQ
+    </select>
+
+</mapper>

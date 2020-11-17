@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAlertmsgDO;
-import jp.smartcompany.job.modules.core.mapper.TmgAlertmsgMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgAlertmsg.TmgAlertmsgMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAlertmsgService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.AlertVo;

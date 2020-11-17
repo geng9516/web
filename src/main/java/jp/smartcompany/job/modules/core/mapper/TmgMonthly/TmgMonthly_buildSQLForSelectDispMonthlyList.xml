@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="buildSQLForSelectDispMonthlyList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO">
+        SELECT
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY/MM/DD') AS CODE,
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY') || '年' || TO_CHAR(t.TMO_DYYYYMM, 'MM') || '月' AS VAL
+        FROM
+            TMG_MONTHLY t
+        WHERE
+            TMO_CCUSTOMERID = #{custId}
+        AND TMO_CCOMPANYID = #{compId}
+        AND TMO_CEMPLOYEEID = #{empId}
+        AND TMO_DYYYYMM  <![CDATA[<=]]> TRUNC(to_date(#{baseDate}), 'MM')
+        ORDER BY
+            t.TMO_DYYYYMM DESC
+    </select>
+
+</mapper>

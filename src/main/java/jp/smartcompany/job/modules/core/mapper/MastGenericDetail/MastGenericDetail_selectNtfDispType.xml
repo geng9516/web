@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectNtfDispType" resultType="int">
+        SELECT
+            MGD_NINPUTCTL
+        FROM
+            TMG_V_MGD_NTFTYPES
+        WHERE
+            MGD_CCUSTOMERID=#{customerId}
+        AND MGD_CCOMPANYID_CK_FK=#{companyId}
+        AND MGD_CLANGUAGE_CK=#{language}
+        AND SYSDATE BETWEEN MGD_DSTART_CK AND MGD_DEND
+        AND MGD_CNTFTYPE=#{ntfId}
+    </select>
+
+</mapper>

@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyActionlogDO;
-import jp.smartcompany.job.modules.core.mapper.TmgDailyActionlogMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgDailyActionlog.TmgDailyActionlogMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyActionlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyLogVO;

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDailyDetail.TmgDailyDetailMapper">
+
+    <select id="buildSQLForSelectDetail" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO">
+        SELECT
+            TDAD_CNOTWORKID,                                			<!-- 非勤務区分-->
+            TMG_F_GET_MGD(
+                TDAD_CNOTWORKID,
+                TDAD_DYYYYMMDD,
+                TDAD_CCUSTOMERID,
+                TDAD_CCOMPANYID,
+                #{language}
+            ) TDAD_CNOTWORK_NAME,     									<!-- 非勤務区分名称-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) AS TDAD_NOPEN_HHMI,           <!-- 開始時刻-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) AS TDAD_NCLOSE_HHMI,         <!-- 終了時刻-->
+            TDAD_NDELETEFLG,                              				<!-- 削除フラグ-->
+            to_multi_byte(ROWID) AS ROW_ID                            	<!-- 行ID-->
+        FROM
+            TMG_DAILY_DETAIL
+        WHERE
+            TDAD_CEMPLOYEEID   = #{targetUser}
+        AND TDAD_DYYYYMMDD     = #{day}
+        AND TDAD_CCOMPANYID    = #{compCode}
+        AND TDAD_CCUSTOMERID   = #{custID}
+
+        <!-- 削除フラグ-->
+        <if test="bDel == true">
+            AND TDAD_NDELETEFLG    = 0
+        </if>
+
+        <!-- 欠勤・離席以外-->
+        <choose>
+            <when test="iMode == 0 ">
+                AND NOT EXISTS(
+                                SELECT
+                                    ITEM_CODE
+                                FROM
+                                    TABLE(
+                                        TMG_F_GET_RESULTITEMS(
+                                            #{custID},
+                                            #{compCode},
+                                            NULL,
+                                            #{day}
+                                        )
+                                    )
+                                WHERE TDAD_CNOTWORKID = ITEM_CODE
+                )
+                ORDER BY TDAD_NOPEN
+            </when>
+
+            <!-- 欠勤-->
+            <when test="iMode == 1 ">
+                AND TDAD_CNOTWORKID = 'TMG_NOTWORK|905'
+            </when>
+
+            <!-- 離席-->
+            <when test="iMode == 2 ">
+                AND TDAD_CNOTWORKID = 'TMG_NOTWORK|910'
+            </when>
+
+            <!-- 休憩(予定)-->
+            <when test="iMode == 3 ">
+                AND TDAD_CNOTWORKID = 'TMG_ITEMS|PlanRest'
+            </when>
+        </choose>
+
+    </select>
+
+
+</mapper>

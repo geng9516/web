@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!-- 出勤簿が存在かとうか -->
+    <select id="selectExistsAttendanceBookCheck" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select case when tab.startDate is null and tab.endDate is null then 0 else 1 end isNothing from (
+            select (select decode(a1.tma_nyyyy, null, null, to_char(tmg_f_get_the_yearzone (a1.tma_nyyyy, '1',#{baseDate}, #{compCode},#{custId}), 'yyyy/mm/dd'))
+                    from tmg_attendance_book a1
+                    where tma_cemployeeid = #{employeeId}
+                      and tma_nyyyy = to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), '01', #{custId}))
+                      and tma_ccompanyid = #{compCode}
+                      and tma_ccustomerid =  #{custId}
+                      and rownum = 1)as startDate
+                 ,(select decode(max(a2.tma_nyyyy), null, null, to_char(tmg_f_get_the_yearzone (max(a2.tma_nyyyy), '1',#{baseDate}, #{compCode}, #{custId}), 'yyyy/mm/dd'))
+                   from tmg_attendance_book a2
+                   where tma_cemployeeid = #{employeeId}
+                     and tma_nyyyy <![CDATA[<]]>  to_number(tmg_f_get_the_year(to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode}, #{custId}))
+                     and tma_ccompanyid = #{compCode}
+                     and tma_ccustomerid =  #{custId}) as endDate
+            from dual
+        )tab
+    </select>
+
+</mapper>

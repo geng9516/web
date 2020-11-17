@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectTmgStatus"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgStatus">
+        SELECT
+            TMG_F_IS_FIXED_MONTHLY(M.TMO_CEMPLOYEEID,M.TMO_DYYYYMM,M.TMO_CCUSTOMERID,M.TMO_CCOMPANYID) AS FIXED_MONTHLY,
+            TMG_F_IS_FIXED_SALARY (M.TMO_CEMPLOYEEID,M.TMO_DYYYYMM,M.TMO_CCUSTOMERID,M.TMO_CCOMPANYID) AS FIXED_SALARY,
+            D.TDA_CSTATUSFLG,
+            M.TMO_CSTATUSFLG,
+            (CASE WHEN TRUNC(SYSDATE)  <![CDATA[<]]> D.TDA_DYYYYMMDD THEN 1 ELSE 0 END) AS IS_FUTURE
+        FROM
+            TMG_DAILY D,
+            TMG_MONTHLY M
+        WHERE
+            D.TDA_CEMPLOYEEID = #{userCode}
+        AND D.TDA_DYYYYMMDD   = #{day}
+        AND D.TDA_CCUSTOMERID = #{custID}
+        AND D.TDA_CCOMPANYID  = #{compCode}
+        AND M.TMO_CEMPLOYEEID = D.TDA_CEMPLOYEEID
+        AND M.TMO_DYYYYMM     = D.TDA_DYYYYMM
+        AND M.TMO_CCUSTOMERID = D.TDA_CCUSTOMERID
+        AND M.TMO_CCOMPANYID  = D.TDA_CCOMPANYID
+    </select>
+
+</mapper>

@@ -3,10 +3,9 @@ package jp.smartcompany.job.modules.core.service.impl;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupdefinitionsDO;
-import jp.smartcompany.job.modules.core.mapper.MastGroupdefinitionsMapper;
+import jp.smartcompany.job.modules.core.mapper.MastGroupdefinitions.MastGroupdefinitionsMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupdefinitionsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

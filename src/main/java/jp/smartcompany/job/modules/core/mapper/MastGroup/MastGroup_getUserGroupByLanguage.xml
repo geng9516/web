@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+
+    <select id="getUserGroupByLanguage" resultType="jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO" parameterType="map">
+        SELECT
+            MG_CSYSTEMID_CK_FK as systemId,
+            MG_NWEIGHTAGE as weight,
+            MG_CGROUPID_PK as groupId,
+            MGP_CQUERY as pQuery,
+            PSMASTER.FUNC_GET_SYSTEM_NAME(
+                MG_CSYSTEMID_CK_FK,
+                current_date,
+                #{language}
+            ) AS systemName,
+            PSMASTER.FUNC_GET_GROUP_DESC(
+            MG_CSYSTEMID_CK_FK,
+            MG_CGROUPID_PK,
+            current_date,
+            #{language}
+            ) AS groupName
+        FROM
+            (
+                SELECT
+                *
+                FROM
+                MAST_GROUP,
+                MAST_GROUPDEFINITIONS
+                WHERE
+                MG_CSYSTEMID_CK_FK = #{systemCode}
+                AND MG_CLANGUAGE = #{language}
+                AND	MG_DSTARTDATE <![CDATA[<=]]> current_date
+                AND	MG_DENDDATE >= current_date
+                AND	MGP_CCUSTOMERID_CK_FK = MG_CCUSTOMERID
+                AND	MGP_CSYSTEMID_CK = MG_CSYSTEMID_CK_FK
+                AND	MGP_CGROUPID_CK_FK = MG_CGROUPID_PK
+                AND	MGP_DSTARTDATE <![CDATA[<=]]> current_date
+                AND	MGP_DENDDATE >= current_date
+                ORDER BY
+                MG_NWEIGHTAGE,
+                MG_CGROUPID_PK
+            ) groups
+    </select>
+
+</mapper>

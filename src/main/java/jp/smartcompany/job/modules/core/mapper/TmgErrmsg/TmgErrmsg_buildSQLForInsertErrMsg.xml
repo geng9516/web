@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgErrmsg.TmgErrmsgMapper">
+
+    <insert id="buildSQLForInsertErrMsg">
+        INSERT INTO
+            TMG_ERRMSG
+            (
+            TER_CCUSTOMERID,
+            TER_CCOMPANYID,
+            TER_DSTARTDATE,
+            TER_DENDDATE,
+            TER_CMODIFIERUSERID,
+            TER_DMODIFIEDDATE,
+            TER_CMODIFIERPROGRAMID,
+            TER_CERRCODE,
+            TER_CLANGUAGE
+            )
+        SELECT
+            #{custID},
+            #{compCode},
+            to_date('1900/01/01','yyyy/mm/dd'),
+            to_date('2222/12/31','yyyy/mm/dd'),
+            #{userCode},
+            sysdate,
+            #{programId},
+            TMG_F_CHECK_DAILY(
+            #{targetUser} ,             <!--職員番号-->
+            #{day} ,                    <!--勤務日-->
+            '650',                      <!--チェックタイプ(勤怠承認時)-->
+            #{custID},                  <!--顧客コード-->
+            #{compCode}                 <!--法人コード-->
+            ),
+            #{language}
+            FROM
+            DUAL
+    </insert>
+
+</mapper>

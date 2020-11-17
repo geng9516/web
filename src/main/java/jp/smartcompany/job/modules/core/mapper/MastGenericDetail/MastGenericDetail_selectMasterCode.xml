@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectMasterCode" resultType="java.lang.String">
+        SELECT
+            MGD_CGENERICDETAILDESC
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+          AND MGD_CCOMPANYID_CK_FK = #{compId}
+          AND MGD_CMASTERCODE = #{masterCode}
+          AND MGD_DSTART_CK <![CDATA[<=]]> #{baseDate}
+          AND MGD_DEND >= #{baseDate}
+    </select>
+
+</mapper>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectDailyEdit" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO">
+        SELECT
+        TDA_CSTATUSFLG,                                                            <!-- 0 ステータス -->
+        TDA_CERRCODE TDA_CERRCODE,                                                 <!-- 1 エラーメッセージ -->
+        to_char(TDA_DYYYYMMDD, 'yyyy/MM/dd') TDA_DYYYYMMDD,                        <!-- 2 日付 -->
+        to_char(TDA_DYYYYMMDD, 'yyyy"年"MM"月"dd"日"(dy)') TDA_DYYYYMMDD_DY,       <!-- 3 日付(表示) -->
+        TDA_CWORKINGID_R,                                                          <!-- 4 [実績]就業区分 -->
+        TMG_F_TRANS_WORKNAME(
+        TDA_CEMPLOYEEID,
+        TDA_DYYYYMMDD,
+        0,
+        TDA_CCUSTOMERID,
+        TDA_CCOMPANYID,
+        #{language}
+        ) TDA_CWORKINGID_R_NAME,                                                 <!-- 5 [実績]就業区分名称 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_N, 0) TDA_NOPEN_N,                    <!-- 6 [申請反映]始業時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_N, 0) TDA_NCLOSE_N,                  <!-- 7 [申請反映]終業時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_TP, 0) TDA_NOPEN_TP,                  <!-- 8 打刻始業時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_TP, 0) TDA_NCLOSE_TP,                <!-- 9 打刻終業時刻 -->
+        DECODE(
+        TMG_F_IS_DISCRETIONWORK(
+        #{custId}   ,
+        #{compCode} ,
+        TDA_CEMPLOYEEID,
+        TRUNC(TDA_DYYYYMMDD)
+        ),
+
+        <!-- 入力サイトの場合はTMG_F_GET_SHOULD_SHOW_TIMEを経由して実績の表示非表示判定を行う -->
+        <choose>
+            <when test="siteId == 'TMG_INP' ">
+                <!-- 裁量労働でなければそのまま表示 -->
+                '0' ,
+                TMG_F_CONV_MIN2HHMI(TMG_F_GET_SHOULD_SHOW_TIME(TRUNC(TDA_DYYYYMMDD), TDA_CSTATUSFLG, TDA_NOPEN_TP, TDA_NOPEN_R)),
+            </when>
+            <otherwise>
+                <!-- 裁量労働でなければそのまま表示 -->
+                '0' ,
+                TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R),
+            </otherwise>
+        </choose>
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R, 0)
+        ) as TDA_NOPEN_R,                                                        <!-- 10 [実績]始業時刻 -->
+        DECODE(
+        TMG_F_IS_DISCRETIONWORK(
+        #{custId},
+        #{compCode},
+        TDA_CEMPLOYEEID,
+        TRUNC(TDA_DYYYYMMDD)
+        ),
+        <!-- 入力サイトの場合はTMG_F_GET_SHOULD_SHOW_TIMEを経由して実績の表示非表示判定を行う -->
+        <choose>
+            <when test="siteId == 'TMG_INP' ">
+                <!-- 裁量労働でなければそのまま表示 -->
+                '0',
+                TMG_F_CONV_MIN2HHMI(TMG_F_GET_SHOULD_SHOW_TIME(TRUNC(TDA_DYYYYMMDD), TDA_CSTATUSFLG, TDA_NCLOSE_TP, TDA_NCLOSE_R)),
+            </when>
+            <otherwise>
+                <!-- 裁量労働でなければそのまま表示 -->
+                '0',
+                TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R),
+            </otherwise>
+        </choose>
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R, 0)
+        ) as TDA_NCLOSE_R,                                                      <!-- 11 [実績終業時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NRESTOPEN_R, 0) TDA_NRESTOPEN_R,                <!-- 12 [実績]休憩開始時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NRESTCLOSE_R, 0) TDA_NRESTCLOSE_R,              <!-- 13 [実績]休憩終了時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_O, 0) TDA_NOPEN_O,                        <!-- 14 超勤開始時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_O, 0) TDA_NCLOSE_O,                      <!-- 15 超勤終了時刻 -->
+        TDA_CCOMMENT_O,                                                         <!-- 16 超勤コメント -->
+        TDA_COWNCOMMENT_R,                                                      <!-- 17 本人コメント-->
+        TDA_CBOSSCOMMENT_R,                                                     <!-- 18 承認者コメント -->
+        TMG_F_GET_ME_NAME_APPROVE(
+        TDA_CMODIFIERUSERID_R,
+        to_date(#{today}, 'yyyy/MM/dd'),
+        0,
+        #{custId},
+        #{compCode}
+        ) TDA_CMODIFIERUSERID_R,                                                   <!-- 19 コメント記入者 -->
+        TO_CHAR(TDA_DMODIFIEDDATE_R, 'YYYY/MM/DD HH24:MI' ) TDA_DMODIFIEDDATE_R,   <!-- 20 コメント記載日 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_P, 0) TDA_NOPEN_P,                           <!-- 21 [予定]始業時刻 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_P, 0) TDA_NCLOSE_P,                         <!-- 22 [予定]終業時刻 -->
+        TDA_CBUSINESSTRIPID_R,                                                     <!-- 23 出張区分 -->
+        TMG_F_GET_MGD(
+        TDA_CBUSINESSTRIPID_R,
+        TDA_DYYYYMMDD,
+        TDA_CCUSTOMERID,
+        TDA_CCOMPANYID,
+        #{language}
+        ) TDA_CBUSINESSTRIPID_R_NAME,                                              <!-- 24 [実績]出張区分名称 -->
+        TDA_NREST45_P,                                                             <!-- 25 [予定]休憩45分選択 -->
+        TMG_F_CONV_MIN2HHMI(
+        DECODE(TDA_NREST45_P,
+        1,
+        DECODE(TDA_NCLOSE_P - TDA_NCLOSE_N, 15, (TDA_NCLOSE_P - 15), TDA_NCLOSE_P),
+        TDA_NCLOSE_P
+        ),
+        0
+        ) as TDA_NCLOSE_P_AT_REST45,                                                  <!-- 26 [予定]休憩45分選択 -->
+        TMG_F_GET_TMG_PATTERN(TDA_CCUSTOMERID, TDA_CCOMPANYID, NULL, NULL).NTIME NTIME,    <!-- 27 [標準]勤務時間数 -->
+        DECODE(
+        TMG_F_IS_DISCRETIONWORK(
+        #{custId},
+        #{compCode} ,
+        TDA_CEMPLOYEEID,
+        TRUNC(TDA_DYYYYMMDD)
+        ),
+        '0' ,
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R),     <!-- 裁量労働でなければそのまま表示 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R, 0)
+        ) as TDA_NOPEN_R_HIDDEN,                                                            <!-- 28 [hidden用]始業時刻 -->
+        DECODE(
+        TMG_F_IS_DISCRETIONWORK(
+        #{custId}  ,
+        #{compCode} ,
+        TDA_CEMPLOYEEID,
+        TRUNC(TDA_DYYYYMMDD)
+        ),
+        '0' ,
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R),    <!-- 裁量労働でなければそのまま表示 -->
+        TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R, 0)
+        ) as TDA_NCLOSE_R_HIDDEN,                                                         <!-- 29 [hidden用]終業時刻 -->
+        NVL(DECODE(
+        TMG_F_GET_TIMEPUNCH_TARGETDATE(TDA_CCUSTOMERID, TDA_CCOMPANYID, TDA_CEMPLOYEEID, SYSDATE),
+        TDA_DYYYYMMDD,
+        TMG_F_GET_NOOVERTIME_DAYS_MSG(TDA_CEMPLOYEEID, TDA_DYYYYMMDD, 1, TDA_CCUSTOMERID, TDA_CCOMPANYID, #{language})
+        ), ' ') as NO_OVERTIME_DAYS_MSG                                            <!-- 30 ノー残業デー表示メッセージ -->
+        FROM
+        TMG_DAILY
+        WHERE
+        TDA_CEMPLOYEEID = #{targetUser}
+        AND TDA_DYYYYMMDD   = #{day}
+        AND TDA_CCOMPANYID  = #{compCode}
+        AND TDA_CCUSTOMERID = #{custId}
+    </select>
+
+</mapper>

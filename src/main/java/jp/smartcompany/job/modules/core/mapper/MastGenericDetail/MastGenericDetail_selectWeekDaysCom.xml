@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectWeekDaysCom" resultType="java.lang.String">
+        select
+            TMG_F_GET_TMG_WEEKDAYS_COM ( #{custId}, #{compId},#{baseDate},#{daysOfWeeks,jdbcType=BIGINT},#{allMinutes,jdbcType=BIGINT}  )
+        from dual
+    </select>
+
+</mapper>

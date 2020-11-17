@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectPaidHoliday"
+            resultType="jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO">
+        SELECT
+            TO_CHAR(R1.TDA_DYYYYMMDD, 'yyyy/MM/dd') AS TDA_DYYYYMMDD,                       												<!-- 取得日-->
+            TO_CHAR(TMG_F_GET_MGD(R4.TNTF_CTYPE, sysdate,R1.TDA_CCUSTOMERID, R1.TDA_CCOMPANYID)) AS TDA_CWORKINGNAME,                        <!-- 年次有給休暇名称-->
+            R1.TDA_CWORKINGID_R                      																						<!-- 年次有給休暇ID-->
+        FROM
+            TMG_DAILY R1
+        INNER JOIN  TMG_NOTIFICATION R4
+        ON R1.TDA_CCUSTOMERID =R4.TNTF_CCUSTOMERID
+        AND R1.TDA_CCOMPANYID =R4.TNTF_CCOMPANYID
+        AND R1.TDA_CEMPLOYEEID =R4.TNTF_CEMPLOYEEID
+        AND R1.TDA_CREFNTFNO =R4.TNTF_CNTFNO
+        WHERE
+            R1.TDA_CCUSTOMERID = #{custID}
+        AND R1.TDA_CCOMPANYID  =  #{compCode}
+        AND R1.TDA_CEMPLOYEEID = #{userCode}
+        AND R1.TDA_DYYYYMMDD  >= #{searchStart}
+        AND R1.TDA_DYYYYMMDD  <![CDATA[<=]]> #{searchEnd}
+        AND EXISTS (
+            SELECT 1 FROM TMG_V_MGD_ACQUIRED5DAY_TGT R2
+            WHERE
+                R2.MGD_CCUSTOMERID      = #{custID}
+            AND R2.MGD_CCOMPANYID_CK_FK = #{compCode}
+            AND R2.MGD_DSTART_CK       <![CDATA[<=]]> #{searchEnd}
+            AND R2.MGD_DEND            >= #{searchStart}
+            AND R2.MGD_CLANGUAGE_CK     = 'ja'
+            AND R2.MGD_NKIND            = 1
+            AND R2.MGD_CWORKNOTWORKTYPE = R1.TDA_CWORKINGID_R
+        )
+        UNION
+        SELECT
+            TO_CHAR(R3.TDAD_DYYYYMMDD, 'yyyy/MM/dd') AS TDAD_DYYYYMMDD,
+            TO_CHAR(R3.TNTF_CTYPE) AS TDA_CWORKINGNAME,
+            R3.TDAD_CNOTWORKID
+        FROM
+            (
+                SELECT
+                    R1.TDAD_DYYYYMMDD, TMG_F_GET_MGD(R4.TNTF_CTYPE, sysdate,R4.TNTF_CCUSTOMERID, R4.TNTF_CCOMPANYID) TNTF_CTYPE , R1.TDAD_CNOTWORKID
+                FROM
+                    TMG_DAILY_DETAIL R1
+                INNER JOIN  TMG_NOTIFICATION R4
+                ON R1.TDAD_CCUSTOMERID =R4.TNTF_CCUSTOMERID
+                AND R1.TDAD_CCOMPANYID =R4.TNTF_CCOMPANYID
+                AND R1.TDAD_CEMPLOYEEID =R4.TNTF_CEMPLOYEEID
+                AND R1.TDAD_CREFNTFNO =R4.TNTF_CNTFNO
+                WHERE
+                    R1.TDAD_CCUSTOMERID = #{custID}
+                AND R1.TDAD_CCOMPANYID  = #{compCode}
+                AND R1.TDAD_CEMPLOYEEID = #{userCode}
+                AND R1.TDAD_DYYYYMMDD  >= #{searchStart}
+                AND R1.TDAD_DYYYYMMDD  <![CDATA[<=]]> #{searchEnd}
+                AND EXISTS (
+                    SELECT 1 FROM TMG_V_MGD_ACQUIRED5DAY_TGT R2
+                    WHERE
+                    R2.MGD_CCUSTOMERID      = #{custID}
+                    AND R2.MGD_CCOMPANYID_CK_FK = #{compCode}
+                    AND R2.MGD_DSTART_CK       <![CDATA[<=]]> #{searchEnd}
+                    AND R2.MGD_DEND            >= #{searchStart}
+                    AND R2.MGD_CLANGUAGE_CK     = 'ja'
+                    AND R2.MGD_NKIND           in (2, 3)
+                    AND R2.MGD_CWORKNOTWORKTYPE = R1.TDAD_CNOTWORKID
+                )
+            ) R3
+    </select>
+
+</mapper>

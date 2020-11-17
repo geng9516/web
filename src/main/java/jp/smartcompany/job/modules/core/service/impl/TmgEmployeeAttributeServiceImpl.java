@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeeAttributeDO;
-import jp.smartcompany.job.modules.core.mapper.TmgEmployeeAttributeMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgEmployeeAttribute.TmgEmployeeAttributeMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeeAttributeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.TmgEmployeeAttributeVO;

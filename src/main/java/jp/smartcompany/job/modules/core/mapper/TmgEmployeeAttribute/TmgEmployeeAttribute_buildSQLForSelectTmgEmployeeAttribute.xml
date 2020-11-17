@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgEmployeeAttribute.TmgEmployeeAttributeMapper">
+
+    <select id="buildSQLForSelectTmgEmployeeAttribute" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.TmgEmployeeAttributeVO">
+        SELECT
+        NVL(TES_CATTRIBUTE, 'TMG_ONOFF|0' ) TES_CATTRIBUTE
+        ,CSPARECHAR1
+        ,CCODE01
+        ,TMG_F_GET_MGD(CCODE01, #{date,jdbcType=DATE} , #{custID} ,#{compCode}) CCODE1NAME
+        , NSPARENUM1
+        , CSPARECHAR2
+        FROM
+        TMG_EMPLOYEE_ATTRIBUTE
+        WHERE
+        TES_CCUSTOMERID = #{custID}
+        AND  TES_CCOMPANYID = #{compCode}
+        AND  TES_CEMPLOYEEID = #{targetUser}
+        <if test="psType == overHoursReasonType">
+            AND TES_DSTARTDATE = #{month,jdbcType=DATE}
+        </if>
+        <if test="psType != overHoursReasonType">
+            AND TES_DSTARTDATE <![CDATA[<=]]> #{month,jdbcType=DATE}
+            AND TES_DENDDATE >= #{month,jdbcType=DATE}
+        </if>
+        AND  TES_CTYPE = #{psType}
+    </select>
+
+</mapper>

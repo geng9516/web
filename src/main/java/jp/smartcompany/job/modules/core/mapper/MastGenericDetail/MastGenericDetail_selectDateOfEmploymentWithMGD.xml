@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectDateOfEmploymentWithMGD" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo">
+        SELECT
+            TO_CHAR( MGD_DSTART_CK, 'yyyy/mm/dd' ) AS DSTART,
+            DECODE( TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ), '2222/12/31', '', TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) ) AS DEND,
+            TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) AS DENDBACK,
+            TO_CHAR( MGD_DSPAREDATE1, 'yyyy/mm/dd' ) AS BEGINDATE
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+          AND MGD_CCOMPANYID_CK_FK = #{compId}
+          AND MGD_CLANGUAGE_CK = #{lang}
+          AND MGD_CGENERICGROUPID = #{groupId}
+          AND MGD_CGENERICDETAILID_CK = #{empId}
+        ORDER BY
+            MGD_DSTART_CK DESC
+    </select>
+
+</mapper>

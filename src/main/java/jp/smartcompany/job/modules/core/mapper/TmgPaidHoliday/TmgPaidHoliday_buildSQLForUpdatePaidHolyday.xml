@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHoliday.TmgPaidHolidayMapper">
+
+    <update id="buildSQLForUpdatePaidHolyday" parameterType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto">
+        UPDATE
+        TMG_PAID_HOLIDAY
+        SET
+        TPH_CMODIFIERUSERID    = #{dto.tphCmodifieruserid}
+        ,TPH_DMODIFIEDDATE      = SYSDATE
+        ,TPH_CMODIFIERPROGRAMID = #{dto.tphCmodifierprogramid}
+        ,TPH_NINVEST            = NVL(#{dto.tphNinvest}, 0)
+        ,TPH_NADJUST            = #{dto.tphNadjust}
+        ,TPH_NADJUST_HOURS      = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(to_char(#{dto.tphNadjustHours},'fm99.00')), 0)
+        <!-- ,TPH_NADJUST_HOURS      = TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{dto.tphNadjustHours}) -->
+        ,TPH_NADJUST_TO         = NVL(#{dto.tphNadjustTo}, 0)
+        ,TPH_NADJUST_HOURS_TO   = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(to_char(#{dto.tphNadjustHoursTo},'fm99.00')), 0)
+        <!--,TPH_NADJUST_HOURS_TO   = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{dto.tphNadjustHoursTo}), 0) -->
+       <if test="dto.tphDexpireAdjust != null">
+           ,TPH_DEXPIRE_ADJUST     = #{dto.tphDexpireAdjust}
+       </if>
+       <if test="dto.tphDexpireAdjust == null">
+            ,TPH_DEXPIRE_ADJUST     = null
+       </if>
+       <if test="dto.tphDexpireAdjustTo != null">
+           ,TPH_DEXPIRE_ADJUST_TO  = #{dto.tphDexpireAdjustTo}
+       </if>
+       <if test="dto.tphDexpireAdjustTo == null">
+            ,TPH_DEXPIRE_ADJUST_TO     = null
+       </if>
+       <if test="dto.tphCcomment != null">
+           ,TPH_CCOMMENT           = #{dto.tphCcomment}
+       </if>
+       WHERE
+       TPH_CEMPLOYEEID      = #{dto.tphCemployeeid}
+       AND TPH_DYYYYMMDD        = #{dto.tphDyyyymmdd}
+       AND TPH_CCOMPANYID       = #{dto.tphCcompanyid}
+       AND TPH_CCUSTOMERID      = #{dto.tphCcustomerid}
+   </update>
+
+</mapper>

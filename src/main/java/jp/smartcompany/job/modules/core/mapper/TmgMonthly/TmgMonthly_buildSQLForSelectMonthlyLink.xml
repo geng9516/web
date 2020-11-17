@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="buildSQLForSelectMonthlyLink"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO">
+        SELECT
+            (
+                SELECT
+                    to_char(max(TMO_DYYYYMM), 'yyyy/MM/dd') TMO_DYYYYMM         <!-- 前月 -->
+                FROM
+                    TMG_MONTHLY
+                WHERE
+                    TMO_CEMPLOYEEID = #{targetUser}
+                AND TMO_DYYYYMM        <![CDATA[<]]>  #{month}
+                AND TMO_CCOMPANYID = #{compCode}
+                AND TMO_CCUSTOMERID = #{custID}
+            ) PREVIOUS_MONTH,
+            (
+                SELECT
+                    to_char(min(TMO_DYYYYMM), 'yyyy/MM/dd') TMO_DYYYYMM           <!-- 翌月 -->
+                FROM
+                    TMG_MONTHLY
+                WHERE
+                    TMO_CEMPLOYEEID = #{targetUser}
+                AND TMO_DYYYYMM > #{month}
+                AND TMO_CCOMPANYID = #{compCode}
+                AND TMO_CCUSTOMERID = #{custID}
+            ) NEXT_MONTH
+        FROM DUAL
+    </select>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastSystem.MastSystemMapper">
+
+	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO">
+		-- HIST_GROUPDATAPERMISSION 常駐変数化用
+		SELECT
+		HGP_CCUSTOMERID,
+		HGP_CSYSTEMID,
+		HGP_CGROUPID,
+		HGP_CSITEID,
+		HGP_CAPPID,
+		HGP_CPERMNECESSITY,
+		HGP_CPERMMUST,
+		HGP_CBASESECTION_FLAG_NEED,
+		HGP_CBASESECTION_FLAG_MUST,
+		HGP_CPERM_RETIRED
+		FROM
+		HIST_GROUPDATAPERMISSION
+		WHERE
+		HGP_DSTARTDATE  <![CDATA[<=]]> TRUNC(SYSDATE)
+		AND HGP_DENDDATE   >= TRUNC(SYSDATE)
+		ORDER BY
+		HGP_CCUSTOMERID,
+		HGP_CSYSTEMID,
+		HGP_CGROUPID,
+		HGP_CSITEID,
+		HGP_CAPPID
+	</select>
+
+</mapper>

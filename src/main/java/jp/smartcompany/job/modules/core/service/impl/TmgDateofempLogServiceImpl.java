@@ -1,11 +1,10 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDateofempLogDO;
-import jp.smartcompany.job.modules.core.mapper.TmgDateofempLogMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgDateofempLog.TmgDateofempLogMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDateofempLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgDateOfEmpLogVo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

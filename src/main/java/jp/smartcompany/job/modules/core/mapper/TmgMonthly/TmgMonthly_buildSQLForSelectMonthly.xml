@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="buildSQLForSelectMonthly" resultType="hashmap">
+        SELECT
+            to_char(TMO_DYYYYMM, 'yyyy/MM/dd') TMO_DYYYYMM,      <!-- 年月 -->
+            TMO_CSTATUSFLG,                                      <!-- ステータスフラグ -->
+            TMG_F_IS_FIXED_MONTHLY(TMO_CEMPLOYEEID, TMO_DYYYYMM, TMO_CCUSTOMERID, TMO_CCOMPANYID) FIXED<!-- 月次確定判定情報-->
+        <!-- 表示項目のselect句を取得し、joinでカンマ結合する -->
+        <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
+            ${params}
+        </foreach>
+        FROM
+            TMG_MONTHLY
+        WHERE
+            TMO_CEMPLOYEEID  = #{targetUser}
+        AND TMO_DYYYYMM      = #{month,jdbcType=DATE}
+        AND TMO_CCOMPANYID   = #{compCode}
+        AND TMO_CCUSTOMERID  = #{custID}
+    </select>
+
+</mapper>

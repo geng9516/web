@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
-import jp.smartcompany.job.modules.core.mapper.TmgDailyMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
@@ -11,7 +11,6 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgStatus;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;

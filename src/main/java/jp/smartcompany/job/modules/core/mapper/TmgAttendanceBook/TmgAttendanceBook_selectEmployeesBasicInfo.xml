@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!-- 操作職員情報 -->
+    <resultMap id="selectEmpInfoMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookEmpDTO">
+        <result column="empname" property="empname" javaType="java.lang.String"/>
+        <result column="secname" property="secname" javaType="java.lang.String"/>
+        <result column="worktypename" property="worktypename" javaType="java.lang.String"/>
+        <result column="postname" property="postname" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!-- 出勤簿のヘッダ部情報（氏名、所属）等 -->
+    <select id="selectEmployeesBasicInfo" parameterType="java.util.HashMap" resultMap="selectEmpInfoMap">
+        select kanjiname as empname
+             ,sectionname as secname
+             ,worktypename as worktypename
+             ,postname as postname
+        from table(tmg_empattr4ledger_table(tmg_f_get_empattr4ledger(#{custId}, #{compCode}, #{employeeId}, to_date(#{queryMonthDay}, 'yyyy/mm/dd'), to_date(#{nextYearDay}, 'yyyy/mm/dd'))))
+    </select>
+
+</mapper>

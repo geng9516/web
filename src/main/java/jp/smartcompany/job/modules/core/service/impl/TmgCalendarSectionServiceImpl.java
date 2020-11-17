@@ -1,11 +1,10 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarSectionDO;
-import jp.smartcompany.job.modules.core.mapper.TmgCalendarSectionMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgCalendarSection.TmgCalendarSectionMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarSectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
-import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
 import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo;
 import org.springframework.stereotype.Repository;
 

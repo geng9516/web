@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPatternApplies.TmgPatternAppliesMapper">
+
+
+    <select id="selectPatternId" resultType="java.lang.String" >
+        SELECT
+        R1.TPAA_CPATTERNID
+        FROM
+        TMG_PATTERN_APPLIES     R1
+        ,   HIST_DESIGNATION        R2
+        WHERE
+        R1.TPAA_CCUSTOMERID             =   #{customerId}
+        AND     R1.TPAA_CCOMPANYID              =   #{companyId}
+        AND     R1.TPAA_CEMPLOYEEID             =   #{employeeId}
+        AND     R1.TPAA_DSTARTDATE              <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     R1.TPAA_DENDDATE                >=  #{yyyymmdd,jdbcType=DATE}
+        AND     R2.HD_CCUSTOMERID_CK            =   R1.TPAA_CCUSTOMERID
+        AND     R2.HD_CCOMPANYID_CK             =   R1.TPAA_CCOMPANYID
+        AND     R2.HD_CEMPLOYEEID_CK            =   R1.TPAA_CEMPLOYEEID
+        AND     R2.HD_DSTARTDATE_CK             <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     R2.HD_DENDDATE                  >=  #{yyyymmdd,jdbcType=DATE}
+        AND     R2.HD_CIFKEYORADDITIONALROLE    =   '0'
+        AND     R2.HD_CSECTIONID_FK             =   R1.TPAA_CSECTIONID
+
+      </select>
+</mapper>

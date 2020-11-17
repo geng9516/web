@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgBulkNotification.TmgBulkNotificationMapper">
+
+    <select id="selectHistoryList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto">
+SELECT
+             A.TBN_NTBNID
+            ,TMG_F_GET_MGD(A.TBN_CBULKNTFTYPE, A.TBN_DBEGIN, A.TBN_CCUSTOMERID,A.TBN_CCOMPANYID, #{language})
+                AS TBN_CBULKNTFTYPE
+            ,O.MO_CSECTIONNAME
+              ,TMG_F_GET_MO(A.TBN_CSECTIONID, A.TBN_DBEGIN, 0, A.TBN_CCUSTOMERID,
+                A.TBN_CCOMPANYID, #{language}) AS TBN_CSECTIONID
+            ,TMG_F_GET_MGD(A.TBN_CSTATUS, A.TBN_DBEGIN, A.TBN_CCUSTOMERID, A.TBN_CCOMPANYID,
+                #{language}) AS TBN_CSTATUS
+            ,TO_CHAR(A.TBN_DBEGIN, 'YYYY/MM/DD') || ' - ' || TO_CHAR(A.TBN_DEND,
+                'YYYY/MM/DD') AS TBN_DBEGIN
+            , A.TBN_NCOUNT
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+              WHERE
+                B.TBNL_NTBNID = A.TBN_NTBNID) AS CNT_FINISH
+            ,(SELECT COUNT(1)
+                FROM TMG_BULK_NTF_DETAIL
+                WHERE TBND_NTBNID_FK = A.TBN_NTBNID) AS TBND_COUNT
+
+
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = A.TBN_NTBNID
+               AND B.TBNL_CSTATUS = 'TMG_BULKNTFSTATUS|230') AS CNT_CANCEL
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = A.TBN_NTBNID
+               AND B.TBNL_CERRCODE != '0') AS CNT_ERR
+            ,A.TBN_CSTATUS as TBN_CSTATUSID
+        FROM
+            TMG_BULK_NOTIFICATION A,
+            MAST_ORGANISATION O
+        WHERE
+            A.TBN_CCUSTOMERID = #{custID}
+        AND A.TBN_CCOMPANYID = #{compCode}
+        AND O.MO_CCUSTOMERID_CK_FK = A.TBN_CCUSTOMERID
+        AND O.MO_CCOMPANYID_CK_FK = A.TBN_CCOMPANYID
+        AND O.MO_CSECTIONID_CK = A.TBN_CSECTIONID
+        AND O.MO_DSTART  <![CDATA[<=]]> A.TBN_DBEGIN
+        AND O.MO_DEND >= A.TBN_DEND
+        AND O.MO_CLANGUAGE = #{language}
+        ORDER BY
+            A.TBN_DBEGIN
+        DESC, A.TBN_CBULKNTFTYPE, A.TBN_CSECTIONID, A.TBN_CSTATUS
+    </select>
+    <select id="selectNextSeq" resultType="java.lang.String">
+         SELECT  TMG_BULK_NOTIFICATION_SEQ.NEXTVAL FROM DUAL
+    </select>
+    <select id="selectDetail" resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo">
+        SELECT
+             A.TBN_NTBNID
+            ,TMG_F_GET_MGD(A.TBN_CBULKNTFTYPE, A.TBN_DBEGIN, A.TBN_CCUSTOMERID,
+                A.TBN_CCOMPANYID, #{language}) AS TBN_CBULKNTFTYPE
+            ,TMG_F_GET_MO(A.TBN_CSECTIONID, A.TBN_DBEGIN, 0, A.TBN_CCUSTOMERID,
+                A.TBN_CCOMPANYID, #{language}) AS TBN_CSECTIONID
+            ,TMG_F_GET_MGD(A.TBN_CSTATUS, A.TBN_DBEGIN, A.TBN_CCUSTOMERID, A.TBN_CCOMPANYID,
+                #{language}) AS TBN_CSTATUS
+            ,TO_CHAR(A.TBN_DBEGIN, 'YYYY/MM/DD') || ' - ' || TO_CHAR(A.TBN_DEND,
+                'YYYY/MM/DD') AS TBN_DBEGIN
+            ,A.TBN_NCOUNT
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+              WHERE
+                B.TBNL_NTBNID = #{seq,jdbcType=BIGINT}) AS CNT_FINISH
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = #{seq,jdbcType=BIGINT}
+               AND B.TBNL_CSTATUS = 'TMG_BULKNTFSTATUS|230') AS CNT_CANCEL
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = #{seq,jdbcType=BIGINT}
+               AND B.TBNL_CERRCODE != '0') AS CNT_ERR
+            ,A.TBN_CSTATUS as TBN_CSTATUSID
+            ,(SELECT
+                count(1)
+              FROM
+                TMG_BULK_NTF_DETAIL
+              WHERE TBND_NTBNID_FK = A.TBN_NTBNID) AS TBND_COUNT
+        FROM
+            TMG_BULK_NOTIFICATION A
+        WHERE
+            A.TBN_NTBNID = #{seq,jdbcType=BIGINT}
+    </select>
+</mapper>

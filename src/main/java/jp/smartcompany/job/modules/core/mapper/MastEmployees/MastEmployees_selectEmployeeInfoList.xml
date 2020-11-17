@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper">
+
+    <select id="selectEmployeeInfoList" parameterType="map" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">
+        SELECT
+        ME_ID,
+        HD.HD_ID,
+        HD.HD_CCOMPANYID_CK,
+        ME_CEMPLOYEEID_CK,
+        ME_CUSERID,
+        PSMASTER.FUNC_GET_EMP_NAME(
+        ME_CCUSTOMERID_CK,ME_CUSERID,'${searchDate}','${language}'
+        ) AS emp_name,
+        ME_CKANANAME,
+        HD.HD_CSECTIONID_FK,
+        <if test='sSectionNick == "no"'>
+            PSMASTER.FUNC_GET_SECTION_NAME(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+            HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
+            ) AS section_Name,
+        </if>
+        <if test='sSectionNick=="yes"'>
+            PSMASTER.FUNC_GET_SECTION_NICK(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+            HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
+            ) AS section_Name,
+        </if>
+        HD.HD_CPOSTID_FK,
+        <if test='sPostNick == "no"'>
+            PSMASTER.FUNC_GET_POST_NAME(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+            HD.HD_CPOSTID_FK,'${searchDate}','${language}'
+            ) AS post_name,
+        </if>
+        <if test='sPostNick == "yes"'>
+            PSMASTER.FUNC_GET_POST_NICK(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+            HD.HD_CPOSTID_FK,'${searchDate}','${language}'
+            ) AS post_name,
+        </if>
+        (
+        SELECT
+        MAP_NWEIGHTAGE
+        FROM MAST_POST
+        WHERE
+        MAP_CCUSTOMERID_CK_FK = HD.HD_CCUSTOMERID_CK
+        AND MAP_CCOMPANYID_CK_FK = HD.HD_CCOMPANYID_CK
+        AND MAP_CPOSTID_CK = HD.HD_CPOSTID_FK
+        AND MAP_CLANGUAGE = 'ja'
+        AND MAP_DSTART <![CDATA[<=]]> #{searchDate}
+        AND MAP_DEND >= #{searchDate}
+        ) AS MAP_NWEIGHTAGE,
+        <if test='sCompNick=="no"'>
+            PSMASTER.FUNC_GET_COMP_NAME(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+            ${searchDate},'${language}'
+            ${searchDate},'${language}'
+            ) AS comp_name,
+        </if>
+        <if test='sCompNick == "yes"'>
+            PSMASTER.FUNC_GET_COMP_NICK(
+            HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,'${searchDate}','${language}'
+            ) AS comp_name,
+        </if>
+        PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
+        ME_CCUSTOMERID_CK,ME_CCOMPANYID,'QZAITAI|' || ME_CIFSTILLEMPLOYEDID,
+        '${searchDate}','${language}'
+        ) AS ME_CIFSTILLEMPLOYED_NAME,
+        PSMASTER.FUNC_GET_GENERICDETAIL_SPARE(
+        HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
+        'QHONKEN|'||HD.HD_CIFKEYORADDITIONALROLE,'${searchDate}','${language}',1
+        ) AS HD_CIFKEYORADDITIONALROLE
+        FROM
+        MAST_EMPLOYEES,
+        ${designation} HD
+        WHERE
+        HD.HD_CCUSTOMERID_CK(+) = ME_CCUSTOMERID_CK
+        AND HD.HD_CUSERID(+) = ME_CUSERID
+        AND HD.HD_DSTARTDATE_CK(+) <![CDATA[<=]]> #{searchDate}
+        AND HD.HD_DENDDATE(+) >= #{searchDate}
+        AND ME_CCUSTOMERID_CK = '01'
+        AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+        AND ME_DENDDATE >= #{searchDate}
+        <if test="sEmpInfoUserIDList != null">
+            AND (${sEmpInfoUserIDList})
+        </if>
+    </select>
+
+</mapper>

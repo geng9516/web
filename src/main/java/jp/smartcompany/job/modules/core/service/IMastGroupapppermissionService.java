@@ -1,12 +1,9 @@
 package jp.smartcompany.job.modules.core.service;
 
-import cn.hutool.core.date.DateUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Date;
 import java.util.List;
@@ -28,8 +25,6 @@ public interface IMastGroupapppermissionService extends IService<MastGroupappper
         List<GroupAppManagerPermissionDTO> selectPermissionList(String systemId, Date date,List<String> groupIds,List<String> siteList,String language);
 
         GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId);
-
-        Page<MastGroupapppermissionDO> pagePermissionList(IPage<MastGroupapppermissionDO> page);
 
         int deleteAfter(String systemId,Date date,String groupId, String objectId);
 

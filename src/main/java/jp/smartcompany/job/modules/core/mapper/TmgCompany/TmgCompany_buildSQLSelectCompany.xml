@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCompany.TmgCompanyMapper">
+
+    <select id="buildSQLSelectCompany" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.CompanyVO">
+        SELECT
+            TCO_NOPEN,
+            TCO_NCLOSE,
+            TMG_F_CONV_MIN2HHMI(TCO_NOPEN) TCO_NOPEN_MIN2HHMI,
+            TMG_F_CONV_MIN2HHMI(TCO_NCLOSE) TCO_NCLOSE_MIN2HHMI
+        FROM
+            TMG_COMPANY
+        WHERE
+            TCO_CCUSTOMERID = #{custCode}
+        AND TCO_CCOMPANYID  = #{compCode}
+        AND TCO_DSTARTDATE  <![CDATA[<=]]>  TO_DATE(#{targetDate} , 'YYYY/MM/DD')
+        AND TCO_DENDDATE    >= TO_DATE(#{targetDate} , 'YYYY/MM/DD')
+     </select>
+</mapper>

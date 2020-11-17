@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailDO;
-import jp.smartcompany.job.modules.core.mapper.TmgDailyDetailMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgDailyDetail.TmgDailyDetailMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.ResultRest40tVo;

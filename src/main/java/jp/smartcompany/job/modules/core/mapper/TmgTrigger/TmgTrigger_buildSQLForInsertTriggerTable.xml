@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTrigger.TmgTriggerMapper">
+
+    <insert id="buildSQLForInsertTriggerTable">
+        INSERT INTO
+        TMG_TRIGGER
+        (
+            TTR_CCUSTOMERID,
+            TTR_CCOMPANYID,
+            TTR_CEMPLOYEEID,
+            TTR_DSTARTDATE,
+            TTR_DENDDATE,
+            TTR_CMODIFIERUSERID,
+            TTR_DMODIFIEDDATE,
+            TTR_CMODIFIERPROGRAMID,
+            TTR_CPROGRAMID,
+            TTR_DPARAMETER1
+        ) VALUES (
+            #{custID},
+            #{compCode},
+            #{dispUserCode},
+            TO_DATE('19000101', 'YYYYMMDD'),
+            TO_DATE('22221231', 'YYYYMMDD'),
+            #{userCode},
+            SYSDATE,
+            'PaidHoliday_ACT_UADJUST',
+            'PaidHoliday',
+            (
+                SELECT
+                    MAX(TPH_DYYYYMM)
+                FROM
+                    TMG_PAID_HOLIDAY
+                WHERE
+                    TPH_CEMPLOYEEID = #{dispUserCode}
+                and TPH_DYYYYMM <![CDATA[<=]]>  TO_DATE(#{baseDate}, 'yyyy/MM/dd')
+                AND TPH_DYYYYMM <![CDATA[<=]]>  (
+                        SELECT
+                            max(TMG_F_GET_THE_YEARZONE(
+                                TMG_F_GET_THE_YEAR(TO_DATE(#{baseDate}, 'yyyy/MM/dd'), #{custID}, #{compCode})
+                                , 1
+                                , TO_DATE(#{baseDate}, 'yyyy/MM/dd')
+                                , #{custID}
+                                , #{compCode}
+                                )
+                            )
+                    FROM DUAL
+                )
+                AND TPH_CCOMPANYID  = #{compCode}
+            )
+        )
+    </insert>
+
+</mapper>

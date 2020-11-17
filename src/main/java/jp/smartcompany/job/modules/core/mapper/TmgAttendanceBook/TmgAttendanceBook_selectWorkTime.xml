@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!-- 月間実働時間 -->
+    <select id="selectWorkTime" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select ${sqlStr} as work_time
+        from tmg_attendance_book,
+             tmg_monthly
+        where tma_cemployeeid = #{employeeId}
+          and tma_ccompanyid = #{compCode}
+          and tma_dyyyymm <![CDATA[>=]]> to_date(#{monthStartDate}, 'yyyy/mm/dd')
+          and tma_dyyyymm <![CDATA[<=]]> to_date(#{monthEndDate}, 'yyyy/mm/dd')
+          and tma_ccustomerid = #{custId}
+          and tmo_ccustomerid = tma_ccustomerid
+          and tmo_ccompanyid = tma_ccompanyid
+          and tmo_cemployeeid = tma_cemployeeid
+          and trunc(tmo_dyyyymm) = trunc(tma_dyyyymm)
+    </select>
+
+</mapper>

@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
-import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgCalendar.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;

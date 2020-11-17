@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="tmgFConvHhmi2Min" resultType="long">
+        SELECT
+            TMG_F_CONV_HHMI2MIN(#{hhmi})
+        FROM
+            dual
+    </select>
+
+</mapper>

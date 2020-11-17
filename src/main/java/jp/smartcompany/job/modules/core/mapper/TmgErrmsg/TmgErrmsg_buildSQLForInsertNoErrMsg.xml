@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgErrmsg.TmgErrmsgMapper">
+
+    <insert id="buildSQLForInsertNoErrMsg">
+        INSERT INTO TMG_ERRMSG (
+            TER_CCUSTOMERID,
+            TER_CCOMPANYID,
+            TER_DSTARTDATE,
+            TER_DENDDATE,
+            TER_CMODIFIERUSERID,
+            TER_DMODIFIEDDATE,
+            TER_CMODIFIERPROGRAMID,
+            TER_CERRCODE,
+            TER_CLANGUAGE
+        ) VALUES (
+            #{custId},
+            #{compId},
+            to_date('1900/01/01','yyyy/mm/dd'),
+            to_date('2222/12/31','yyyy/mm/dd'),
+            #{userId},
+            sysdate,
+            #{programId},
+            0,
+            #{lang}
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="buildSQLForSelectCountNotApprovalDay" resultType="string">
+        SELECT
+            SUM(DECODE(TDA_CSTATUSFLG, NULL, NULL, #{dataStatus9}, 0, #{dataStatus5} , 0, 1))
+        FROM
+            TMG_DAILY
+        WHERE TDA_CCOMPANYID = #{compId}
+          AND TDA_CCUSTOMERID = #{custId}
+          AND TDA_CEMPLOYEEID = #{empId}
+          AND TDA_DYYYYMM = TRUNC(TO_DATE(#{targetDate}, 'YYYY/MM/DD'))
+    </select>
+
+</mapper>

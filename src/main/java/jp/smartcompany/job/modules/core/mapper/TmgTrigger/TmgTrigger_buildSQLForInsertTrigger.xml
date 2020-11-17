@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTrigger.TmgTriggerMapper">
+
+    <insert id="buildSQLForInsertTrigger">
+        INSERT INTO
+            TMG_TRIGGER
+        (
+            TTR_CCUSTOMERID,
+            TTR_CCOMPANYID,
+            TTR_CEMPLOYEEID,
+            TTR_DSTARTDATE,
+            TTR_DENDDATE,
+            TTR_CMODIFIERUSERID,
+            TTR_DMODIFIEDDATE,
+            TTR_CMODIFIERPROGRAMID,
+            TTR_CPROGRAMID,
+            TTR_CPARAMETER1,
+            TTR_DPARAMETER1
+        )
+        VALUES(
+            #{custID},
+            #{compCode},
+            #{targetUser},
+            to_date('1900/01/01','yyyy/mm/dd'),
+            to_date('2222/12/31','yyyy/mm/dd'),
+            #{userCode},
+            sysdate,
+            'TmgResults_' || #{txtAction},
+            'TmgResults_' || #{txtAction},
+            #{txtAction},
+            #{day}
+        )
+    </insert>
+
+</mapper>

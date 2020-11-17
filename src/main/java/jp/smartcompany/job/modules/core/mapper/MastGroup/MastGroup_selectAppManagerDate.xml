@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+
+    <select id="selectAppManagerDate" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO">
+        SELECT
+        MG_CGROUPID_PK,
+        MG_DSTARTDATE,
+        MG_DENDDATE
+        FROM
+        MAST_GROUP
+        WHERE
+        MG_CCUSTOMERID = #{customerId}
+        AND	MG_CSYSTEMID_CK_FK = #{systemId}
+        AND	MG_CLANGUAGE = 'ja'
+        AND	MG_DENDDATE >= TRUNC(SYSDATE)
+        <if test="companyId!=null">
+            AND	MG_CCOMPANYID = #{companyId}
+        </if>
+        <if test="searchCompanyList!=null and searchCompanyList.size>0">
+            AND MG_CCOMPANYID IN
+            <foreach collection="searchCompanyList" item="groupId" open="(" separator="," close=")">
+                #{groupId}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

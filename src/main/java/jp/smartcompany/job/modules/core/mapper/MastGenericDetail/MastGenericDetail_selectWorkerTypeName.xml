@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectWorkerTypeName" resultType="java.lang.String">
+        SELECT
+            tmg_f_get_mgd(TEM_CWORKTYPEID, '${baseDate}', TEM_CCUSTOMERID, TEM_CCOMPANYID, 'ja') from TMG_EMPLOYEES
+        WHERE
+            TEM_CCUSTOMERID = #{custId}
+          AND TEM_CCOMPANYID = #{compId}
+          AND TEM_CEMPLOYEEID = #{empid}
+          AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+          AND TEM_DENDDATE >= #{baseDate}
+    </select>
+
+</mapper>

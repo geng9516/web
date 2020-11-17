@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!--  年次休暇付与日数と付与時間 -->
+    <resultMap id="selectEndueTimeInfoMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO">
+        <result column="endueDate" property="endueDate"/>
+        <result column="endueDays" property="endueDays"/>
+        <result column="endueHours" property="endueHours"/>
+    </resultMap>
+
+    <!-- 年次休暇付与日数と付与時間 -->
+    <select id="selectEndueTimeInfo" resultType="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO" resultMap="selectEndueTimeInfoMap">
+        select * from (
+                          select to_char(tph_dyyyymmdd, 'mm') || '月' || to_char(tph_dyyyymmdd,'dd') || '日' as endueDate,
+                                 nvl(tph_ninvest, 0) + nvl(tph_nthroughout, 0) + nvl(tph_nadjust,0) + nvl(tph_nadjust_to, 0)  as endueDays,
+                                 tmg_f_conv_min2hhmi(nvl(tph_nthroughout_hours, 0) + nvl(tph_nadjust_hours, 0) + nvl(tph_nadjust_hours_to, 0), 1) as endueHours,
+                                 TPH_DYYYYMMDD
+                          from tmg_paid_holiday
+                          where tph_cemployeeId = #{employeeId}
+                            and tph_dyyyymm = (select max(tph_dyyyymm) from tmg_paid_holiday
+                                               where tph_cemployeeId = #{employeeId}
+                                                 and tph_dyyyymm <![CDATA[>=]]> tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{preMonthDay}, 'yyyy/mm/dd'),#{custId}, #{compCode})), 0, #{dyyyymmdd}, #{custId}, #{compCode})
+                                                 and tph_dyyyymm <![CDATA[<=]]> tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{nextYearDay}, 'yyyy/mm/dd'),#{custId}, #{compCode})), 1, #{dyyyymmdd}, #{custId}, #{compCode}))
+                            and tph_ccompanyid = #{compCode}
+                          order by TPH_DYYYYMMDD desc)
+        where rownum = 1
+    </select>
+
+</mapper>

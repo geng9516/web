@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper">
+
+    <select id="selectRelation" parameterType="map" resultType="int">
+        SELECT PSEMPRELATION.FUNC_GET_RELATIONID(
+                       '${psCust}',
+                       '${psLogin}',
+                       '${psTarget}',
+                       '${psSystem}',
+                       '${psDesig}',
+                       TO_DATE('${psDate}','yyyy/mm/dd'))
+        FROM DUAL
+    </select>
+
+</mapper>

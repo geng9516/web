@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
-import jp.smartcompany.job.modules.core.mapper.TmgAttendanceBookMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;

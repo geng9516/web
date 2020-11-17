@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastRelationshipDO;
-import jp.smartcompany.job.modules.core.mapper.MastRelationshipMapper;
+import jp.smartcompany.job.modules.core.mapper.MastRelationship.MastRelationshipMapper;
 import jp.smartcompany.job.modules.core.service.IMastRelationshipService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysDateUtil;

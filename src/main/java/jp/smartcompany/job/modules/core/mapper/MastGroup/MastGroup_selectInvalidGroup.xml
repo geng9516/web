@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+
+    <select id="selectInvalidGroup" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO">
+        SELECT
+        DISTINCT
+        MG_DSTARTDATE,
+        MG_DENDDATE,
+        MG_CGROUPID_PK,
+        MG_CCOMPANYID,
+        PSMASTER.FUNC_GET_GROUP_DESC(
+        MG_CSYSTEMID_CK_FK
+        ,MG_CGROUPID_PK
+        ,MG_DENDDATE
+        ,'${language}')
+        AS MG_CGROUPDESCRIPTION,
+        PSMASTER.FUNC_GET_COMP_NAME(
+        MG_CCUSTOMERID
+        ,MG_CCOMPANYID
+        ,MG_DENDDATE
+        ,'${language}')
+        AS COMPANY_NAME,
+        MG_ID,
+        VERSIONNO
+        FROM
+        MAST_GROUP
+        WHERE
+        MG_CCUSTOMERID = #{customerCode}
+        AND MG_CSYSTEMID_CK_FK = #{systemId}
+        AND MG_CLANGUAGE = 'ja'
+        <if test="companyList!=null and companyList.size>0">
+            AND MG_CCOMPANYID IN
+            <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+        <if test="validGroupList!=null and validGroupList.size>0">
+            AND MG_CGROUPID_PK NOT IN
+            <foreach collection="validGroupList" item="groupId" open="(" separator="," close=")">
+                #{groupId}
+            </foreach>
+        </if>
+        ORDER BY
+        MG_CGROUPID_PK
+    </select>
+
+</mapper>

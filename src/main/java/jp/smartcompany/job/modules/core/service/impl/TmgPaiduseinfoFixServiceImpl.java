@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPaiduseinfoFixDO;
-import jp.smartcompany.job.modules.core.mapper.TmgPaiduseinfoFixMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgPaiduseinfoFix.TmgPaiduseinfoFixMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPaiduseinfoFixService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

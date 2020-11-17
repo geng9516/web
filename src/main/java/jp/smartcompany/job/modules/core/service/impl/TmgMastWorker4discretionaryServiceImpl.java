@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMastWorker4discretionaryDO;
-import jp.smartcompany.job.modules.core.mapper.TmgMastWorker4discretionaryMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgMastWorker4discretionary.TmgMastWorker4discretionaryMapper;
 import jp.smartcompany.job.modules.core.service.ITmgMastWorker4discretionaryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

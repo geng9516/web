@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfo.TmgMonthlyInfoMapper">
+
+    <select id="buildSQLForSelectTmgMonthlyInfo"
+            resultType="jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO">
+        SELECT
+        v.EMPID,          																										<!-- 0 職員番号 -->
+        v.EMPNAME,         																										<!-- 1 職員氏名-->
+        TMO_CSTATUSFLG,    																										<!-- 2 月次ステータス-->
+        NVL(TMG_F_GET_MGD_C(TMO_CSTATUSFLG, TMO_DYYYYMM, 1, TMO_CCUSTOMERID, TMO_CCOMPANYID, #{lang}), ' ') AS STATUS_NAME,  	<!-- 3 月次ステータス名称-->
+        (
+        SELECT
+        COUNT(*)
+        FROM
+        TMG_DAILY
+        WHERE
+        TDA_CCUSTOMERID = TMI_CCUSTOMERID
+        AND TDA_CCOMPANYID  = TMI_CCOMPANYID
+        AND TDA_CEMPLOYEEID = TMI_CEMPLOYEEID
+        AND TDA_DYYYYMM     = TMI_DYYYYMM
+        AND TDA_CSTATUSFLG  NOT IN ('TMG_DATASTATUS|5', 'TMG_DATASTATUS|9')
+        ) AS DAILY_COUNT,  																										<!-- 4 承認済、確定済の日次実績データ数-->
+        TO_CHAR(LAST_DAY(#{baseDate}), 'yyyy/mm/dd')  AS LAST_BASE_DATE																			<!-- 5 表示対象月の末日-->
+        <foreach collection="list" item="col"  index="idx" open=" " separator=" " close=" ">
+            , NVL(
+            TMG_F_GET_MGD_C(
+            TMG_F_TRANS_DISPPERMSTATUS(${col.colName}, TMI_DYYYYMM + #{idx}, TRUNC(SYSDATE))
+            ,#{today}
+            ,1
+            ,TMI_CCUSTOMERID
+            ,TMI_CCOMPANYID,
+            #{lang}
+            )
+            ,' '
+            )  AS  ${col.disppermStatusName} 																			<!-- 2予備文字列-->
+            , TMG_F_TRANS_DISPPERMSTATUS(${col.colName}, TMI_DYYYYMM + #{idx}, TRUNC(SYSDATE))	AS  ${col.disppermStatus} 		 	<!-- 3ステータス区分-->
+        </foreach>
+        FROM
+        TMG_MONTHLY_INFO,
+        TMG_MONTHLY,
+        ( ${empSql} ) v
+        WHERE
+        TMI_CCUSTOMERID = #{custId}
+        AND TMI_CCOMPANYID  = #{compId}
+        AND TMI_CEMPLOYEEID = v.EMPID
+        AND TMI_DYYYYMM     = to_date(#{baseDate},'yyyy/mm/dd')
+        AND TMI_CCONTENTID  = 'TMG_CONTENTID|PSL'
+        <!-- 表示対象月について管理対象であるか判定（該当月内に複数の歴がある場合は新しい歴を用いる）-->
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{baseDate},'yyyy/mm/dd')), LAST_DAY(#{baseDate}), v.cust, v.comp)
+        AND TMO_CCUSTOMERID = TMI_CCUSTOMERID
+        AND TMO_CCOMPANYID  = TMI_CCOMPANYID
+        AND TMO_CEMPLOYEEID = TMI_CEMPLOYEEID
+        AND TMO_DYYYYMM     = TMI_DYYYYMM
+        ORDER BY
+        v.SEQ
+    </select>
+
+</mapper>

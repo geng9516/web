@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="selectPaidHolidayThisMonthInfo"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo" >
+        SELECT
+            TMO_NPAID_BEGINING_DAYS,
+            TMO_NPAID_BEGINING_HOURS,
+            TMO_NPAID_REST_DAYS,
+            TMO_NPAID_REST_HOURS,
+            TO_CHAR( TPH_DYYYYMMDD, 'yyyy"年"MM"月"dd"日"' ) TPH_DYYYYMMDD
+        FROM
+            TMG_EMPLOYEES,
+            TMG_MONTHLY,
+            TMG_PAID_HOLIDAY
+        WHERE
+            TEM_CCUSTOMERID = #{customerId}
+          AND TEM_CCOMPANYID = #{companyId}
+          AND TEM_CEMPLOYEEID = #{employeeId}
+          AND TEM_DSTARTDATE <![CDATA[<=]]> TRUNC( SYSDATE )
+          AND TEM_DENDDATE >= TRUNC( SYSDATE )
+          AND TEM_CWORKTYPEID IN ( 'TMG_WORKERTYPE|20', 'TMG_WORKERTYPE|30' )
+          AND TMO_CCUSTOMERID = TEM_CCUSTOMERID
+          AND TMO_CCOMPANYID = TEM_CCOMPANYID
+          AND TMO_CEMPLOYEEID = TEM_CEMPLOYEEID
+          AND TMO_DSTARTDATE <![CDATA[<=]]> TRUNC( SYSDATE )
+          AND TMO_DENDDATE >= TRUNC( SYSDATE )
+          AND TMO_DYYYYMM = TRUNC( SYSDATE, 'MM' )
+          AND TPH_CCUSTOMERID = TEM_CCUSTOMERID
+          AND TPH_CCOMPANYID = TEM_CCOMPANYID
+          AND TPH_CEMPLOYEEID = TEM_CEMPLOYEEID
+          AND TPH_DSTARTDATE <![CDATA[<=]]> TRUNC( SYSDATE )
+          AND TPH_DENDDATE >= TRUNC( SYSDATE )
+          AND TPH_DYYYYMM = TRUNC( SYSDATE, 'MM' )
+          AND TPH_DYYYYMM != TPH_DYYYYMMDD
+    </select>
+
+</mapper>

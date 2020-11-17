@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCalendar.TmgCalendarMapper">
+
+    <select id="selectDayCount" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo">
+        SELECT
+            TO_NUMBER( TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dd' ) ) AS SEQ,
+            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dy' ) AS DAY_OF_WEEK,
+            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'yyyy/mm/dd' ) AS DAY
+        FROM
+            TMG_V_DAYCOUNT
+        WHERE
+                TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 <![CDATA[<=]]> TRUNC( Last_day( TO_DATE(#{baseDate}) ) )
+    </select>
+
+</mapper>

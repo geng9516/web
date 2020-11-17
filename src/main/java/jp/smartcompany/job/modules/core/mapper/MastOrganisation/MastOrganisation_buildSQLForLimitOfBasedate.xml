@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="buildSQLForLimitOfBasedate" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO">
+        SELECT
+            OT_DAILY_01 AS OT_DAILY,
+            OT_DAILY_01 * 60 AS DAILY_CONV_MINUTE
+        FROM
+            TABLE(
+                    TMG_F_GET_OVERTIMELIMT(
+                        #{custID},
+                        #{compCode},
+                        #{targetSec},
+                        NULL,
+                        #{day}
+                    )
+                )
+    </select>
+
+</mapper>

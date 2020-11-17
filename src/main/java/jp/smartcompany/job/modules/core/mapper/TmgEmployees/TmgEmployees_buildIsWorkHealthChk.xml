@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgEmployees.TmgEmployeesMapper">
+
+    <select id="buildIsWorkHealthChk" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO">
+        SELECT
+            TMG_F_IS_WORKCHK_TARGET(#{custId}, #{compId}, #{empId}, TRUNC(to_date(#{baseDate},'yyyy/MM/dd'), 'MM'), #{lang}) as workChk,
+            TMG_F_IS_HEALTHCHK_TARGET(#{custId}, #{compId}, #{empId}, #{baseDate}, #{lang}) as healthChk
+        FROM
+            DUAL
+    </select>
+
+</mapper>

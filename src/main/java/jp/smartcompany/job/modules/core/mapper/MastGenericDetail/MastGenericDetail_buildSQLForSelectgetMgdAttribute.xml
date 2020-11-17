@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="buildSQLForSelectgetMgdAttribute"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO">
+        SELECT
+            ATTRIBUTE_URL,
+            ITEM_NAME,
+            CATEGORY_CODE,
+            CATEGORY_NAME,
+            ITEM_CODE,
+            ITEM_TYPE,
+            ATTRIBUTE_ADDLIMIT,
+            TMG_F_GET_MGD_C(#{categoryCode} ,#{day}, 1,#{custID},#{compCode},#{language}) as MGD_C
+        FROM
+            TABLE(TMG_F_GET_RESULTATTRIBUTE(#{custID},#{compCode},#{targetUser},#{siteId},#{categoryCode},#{day},#{attribute}))
+    </select>
+
+</mapper>

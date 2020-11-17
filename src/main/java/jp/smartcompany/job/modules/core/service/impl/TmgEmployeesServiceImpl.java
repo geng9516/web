@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeesDO;
-import jp.smartcompany.job.modules.core.mapper.TmgEmployeesMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgEmployees.TmgEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO;

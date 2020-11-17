@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="selectNotFixedDeptList" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo">
+        SELECT
+            M.SECTION_NICK,
+            M.NOT_MONTHLYFIX_COUNT
+        FROM
+            (
+                SELECT
+                    TMG_F_GET_MO ( M.BASESECTION, LAST_DAY( M.TMO_DYYYYMM ), 1, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID, #{lang} ) AS SECTION_NICK,
+                    ROWNUM AS NUM,
+                    MAX( ROWNUM ) KEEP ( DENSE_RANK LAST ORDER BY ROWNUM ) OVER ( ) AS NOT_MONTHLYFIX_COUNT
+                FROM
+                    (
+                    SELECT
+                    M.TMO_CCUSTOMERID,
+                    M.TMO_CCOMPANYID,
+                    M.TMO_DYYYYMM,
+                    M.BASESECTION
+                    FROM
+                    (
+                    SELECT
+                    M.* ,
+                    TMG_F_IS_FIXED_MONTHLY ( M.TMO_CEMPLOYEEID, M.TMO_DYYYYMM, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID ) AS NOT_MONTHLY_FIX
+                    FROM
+                    ( SELECT * FROM TABLE ( TMG_SELECT_MONTHLYOUTPUTLIST ( #{custId}, #{compId}, #{secId}, TRUNC( TO_DATE( #{dyyyymm}, 'YYYY/MM/DD' ) ), #{lang} ) ) ) M
+                    ) M
+                    WHERE
+                    M.NOT_MONTHLY_FIX = 0
+                    GROUP BY
+                    M.TMO_CCUSTOMERID,
+                    M.TMO_CCOMPANYID,
+                    M.TMO_DYYYYMM,
+                    M.BASESECTION
+                    ORDER BY
+                    M.BASESECTION
+                    ) M
+            ) M
+        WHERE
+            M.NUM BETWEEN #{numStart,jdbcType=BIGINT}
+                AND  #{numEnd,jdbcType=BIGINT}
+    </select>
+
+</mapper>

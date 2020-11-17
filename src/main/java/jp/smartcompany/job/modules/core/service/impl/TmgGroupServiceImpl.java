@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgGroupDO;
-import jp.smartcompany.job.modules.core.mapper.TmgGroupMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgGroup.TmgGroupMapper;
 import jp.smartcompany.job.modules.core.service.ITmgGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

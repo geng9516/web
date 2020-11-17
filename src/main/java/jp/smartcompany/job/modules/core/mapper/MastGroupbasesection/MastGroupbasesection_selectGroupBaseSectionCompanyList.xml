@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupbasesection.MastGroupbasesectionMapper">
+
+    <select id="selectGroupBaseSectionCompanyList" parameterType="map" resultType="jp.smartcompany.admin.component.dto.BaseSectionRowDTO">
+        SELECT DISTINCT
+            MGBS_CCOMPANYID,
+            PSMASTER.FUNC_GET_COMP_NAME(
+               MGBS_CCUSTOMERID,
+               MGBS_CCOMPANYID,
+               '${searchDate}',
+               '${language}')
+        AS COMPANY_NAME
+        FROM MAST_GROUPBASESECTION
+        WHERE
+          MGBS_CCUSTOMERID = #{custId}
+          AND MGBS_CSYSTEMID = #{systemId}
+          <if test="companyList!=null and companyList.size()>0">
+            AND	MGBS_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="companyId" separator="," open="(" close=")">
+                #{companyId}
+            </foreach>
+          </if>
+          AND MGBS_CGROUPID = #{groupId}
+          AND MGBS_DSTARTDATE <![CDATA[ <= ]]> #{searchDate}
+          AND MGBS_DENDDATE >= #{searchDate}
+        ORDER BY MGBS_CCOMPANYID
+    </select>
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="selectNotApproval" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo">
+        SELECT
+            M.SECTION_NICK,
+            M.EMP_NAME,
+            M.NOT_APPROVAL_COUNT,
+            M.TMO_CEMPLOYEEID
+        FROM
+            (
+                SELECT
+                    TMG_F_GET_MO ( M.HD_CSECTIONID_FK, LAST_DAY( M.TMO_DYYYYMM ), 1, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID, #{lang} ) AS SECTION_NICK,
+                    M.TMO_CEMPLOYEEID,
+                    TMG_F_GET_ME_NAME ( M.TMO_CEMPLOYEEID, M.HD_DSTARTDATE_CK, 0, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID ) AS EMP_NAME,
+                    ROWNUM AS NUM,
+                    MAX( ROWNUM ) KEEP ( DENSE_RANK LAST ORDER BY ROWNUM ) OVER ( ) AS NOT_APPROVAL_COUNT
+                FROM
+                    (
+                    SELECT
+                    *
+                    FROM
+                    ( SELECT * FROM TABLE ( TMG_SELECT_MONTHLYOUTPUTLIST ( #{custId}, #{compId}, #{secId}, TRUNC( TO_DATE( #{dyyyymm}, 'YYYY/MM/DD' ) ), #{lang} ) ) ) M
+                    WHERE
+                    M.TMO_CSTATUSFLG = 'TMG_DATASTATUS|0'
+                    ORDER BY
+                    M.HD_CSECTIONID_FK,
+                    M.TMO_CEMPLOYEEID
+                    ) M
+            ) M
+        WHERE
+            M.NUM BETWEEN #{numStart,jdbcType=BIGINT}
+                AND #{numEnd,jdbcType=BIGINT}
+    </select>
+
+</mapper>

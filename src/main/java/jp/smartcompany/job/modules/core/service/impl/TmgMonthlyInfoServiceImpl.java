@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyInfoDO;
-import jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfoMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfo.TmgMonthlyInfoMapper;
 import jp.smartcompany.job.modules.core.service.ITmgMonthlyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;

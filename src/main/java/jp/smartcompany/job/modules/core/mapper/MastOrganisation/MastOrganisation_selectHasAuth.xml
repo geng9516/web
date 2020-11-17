@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="selectHasAuth" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            MAST_ORGANISATION o
+        WHERE
+            o.MO_CCUSTOMERID_CK_FK =#{customerId}
+        AND o.MO_CCOMPANYID_CK_FK  = #{compnyId}
+        AND o.MO_CSECTIONID_CK  = #{sectionId}
+        AND o.MO_DSTART  <![CDATA[ <= ]]> #{searchDate}
+        AND o.MO_DEND  >= #{searchDate}
+        AND o.MO_CLANGUAGE  = #{language}
+        ${exists}
+    </select>
+
+</mapper>

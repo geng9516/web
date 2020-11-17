@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgAttendanceBook.TmgAttendanceBookMapper">
+
+    <!-- 摘要編集 -->
+    <update id="updateComment" parameterType="java.util.HashMap">
+        merge
+          into tmg_yearly y using dual on (dual.dummy is not null
+               and y.tmy_cemployeeid = #{employeeId}
+        and y.tmy_nyyyy = to_number(tmg_f_get_the_year(to_date( #{yearLastDay}, 'yyyy/mm/dd'), #{custId}, #{compCode}))
+        and y.tmy_ccompanyid = #{compCode} and y.tmy_ccustomerid = #{custId}) when matched then
+        update
+            set tmy_comment = #{comment} ,
+            tmy_dmodifieddate = sysdate ,
+            tmy_cmodifieruserid = #{modifieruserId} ,
+            tmy_cmodifierprogramid = 'UAttendanceBook' when not matched then
+        insert (tmy_ccustomerid , tmy_ccompanyid , tmy_cemployeeid ,
+            tmy_dstartdate , tmy_denddate , tmy_cmodifieruserid ,
+            tmy_dmodifieddate , tmy_cmodifierprogramid , tmy_nyyyy ,
+            tmy_comment)
+            values
+        ( #{custId}, #{compCode}, #{employeeId} , to_date('1900/01/01', 'yyyy/mm/dd'),to_date('2222/12/31', 'yyyy/mm/dd'),
+            #{modifieruserId} , sysdate ,'UAttendanceBook' , to_number(tmg_f_get_the_year(to_date( #{yearLastDay}, 'yyyy/mm/dd'), #{custId}, #{compCode})),#{comment})
+    </update>
+
+</mapper>

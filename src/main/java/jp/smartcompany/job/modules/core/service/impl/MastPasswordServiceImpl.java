@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
-import jp.smartcompany.job.modules.core.mapper.MastPasswordMapper;
+import jp.smartcompany.job.modules.core.mapper.MastPassword.MastPasswordMapper;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;

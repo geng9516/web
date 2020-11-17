@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
-import jp.smartcompany.job.modules.core.mapper.MastApptreeMapper;
+import jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;

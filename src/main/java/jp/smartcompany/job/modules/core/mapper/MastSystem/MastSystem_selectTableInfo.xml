@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastSystem.MastSystemMapper">
+
+    <select id="selectTableInfo" resultType="jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO">
+        SELECT	TABLE_NAME,
+                  COLUMN_NAME
+        FROM	USER_TAB_COLUMNS
+        WHERE	TABLE_NAME IN
+                 ( SELECT DISTINCT MD_CTABLENAME FROM MAST_DATADICTIONARY)
+          AND	(	/* IDカラムの特定方法に_が1つである旨の条件を追加 */
+            (COLUMN_NAME LIKE '%\_ID' ESCAPE '\'  AND INSTR(COLUMN_NAME, CHR(95),1,2) = 0) /* IDカラム */
+		OR COLUMN_NAME LIKE '%\_CCUSTOMERID%' ESCAPE '\' /* 顧客 */
+		OR COLUMN_NAME LIKE '%\_CCOMPANYID%' ESCAPE '\' /* 法人 */
+		OR COLUMN_NAME LIKE '%\_CUSERID' ESCAPE '\' /* ユーザID */
+		OR COLUMN_NAME LIKE '%\_CEMPLOYEEID%' ESCAPE '\' /* 職員番号 */
+		OR COLUMN_NAME LIKE '%\_CSECTIONID%' ESCAPE '\' /* 組織 */
+		OR COLUMN_NAME LIKE '%\_CPOSTID%' ESCAPE '\' /* 役職 */
+		OR COLUMN_NAME LIKE '%\_DSTART%' ESCAPE '\' /* 開始日 */
+		OR COLUMN_NAME LIKE '%\_DEND%' ESCAPE '\' /* 終了日 */
+		OR COLUMN_NAME LIKE '%\_CLANGUAGE' ESCAPE '\'
+		OR COLUMN_NAME LIKE '%\_CLAYEREDSECTIONID' ESCAPE '\'
+		OR COLUMN_NAME LIKE '%\_CIFKEYORADDITIONALROLE' ESCAPE '\'
+	   ) ORDER BY TABLE_NAME,COLUMN_ID
+    </select>
+
+</mapper>

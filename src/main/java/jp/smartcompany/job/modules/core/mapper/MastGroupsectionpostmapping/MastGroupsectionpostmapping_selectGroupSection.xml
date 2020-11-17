@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupsectionpostmapping.MastGroupsectionpostmappingMapper">
+
+    <select id="selectGroupSection" parameterType="map" resultType="jp.smartcompany.admin.component.dto.SectionPostRowListDTO">
+        SELECT
+            MAG_ID AS id,
+            MAG_CCUSTOMERID_CK_FK AS customerId,
+            MAG_CSYSTEMID_CK AS systemId,
+            MAG_CGROUPID_FK AS groupId,
+            MAG_DSTARTDATE_CK AS startDate,
+            MAG_DENDDATE AS endDate,
+            MAG_CTYPEID AS typeId,
+            MAG_CCOMPANYID AS companyId,
+            PSMASTER.FUNC_GET_COMP_NAME(
+               MAG_CCUSTOMERID_CK_FK,
+               MAG_CCOMPANYID,
+               '${searchDate}',
+               '${language}'
+            ) AS companyName,
+            MAG_CSECTIONID AS sectionId,
+            PSMASTER.FUNC_GET_SECTION_NAME(
+               MAG_CCUSTOMERID_CK_FK,
+               MAG_CCOMPANYID,
+               MAG_CSECTIONID,
+               '${searchDate}',
+               '${language}'
+            ) AS sectionName,
+            MAG_CPOSTID AS postId,
+            PSMASTER.FUNC_GET_POST_NAME(
+               MAG_CCUSTOMERID_CK_FK,
+               MAG_CCOMPANYID,
+               MAG_CPOSTID,
+               '${searchDate}',
+               '${language}'
+            ) AS postName,
+            MAG_CEMPLOYEEID AS employeeId,
+            PSMASTER.FUNC_GET_EMP_NAME(
+                MAG_CCUSTOMERID_CK_FK,
+                MAG_CCOMPANYID,
+                MAG_CEMPLOYEEID,
+                '${searchDate}',
+                '${language}'
+            ) AS kanJiName,
+            VERSIONNO
+        FROM
+            MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+            MAG_CCUSTOMERID_CK_FK = #{customerId} AND
+            MAG_CCOMPANYID = #{companyId} AND
+            MAG_CSYSTEMID_CK  = #{systemId} AND
+            MAG_CGROUPID_FK = #{groupId} AND
+            MAG_DSTARTDATE_CK <![CDATA[<=]]> #{searchDate}  AND
+            MAG_DENDDATE >= #{searchDate}  AND
+            MAG_CTYPEID	= #{permissionId}
+        ORDER BY
+            MAG_CTYPEID,
+            MAG_CCUSTOMERID_CK_FK,
+            MAG_CSYSTEMID_CK,
+            MAG_CGROUPID_FK,
+            MAG_DSTARTDATE_CK,
+            MAG_CCOMPANYID,
+            MAG_CSECTIONID,
+            MAG_CPOSTID,
+            MAG_CEMPLOYEEID
+    </select>
+
+</mapper>

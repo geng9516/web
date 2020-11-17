@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNotificationDO;
-import jp.smartcompany.job.modules.core.mapper.TmgBulkNotificationMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgBulkNotification.TmgBulkNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgBulkNotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto;

@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
-import jp.smartcompany.job.modules.core.mapper.TmgDailyDetailCheckMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgDailyDetailCheck.TmgDailyDetailCheckMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyDetailCheckService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.DetailCheckDto;

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPatternRest.TmgPatternRestMapper">
+    <select id="selectPatternRestTime" resultType="jp.smartcompany.job.modules.core.pojo.entity.TmgPatternRestDO" >
+        SELECT
+        TPR_NRESTOPEN,				--休憩開始時刻
+        TPR_NRESTCLOSE				--休憩終了時刻
+        FROM
+        TMG_PATTERN,
+        TMG_PATTERN_REST
+        WHERE
+        -- TMG_PATTERN
+        TPA_CCUSTOMERID		= #{customerId}	/* 顧客コード */
+        AND	TPA_CCOMPANYID		= #{companyId}	/* 法人コード */
+        AND DECODE(
+        #{sectionId},	NULL,	DECODE(
+        #{patternId},	NULL,	TPA_CSECTIONID,
+        1
+        ),
+        TPA_CSECTIONID
+        ) = DECODE(
+        #{sectionId},	NULL,	DECODE(
+        #{patternId},	NULL,	#{upperSectionId},
+        1
+        ),
+        #{sectionId}
+        )
+        AND DECODE(
+        #{groupId},	NULL,	-- sGROUPID指定なし
+        DECODE(
+        #{patternId},	NULL,	TPA_CGROUPID,
+        1
+        ),
+        -- sGROUPID指定あり
+        TPA_CGROUPID
+        ) = DECODE(
+        #{groupId},	NULL,	-- sGROUPID指定なし
+        DECODE(
+        #{patternId},	NULL,	TPA_CSECTIONID || '|000000',
+        1
+        ),
+        -- sGROUPID指定あり
+        #{groupId}
+        )
+        AND DECODE(
+        #{patternId},	NULL,	TPA_CDEFAULTFLG,
+        TPA_CPATTERNID
+        ) =  DECODE(
+        #{patternId},	NULL,	'TMG_ONOFF|1',
+        #{patternId}
+        )
+        AND	TPA_DSTARTDATE		<![CDATA[<=]]> #{statDate,jdbcType=DATE}
+        AND	TPA_DENDDATE		>= #{statDate,jdbcType=DATE}
+        -- TMG_PATTERN_REST
+        AND	TPR_CCUSTOMERID(+)	= TPA_CCUSTOMERID
+        AND	TPR_CCOMPANYID(+)	= TPA_CCOMPANYID
+        AND	(	(TPA_CSECTIONID IS NOT NULL AND TPR_CSECTIONID = TPA_CSECTIONID) OR
+        (TPA_CSECTIONID IS     NULL AND TPR_CSECTIONID IS NULL         )
+        )
+        AND	(	(TPA_CGROUPID IS NOT NULL AND TPR_CGROUPID = TPA_CGROUPID) OR
+        (TPA_CGROUPID IS     NULL AND TPR_CGROUPID IS NULL         )
+        )
+        AND	TPR_DSTARTDATE(+)	<![CDATA[<=]]> #{statDate,jdbcType=DATE}
+        AND	TPR_DENDDATE(+)		>= #{statDate,jdbcType=DATE}
+        -- ▼ 2010/01/27 Kakutani Mod[S] TMG_PATTERN_ROWの拡張（ISOL殿修正）に伴う修正。
+        --		AND	TPR_CPATTERNID(+)	= TPA_CPATTERNID;
+        AND	TPR_CPATTERNID(+)	= TPA_CPATTERNID
+        GROUP BY
+        TPR_NRESTOPEN,
+        TPR_NRESTCLOSE
+        ORDER BY
+        TPR_NRESTOPEN,
+        TPR_NRESTCLOSE
+      </select>
+</mapper>

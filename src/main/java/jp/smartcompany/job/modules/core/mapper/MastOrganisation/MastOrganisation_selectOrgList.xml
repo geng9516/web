@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="selectOrgList" parameterType="map" resultType="jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO">
+        SELECT /*+ INDEX(MO PS_MAST_ORGANISATION_IDX3) */
+        MO.MO_CCUSTOMERID_CK_FK,
+        MO.MO_CCOMPANYID_CK_FK,
+        MO.MO_ID,
+        NVL(
+        CASE '${language}'
+        WHEN 'en' THEN b.MAC_CCOMPANYNAMEEN
+        WHEN 'ch' THEN b.MAC_CCOMPANYNAMECH
+        WHEN '01' THEN b.MAC_CCOMPANYNAME01
+        WHEN '02' THEN b.MAC_CCOMPANYNAME02
+        ELSE b.MAC_CCOMPANYNAMEJA
+        END,
+        ' '
+        ) as MAC_CCOMPANYNAME,
+        MO.MO_CSECTIONID_CK,
+        MO.MO_CLAYEREDSECTIONID,
+        NVL(
+        CASE '${language}'
+        WHEN 'en' THEN MO.MO_CSECTIONNAMEEN
+        WHEN 'ch' THEN MO.MO_CSECTIONNAMECH
+        WHEN '01' THEN MO.MO_CSECTIONNAME01
+        WHEN '02' THEN MO.MO_CSECTIONNAME02
+        ELSE MO.MO_CSECTIONNAMEJA
+        END,
+        ' '
+        ) as MO_CSECTIONNAME,
+        NVL(
+        CASE '${language}'
+        WHEN 'en' THEN MO.MO_CSECTIONNICKEN
+        WHEN 'ch' THEN MO.MO_CSECTIONNICKCH
+        WHEN '01' THEN MO.MO_CSECTIONNICK01
+        WHEN '02' THEN MO.MO_CSECTIONNICK02
+        ELSE MO.MO_CSECTIONNICKJA
+        END,
+        ' '
+        ) as MO_CSECTIONNICK,
+        NVL(MO.MO_CPARENTID, 'Root') as MO_CPARENTID,
+        MO.MO_NLEVEL,
+        MO.MO_NSEQ,
+        MO.MO_NHR
+        FROM
+        MAST_ORGANISATION MO
+        LEFT OUTER JOIN MAST_COMPANY b ON
+        b.MAC_CCUSTOMERID_CK_FK = #{customerId}
+        AND b.MAC_CCOMPANYID_CK = #{companyId}
+        AND b.MAC_DSTART <![CDATA[ <= ]]> #{startDate}
+        AND b.MAC_DEND >= #{endDate}
+        AND b.MAC_CLANGUAGE = 'ja'
+        WHERE
+        MO.MO_DSTART <![CDATA[ <= ]]> #{startDate}
+        AND MO.MO_DEND >= #{endDate}
+        AND MO.MO_CCUSTOMERID_CK_FK = #{customerId}
+        AND MO.MO_CCOMPANYID_CK_FK	= #{companyId}
+        AND MO.MO_CLANGUAGE = 'ja'
+        <choose>
+            <when test='(companyCode ==null or companyCode == "") and (sectionCode=="" or sectionCode== null)'>
+                ${sExists}
+            </when>
+            <otherwise>
+                AND MO.MO_CCOMPANYID_CK_FK = #{companyCode}
+                AND MO.MO_CLAYEREDSECTIONID LIKE (
+                SELECT
+                MO2.MO_CLAYEREDSECTIONID || '%'
+                FROM MAST_ORGANISATION MO2
+                WHERE
+                MO2.MO_CCOMPANYID_CK_FK = #{companyCode}
+                AND MO2.MO_CSECTIONID_CK = #{sectionCode}
+                AND MO2.MO_DSTART <![CDATA[<=]]> #{searchDate}
+                AND MO2.MO_DEND >= #{searchDate}
+                )
+            </otherwise>
+        </choose>
+        ORDER BY MO.MO_NSEQ,MO.MO_CCOMPANYID_CK_FK,MO.MO_CSECTIONID_CK
+    </select>
+
+</mapper>

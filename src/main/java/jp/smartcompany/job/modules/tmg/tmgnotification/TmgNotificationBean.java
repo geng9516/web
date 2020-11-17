@@ -1790,9 +1790,7 @@ public class TmgNotificationBean {
      * @return int inputCtl
      */
     private int selectNtfDispType(ParamNotificationListDto param) {
-
-        int inputCtl = iMastGenericDetailService.selectNtfDispType(param.getCustId(), param.getCompId(), param.getLang(), param.getTypeNew());
-        return inputCtl;
+        return iMastGenericDetailService.selectNtfDispType(param.getCustId(), param.getCompId(), param.getLang(), param.getTypeNew());
     }
 
     /**

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="selectDailyDetailOverHours" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo" statementType="STATEMENT">
+        SELECT
+            e.EMPID AS TDA_CEMPLOYEEID,
+            TDA_DYYYYMM TDAD_DYYYYMM,
+            TDA_DYYYYMMDD TDAD_DYYYYMMDD,
+            'TMG_ITEMS|Overhours' TDAD_CNOTWORKID,
+            TMG_F_CONV_MIN2HHMI ( TDA_NRESTOPEN_R, 0 ) TDAD_NOPEN,
+            TMG_F_CONV_MIN2HHMI ( TDA_NRESTCLOSE_R, 0 ) TDAD_NCLOSE,
+            TDA_CCOMMENT_O TDAD_CSPARECHAR1,
+            '' AS TDAD_CSPARECHAR2
+        FROM
+            TMG_DAILY,
+            (${empListSql}) e
+        WHERE
+            TDA_CEMPLOYEEID = e.EMPID
+          AND TDA_DYYYYMMDD = to_date('${baseDate}', 'yyyy/mm/dd' )
+          AND TDA_CCOMPANYID = '${compId}'
+          AND TDA_CCUSTOMERID = '${custId}'
+          AND TDA_DSTARTDATE <![CDATA[<=]]> to_date('${baseDate}', 'yyyy/mm/dd' )
+          AND TDA_DENDDATE >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+          AND TDA_NOPEN_O IS NOT NULL
+          AND TDA_NCLOSE_O IS NOT NULL
+
+        UNION
+
+        SELECT
+            e.EMPID AS TDA_CEMPLOYEEID,
+            TDAD_DYYYYMM,
+            TDAD_DYYYYMMDD,
+            TDAD_CNOTWORKID,
+            TMG_F_CONV_MIN2HHMI ( TDAD_NOPEN, 0 ) TDAD_NOPEN,
+            TMG_F_CONV_MIN2HHMI ( TDAD_NCLOSE, 0 ) TDAD_NCLOSE,
+            TDAD_CSPARECHAR1,
+            NVL(TDAD_CSPARECHAR2,'TMG_OVERHOUR_STATUS|6') TDAD_CSPARECHAR2
+        FROM
+            TMG_DAILY_DETAIL,
+            (${empListSql}) e
+        WHERE
+            TDAD_CEMPLOYEEID = e.EMPID
+          AND TDAD_DYYYYMMDD = to_date('${baseDate}', 'yyyy/mm/dd' )
+          AND TDAD_CCOMPANYID = '${compId}'
+          AND TDAD_CCUSTOMERID = '${custId}'
+          AND TDAD_CNOTWORKID = 'TMG_ITEMS|Overhours'
+    </select>
+
+</mapper>

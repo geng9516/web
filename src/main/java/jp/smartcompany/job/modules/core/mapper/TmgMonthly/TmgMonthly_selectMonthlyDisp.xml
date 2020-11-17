@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthly.TmgMonthlyMapper">
+
+    <select id="selectMonthlyDisp" parameterType="map" resultType="map" statementType="STATEMENT">
+        SELECT
+
+        <foreach collection="array" item="params"  index="index" open=" " separator="," close=" ">
+            ${params}
+        </foreach>
+        FROM
+        TMG_MONTHLY
+        WHERE
+        TMO_CCOMPANYID          =   ${customerId}
+        AND     TMO_CCUSTOMERID     =   ${companyId}
+        AND     TMO_DYYYYMM                 =  ${yyyymmdd}
+        AND     TMO_CEMPLOYEEID         =   ${employeeId}
+    </select>
+
+</mapper>

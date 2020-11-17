@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="selectLowEmp" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO">
+        -- 下位組織情報取得（職員指定）
+        SELECT
+        MO_CSECTIONID_CK
+        FROM
+        MAST_ORGANISATION
+        WHERE
+        MO_CCUSTOMERID_CK_FK = #{custId}
+        AND MO_CSECTIONID_CK <![CDATA[<>]]> #{sectionId}
+        AND MO_CLANGUAGE = 'ja'
+        AND MO_DSTART <![CDATA[ <= ]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+        -- 仮想組織判定がtrueだったら、下記条件をANDする
+        <if test="virtualSection">
+            AND MO_NHR <![CDATA[<>]]> '3'
+        </if>
+        AND MO_CLAYEREDSECTIONID LIKE (
+            SELECT
+            MO_CLAYEREDSECTIONID ||'%'
+            FROM
+            MAST_ORGANISATION
+            WHERE
+            MO_CCUSTOMERID_CK_FK = #{custId}
+            AND MO_CCOMPANYID_CK_FK = #{compId}
+            AND	MO_CSECTIONID_CK = #{sectionId}
+            AND	MO_CLANGUAGE = 'ja'
+            AND MO_DSTART <![CDATA[ <= ]]> to_date(#{searchDate},'yyyy/mm/dd')
+            AND MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+        )
+        ORDER BY MO_CSECTIONID_CK
+    </select>
+
+</mapper>

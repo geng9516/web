@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayAttribute.TmgPaidHolidayAttributeMapper">
+
+    <select id="selectAvgWorkTimeHistory" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.AvgWorkTimeHistoryVo">
+        SELECT
+            TO_CHAR( A.TPHA_DSTARTDATE, 'YYYY/MM/DD' ) AS TPHA_DSTARTDATE,
+            (
+                SELECT
+                    TO_CHAR( MAX( TPHA_DENDDATE ), 'YYYY/MM/DD' )
+                FROM
+                    TMG_PAID_HOLIDAY_ATTRIBUTE B
+                WHERE
+                    B.TPHA_CCUSTOMERID = A.TPHA_CCUSTOMERID
+                  AND B.TPHA_CCOMPANYID = A.TPHA_CCOMPANYID
+                  AND B.TPHA_CEMPLOYEEID = A.TPHA_CEMPLOYEEID
+                  AND B.TPHA_NAVGWORKTIME = A.TPHA_NAVGWORKTIME
+                  AND B.TPHA_DSTARTDATE >= A.TPHA_DSTARTDATE
+                  AND ( B.TPHA_DENDDATE  <![CDATA[<=]]>  A.LEAD_DSTART OR A.LEAD_DSTART IS NULL )
+            ) AS TPHA_DENDDATE,
+            A.TPHA_NAVGWORKTIME,
+            A.TPHA_NWORKINGDAYS_WEEK
+        FROM
+            (
+                SELECT
+                    TPHA_CCUSTOMERID,
+                    TPHA_CCOMPANYID,
+                    TPHA_CEMPLOYEEID,
+                    A.TPHA_DSTARTDATE,
+                    LEAD ( A.TPHA_DSTARTDATE ) OVER ( ORDER BY A.TPHA_DSTARTDATE ) LEAD_DSTART,
+                    A.TPHA_NAVGWORKTIME,
+                    A.TPHA_NWORKINGDAYS_WEEK
+                FROM
+                    (
+                        SELECT
+                            TPHA_CCUSTOMERID,
+                            TPHA_CCOMPANYID,
+                            TPHA_CEMPLOYEEID,
+                            TPHA_DSTARTDATE,
+                            TPHA_DENDDATE,
+                            TPHA_NAVGWORKTIME,
+                            TPHA_NWORKINGDAYS_WEEK,
+                            LAG ( TPHA_DENDDATE ) OVER ( ORDER BY TPHA_DSTARTDATE ) + 1 AS LAG_DEND,
+                            LAG ( TPHA_NAVGWORKTIME ) OVER ( ORDER BY TPHA_DSTARTDATE ) AS LAG_NAVGWORKTIME
+                        FROM
+                            TMG_PAID_HOLIDAY_ATTRIBUTE A
+                        WHERE
+                            A.TPHA_CCUSTOMERID = #{customerId}
+                          AND A.TPHA_CCOMPANYID = #{companyId}
+                          AND A.TPHA_CEMPLOYEEID = #{employeeId}
+                    ) A
+                WHERE
+                    A.TPHA_DSTARTDATE != A.LAG_DEND
+                   OR A.TPHA_NAVGWORKTIME != A.LAG_NAVGWORKTIME
+                   OR A.LAG_DEND IS NULL
+            ) A
+        ORDER BY
+            TPHA_DSTARTDATE
+    </select>
+
+</mapper>

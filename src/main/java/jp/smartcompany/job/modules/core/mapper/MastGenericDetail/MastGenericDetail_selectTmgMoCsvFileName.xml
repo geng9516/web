@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectTmgMoCsvFileName" resultType="java.lang.String">
+        SELECT  TMG_F_GET_MO_CSVFILENAME(#{targetDate},#{empId},#{dlTypeID},#{custId},#{compId})
+        FROM dual
+    </select>
+
+</mapper>

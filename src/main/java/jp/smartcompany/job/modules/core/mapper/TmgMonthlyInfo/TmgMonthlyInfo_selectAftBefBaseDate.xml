@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfo.TmgMonthlyInfoMapper">
+
+    <select id="selectAftBefBaseDate" resultType="java.lang.String">
+        SELECT
+            <choose>
+                <when test="AftBef==1">
+                    TO_CHAR( MAX( TMI_DYYYYMM ), 'YYYY/MM/DD' )
+                </when>
+                <otherwise>
+                    TO_CHAR( MIN( TMI_DYYYYMM ), 'YYYY/MM/DD' )
+                </otherwise>
+            </choose>
+        FROM
+            ( ${sql} ) e,
+            TMG_MONTHLY_INFO m
+        WHERE
+            m.TMI_CCUSTOMERID = e.CUST
+        AND m.TMI_CCOMPANYID = e.COMP
+        <choose>
+            <when test="AftBef==1">
+                AND m.TMI_DYYYYMM <![CDATA[<]]> #{sBaseDate}
+            </when>
+            <otherwise>
+                AND m.TMI_DYYYYMM > #{sBaseDate}
+            </otherwise>
+        </choose>
+        AND m.TMI_CEMPLOYEEID = e.EMPID
+        AND m.TMI_DSTARTDATE <![CDATA[<=]]> #{sBaseDate}
+        AND m.TMI_DENDDATE >= #{sBaseDate}
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<=]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{sBaseDate} ) ), LAST_DAY( TO_DATE( #{sBaseDate}) ), e.cust, e.comp )
+    </select>
+
+</mapper>

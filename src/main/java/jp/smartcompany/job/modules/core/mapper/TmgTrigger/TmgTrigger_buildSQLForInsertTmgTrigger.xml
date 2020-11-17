@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgTrigger.TmgTriggerMapper">
+
+    <insert id="buildSQLForInsertTmgTrigger">
+        INSERT INTO
+            TMG_TRIGGER
+        SELECT
+            TDA_CCUSTOMERID,
+            TDA_CCOMPANYID,
+            TDA_CEMPLOYEEID,
+            TO_DATE('1900/01/01', 'YYYY/MM/DD') , <!-- 開始日 -->
+            TO_DATE('2222/12/31', 'YYYY/MM/DD') ,  <!-- 終了日 -->
+            #{loginUserCode} ,
+            SYSDATE,
+            #{programId} , <!-- 更新プログラムID-->
+            #{programId} ,  <!-- プログラムID-->
+            NULL,  <!-- 数値型パラメータ１ -->
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            #{action}, <!-- 文字列型パラメータ1-->
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            #{yyyymmdd},  <!-- 日付型パラメータ1-->
+            NULL,
+            NULL,
+            NULL,
+            NULL
+        FROM
+            TMG_DAILY
+        WHERE
+            ROWID IN
+            <foreach item="item" collection="rowIdList" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </insert>
+
+</mapper>

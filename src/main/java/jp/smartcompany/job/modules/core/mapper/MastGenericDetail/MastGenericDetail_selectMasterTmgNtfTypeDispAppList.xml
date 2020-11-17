@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectMasterTmgNtfTypeDispAppList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo">
+        SELECT
+            G.MGD_CMASTERCODE AS GROUP_ID,
+            G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
+            T1.MGD_CMASTERCODE AS NTFI_D,
+            T1.MGD_CGENERICDETAILDESC AS NTF_NAME,
+            T1.MGD_NSPARENUM2 AS VIEW_TYPE,
+            T1.MGD_CSPARECHAR3 AS CONFIM_COMMENT,
+            T2.MGD_CSPARECHAR3 AS BIKO,
+            T2.MGD_NSPARENUM2 AS CONFIRM_FILE
+        FROM
+            MAST_GENERIC_DETAIL G,
+            MAST_GENERIC_DETAIL T1,
+            MAST_GENERIC_DETAIL T2
+        WHERE
+            G.MGD_CCUSTOMERID = #{companyId}
+        AND G.MGD_CCOMPANYID_CK_FK = #{companyId}
+        AND G.MGD_CGENERICGROUPID = 'TMG_NTFGROUP'
+        AND G.MGD_CLANGUAGE_CK = #{language}
+        AND G.MGD_DSTART_CK <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND G.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_CCUSTOMERID = G.MGD_CCUSTOMERID
+        AND T2.MGD_CCOMPANYID_CK_FK = G.MGD_CCOMPANYID_CK_FK
+        AND T2.MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+        AND T2.MGD_CLANGUAGE_CK = G.MGD_CLANGUAGE_CK
+        AND T2.MGD_DSTART_CK <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_CSPARECHAR1 = G.MGD_CMASTERCODE
+        AND T1.MGD_CCUSTOMERID = T2.MGD_CCUSTOMERID
+        AND T1.MGD_CCOMPANYID_CK_FK = T2.MGD_CCOMPANYID_CK_FK
+        AND T1.MGD_CGENERICGROUPID = 'TMG_NTFTYPE'
+        AND T1.MGD_CLANGUAGE_CK = T2.MGD_CLANGUAGE_CK
+        AND T1.MGD_DSTART_CK <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        AND T1.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
+        ORDER BY
+            G.MGD_NSPARENUM1,
+            T2.MGD_NSPARENUM1
+    </select>
+
+
+</mapper>

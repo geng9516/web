@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+
+    <select id="selectAppManagerGroup" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO">
+        -- グループ一覧取得SQL
+        SELECT DISTINCT
+        MG_CGROUPID_PK,
+        PSMASTER.FUNC_GET_GROUP_DESC(
+        MG_CSYSTEMID_CK_FK,
+        MG_CGROUPID_PK,
+        MG_DSTARTDATE,
+        '${language}'
+        ) MG_CGROUPDESCRIPTION,
+        NVL(
+        PSMASTER.FUNC_GET_COMP_NICK(
+        MG_CCUSTOMERID,
+        MG_CCOMPANYID,
+        NULL,
+        '${language}'
+        ),
+        PSMASTER.FUNC_GET_COMP_NAME(
+        MG_CCUSTOMERID,
+        MG_CCOMPANYID,
+        NULL,
+        '${language}'
+        )
+        ) COMPANYNICK,	-- 法人略称(ない場合名称も取得)
+        MG_NWEIGHTAGE
+        FROM
+        MAST_GROUP
+        WHERE
+        MG_CCUSTOMERID = #{customerId}
+        AND	MG_CSYSTEMID_CK_FK = #{systemId}
+        AND	MG_CLANGUAGE = 'ja'
+        AND	MG_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+        AND	MG_DENDDATE >= #{searchDate}
+        <if test="companyId!=null">
+            AND	MG_CCOMPANYID = #{companyId}
+        </if>
+        <if test="searchCompanyList!=null and searchCompanyList.size>0">
+            AND MG_CCOMPANYID IN
+            <foreach collection="searchCompanyList" item="groupId" open="(" separator="," close=")">
+                #{groupId}
+            </foreach>
+        </if>
+        ORDER BY MG_NWEIGHTAGE,MG_CGROUPID_PK
+    </select>
+
+</mapper>

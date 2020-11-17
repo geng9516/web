@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectTmgMoDLType" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo">
+        SELECT
+            MGD_CDLTYPEID,
+            MGD_CDLTYPENAME
+        FROM
+            TMG_V_MGD_MO_DLTYPE
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+          AND MGD_CCOMPANYID_CK_FK = #{compId}
+          AND MGD_CLANGUAGE_CK = #{lang}
+          AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
+          AND MGD_DEND >= #{date}
+        ORDER BY
+            MGD_NSEQ
+    </select>
+
+</mapper>

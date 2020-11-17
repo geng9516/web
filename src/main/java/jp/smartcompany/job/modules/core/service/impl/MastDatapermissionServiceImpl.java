@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
-import jp.smartcompany.job.modules.core.mapper.MastDatapermissionMapper;
+import jp.smartcompany.job.modules.core.mapper.MastDatapermission.MastDatapermissionMapper;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;

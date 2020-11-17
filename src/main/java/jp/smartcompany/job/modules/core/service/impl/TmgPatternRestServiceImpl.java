@@ -2,10 +2,9 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternRestDO;
-import jp.smartcompany.job.modules.core.mapper.TmgPatternRestMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgPatternRest.TmgPatternRestMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPatternRestService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDetailRow;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

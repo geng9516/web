@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="selectApprovelLevel" resultType="java.lang.String">
+        SELECT
+        MGD_CMASTERCODE
+        FROM
+        MAST_GENERIC_DETAIL
+        WHERE
+        MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_APPROVAL_LEVEL'
+        AND MGD_CLANGUAGE_CK = #{language}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{today}
+        AND MGD_DEND >= #{today}
+        AND MGD_NSPARENUM1=(
+        SELECT
+        MIN(MGD_NSPARENUM1)
+        FROM
+        MAST_GENERIC_DETAIL
+        WHERE
+        MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_APPROVAL_LEVEL'
+        AND MGD_CLANGUAGE_CK = #{language}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{today}
+        AND MGD_DEND >= #{today}
+        <if test="piMode==0">
+            AND MGD_NSPARENUM1 > #{approvelLevel}
+        </if>
+        )
+    </select>
+    
+</mapper>

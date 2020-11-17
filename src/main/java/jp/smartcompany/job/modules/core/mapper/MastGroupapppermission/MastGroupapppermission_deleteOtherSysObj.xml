@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupapppermission.MastGroupapppermissionMapper">
+
+    <delete id="deleteOtherSysObj" parameterType="map">
+        -- 他システム上の同じオブジェクトを削除する
+        delete from
+          mast_groupapppermission
+        where
+          mgp_csystemid <![CDATA[<>]]> #{systemId}
+          and	mgp_cobjectid = #{objectId}
+    </delete>
+
+</mapper>

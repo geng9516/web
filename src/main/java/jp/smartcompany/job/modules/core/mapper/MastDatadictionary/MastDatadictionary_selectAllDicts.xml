@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastDatadictionary.MastDatadictionaryMapper">
+
+    <select id="selectAllDicts" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO">
+        SELECT
+            a.MD_ID
+             ,a.MD_CCUSTOMERID
+             ,a.MD_CTABLENAME
+             ,a.MD_NTABLESEQ
+             ,a.MD_CCOLUMNNAME
+             ,a.MD_CCOLUMNDESCJA
+             ,a.MD_CCOLUMNDESCEN
+             ,a.MD_CCOLUMNDESCCH
+             ,a.MD_CCOLUMNDESC01
+             ,a.MD_CCOLUMNDESC02
+             ,a.MD_CTYPEOFCOLUMN
+             ,a.MD_CEXCEPTEDDATATYPE
+             ,a.MD_NSEQ
+             ,a.MD_CLEVELID
+             ,a.MD_CMASTERTBLNAME
+             ,a.MD_CAVLFORAXESINCR
+             ,a.MD_CAVLFORCTNINCR
+             ,a.MD_CAVLFORCONDITIONINCR
+             ,a.MD_CAVLGROUPS
+             ,a.MD_CAVLFORCKSTART
+             ,a.MD_CFULLTEXTFLG
+             ,a.MD_CRESULTAPPID
+             ,a.MD_CCALCULATECOLUMN
+             ,a.MD_CMASTTBLCOLUMN
+             ,a.MD_CMATCHESWITH
+             ,a.VERSIONNO
+             ,NVL(b.DATA_LENGTH,0) as DATA_LENGTH
+             ,NVL(b.DATA_PRECISION,0) as DATA_PRECISION
+             ,NVL(b.DATA_SCALE,0) as DATA_SCALE
+             ,NVL(b.CHAR_LENGTH,0) as CHAR_LENGTH
+             ,NVL(b.NULLABLE,'Y') as NULLABLE
+        FROM
+            MAST_DATADICTIONARY a
+           ,USER_TAB_COLUMNS b
+        WHERE
+            MD_CTABLENAME = TABLE_NAME(+)
+          AND MD_CCOLUMNNAME = COLUMN_NAME(+)
+        /* 実テーブルにカラムがないと転けるので暫定対応 konno
+             MAST_DATADICTIONARY a LEFT OUTER JOIN USER_TAB_COLUMNS b ON
+                  a.MD_CTABLENAME = b.TABLE_NAME
+              AND a.MD_CCOLUMNNAME = b.COLUMN_NAME
+        */
+        /*
+             MAST_DATADICTIONARY
+            ,USER_TAB_COLUMNS
+        WHERE
+             MD_CTABLENAME = TABLE_NAME
+         AND MD_CCOLUMNNAME = COLUMN_NAME
+        */
+    </select>
+
+</mapper>

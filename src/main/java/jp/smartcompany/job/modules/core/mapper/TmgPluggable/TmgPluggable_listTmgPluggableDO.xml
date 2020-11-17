@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPluggable.TmgPluggableMapper">
+
+    <select id="listTmgPluggableDO" resultType="jp.smartcompany.job.modules.core.pojo.entity.TmgPluggableDO">
+        select
+            tp.tpl_ccustomerid,
+            tp.tpl_ccompanyid,
+            tp.tpl_cworktypeid,
+            tp.tpl_cphase,
+            tp.tpl_nseq,
+            tp.tpl_dstartdate,
+            tp.tpl_denddate,
+            tp.tpl_cmodifieruserid,
+            tp.tpl_dmodifieddate,
+            tp.tpl_cmodifierprogramid,
+            tp.tpl_csqltype,
+            tp.tpl_csql,
+            tp.tpl_cuseflg,
+            tp.tpl_filepath,
+            tp.tpl_csparechar01,
+            tp.tpl_csparechar02,
+            tp.tpl_csparechar03,
+            tp.tpl_csparechar04,
+            tp.tpl_csparechar05,
+            tp.tpl_csparechar06,
+            tp.tpl_csparechar07,
+            tp.tpl_csparechar08,
+            tp.tpl_csparechar09,
+            tp.tpl_csparechar10,
+            tp.tpl_nsparenum01,
+            tp.tpl_nsparenum02,
+            tp.tpl_nsparenum03,
+            tp.tpl_nsparenum04,
+            tp.tpl_nsparenum05,
+            tp.tpl_nsparenum06,
+            tp.tpl_nsparenum07,
+            tp.tpl_nsparenum08,
+            tp.tpl_nsparenum09,
+            tp.tpl_nsparenum10,
+            tp.tpl_dsparedate01,
+            tp.tpl_dsparedate02,
+            tp.tpl_dsparedate03,
+            tp.tpl_dsparedate04,
+            tp.tpl_dsparedate05,
+            tp.tpl_dsparedate06,
+            tp.tpl_dsparedate07,
+            tp.tpl_dsparedate08,
+            tp.tpl_dsparedate09,
+            tp.tpl_dsparedate10
+        from
+            tmg_pluggable tp
+        where
+            tp.tpl_ccustomerid = #{customerId}
+          and tp.tpl_ccompanyid  = #{companyId}
+          and tp.tpl_cworktypeid = #{workType}
+          and tp.tpl_cuseflg     = 'TMG_ONOFF|1'
+          and tp.tpl_cphase      = #{cphase}
+          and tp.tpl_dstartdate   <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+          and tp.tpl_denddate    >= #{yyyymmdd,jdbcType=DATE}
+        order by
+            tp.tpl_nseq
+    </select>
+
+</mapper>

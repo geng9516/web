@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfo.TmgMonthlyInfoMapper">
+
+    <update id="buildSQLForUpdateTmgMonthly">
+        UPDATE
+            TMG_MONTHLY
+        SET
+            TMO_CMODIFIERUSERID    = #{loginUserCode},
+            TMO_DMODIFIEDDATE      = SYSDATE,
+            TMO_CMODIFIERPROGRAMID = #{modifierProgramId},
+            TMO_CSTATUSFLG         = 'TMG_DATASTATUS|5'
+        WHERE
+            TMO_CCUSTOMERID        = #{custId}
+        AND TMO_CCOMPANYID         = #{compId}
+        AND TMO_CEMPLOYEEID        = #{empId}
+        AND TMO_DYYYYMM            = #{yyyyMm}
+        AND 0 = (
+                     SELECT
+                         COUNT(*)
+                     FROM
+                         TMG_DAILY
+                     WHERE
+                         TDA_CCUSTOMERID = TMO_CCUSTOMERID
+                     AND TDA_CCOMPANYID  = TMO_CCOMPANYID
+                     AND TDA_CEMPLOYEEID = TMO_CEMPLOYEEID
+                     AND TDA_DYYYYMM     = TMO_DYYYYMM
+                     AND TDA_CSTATUSFLG  NOT IN ('TMG_DATASTATUS|5', 'TMG_DATASTATUS|9')
+                )
+    </update>
+
+</mapper>

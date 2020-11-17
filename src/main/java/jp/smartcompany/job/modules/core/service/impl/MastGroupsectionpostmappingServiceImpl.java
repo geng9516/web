@@ -5,7 +5,7 @@ import jp.smartcompany.admin.component.dto.SectionPostRowDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupsectionpostmappingDO;
-import jp.smartcompany.job.modules.core.mapper.MastGroupsectionpostmappingMapper;
+import jp.smartcompany.job.modules.core.mapper.MastGroupsectionpostmapping.MastGroupsectionpostmappingMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupsectionpostmappingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
@@ -158,10 +158,5 @@ public class MastGroupsectionpostmappingServiceImpl extends ServiceImpl<MastGrou
         baseMapper.deleteSectionPostType(customerId,systemId,groupId, typeId, sStartDate);
     }
 
-    @Override
-    public List<MastGroupsectionpostmappingDO> selectMastGroupSectionPostMapping(Date startDate, String custId, String systemId,String groupId) {
-        String sStartDate = SysUtil.transDateToString(startDate);
-        return baseMapper.selectMastGroupSectionPostMapping(sStartDate, custId, systemId,groupId);
-    }
 
 }

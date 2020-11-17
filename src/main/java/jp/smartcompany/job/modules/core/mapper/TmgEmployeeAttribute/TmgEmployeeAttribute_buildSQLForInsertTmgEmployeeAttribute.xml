@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgEmployeeAttribute.TmgEmployeeAttributeMapper">
+
+    <insert id="buildSQLForInsertTmgEmployeeAttribute">
+        INSERT INTO TMG_EMPLOYEE_ATTRIBUTE
+        (
+        TES_CCUSTOMERID,
+        TES_CCOMPANYID,
+        TES_CEMPLOYEEID,
+        TES_DSTARTDATE,
+        TES_DENDDATE,
+        TES_CMODIFIERUSERID,
+        TES_DMODIFIEDDATE,
+        TES_CMODIFIERPROGRAMID,
+        TES_CTYPE,
+        TES_CATTRIBUTE,
+        CSPARECHAR1,
+        CCODE01
+        ) VALUES (
+        #{custID},
+        #{compCode},
+        #{targetUser},
+        TRUNC(TO_DATE(#{cycleDay1}) ),
+        LAST_DAY(TO_DATE(#{cycleDay2}) ),
+        #{userCode},
+        sysdate,
+        #{modifierProgramId},
+        #{status},
+        <choose>
+            <!-- 勤務状況確認の場合-->
+            <when test='status == "TMG_ITEMS|WorkStatus" '>
+                <choose>
+                    <when test='action == "ACT_CONF_WORK_ON"'>
+                        'TMG_ONOFF|1',
+                    </when>
+                    <otherwise>
+                        'TMG_ONOFF|0',
+                    </otherwise>
+                </choose>
+                null,
+                null
+            </when>
+            <!-- 健康状態確認の場合-->
+            <when test='status == "TMG_ITEMS|HealthStatus" '>
+                <choose>
+                    <when test='action == "ACT_CONF_HEALTH_ON"'>
+                        'TMG_ONOFF|1',
+                    </when>
+                    <otherwise>
+                        'TMG_ONOFF|0',
+                    </otherwise>
+                </choose>
+                null,
+                <choose>
+                    <when test='action == "ACT_CONF_HEALTH_ON"'>
+                        #{selHealthStatus}
+                    </when>
+                    <otherwise>
+                        <!-- 解除する場合はOFFにセット-->
+                        'TMG_ONOFF|0'
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                null,
+                null,
+                null
+            </otherwise>
+        </choose>
+        )
+    </insert>
+
+</mapper>

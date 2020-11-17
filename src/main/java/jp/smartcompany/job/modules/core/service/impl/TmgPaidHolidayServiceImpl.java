@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayDO;
-import jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgPaidHoliday.TmgPaidHolidayMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPaidHolidayService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;

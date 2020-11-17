@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHoliday.TmgPaidHolidayMapper">
+
+    <select id="selectNenjikyukazannissu"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.RestYearPaidHolidayVo" >
+        SELECT
+        NREST_DAYS,
+        NREST_HOURS,
+        CTYPE,
+        CDESC,
+        TO_CHAR(DBEGIN, 'YYYY/MM/DD') as DBEGIN,
+        TO_CHAR(DEND, 'YYYY/MM/DD') as DEND
+        FROM (
+        TMG_SELECT_HOLIDAY_REST(
+        #{params.custId},
+        #{params.compId},
+        <choose>
+            <when test="detailFlg==1 ">
+                (
+                SELECT
+                DISTINCT TNTF_CEMPLOYEEID
+                FROM
+                TMG_NOTIFICATION
+                WHERE
+                TNTF_CCUSTOMERID=#{params.custId}
+                AND TNTF_CCOMPANYID=#{params.compId}
+                AND TNTF_CNTFNO=#{params.ntfNo}
+                ),
+            </when>
+            <otherwise>
+                #{params.targetUser},
+            </otherwise>
+        </choose>
+        TRUNC(#{params.todayD,jdbcType=DATE})
+        )
+        )
+        WHERE
+        TRUNC(DBEGIN) <![CDATA[<=]]> TRUNC(#{params.todayD,jdbcType=DATE})
+    </select>
+
+</mapper>

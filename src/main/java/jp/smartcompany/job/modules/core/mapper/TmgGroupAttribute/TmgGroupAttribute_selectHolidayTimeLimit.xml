@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgGroupAttribute.TmgGroupAttributeMapper">
+
+    <select id="selectHolidayTimeLimit" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.HolidayTimeLimitDto">
+        SELECT
+            HT_MONTLY_01,
+            HT_MONTLY_02,
+            HT_MONTLY_03,
+            HT_MONTLY_04,
+            HT_MONTLY_05
+        FROM
+            TABLE ( TMG_F_GET_HOLIDAYTIMELIMT ( #{custId}, #{compId}, ${sectionId}, ${groupId}, TRUNC( SYSDATE ) ) )
+    </select>
+
+</mapper>

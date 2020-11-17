@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper">
+
+   <select id="selectAppTreePermission" resultType="jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity">
+       -- アプリケーション起動権限判定 情報取得SQLファイル (オブジェクト一覧)
+       SELECT
+           MTR_ID,
+           MTR_COBJECTID,
+           MTR_CSITEID,
+           MTR_CAPPID,
+           MTR_CSUBAPPID,
+           MTR_CSCREENID,
+           MTR_CBUTTONID,
+           MTR_CTYPE,
+           MTR_CTEMPLATEID,
+           MTR_CURL,
+           MTR_CIMAGEURL,
+           MTR_NSEQ,
+           MTR_CVERSION,
+           MTR_CSYSTEMID,
+           MTR_CDEFAULTTARGETUSER,
+           MTR_CCRITERIALDATETYPE,
+           MTR_CDATAPERMISSIONTYPE,
+           MTR_CAPPAUTOLOAD,
+           MTR_CONLINEHELPURL,
+           MTR_CONLINEHELPATTR,
+           MTR_CDOMAINID,
+           '0' AS MGP_CPERMISSION,
+           '0' AS MGP_CREJECT,
+           MTR_COBJNAMEJA,
+           MTR_COBJNAMEEN,
+           MTR_COBJNAMECH,
+           MTR_COBJNAME01,
+           MTR_COBJNAME02,
+           MTR_CSITECAPTIONJA,
+           MTR_CSITECAPTIONEN,
+           MTR_CSITECAPTIONCH,
+           MTR_CSITECAPTION01,
+           MTR_CSITECAPTION02,
+           MTR_CIFRAMEFLAG
+       FROM
+           MAST_APPTREE
+       ORDER BY
+           MTR_NSEQ
+   </select>
+
+</mapper>

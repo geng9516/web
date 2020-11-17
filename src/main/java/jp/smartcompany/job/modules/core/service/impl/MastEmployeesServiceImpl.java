@@ -12,7 +12,7 @@ import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
-import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
+import jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;

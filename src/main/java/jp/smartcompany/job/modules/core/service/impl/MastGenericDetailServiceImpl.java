@@ -4,11 +4,11 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
-import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
-import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
+import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo;
@@ -17,26 +17,19 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
-import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
-import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
-import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,109 +44,6 @@ import java.util.Map;
  */
 @Repository
 public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailMapper, MastGenericDetailDO> implements IMastGenericDetailService {
-
-    /**
-     * 常勤年休ルールを取得
-     *
-     * @param customerId    顧客コード
-     * @param companyId     法人コード
-     * @param employeeId    職員番号
-     * @param yyyymmdd      基準日
-     * @param beginDateWork 　開始日
-     * @return int 年休ルール
-     */
-    @Override
-    public int selectNenkyuRuleH(String customerId, String companyId, String employeeId
-            , Date yyyymmdd, Date beginDateWork) {
-        Map<String, Object> map = MapUtil.newHashMap(3);
-        map.put("companyId", companyId);
-        map.put("yyyymmdd", yyyymmdd);
-        map.put("employeeId", employeeId);
-
-        // 年休ルールを取得
-        Integer nenkyu = baseMapper.selectNenkyuRuleH(map);
-
-        // データが無い場合、名称マスタを参照する様に設定
-        if (nenkyu == null) {
-            nenkyu = baseMapper.selectNenkyuRuleH2(map);
-
-        }
-        return nenkyu;
-    }
-
-    /**
-     * 汎用マスタから予備日付を取得
-     *
-     * @param customerId 　顧客コード
-     * @param companyId  　法人コード
-     * @param wsGroupId  　グループコード
-     * @param wsDetailId 　名称コード
-     * @param language   　言語
-     * @param wdKijun    　基準日
-     * @return MastGenericDetailDO 名称マスタD0
-     */
-    @Override
-    public MastGenericDetailDO selectMastGenericDetailDO(String customerId, String companyId, String wsGroupId, String wsDetailId, String language, Date wdKijun) {
-
-        Map<String, Object> map = MapUtil.newHashMap(6);
-        map.put("customerId", customerId);
-        map.put("companyId", companyId);
-        map.put("wsGroupId", wsGroupId);
-        map.put("wsDetailId", wsDetailId);
-        map.put("language", language);
-        map.put("wdKijun", wdKijun);
-
-        return baseMapper.selectMastGenericDetailDO(map);
-    }
-
-
-    /**
-     * ワークタイプのデフォルトパターンを検索
-     *
-     * @param customerId 顧客コード
-     * @param companyId  法人コード
-     * @param yyyymmdd   基準日
-     * @param workerType 　ワークタイプ
-     * @return String パターン
-     */
-    @Override
-    public String selectWorkPattern(String customerId, String companyId, Date yyyymmdd, String workerType) {
-        Map<String, Object> map = MapUtil.newHashMap(3);
-        map.put("customerId", customerId);
-        map.put("companyId", companyId);
-        map.put("yyyymmdd", yyyymmdd);
-        map.put("workerType", workerType);
-        // パターン
-        String workPattern = baseMapper.selectWorkPattern(map);
-
-
-        return workPattern;
-    }
-
-
-    /**
-     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
-     *
-     * @param customerId 顧客コード
-     * @param companyId  法人コード
-     * @param yyyymmdd   基準日
-     * @param language   　言語
-     * @return String パターン
-     */
-    @Override
-    public List<TmgDispItemsDto> selectDispDailyItems(String customerId, String companyId, Date yyyymmdd, String language) {
-        Map<String, Object> map = MapUtil.newHashMap(3);
-        map.put("customerId", customerId);
-        map.put("companyId", companyId);
-        map.put("yyyymmdd", yyyymmdd);
-        map.put("language", language);
-        //
-        List<TmgDispItemsDto> tmgDispDailyItemsDtoList = baseMapper.selectDispDailyItems(map);
-
-
-        return tmgDispDailyItemsDtoList;
-    }
-
 
     /**
      * 申請一覧画面用 申請区分マスタ取得SQL
@@ -187,9 +77,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
 
     @Override
     public List<Map<String, Object>> selectGenericDetail(String sql) {
-
-        List<Map<String, Object>> mgdList = baseMapper.selectGenericDetail(sql);
-        return mgdList;
+        return baseMapper.selectGenericDetail(sql);
     }
 
 
@@ -369,41 +257,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     }
 
     /**
-     * 名称マスタから属性コードを取得(エフォート対象者判定用)
-     *
-     * @param custID       顧客コード
-     * @param compCode     法人コード
-     * @param targetUser   対象者
-     * @param language     言語
-     * @param siteId       サイトID
-     * @param day          対象日
-     * @param month        対象月
-     * @param type         　種別
-     * @param onOff        　onOff
-     * @param attribute    　使用可否
-     * @param categoryCode 　カテゴリーID
-     * @return List<MgdAttributeVO>
-     */
-    @Override
-    public List<MgdAttributeVO> buildSQLForSelectgetMgdAttributeEffort(String custID, String compCode, String targetUser, String language,
-                                                                       String siteId, String day, String month, String type, String onOff,
-                                                                       String attribute, String categoryCode) {
-        Map<String, Object> map = MapUtil.newHashMap(11);
-        map.put("custID", custID);
-        map.put("compCode", compCode);
-        map.put("targetUser", targetUser);
-        map.put("language", language);
-        map.put("siteId", siteId);
-        map.put("day", day);
-        map.put("month", month);
-        map.put("type", type);
-        map.put("onOff", onOff);
-        map.put("attribute", attribute);
-        map.put("categoryCode", categoryCode);
-        return baseMapper.buildSQLForSelectgetMgdAttributeEffort(map);
-    }
-
-    /**
      * 予備項目4を取得「0:出勤日,それ以外は出勤日ではない」
      *
      * @param custCode 顧客コード
@@ -440,28 +293,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         map.put("language", language);
 
         return baseMapper.buildSQLForSelectGenericDetail(map);
-    }
-
-    /**
-     * 各コメント欄の最大値を名称マスタ詳細より取得
-     *
-     * @param custID     顧客コード
-     * @param compID     法人コード
-     * @param lang       言語
-     * @param targetDate 対象日
-     * @param masterCode マスタコード
-     * @return String
-     */
-    @Override
-    public String buildSQLForSelectTmgVMgdMaxLengthCheck(String custID, String compID, String lang, String targetDate, String masterCode) {
-        Map<String, Object> map = MapUtil.newHashMap(5);
-        map.put("custID", custID);
-        map.put("compID", compID);
-        map.put("lang", lang);
-        map.put("targetDate", targetDate);
-        map.put("masterCode", masterCode);
-
-        return baseMapper.buildSQLForSelectTmgVMgdMaxLengthCheck(map);
     }
 
     /**
@@ -510,32 +341,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     }
 
     /**
-     * 画面項目名称の設定マスタ
-     *
-     * @param custId
-     * @param compId
-     * @param language
-     * @return String
-     */
-    @Override
-    public MgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language) {
-        Map<String, Object> map = MapUtil.newHashMap(5);
-        map.put("custId", custId);
-        map.put("compId", compId);
-        map.put("language", language);
-
-        return baseMapper.selectMasterNtfProp(map);
-    }
-
-    /**
-     * 現在日付を取得するクエリ文を生成します
-     */
-    @Override
-    public String selectSysdate() {
-        return baseMapper.selectSysdate();
-    }
-
-    /**
      * 年度を取得するSQLを返す
      */
     @Override
@@ -550,26 +355,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public DateDto selectDate(String custId, String compId, int year, String baseDate) {
         return baseMapper.selectDate(custId, compId, year, baseDate);
     }
-
-    /**
-     * 日付関連情報を取得
-     *
-     * @return TodayThisMonthVO
-     */
-    @Override
-    public TodayThisMonthVO buildSQLForSelectDate() {
-        return baseMapper.buildSQLForSelectDate();
-    }
-
-
-    /**
-     * 36協定における月の超勤限度時間表示用名称取得
-     */
-    @Override
-    public String selectLimit(String custId, String compId, String baseDate, String sLang, String masterCode) {
-        return baseMapper.selectLimit(custId, compId, baseDate, sLang, masterCode);
-    }
-
 
     /**
      * 超過勤務命令情報表示項目ヘッダー・select句・表示順をTMG_DISPOVERTIMEINSTマスタより取得
@@ -718,50 +503,11 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     }
 
     /**
-     * HR連携除外条件マスタ情報を取得する
-     *
-     * @param custID   顧客コード
-     * @param compCode 　法人コード
-     * @param language 　言語
-     * @param groupId  グループID
-     * @return 　List<SimulationMasterDto>
-     */
-    @Override
-    public List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId){
-        return baseMapper.buildSQLForSelectSimulationMaster( custID, compCode, language, groupId);
-    }
-
-
-
-    /**
      * 個人属性一覧_表示処理での一括編集用項目の制御情報を取得するクエリを返します。
      */
     @Override
     public List<EmpAttsetDispVo> selectEmpAttsetDisp(String custId, String compId, String baseDate, String lang){
         return baseMapper.selectEmpAttsetDisp( custId, compId, baseDate, lang);
-    }
-
-
-    /**
-     * マスタ検索用SQL取得メソッド
-     */
-    @Override
-    public List<MastGenericDetailDO> selectWorkPlace(String custId,String compId,String lang,String groupId,
-                                                                        String baseDate){
-        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
-        qw.eq("MGD_CCUSTOMERID", custId)
-                .eq("MGD_CCOMPANYID_CK_FK", compId)
-                .eq("MGD_CLANGUAGE_CK", lang)
-                .eq("MGD_CGENERICGROUPID",  groupId )
-                .le("MGD_DSTART_CK", baseDate)
-                .ge("MGD_DEND", baseDate)
-                .orderByAsc("MGD_CGENERICDETAILID_CK")
-                .select("MGD_CMASTERCODE","MGD_CGENERICDETAILDESC");
-        List<MastGenericDetailDO> mastGenericDetailDOList = list(qw);
-        if (mastGenericDetailDOList != null) {
-            return mastGenericDetailDOList;
-        }
-        return null;
     }
 
     /**
@@ -797,62 +543,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate,String startDate,String endDate,String beginDate){
         return baseMapper.insertMgdKinmuStart( custId,  compId,  targetUser, userCode,  baseDate,startDate,endDate,beginDate);
-    }
-
-    /**
-     * HR連携除外条件マスタ情報の件数を取得するSQL文を返却します。
-     *
-     * @param custID   顧客コード
-     * @param compCode 　法人コード
-     * @param language 　言語
-     * @param groupId groupId
-     * @return
-     */
-    @Override
-    public List<Integer> buildSQLForSelectSumSimulationMaster(String custID, String compCode, String language, String groupId) {
-        return baseMapper.buildSQLForSelectSumSimulationMaster(custID, compCode, language, groupId);
-    }
-
-    /**
-     * HR連携除外条件区分マスタ情報の件数を取得する
-     *
-     * @param custID   顧客コード
-     * @param compCode 　法人コード
-     * @param language 　言語
-     * @return
-     */
-    @Override
-    public List<ExcludecondCtlDto> buildSQLForSelectExcludecondCtl(String custID, String compCode, String language){
-        return baseMapper.buildSQLForSelectExcludecondCtl(custID, compCode, language);
-    }
-
-    /**
-     * 名称マスタ詳細情報に登録する
-     *
-     * @param psCustId          顧客コード
-     * @param psCompId          法人コード
-     * @param psLanguage        言語
-     * @param psGroupCode       グループコード
-     * @param psDetailId        明細データコード
-     * @param psMasterCode      マスタコード
-     * @param psStartDate       データ開始日
-     * @param psEndDate         データ終了日
-     * @param psUpdateUser      更新者ID
-     * @param psExuludecondType 絞込み項目区分
-     * @param psExuludecondForm 範囲(FROM)
-     * @param psExuludecondTo   範囲(TO)
-     */
-    @Override
-    public void buildSQLForInsertTmgDailyDetail(String psCustId, String psCompId,
-                                         String psLanguage, String psGroupCode, String psDetailId,
-                                         String psMasterCode, String psStartDate, String psEndDate,
-                                         String psUpdateUser, String psExuludecondType, String psExuludecondForm,
-                                         String psExuludecondTo){
-         baseMapper.buildSQLForInsertTmgDailyDetail(psCustId, psCompId,
-                psLanguage, psGroupCode, psDetailId,
-                psMasterCode, psStartDate, psEndDate,
-                psUpdateUser, psExuludecondType, psExuludecondForm,
-                psExuludecondTo);
     }
 
     /**

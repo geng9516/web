@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfo.TmgMonthlyInfoMapper">
+
+    <select id="selectYearlyInfo" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.YearlyInfoVo">
+        SELECT
+        ORVERTIME_RESULT_INFO.SEQ AS SEQ,
+        ORVERTIME_RESULT_INFO.EMPID AS TMI_CEMPLOYEEID,
+        REPLACE ( TMG_F_CONV_MIN2HHMI ( SUM( TMG_F_CONV_HHMI2MIN ( REPLACE ( TO_CHAR( ORVERTIME_RESULT_INFO.TOTAL_TIMES, 'FM9990.00' ), '.', ':' ) ) ) ), ':', '.' ) AS TMI_CINFO01,
+        SUM( ORVERTIME_RESULT_INFO.ORVERTIME_COUNT_MONTHLY ) AS TMI_CINFO02,
+        (
+        SELECT
+        COUNT( * )
+        FROM
+        TMG_DAILY
+        WHERE
+        TDA_CCUSTOMERID = ORVERTIME_RESULT_INFO.CUST
+        AND TDA_CCOMPANYID = ORVERTIME_RESULT_INFO.COMP
+        AND TDA_DYYYYMM = trunc( to_date( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' )
+        AND TDA_CHOLFLG IS NOT NULL
+        AND TDA_CHOLFLG <![CDATA[<>]]> 'TMG_HOLFLG|0'
+        AND ( TDA_CWORKINGID_R = 'TMG_WORK|000' OR TDA_CWORKINGID_R = 'TMG_WORK|510' )
+        AND TDA_CEMPLOYEEID = ORVERTIME_RESULT_INFO.EMPID
+        ) AS TMI_CINFO03,
+
+        REPLACE (
+        TMG_F_CONV_MIN2HHMI (
+        FLOOR(
+        SUM( TMG_F_CONV_HHMI2MIN ( REPLACE ( TO_CHAR( ORVERTIME_RESULT_INFO.TOTAL_TIMES, 'FM9990.00' ), '.', ':' ) ) ) / (
+        TRUNC(
+        months_between(
+        ADD_MONTHS( TRUNC( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1,
+        TMG_F_GET_DATEOF36KYOTEI (#{custId}, #{compId}, TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 1 )
+        )
+        ) + 1
+        )
+        )
+        ),
+        ':',
+        '.'
+        ) AS TMI_CINFO04
+
+        FROM
+        (
+        SELECT
+        E.SEQ AS SEQ,
+        E.EMPID AS EMPID,
+        E.CUST AS CUST,
+        E.COMP AS COMP,
+        E.EMPNAME AS EMPNAME,
+        <choose>
+            <when test='sContentId == "TMG_CONTENTID|OTR" '>
+                NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0), '0.00')
+            </when>
+            <when test='sContentId == "TMG_CONTENTID|OTRA" '>
+                NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 1), '0.00')
+            </when>
+            <otherwise>
+                NVL(TMG_F_GET_SUM_OVERTIME_INST(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST), '0.00')
+            </otherwise>
+        </choose> AS TOTAL_TIMES,
+        DECODE(
+        DECODE(
+        TO_NUMBER( <choose>
+        <when test='sContentId == "TMG_CONTENTID|OTR" '>
+            NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0), '0.00')
+        </when>
+        <when test='sContentId == "TMG_CONTENTID|OTRA" '>
+            NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 1), '0.00')
+        </when>
+        <otherwise>
+            NVL(TMG_F_GET_SUM_OVERTIME_INST(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST), '0.00')
+        </otherwise>
+    </choose>
+        ),
+        (
+        SELECT
+        MGD_NSPARENUM1
+        FROM
+        MAST_GENERIC_DETAIL
+        WHERE
+        MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
+        AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+        AND MGD_DEND >= #{toDay}
+        AND MGD_CLANGUAGE_CK = #{sLang}
+        ),
+        0,
+        LEAST(
+        TO_NUMBER( NVL( TMG_F_GET_SUM_OVERTIME ( E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0 ), '0.00' ) ),
+        (
+        SELECT
+        MGD_NSPARENUM1
+        FROM
+        MAST_GENERIC_DETAIL
+        WHERE
+        MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
+        AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+        AND MGD_DEND >= #{toDay}
+        AND MGD_CLANGUAGE_CK = #{sLang}
+        )
+        )
+        ),
+        (
+        SELECT
+        MGD_NSPARENUM1
+        FROM
+        MAST_GENERIC_DETAIL
+        WHERE
+        MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
+        AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+        AND MGD_DEND >= #{toDay}
+        AND MGD_CLANGUAGE_CK = #{sLang}
+        ),
+        1,
+        0
+        ) AS ORVERTIME_COUNT_MONTHLY
+        FROM
+        TMG_MONTHLY_INFO,
+        ( ${sql} ) E
+        WHERE
+        TMI_CEMPLOYEEID = E.EMPID
+        AND TMI_DYYYYMM >= ADD_MONTHS( TRUNC( ADD_MONTHS( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), - 3 ), 'YYYY' ), 3 )
+        AND TMI_DYYYYMM <![CDATA[<=]]> ADD_MONTHS( TRUNC( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1
+        AND TMI_CCONTENTID = #{sContentId}
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{sBaseDate}) ), LAST_DAY( TO_DATE(#{sBaseDate} ) ), e.cust, e.comp )
+        )
+        ORVERTIME_RESULT_INFO
+        GROUP BY
+        ORVERTIME_RESULT_INFO.SEQ,
+        ORVERTIME_RESULT_INFO.EMPID,
+        ORVERTIME_RESULT_INFO.CUST,
+        ORVERTIME_RESULT_INFO.COMP
+        ORDER BY
+        ORVERTIME_RESULT_INFO.SEQ
+    </select>
+
+</mapper>

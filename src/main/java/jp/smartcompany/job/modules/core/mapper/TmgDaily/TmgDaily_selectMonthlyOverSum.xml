@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDaily.TmgDailyMapper">
+
+    <select id="selectMonthlyOverSum" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo">
+        SELECT
+            NVL( b.MONTH_ID, '0.00' ) MONTH_ID,
+            NVL( a.WEEKDAYS_OVERTIME, '0.00' ) WEEKDAYS_OVERTIME,
+            NVL( a.SUNDAYS_OVERTIME, '0.00' ) SUNDAYS_OVERTIME,
+            NVL( a.TOTAL_OVERTIME, '0.00' ) TOTAL_OVERTIME
+        FROM
+            (
+                SELECT
+                    TDA.TDA_DYYYYMM AS TDA_DYYYYMM,
+                    REPLACE ( TMG_F_CONV_MIN2HHMI ( NVL( SUM( DECODE( TDA.TDA_CWORKINGID_R, 'TMG_WORK|000', TDT.TDT_NVALUE, 0 ) ), '0.00' ) ), ':', '.' ) AS WEEKDAYS_OVERTIME,
+                    REPLACE ( TMG_F_CONV_MIN2HHMI ( NVL( SUM( DECODE( TDA.TDA_CWORKINGID_R, 'TMG_WORK|510', TDT.TDT_NVALUE, 0 ) ), '0.00' ) ), ':', '.' ) AS SUNDAYS_OVERTIME,
+                    REPLACE ( TMG_F_CONV_MIN2HHMI ( NVL( SUM( TDT.TDT_NVALUE ), '0.00' ) ), ':', '.' ) AS TOTAL_OVERTIME
+                FROM
+                    TMG_DAILY_TOTALIZATION TDT,
+                    TMG_DAILY TDA
+                WHERE
+                    TDT.TDT_CEMPLOYEEID = #{userID}
+                  AND TDT.TDT_CTOTALIZATIONID = 'TMG_TOTALITEM|overtime_total'
+                  AND TDT.TDT_CCUSTOMERID = #{custId}
+                  AND TDT.TDT_CCOMPANYID = #{compId}
+                  AND TDT.TDT_DYYYYMMDD = TDA.TDA_DYYYYMMDD
+                  AND TDT.TDT_CCUSTOMERID = TDA.TDA_CCUSTOMERID
+                  AND TDT.TDT_CCOMPANYID = TDA.TDA_CCOMPANYID
+                  AND TDT.TDT_CEMPLOYEEID = TDA.TDA_CEMPLOYEEID
+                  AND TDA.TDA_DYYYYMM >= ADD_MONTHS( to_date( #{sBaseDBDate}, 'yyyy/mm/dd' ),#{sMonthsNum,jdbcType=BIGINT})
+                  AND TDA.TDA_DYYYYMM <![CDATA[<=]]> to_date( #{sBaseDBDate}, 'yyyy/mm/dd' )
+                  AND ( TDA.TDA_CWORKINGID_R = 'TMG_WORK|000' OR TDA.TDA_CWORKINGID_R = 'TMG_WORK|510' )
+                GROUP BY
+                    TDA.TDA_DYYYYMM
+            ) a
+                RIGHT JOIN (
+                SELECT
+                    TO_CHAR( ADD_MONTHS( ( ADD_MONTHS( to_date( #{sBaseDBDate}, 'yyyy/mm/dd' ),#{sMonthsNum,jdbcType=BIGINT} ) ), ROWNUM - 1 ), 'YYYY/MM/DD' ) MONTH_ID_YYYYMM,
+                    TO_CHAR( ADD_MONTHS( ( ADD_MONTHS( to_date( #{sBaseDBDate}, 'yyyy/mm/dd' ),#{sMonthsNum,jdbcType=BIGINT} ) ), ROWNUM - 1 ), 'YYYY/MM' ) MONTH_ID
+                FROM
+                    DUAL
+                        CONNECT BY ROWNUM <![CDATA[<=]]> MONTHS_BETWEEN( to_date(#{sBaseDBDate}, 'yyyy/mm/dd' ), ( ADD_MONTHS( to_date(#{sBaseDBDate}, 'yyyy/mm/dd' ),#{sMonthsNum,jdbcType=BIGINT} ) ) ) + 1
+            ) b ON b.MONTH_ID_YYYYMM = a.TDA_DYYYYMM
+        ORDER BY
+            b.MONTH_ID
+    </select>
+
+</mapper>

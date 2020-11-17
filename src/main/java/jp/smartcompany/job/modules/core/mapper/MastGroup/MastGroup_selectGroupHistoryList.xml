@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroup.MastGroupMapper">
+
+    <select id="selectGroupHistoryList" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO">
+        SELECT
+        MG_ID,
+        MG_CCUSTOMERID,
+        MG_CSYSTEMID_CK_FK,
+        MG_CGROUPID_PK,
+        MG_CLANGUAGE,
+        MG_DSTARTDATE,
+        MG_DENDDATE,
+        MG_CGROUPDESCRIPTIONJA,
+        MG_CGROUPDESCRIPTIONEN,
+        MG_CGROUPDESCRIPTIONCH,
+        MG_CGROUPDESCRIPTION01,
+        MG_CGROUPDESCRIPTION02,
+        MG_CCOMPANYID,
+        MG_NPARTINENTNUMBER,
+        MG_NWEIGHTAGE,
+        MG_CTEXT,
+        PSMASTER.FUNC_GET_GROUP_DESC(
+        MG_CSYSTEMID_CK_FK,
+        MG_CGROUPID_PK,
+        MG_DSTARTDATE,
+        '${language}'
+        ) AS MG_CGROUPDESCRIPTION,
+        PSMASTER.FUNC_GET_COMP_NAME(
+        MG_CCUSTOMERID,
+        MG_CCOMPANYID,
+        MG_DSTARTDATE,
+        '${language}'
+        ) AS COMPANY_NAME
+        FROM
+        MAST_GROUP
+        WHERE
+        MG_CCUSTOMERID = #{customerCode}
+        AND MG_CSYSTEMID_CK_FK  = #{systemId}
+        AND MG_CLANGUAGE = 'ja'
+        AND MG_CGROUPID_PK = #{groupId}
+        <if test="companyList!=null and companyList.size>0">
+            AND MG_CCOMPANYID IN
+            <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
+                #{companyId}
+            </foreach>
+        </if>
+        <if test="searchDate!=null">
+            AND MG_DSTARTDATE	<![CDATA[<=]]> #{searchDate}
+            AND MG_DENDDATE >= #{searchDate}
+        </if>
+        ORDER BY MG_DSTARTDATE DESC
+    </select>
+
+</mapper>
