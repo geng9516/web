@@ -459,6 +459,7 @@
                 this.updateValue = {}
               } catch (error) {
               } finally {
+                history.go(0)
                 this.loading = false
               }
             }
@@ -569,11 +570,13 @@
               let num = 1
               // 需要将子集全删除
               this.tableData.some((e, i) => {
-                const len = e.objectId.split('_').length
-                if (i > index && len > units.length) {
+                const _e = e.objectId.split('_')
+                const first = _e[0]
+                const len = e.length
+                if (i > index && len > units.length && units[0] === first) {
                   num += 1
                 }
-                if (i > index && len === units.length) return true
+                if (i > index && len === units.length && units[0] === first) return true
               })
               this.tableData.splice(index, num)
               this.hasChange = true
