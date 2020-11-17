@@ -35,7 +35,6 @@ public class TmgLiquidationPeriodBean {
 
     private final ITmgEmployeesService iTmgEmployeesService;
     private final ITmgliquidationPeriodService iTmgliquidationPeriodService;
-    private final ITmgliquidationDetailService iTmgliquidationDetailService;
     private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
