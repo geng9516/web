@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.mapper.TmgLiquidationDetailMapper;
+import jp.smartcompany.job.modules.core.mapper.TmgLiquidation.TmgLiquidationDetailMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDetailDO;
 import jp.smartcompany.job.modules.core.service.ITmgliquidationDetailService;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;

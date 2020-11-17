@@ -11,6 +11,8 @@ public class LiquidationPeriodListDto {
 
     private String employeeid;
     private String employeename;
+    private String deptname;
+    private String sectionid;
     private String worktypeid;
     private String worktypename;
     private String startdate;
@@ -19,5 +21,6 @@ public class LiquidationPeriodListDto {
     private String modifieddate;
     private String newflag;
     private String status;
+    private String statusname;
 
 }
