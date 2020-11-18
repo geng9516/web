@@ -142,7 +142,7 @@ const cubeSelect = {
       return this.cancelTxt || 'cancel'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Confirm'
+      return this.confirmTxt || 'Ok'
     }
   },
   created() {
@@ -302,7 +302,7 @@ const CascadePicker = {
       return this.cancelTxt || 'cancel'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Confirm'
+      return this.confirmTxt || 'Ok'
     },
     valueKey() {
       return this.alias.value || DEFAULT_KEYS.value
@@ -562,7 +562,7 @@ const DPicker = {
     return this.cancelTxt || 'cancel'
   },
   _confirmTxt() {
-    return this.confirmTxt || 'Confirm'
+    return this.confirmTxt || 'Ok'
   },
   formatConfig() {
     const formatConfig = Object.assign({}, DEFAULT_FORMAT)

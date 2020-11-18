@@ -6,19 +6,19 @@
 </head>
 
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+   <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+   </script>
+   <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+   </script>
    <div th:replace="layout/loadingBar::loadingBar"></div>
    <main class="content restApply-warp tc">
       <div class="content_body" style="padding-top: 15px">
          <div v-if="!rotate">
             <div class="vacation-type-warp">
                <div class="label">申請区分</div>
-               <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                  class="mb10 no-border-radius" ref="select">
-                  <i-option value="全て" v-if="this.rotate">全て</i-option>
-                  <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
-                     <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
-                  </option-group>
-               </i-select>
+               <cube-select v-model="restApply.restTypeId" title="申請区分" :options="restTypeListForApply" placeholder="選んでください。"
+                @change="handleRestType">
+               </cube-select>
                <section v-show="selectedRestInfo.biko">
                   <Divider size="small" orientation="left">注意事項</Divider>
                   <Alert class="primary-info mb20">{{ selectedRestInfo.biko | turnLine }}
@@ -71,27 +71,56 @@
                      </radio-group>
                   </Row>
                   <Row type="flex" justify="start">
-                     <date-picker type="date" class="datepicker-single" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList = $event" placeholder="日付" ref="datepicker"></date-picker>
-                     <span v-if="timerangeType === 2">
-                        <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付" ref="datepicker2"></date-picker>
+                     <!-- 仿date-picker -->
+                     <span class="input-like-span"  @click="showDatePicker('dateList')" v-if="timerangeType === 1">
+                        <p style="color: rgb(194,194,194);" v-if="!restApply.dateList">日付</p>
+                        <p v-else>{{ restApply.dateList }}</p>
+                        <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
                      </span>
+                     <!-- 仿date-picker -->
+                     <Row v-if="timerangeType === 2" class="width100">
+                        <i-col span="11">
+                           <span class="input-like-span" @click="showDatePicker('dateListRange', 0)">
+                              <p style="color: rgb(194,194,194);" v-if="!restApply.dateListRange[0]">日付</p>
+                              <p v-else>{{ restApply.dateListRange[0] }}</p>
+                              <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                           </span>
+                        </i-col>
+                        <i-col span="2" style="line-height: 32px; text-align: center;">～</i-col>
+                        <i-col span="11">
+                           <span class="input-like-span" @click="showDatePicker('dateListRange', 1)">
+                              <p style="color: rgb(194,194,194);" v-if="!restApply.dateListRange[1]">日付</p>
+                              <p v-else>{{ restApply.dateListRange[1] }}</p>
+                              <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                           </span>
+                        </i-col>
+                     </Row>
                   </Row>
                </section>
                <!-- 有振休 -->
                <section v-show="selectedRestInfo.transfer" class="tl">
                   <p class="mb5">出勤にする休日</p>
-                  <date-picker type="date" :value="restApply.begin" class="datepicker-single mb10" placeholder="日付"
-                     :editable="false" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                  <span class="input-like-span mb10"  @click="showDatePicker('begin')" v-if="timerangeType === 1">
+                     <p style="color: rgb(194,194,194);" v-if="!restApply.begin">日付</p>
+                     <p v-else>{{ restApply.begin }}</p>
+                     <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                  </span>
                   <p class="mb5">振休日とする出勤日</p>
-                  <date-picker type="date" :value="restApply.end" class="datepicker-single mb10" placeholder="日付"
-                     :editable="false" format="yyyy/MM/dd" @on-change="restApply.end = $event"></date-picker>
+                  <span class="input-like-span mb10"  @click="showDatePicker('end')" v-if="timerangeType === 1">
+                     <p style="color: rgb(194,194,194);" v-if="!restApply.end">日付</p>
+                     <p v-else>{{ restApply.end }}</p>
+                     <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                  </span>
                </section>
 
                <!-- 有起算日-->
                <section v-show="selectedRestInfo.period" class="tl mt20">
                   <p class="mb5">起算日</p>
-                  <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5" placeholder="日付"
-                     :editable="false" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event"></date-picker>
+                  <span class="input-like-span mb5"  @click="showDatePicker('txtPeriod')" v-if="timerangeType === 1">
+                     <p style="color: rgb(194,194,194);" v-if="!restApply.txtPeriod">日付</p>
+                     <p v-else>{{ restApply.txtPeriod }}</p>
+                     <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                  </span>
                </section>
 
                <!-- 有加算日-->
@@ -173,9 +202,11 @@
                <!-- 有生年月日-->
                <section v-show="selectedRestInfo.birthday" class="tl">
                   <p class="mb5">生年月日</p>
-                  <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb15"
-                     :editable="false" placeholder="日付" format="yyyy/MM/dd"
-                     @on-change="restApply.txtBirthday = $event"></date-picker>
+                  <span class="input-like-span mb15"  @click="showDatePicker('txtBirthday')" v-if="timerangeType === 1">
+                     <p style="color: rgb(194,194,194);" v-if="!restApply.txtBirthday">日付</p>
+                     <p v-else>{{ restApply.txtBirthday }}</p>
+                     <span class="ivu-input-suffix"><i class="ivu-icon ivu-icon-ios-calendar-outline"></i></span>
+                  </span>
                </section>
 
                <!-- 有伤病-->
@@ -234,22 +265,17 @@
                </i-button>
             </i-col>
             <i-col span="6">
-               <date-picker type="year" :open="openDatePicker" format="yyyy" v-model="curYear" @on-change="handleDatePicker">
-               <a @click="openDatePicker = !openDatePicker" style="color: var(--ghost-primary-color);">
+               <a @click="showYearSelector" style="color: var(--ghost-primary-color);">
                   <Icon type="ios-calendar-outline"></Icon>
                   <span>{{ opts.year }}</span>
                </a>
-               </date-picker>
             </i-col>
             <i-col span="2" offset="11">
                <i-button style="border-radius: 50%;" type="primary" ghost size="small" icon="md-refresh" @click="getApplyHistory()" :loading="listLoading"></i-button>
             </i-col>
          </Row>
-         <i-select v-model="opts.statusFlg" class="mb5" @on-change="handleHistoryStatusChange" size="small">
-            <i-option label="全て" :value="0"></i-option>
-            <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
-            </i-option>
-         </i-select>
+         <cube-select v-model="opts.statusFlg" title="状態" :options="statusList" @change="handleHistoryStatusChange">
+        </cube-select>
          <!-- PersonalApplyTable -->
          <ul class="apply-history-list" style="right: unset;max-height: unset;">
             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
