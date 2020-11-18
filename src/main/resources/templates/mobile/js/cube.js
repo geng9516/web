@@ -139,7 +139,7 @@ const cubeSelect = {
       return this.title || 'entry time'
     },
     _cancelTxt() {
-      return this.confirmTxt || '取消'
+      return this.cancelTxt || '取消'
     },
     _confirmTxt() {
       return this.confirmTxt || '選択'
@@ -299,7 +299,7 @@ const CascadePicker = {
   },
   computed: {
     _cancelTxt() {
-      return this.confirmTxt || '取消'
+      return this.cancelTxt || '取消'
     },
     _confirmTxt() {
       return this.confirmTxt || '選択'
@@ -559,7 +559,7 @@ const DPicker = {
   },
   computed: {
     _cancelTxt() {
-    return this.confirmTxt || '取消'
+    return this.cancelTxt || '取消'
   },
   _confirmTxt() {
     return this.confirmTxt || '選択'
