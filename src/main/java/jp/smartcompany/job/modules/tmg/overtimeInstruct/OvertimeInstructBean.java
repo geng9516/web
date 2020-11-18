@@ -455,6 +455,7 @@ public class OvertimeInstructBean {
         EditDailyDispVo vo = new EditDailyDispVo();
         vo.setDailyOverTimeVoList(dailyOverTimeVos);
         vo.setHasAuthority(referList.hasAuthority(baseDate, TmgUtil.Cs_AUTHORITY_OVERTIME));
+        vo.setLimitOfBaseDate(limitOfBaseDateList.size()>0?limitOfBaseDateList.get(0):null);
         return vo;
     }
 

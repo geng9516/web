@@ -139,10 +139,10 @@ const cubeSelect = {
       return this.title || 'entry time'
     },
     _cancelTxt() {
-      return this.cancelTxt || 'Cancel'
+      return this.cancelTxt || '取消'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Ok'
+      return this.confirmTxt || '選択'
     }
   },
   created() {
@@ -299,10 +299,10 @@ const CascadePicker = {
   },
   computed: {
     _cancelTxt() {
-      return this.cancelTxt || 'Cancel'
+      return this.cancelTxt || '取消'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Ok'
+      return this.confirmTxt || '選択'
     },
     valueKey() {
       return this.alias.value || DEFAULT_KEYS.value
@@ -559,10 +559,10 @@ const DPicker = {
   },
   computed: {
     _cancelTxt() {
-    return this.cancelTxt || 'Cancel'
+    return this.cancelTxt || '取消'
   },
   _confirmTxt() {
-    return this.confirmTxt || 'Ok'
+    return this.confirmTxt || '選択'
   },
   formatConfig() {
     const formatConfig = Object.assign({}, DEFAULT_FORMAT)

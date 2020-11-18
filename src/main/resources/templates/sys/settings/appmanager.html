@@ -158,8 +158,8 @@
           <i-input v-model="updateValue.url" placeholder="サイトURL"></i-input>
         </form-item>
 
-        <form-item v-if="updateValue._type === '1'" label="サイト画像URL">
-          <i-input v-model="updateValue.icon" placeholder="サイト画像URL"></i-input>
+        <form-item v-if="updateValue._type === '1'" label="アイコン">
+          <i-input v-model="updateValue.icon" placeholder="アイコン"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '1'" label="サイトの説明(日本語)">
@@ -189,27 +189,31 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションID">
-          <i-input v-model="updateValue.appId" :disabled="!updateValue.isAdd"></i-input>
+          <i-input v-model="updateValue.appId" :disabled="!updateValue.isAdd" placeholder="アプリケーションID"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションの名称(日本語)">
-          <i-input v-model="updateValue.name"></i-input>
+          <i-input v-model="updateValue.name" placeholder="アプリケーションの名称(日本語)"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'" label="アプリケーションURL">
-          <i-input v-model="updateValue.url"></i-input>
+          <i-input v-model="updateValue.url" placeholder="アプリケーションURL"></i-input>
+        </form-item>
+
+        <form-item v-if="updateValue._type === '3'" label="アイコン">
+          <i-input v-model="updateValue.icon" placeholder="アイコン"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面ID">
-          <i-input v-model="updateValue.screenId"></i-input>
+          <i-input v-model="updateValue.screenId" placeholder="画面ID"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面の名称(日本語)">
-          <i-input v-model="updateValue.name"></i-input>
+          <i-input v-model="updateValue.name" placeholder="画面の名称(日本語)"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '5'" label="画面URL">
-          <i-input v-model="updateValue.url"></i-input>
+          <i-input v-model="updateValue.url" placeholder="画面URL"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '2' || updateValue._type === '3'|| updateValue._type === '5'"
@@ -251,11 +255,11 @@
         </form-item>
 
         <form-item v-if="updateValue._type === '6'" label="ボタンID">
-          <i-input v-model="updateValue.buttonId" :disabled="!updateValue.isAdd"></i-input>
+          <i-input v-model="updateValue.buttonId" :disabled="!updateValue.isAdd" placeholder="ボタンID"></i-input>
         </form-item>
 
         <form-item v-if="updateValue._type === '6'" label="ボタンの名称(日本語)">
-          <i-input v-model="updateValue.name"></i-input>
+          <i-input v-model="updateValue.name" placeholder="ボタンの名称(日本語)"></i-input>
         </form-item>
       </i-form>
       <div class="my-footer tr mt10 mr10">

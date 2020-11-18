@@ -582,7 +582,9 @@
                         key: 'desc'
                     },
                 ],
-                overFlagData: []
+                overFlagData: [],
+                //基準日時点の超勤限度時間
+                dailyConvMinute: ''
             }
         },
         mounted() {
@@ -908,8 +910,8 @@
                 }
                 try {
                     const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
+                    this.dailyConvMinute = data.limitOfBaseDate.dailyConvMinute
                     this.tableData3 = data.dailyOverTimeVoList
-
                     this.value = data.dailyOverTimeVoList.map(e => {
                         const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
                             return {
@@ -1143,6 +1145,7 @@
                     this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
                 }
             },
+            //命令　確認
             async overTimeUpdate() {
                 // 将没打勾的排除出去
                 // const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
@@ -1174,7 +1177,7 @@
                         this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください' })
                         return
                     }
-
+                    let checkOver = true;
                     const check = UpdateData.some(e => {
                         if (e.updateOverTimeDtoList.length > 0) {
                             let checkArr = []
@@ -1200,6 +1203,15 @@
                                     if (e.openN && e.closeN && Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
                                         that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください', duration: 6.5 })
                                         return true
+                                    }
+                                }
+                                // 超過勤務命令時間数合計が登録されている超勤限度時間を超える場合は警告メッセージを表示する
+                                if (t.sNOpen && t.sNClose) {
+                                    let open = Utils.timeToMinute(t.sNOpen)
+                                    let close = Utils.timeToMinute(t.sNClose)
+                                    let minus = close - open
+                                    if(this.dailyConvMinute && minus>parseInt(this.dailyConvMinute)){
+                                        checkOver = false
                                     }
                                 }
                             })
@@ -1240,11 +1252,15 @@
                         // }
                     })
                     if (!check) {
+                        let content = '入力された内容で超過勤務命令を申請します。\nよろしいですか？'
+                        if(!checkOver){
+                            content = '超過勤務命令の時間数が'+Math.floor(parseInt(this.dailyConvMinute)/60 * 100) / 100+'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？'
+                        }
                         this.$Modal.confirm({
                             inDrawer: true,
                             title: '注意',
                             width: 480,
-                            content: '入力された内容で超過勤務命令を申請します。\nよろしいですか？',
+                            content: content,
                             okText: 'OK',
                             cancelText: 'キャンセル',
                             onOk: async () => {
