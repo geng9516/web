@@ -327,19 +327,13 @@ new Vue({
          }
          if(this.selectedRestInfo.timeZone) {
             if(!this.restApply.timezoneOpen) {
-               this.errorInfo = true
-               this.errorMsg = '開始時間を入力してください'
-               return
+               return this.$Notice.warning({ title: '注意', desc: '開始期間を入力してください', duration: 6.5 })
             }
             if(!this.restApply.timezoneClose) {
-               this.errorInfo = true
-               this.errorMsg = '終了時間を入力してください'
-               return
+               return this.$Notice.warning({ title: '注意', desc: '終了期間を入力してください', duration: 6.5 })
             }
             if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
-               this.errorInfo = true
-               this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください'
-               return
+               return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください', duration: 6.5 })
             }
          }
          if (!this.hasPassedTimeCheck) {
