@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgSettingsController {
 
-    @GetMapping("TmgMasterSettings")
-    public String toTmgMasterSettings(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+    @GetMapping("genericmanager")
+    public String toGenericManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/master_settings/namesettings";
     }
