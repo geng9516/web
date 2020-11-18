@@ -19,6 +19,7 @@ public class GenericManagerController {
 
   private final IGenericManagerService genericManagerService;
 
+  // http://localhost:6879/sys/genericmanager/cates
   @GetMapping("cates")
   public List<CategoryGenericDetailVO> listCategoryDetailList(@RequestParam(value="searchDate",required = false) Date searchDate,@RequestParam(value="categoryId",required = false,defaultValue = "TMG") String categoryId) {
       if (searchDate == null) {
