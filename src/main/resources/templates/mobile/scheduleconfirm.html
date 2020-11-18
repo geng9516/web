@@ -4,6 +4,10 @@
 <head th:replace="layout/header::common_header(title='予定確認',cssPaths='/pages/mobile.min.css')"></head>
 
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+  </script>
+  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+  </script>
   <style>
     .title-timerange {
       font-size: 14px
@@ -25,10 +29,9 @@
       </div>
       <div class="searchwrap">
         <span class="label">年月</span>
-        <i-select v-model="defaultDate" style="flex: 1;" @on-change="handleStartMonth($event)" placeholder="選択ください">
-            <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
-            </i-option>
-        </i-select>
+        <cube-select v-model="defaultDate" title="年月" :options="dispMonthlyList" placeholder="選んでください。" class="width100"
+        @change="handleStartMonth">
+       </cube-select>
     </div>
     </div>
     <div class="content_body" style="position: relative">

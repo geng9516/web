@@ -139,10 +139,10 @@ const cubeSelect = {
       return this.title || 'entry time'
     },
     _cancelTxt() {
-      return this.cancelTxt || 'cancel'
+      return this.cancelTxt || 'Cancel'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Confirm'
+      return this.confirmTxt || 'Ok'
     }
   },
   created() {
@@ -299,10 +299,10 @@ const CascadePicker = {
   },
   computed: {
     _cancelTxt() {
-      return this.cancelTxt || 'cancel'
+      return this.cancelTxt || 'Cancel'
     },
     _confirmTxt() {
-      return this.confirmTxt || 'Confirm'
+      return this.confirmTxt || 'Ok'
     },
     valueKey() {
       return this.alias.value || DEFAULT_KEYS.value
@@ -559,10 +559,10 @@ const DPicker = {
   },
   computed: {
     _cancelTxt() {
-    return this.cancelTxt || 'cancel'
+    return this.cancelTxt || 'Cancel'
   },
   _confirmTxt() {
-    return this.confirmTxt || 'Confirm'
+    return this.confirmTxt || 'Ok'
   },
   formatConfig() {
     const formatConfig = Object.assign({}, DEFAULT_FORMAT)

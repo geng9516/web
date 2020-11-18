@@ -114,9 +114,9 @@ public class TmgLiquidationPeriodBean {
         //sequence 获取
         String seq = iTmgliquidationPeriodService.getSeq();
         //一览数据新规
-        insertTlp(seq, updateDto.getEmpId(), updateDto.getWorktypeId(), updateDto.getStartDate(), updateDto.getEndDate(), psDBBean);
+        insertTlp(seq, updateDto, psDBBean);
         //详细数据新规
-        insertTlDD(updateDto.getEmpId(), updateDto.getStartDate(), updateDto.getEndDate(), psDBBean);
+        insertTlDD(updateDto.getEmpId(), updateDto.getCurDateFrom(), updateDto.getCurDateTo(), psDBBean);
         return GlobalResponse.ok();
     }
 
@@ -133,16 +133,16 @@ public class TmgLiquidationPeriodBean {
     }
 
     //一览数据新规
-    private int insertTlp(String seq, String empId, String workTypeId, String startDate, String endDate, PsDBBean psDBBean) {
+    private int insertTlp(String seq,LiquidationUpdateListDto updateDto, PsDBBean psDBBean) {
         TmgLiquidationPeriodDO tlpDo = new TmgLiquidationPeriodDO();
         tlpDo.setTlpCcompanyid(psDBBean.getCompCode());
         tlpDo.setTlpCcustomerid(psDBBean.getCustID());
-        tlpDo.setTlpCemployeeid(empId);
+        tlpDo.setTlpCemployeeid(updateDto.getEmpId());
         tlpDo.setTlpCmodifieruserid(psDBBean.getUserCode());
         tlpDo.setTlpDmodifieddate(DateTime.now());
-        tlpDo.setTlpDstartdate(DateUtil.parseDate(startDate));
-        tlpDo.setTlpDenddate(DateUtil.parseDate(endDate));
-        tlpDo.setTlpCworktypeid(workTypeId);
+        tlpDo.setTlpDstartdate(DateUtil.parseDate(updateDto.getCurDateFrom()));
+        tlpDo.setTlpDenddate(DateUtil.parseDate(updateDto.getCurDateTo()));
+        tlpDo.setTlpCworktypeid(updateDto.getWorkTypeId());
         tlpDo.setTlpCtlpid(seq);
         return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);
     }

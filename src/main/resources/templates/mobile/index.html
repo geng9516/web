@@ -4,6 +4,10 @@
 <head th:replace="layout/header::common_header(title='就業承認',cssPaths='/pages/mobile.min.css')"></head>
 
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+  </script>
+  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+  </script>
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <main class="content mobile-warp">
     <div class="content_head">
@@ -16,10 +20,9 @@
       </div>
       <div class="searchwrap">
         <span class="label">年月</span>
-        <i-select v-model="model1" :disabled="!selectDisabled" style="flex: 1;" @on-change="handleStartMonth($event)" placeholder="選択ください">
-          <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val" :value="item.code">
-          </i-option>
-        </i-select>
+        <cube-select v-model="model1" title="年月" :options="dispMonthlyList" :disabled="!selectDisabled" placeholder="選んでください。" class="width100"
+        @change="handleStartMonth">
+       </cube-select>
       </div>
     </div>
     <div class="content_body" style="position: relative">

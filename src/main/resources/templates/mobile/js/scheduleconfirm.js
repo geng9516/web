@@ -106,7 +106,13 @@ new Vue({
                     baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
                 }
                 const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
-                this.dispMonthlyList = data
+                this.dispMonthlyList = data.map(e => {
+                  return {
+                    ...e,
+                    text:e.tda_dyyyymm,
+                    value:e.tda_dyyyymm
+                  }
+                })
                 this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
                 this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
                 this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay

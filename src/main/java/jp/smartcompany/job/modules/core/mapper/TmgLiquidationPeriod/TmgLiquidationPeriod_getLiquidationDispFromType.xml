@@ -20,6 +20,8 @@
         te.TEM_CCUSTOMERID,
         'ja'
         ) AS WORKTYPENAME,
+        hd.HD_CSECTIONID_FK as sectionid,
+        TMG_F_GET_MO(hd.HD_CSECTIONID_FK,sysdate,0,hd.HD_CCUSTOMERID_CK,hd.HD_CCOMPANYID_CK,'ja') as deptname,
         NVL( TO_CHAR(tlp.TLP_DSTARTDATE,'yyyy/mm/dd'), '' ) AS startdate,
         NVL( TO_CHAR(tlp.TLP_DENDDATE,'yyyy/mm/dd'), '' ) AS enddate,
         NVL( tlp.TLP_CMODIFIERUSERID, '' ) AS modifieduser,
@@ -33,12 +35,17 @@
         tlp.TLP_CCUSTOMERID,
         'ja') as STATUSNAME
         FROM
+        HIST_DESIGNATION hd,
         TMG_EMPLOYEES te
         LEFT JOIN TMG_LIQUIDATION_PERIOD tlp
         ON tlp.TLP_CEMPLOYEEID = te.TEM_CEMPLOYEEID
         AND sysdate BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
         AND tlp.TLP_CCOMPANYID = te.TEM_CCOMPANYID
         AND tlp.TLP_CCUSTOMERID = te.TEM_CCUSTOMERID
+        AND hd.HD_CEMPLOYEEID_CK=te.TEM_CEMPLOYEEID
+        AND hd.HD_CCUSTOMERID_CK = te.TEM_CCUSTOMERID
+        AND hd.HD_CCOMPANYID_CK = te.TEM_CCOMPANYID
+        AND SYSDATE BETWEEN hd.HD_DSTARTDATE_CK AND hd.HD_DENDDATE
         WHERE
         te.TEM_CCOMPANYID = #{custId}
         AND te.TEM_CCUSTOMERID = #{compId}
