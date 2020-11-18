@@ -209,7 +209,6 @@ new Vue({
       },
     },
     methods: {
-
       // 勤務年月一覧取得
       async getWorkDateList() {
         this.query.txtAction = 'ACT_DISP_RMONTHLY'
@@ -217,7 +216,13 @@ new Vue({
           const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
 
           this.query.today = data.today
-          this.dispMonthlyList = data.monthLy
+          this.dispMonthlyList = data.monthLy.map(e=> {
+            return {
+              ...e,
+              text: e.val,
+              value: e.code
+            }
+          })
           if (data.monthLy.length > 0) {
             this.model1 = this.dispMonthlyList[0].code
             this.query.txtDYYYYMM = this.model1

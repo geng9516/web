@@ -139,7 +139,7 @@ const cubeSelect = {
       return this.title || 'entry time'
     },
     _cancelTxt() {
-      return this.cancelTxt || 'cancel'
+      return this.cancelTxt || 'Cancel'
     },
     _confirmTxt() {
       return this.confirmTxt || 'Ok'
@@ -299,7 +299,7 @@ const CascadePicker = {
   },
   computed: {
     _cancelTxt() {
-      return this.cancelTxt || 'cancel'
+      return this.cancelTxt || 'Cancel'
     },
     _confirmTxt() {
       return this.confirmTxt || 'Ok'
@@ -559,7 +559,7 @@ const DPicker = {
   },
   computed: {
     _cancelTxt() {
-    return this.cancelTxt || 'cancel'
+    return this.cancelTxt || 'Cancel'
   },
   _confirmTxt() {
     return this.confirmTxt || 'Ok'
