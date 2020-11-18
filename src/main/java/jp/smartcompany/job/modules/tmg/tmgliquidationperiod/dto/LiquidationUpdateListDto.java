@@ -11,7 +11,15 @@ import java.util.List;
 @ToString
 public class LiquidationUpdateListDto {
     private String empId;
-    private String worktypeId;
-    private String startDate;
-    private String endDate;
+    private String workTypeId;
+    private String sectionId;
+    private String curDateFrom;
+    private String curDateTo;
+    private String avgWorkTime;
+    private String dailyMaxWorkTime;
+    private String weeklyMaxWorkTime;
+    private String totalWorkDays;
+    private String maxContiDays;
+    private String maxContiWeeks;
+    private String contiWeeks;
 }

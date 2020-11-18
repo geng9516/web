@@ -129,21 +129,12 @@
         <Modal title="精算期間詳細"  width="90" :mask-closable="false" footer-hide v-model="editFlag">
             <div class="table-top">
                 <Row  class="mb10">
-<!--                    <i-col span="4">-->
-<!--                        <i-button type="warning" class="mr5" ghost icon="md-add" @click="show3 = !show3">パターン入力</i-button>-->
-<!--                    </i-col>-->
                     <i-col span="24" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
                         <i-button type="primary" ghost icon="md-filing">登録</i-button>
                     </i-col>
                 </Row>
 
-<!--                <Row>-->
-<!--                    <span class="label" v-show="show3">勤務パターン選択</span>-->
-<!--                    <span v-show="show3" class="input-like-span dept-select">-->
-<!--                    <i-button v-for="(item, i) of button4Pattern" :key="i" size="small" style="margin-right:3px;margin-top:3px">{{ item }}</i-button>-->
-<!--                    </span>-->
-<!--                </Row>-->
             </div>
 
             <Alert type="error" class="error-info" >123 123 123 123 123 123</Alert>
@@ -152,8 +143,6 @@
                 <Icon type="logo-buffer"></Icon>
                 精算期間一覧
             </div>
-
-
             <i-table
                     class="mt10"
                     @on-row-click="handleClickRow(arguments)"
@@ -169,46 +158,124 @@
                     <div :class="i === 0 ? `sum-row ${item.color}` : `divi-hour-line sum-row ${item.color}`" v-for="(item, i) of row[`m${j + 1}`]" :key="i">{{ item.label || '&nbsp;' }}</div>
                 </template>
             </i-table>
-
-
-
-
-
-
-
         </Modal>
 
-        <Modal title="新規精算期間"  width="30" :mask-closable="false" footer-hide v-model="newFlg">
+        <Modal title="新規精算期間"  width="50" :mask-closable="false" footer-hide v-model="newFlg">
             <Row :gutter="10">
                 <i-col span="8">
                     <div class="label" style="padding:1px 0">所属</div>
                     <div class="person-info">{{ empInfo.deptName }}</div>
                 </i-col>
-                <i-col span="8">
+                <i-col span="7">
                     <div class="label" style="padding:1px 0">氏名</div>
                     <div class="person-info">{{ empInfo.empName }}</div>
                 </i-col>
-                <i-col span="8">
+                <i-col span="9">
                     <div class="label" style="padding:1px 0">種別</div>
                     <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
                 </i-col>
             </Row>
-            <Row>
-                <i-col>
-                    <date-picker class="mar"  type="month" v-model="curDateFrom" :editable="false" :clearable="false"
-                                 format="yyyy年MM月"></date-picker>
-                    -
-                    <date-picker class="mar"  type="month" v-model="curDateTo" :editable="false" :clearable="false"
-                                 format="yyyy年MM月"></date-picker>
-                </i-col>
-            </Row>
-            <div>
-                <i-button type="primary" @click="makeNewLiquidation" ghost>期間作成</i-button>-->
+
+            <div class="titlenorm mt20 mb20 ">
+                <Icon type="logo-buffer"></Icon>
+                新規精算
+            </div>
+
+            <div class="tr mb20">
+                <Row>
+                    <i-col span="12">
+                        <div class="label mr20">
+                            精算期間
+                        </div>
+                    </i-col>
+                    <i-col span="6">
+                        <date-picker class="mar width100"  type="month" v-model="newLiquidationInfo.curDateFrom" :editable="false" :clearable="false"
+                                     format="yyyy年MM月"></date-picker>
+                    </i-col>
+                    <i-col span="6">
+                        <date-picker class="mar width100"  type="month" v-model="newLiquidationInfo.curDateTo" :editable="false" :clearable="false"
+                                     format="yyyy年MM月"></date-picker>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        一週間の平均労働時間数
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.avgWorkTime" placeholder="分"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        一日最大労働時間
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.dailyMaxWorkTime" placeholder="分"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        一週最大労働時間
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.weeklyMaxWorkTime" placeholder="分"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        総労働日数
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.totalWorkDays" placeholder="日"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        最も長い連続労働日数
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.maxContiDays" placeholder="日"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        ４８時間を超える週の最長連続週数
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.maxContiWeeks" placeholder="週"/>
+                    </i-col>
+                </Row>
+                <Row>
+                    <i-col span="12">
+                    <div class="label mr20">
+                        三っ月の労働時間が４８時間を超える週数
+                    </div>
+                    </i-col>
+                    <i-col span="12">
+                        <input-number class="width100" v-model="newLiquidationInfo.contiWeeks" placeholder="週"/>
+                    </i-col>
+                </Row>
+
+            </div>
+
+            <div class="tr">
+                <i-button type="primary" @click="makeNewLiquidation" ghost>期間作成</i-button>
             </div>
         </Modal>
-
         <!-- 勤務パターンSTART -->
-        <Modal v-model="patternFlg" title="新規パターン" footer-hide :mask-closable="false">
+        <Modal title="新規パターン" width="30" v-model="patternFlg"  footer-hide :mask-closable="false">
             <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
             <i-form :label-width="120" ref="localValue">
                 <form-item label="所属">
@@ -272,16 +339,79 @@
                 </form-item>
             </i-form>
         </Modal>
+
+
+
+        <Modal title = "月編集画面"　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
+            <Row class="mb10">
+                <i-col span="4">
+                    <div class="label tc">勤務パターン</div>
+                </i-col>
+                <i-col span="20">
+
+                </i-col>
+            </Row>
+
+
+            <i-table border :columns="columnsMonth" :data="columnsMonthData" :row-class-name="() => 'select-col'"  @on-row-click="patternSet">
+
+                <template slot-scope="{ row }" slot="workFar">
+                    <i-select transfer  v-model="pattern.bussinessTripid">
+                        <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
+                    </i-select>
+                </template>
+
+                <template slot-scope="{ row }" slot="pattern">
+                    <i-input v-model="pattern.nopen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nopen', $event.target)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="startTime">
+                    <i-input v-model="pattern.nopen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nopen', $event.target)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="endTime">
+                    <i-input v-model="pattern.nclose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nclose', $event.target)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="restTime" >
+                    <Row :gutter="10" v-for="(item, i) of pattern.restList" :key="i" class="mb5" >
+                        <i-col :span="pattern.restList.length > 1 ? 8 : 12">
+                            <i-input v-model="pattern.restList[i].restOpen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restOpen', $event.target)"/>
+                        </i-col>
+                        <i-col :span="pattern.restList.length > 1 ? 8 : 12">
+                            <i-input v-model="pattern.restList[i].restClose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restClose', $event.target)"/>
+                        </i-col>
+                        <i-col span="8" v-show="pattern.restList.length > 1">
+                            <i-button ghost type="error" @click="handleMinusRest(pattern.restList, i)">-</i-button>
+                        </i-col>
+                    </Row>
+                    <i-button
+                            :disabled="!patternDisabled"
+                            class="mt5"
+                            size="small"
+                            ghost
+                            type="success"
+                            long
+                            @click="handleAddRest(pattern.restList)"
+                            v-show="pattern.restList.length < 4"
+                    >+</i-button>
+                </template>
+
+                <template slot-scope="{ row }" slot="comment">
+                    <i-input v-model="pattern.nclose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nclose', $event.target)"/>
+                </template>
+            </i-table>
+        </Modal>
+
     </div>
 </main>
-d
+
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const FIVE_DAYS_HOLIDAY = new Vue({
         el: '.tmgliquidationperiod-warp',
         data() {
             return {
-
                 workTypeDrawShow:false,
                 loading:false,
                 workTypeLoading:false,
@@ -353,6 +483,7 @@ d
                     empWorkTypeName:'',
                     empWorkTypeId:'',
                     deptName:'',
+                    sectionId:''
                 },
                 editColumns:[
                     {
@@ -402,11 +533,22 @@ d
                 totalDate:[],
 
 
-
                 //新規画面
                 newFlg:false,
-                curDateFrom:'',
-                curDateTo:'',
+                newLiquidationInfo:{
+                    empId:'',
+                    sectionId:'',
+                    workTypeId:'',
+                    curDateFrom:'',
+                    curDateTo:'',
+                    avgWorkTime:'',
+                    dailyMaxWorkTime:'',
+                    weeklyMaxWorkTime:'',
+                    totalWorkDays:'',
+                    maxContiDays:'',
+                    maxContiWeeks:'',
+                    contiWeeks:''
+                },
 
                 //編集画面
                 show3:true,
@@ -681,6 +823,59 @@ d
                 centerTable: [],
                 rightTable: [],
 
+                //月编辑画面
+                columnsMonth:[
+                    {
+                        title: '日付',
+                        key: 'yyyymmdd',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: '区分',
+                        slot: 'workFar',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: 'パターン',
+                        slot: 'pattern',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: '勤務時間',
+                        children:[
+                            {
+                                title: '開始時間',
+                                slot: 'startTime',
+                                minWidth: 100,
+                                align: 'left'
+                            },
+                            {
+                                title: '終了時間',
+                                slot: 'endTime',
+                                minWidth: 100,
+                                align: 'left'
+                            },
+                        ]
+                    },
+                    {
+                        title: '休憩時間',
+                        slot: 'restTime',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: 'コメント',
+                        slot: 'comment',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                ],
+                columnsMonthData:[],
+                monthlyEditFlg:false,
+                workPatternList:[],
 
 
 
@@ -852,24 +1047,32 @@ d
             },
             async showDetails(e) {
                 console.log(e)
+                this.empInfo.empId=e.employeeid
+                this.empInfo.empWorkTypeId=e.worktypeid
+                this.empInfo.deptName=e.deptname
+                this.empInfo.sectionId=e.sectionid
+                this.empInfo.empName=e.employeename
+                this.empInfo.empWorkTypeName=e.worktypename
                 if(e.newflag){
                     try {
-                        this.empInfo.empId=e.employeeid
-                        this.empInfo.empWorkTypeId=e.worktypeid
+
                         this.optsEmp.empId = e.employeeid
                         this.optsEmp.startDate = e.startdate
                         this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                         this.editTableDate = data.monthDtoList
-
+                        this.editFlag = true;
                     } catch (error) {
                         return
                     } finally {
                     }
                 }else{
-
+                    this.newLiquidationInfo.empId=this.empInfo.empId
+                    this.newLiquidationInfo.sectionId=this.empInfo.sectionId
+                    this.newLiquidationInfo.workTypeId=this.empInfo.empWorkTypeId
+                    this.newFlg=true
                 }
-                this.editFlag = true;
+
             },
 
             async insertLiquidation() {
@@ -934,7 +1137,20 @@ d
                     this.$set(object, index, object[index])
                 }
             },
-            makeNewLiquidation{
+            async makeNewLiquidation() {
+
+                try {
+                    const { msg } = await this.http.post('sys/tmgliquidationperiod/insertLiquidation', this.newLiquidationInfo)
+                    this.newFlg = false;
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
+            patternSet(){
+
+            },
+            handleAddRest(){
 
             }
 
