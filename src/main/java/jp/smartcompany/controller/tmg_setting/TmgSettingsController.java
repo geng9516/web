@@ -1,4 +1,4 @@
-package jp.smartcompany.controller.tmg_settings;
+package jp.smartcompany.controller.tmg_setting;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

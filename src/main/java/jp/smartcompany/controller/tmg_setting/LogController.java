@@ -1,4 +1,4 @@
-package jp.smartcompany.controller;
+package jp.smartcompany.controller.tmg_setting;
 
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.LogBusiness;
