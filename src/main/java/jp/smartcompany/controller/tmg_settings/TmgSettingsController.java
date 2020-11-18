@@ -16,7 +16,7 @@ public class TmgSettingsController {
     @GetMapping("genericmanager")
     public String toGenericManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/master_settings/namesettings";
+        return "sys/master_settings/genericmanager";
     }
 
     /**
@@ -25,7 +25,7 @@ public class TmgSettingsController {
     @GetMapping("groupmanager")
     public String toGroupManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/settings/groupsettings";
+        return "sys/master_settings/groupmanager";
     }
     /**
      * 跳转到检索对象范围界面
@@ -33,7 +33,25 @@ public class TmgSettingsController {
     @GetMapping("searchrangemanager")
     public String toSearchRangeManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/settings/searchrangemanager";
+        return "sys/master_settings/searchrangemanager";
+    }
+
+    /**
+     * 跳转到属性设定页面
+     */
+    @GetMapping("propmanager")
+    public String toPropManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/master_settings/propmanager";
+    }
+
+    /**
+     * 跳转到邮箱设定页面
+     */
+    @GetMapping("mailmanager")
+    public String toMailManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/master_settings/mailmanager";
     }
 
 }
