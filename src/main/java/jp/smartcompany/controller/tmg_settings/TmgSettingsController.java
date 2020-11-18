@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("tmg_settings")
+@RequestMapping("tmg_setting")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgSettingsController {
 
@@ -17,23 +17,6 @@ public class TmgSettingsController {
     public String toGenericManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/master_settings/genericmanager";
-    }
-
-    /**
-     * 跳转到グループ定義界面
-     */
-    @GetMapping("groupmanager")
-    public String toGroupManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/master_settings/groupmanager";
-    }
-    /**
-     * 跳转到检索对象范围界面
-     */
-    @GetMapping("searchrangemanager")
-    public String toSearchRangeManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/master_settings/searchrangemanager";
     }
 
     /**
@@ -52,6 +35,12 @@ public class TmgSettingsController {
     public String toMailManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/master_settings/mailmanager";
+    }
+
+    @GetMapping("logviewer")
+    public String toLogViewer(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/master_settings/logviewer";
     }
 
 }

@@ -1,4 +1,4 @@
-package jp.smartcompany.controller.tmg_settings;
+package jp.smartcompany.controller.admin;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;

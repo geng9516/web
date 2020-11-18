@@ -18,7 +18,7 @@ security:
     - /web-work/tmg_admin/**
     - /web-work/tmg_inp/**
     - /web-work/admin/**
-    - /web-work/tmg_settings/**
+    - /web-work/tmg_setting/**
     - /web-work/expirePassword
     - /web-work/changeExpirePassword
     - /web-work/changePassword

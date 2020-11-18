@@ -43,4 +43,21 @@ public class AdminController {
         return "sys/settings/groupappmanager";
     }
 
+    /**
+     * 跳转到グループ定義界面
+     */
+    @GetMapping("groupmanager")
+    public String toGroupManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/settings/groupmanager";
+    }
+    /**
+     * 跳转到检索对象范围界面
+     */
+    @GetMapping("searchrangemanager")
+    public String toSearchRangeManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/settings/searchrangemanager";
+    }
+
 }

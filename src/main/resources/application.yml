@@ -104,7 +104,7 @@ security:
     - /tmg_admin/**
     - /tmg_inp/**
     - /admin/**
-    - /tmg_settings/**
+    - /tmg_setting/**
     - /expirePassword
     - /changeExpirePassword
     - /changePassword
