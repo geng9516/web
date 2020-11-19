@@ -398,6 +398,10 @@ iview.lang('ja-JP');
 // Vue.prototype.$IVIEW.transfer = true
 // Vue.prototype.$IVIEW.capture = false
 
+// Tree 下拉箭头图标
+// Vue.prototype.$IVIEW.tree.arrow= 'ios-baseball'
+Vue.prototype.$IVIEW.tree.arrowSize = 16
+
 window.requestAnimFrame =
   window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
