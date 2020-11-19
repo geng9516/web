@@ -99,43 +99,32 @@
 .ivu-divider + .ivu-radio-group {
   width: 100%;
 }
-.paid-vacation {
-  float: right;
-  color: var(--theme-blue);
-  background-color: var(--light-blue);
-  padding: 1px 6px;
-  border-radius: 50%;
-  &:before {
-    content: '有';
-  }
-}
+
 .card {
   width: 800px;
   background: var(--content-bg);
-  backface-visibility: hidden;
-  transition: all 1.5s;
   box-shadow: rgba(50, 50, 50, 0.2) 0 0 15px;
   &.card-two {
-    position: absolute;
+    display: none;
     width: 800px;
-    opacity: 0;
     // 将滚动条隐藏
     overflow-x: hidden;
     min-height: 80vh;
    .ivu-card-body {
       padding-bottom: 0;
     }
+    &.rotate-360 {
+      display: block;
+      transform: rotateY(-360deg);
+    }
   }
 }
 .rotate-180 {
+  display: none;
   transform: rotateY(-180deg);
   .ivu-select-dropdown {
-    animation: dispear 1s forwards ease-in-out;
+    animation: fadeOut 1s forwards ease-in-out;
   }
-}
-.rotate-360 {
-  opacity: 1 !important;
-  transform: rotateY(-360deg);
 }
 .ivu-avatar {
   background: var(--light-grey);
@@ -157,7 +146,7 @@
 .btn {
   margin-top: 20px;
 }
-@keyframes dispear {
+@keyframes fadeOut {
   100% {
     opacity: 0;
   }
@@ -230,12 +219,9 @@
 
 .apply-history-list {
   position: relative;
+  right: -20px;
   background: linear-gradient(to bottom, #ccc 80%, transparent 100%) no-repeat left 19px top 15px/1px 100%;
   text-align: left;
-  position: relative;
-  right: -33px;
-  max-height: 70vh;
-  overflow-y: scroll;
   color: var(--grey);
   .title {
     font-size: 15px;

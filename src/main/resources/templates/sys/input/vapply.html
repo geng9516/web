@@ -548,7 +548,6 @@
                  },
                  handleRestType(e) {
                     if (!e) return
-                    console.log(this.rotate)
                     if (this.rotate) {
                         this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
@@ -575,7 +574,6 @@
                     }
                     this.restApply.restTypeId = e
                     this.isReApplyIng = false
-                    console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
                 onRefresh() {
