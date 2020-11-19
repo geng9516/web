@@ -100,7 +100,7 @@
                                             <ul style="display:flex" v-if="item.ntfapprover">
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
-                                                    <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
+                                                    <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml3':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                 </li>
                                                 <li style="margin-right:10px;" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
