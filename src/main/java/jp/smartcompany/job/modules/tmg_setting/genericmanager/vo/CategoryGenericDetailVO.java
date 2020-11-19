@@ -3,7 +3,6 @@ package jp.smartcompany.job.modules.tmg_setting.genericmanager.vo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import java.util.List;
 
 @Getter
 @Setter
@@ -12,11 +11,11 @@ public class CategoryGenericDetailVO {
 
     private Long mgId;
     private String groupId;
-    private String desc;
+    private String description;
     private String editAble;
-    private String cateId;
-    private String cateName;
-
-    private List<CategoryGenericDetailItemVO> itemList;
+    private String categoryId;
+    private String categoryName;
+    private String historyType;
+    private String companyType;
 
 }

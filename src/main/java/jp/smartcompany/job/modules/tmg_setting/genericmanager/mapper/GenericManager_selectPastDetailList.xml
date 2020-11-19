@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper">
+
+    <select id="selectPastDetailList" parameterType="map" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.dto.GenericHistoryDetail">
+        SELECT
+            DISTINCT a.MGD_CGENERICDETAILID_CK detail_id,
+            PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
+              a.MGD_CCUSTOMERID,
+              a.MGD_CCOMPANYID_CK_FK,
+              a.MGD_CMASTERCODE,
+              a.MGD_DSTART_CK,
+              'ja'
+            ) description
+        FROM
+            MAST_GENERIC_DETAIL a
+        WHERE
+            a.MGD_CCUSTOMERID = '01'
+            AND a.MGD_CCOMPANYID_CK_FK = '01'
+            AND a.MGD_CGENERICGROUPID = #{groupId}
+            AND a.MGD_CLANGUAGE_CK = 'ja'
+            AND a.MGD_DEND <![CDATA[<]]> #{searchDate}
+            AND NOT EXISTS
+                (
+                    SELECT
+                        b.MGD_ID
+                    FROM
+                        MAST_GENERIC_DETAIL b
+                    WHERE
+                        b.MGD_CCUSTOMERID = a.MGD_CCUSTOMERID
+                        AND b.MGD_CCOMPANYID_CK_FK = a.MGD_CCOMPANYID_CK_FK
+                        AND b.MGD_CGENERICGROUPID = a.MGD_CGENERICGROUPID
+                        AND b.MGD_CLANGUAGE_CK = a.MGD_CLANGUAGE_CK
+                        AND b.MGD_CGENERICDETAILID_CK = a.MGD_CGENERICDETAILID_CK
+                        AND b.MGD_DSTART_CK <![CDATA[<=]]> #{searchDate}
+                        AND b.MGD_DEND >= #{searchDate}
+                )
+            ORDER BY
+              a.MGD_CGENERICDETAILID_CK
+    </select>
+
+</mapper>

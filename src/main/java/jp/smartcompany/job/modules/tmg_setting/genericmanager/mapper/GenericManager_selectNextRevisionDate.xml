@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper">
+
+    <select id="selectNextRevisionDate" parameterType="map" resultType="java.util.Date">
+        SELECT
+            CASE
+                WHEN a.MIN_START IS NULL THEN b.MIN_END
+                WHEN b.MIN_END IS NULL THEN a.MIN_START
+                WHEN a.MIN_START <![CDATA[<]]> b.MIN_END THEN a.MIN_START
+                                   ELSE b.MIN_END
+                                   END NextRivisionDate
+        FROM
+            (
+                SELECT
+                    MIN(MGD_DSTART_CK) AS MIN_START
+                FROM
+                    MAST_GENERIC_DETAIL
+                WHERE
+                    MGD_CCUSTOMERID = '01'
+                    AND MGD_CCOMPANYID_CK_FK = '01'
+                    AND MGD_CGENERICGROUPID = #{groupId}
+                    AND MGD_CLANGUAGE_CK = 'ja'
+                    AND MGD_DSTART_CK > #{searchDate}
+            ) a,
+            (
+                SELECT
+                  MIN(MGD_DEND) + 1  AS MIN_END
+                FROM
+                  MAST_GENERIC_DETAIL
+                WHERE
+                  MGD_CCUSTOMERID = '01'
+                  AND MGD_CCOMPANYID_CK_FK = '01'
+                  AND MGD_CGENERICGROUPID = #{groupId}
+                  AND MGD_CLANGUAGE_CK = 'ja'
+                  AND MGD_DEND >= #{searchDate}
+                  AND MGD_DEND <![CDATA[<]]> #{maxDate}
+            ) b
+    </select>
+
+</mapper>

@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IGenericManagerService extends IService<MastGenericDO> {
 
-    List<CategoryGenericDetailVO> listCategoryGenericDetail(Date searchDate,String categoryId);
+    List<CategoryGenericDetailVO> listCategoryGenericDetail(String categoryId);
+
+    Map<String,Object> getGenericDetailList(Map<String,Object> conditions);
 
 }

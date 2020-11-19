@@ -3,61 +3,25 @@
 
 <mapper namespace="jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper">
 
-    <resultMap id="categoryGenericDetailMap" type="jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO">
-        <result property="mgId" column="MG_ID"/>
-        <result property="groupId" column="MG_CGENERICGROUPID_CK"/>
-        <result property="desc" column="MG_CGENERICGROUPDESC"/>
-        <result property="editAble" column="MG_CIFEDITABLE"/>
-        <result property="cateName" column="CATEGORY_NAME"/>
-        <result property="cateId" column="MG_CCATEGORYID"/>
-        <collection property="itemList" ofType="jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailItemVO">
-            <result property="mgdId" column="MGD_ID"/>
-            <result property="groupId" column="MGD_CGENERICGROUPID"/>
-            <result property="detailId" column="MGD_CGENERICDETAILID_CK"/>
-            <result property="masterCode" column="MGD_CMASTERCODE"/>
-            <result property="startDate" column="MGD_DSTART_CK"/>
-            <result property="endDate" column="MGD_DEND"/>
-            <result property="desc" column="MGD_CGENERICDETAILDESC"/>
-        </collection>
-    </resultMap>
-
-    <select id="listCategoryGenericDetail" resultMap="categoryGenericDetailMap" parameterType="map">
+    <select id="listCategoryGenericDetail" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO">
         SELECT
             A.MG_ID,
-            A.MG_CGENERICGROUPID_CK,
-            A.MG_CGENERICGROUPDESC,
-            A.MG_CIFEDITABLE,
-            A.MG_CCATEGORYID,
-            B.MGC_CCATEGORYNAME CATEGORY_NAME,
-            C.MGD_ID,
-            C.MGD_CGENERICGROUPID,
-            C.MGD_CGENERICDETAILID_CK,
-            C.MGD_CMASTERCODE,
-            C.MGD_DSTART_CK,
-            C.MGD_DEND,
-            PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
-                    C.MGD_CCUSTOMERID,
-                    C.MGD_CCOMPANYID_CK_FK,
-                    C.MGD_CMASTERCODE,
-                    '${searchDate}',
-                    'ja'
-                ) MGD_CGENERICDETAILDESC
+            A.MG_CGENERICGROUPID_CK as group_id,
+            A.MG_CGENERICGROUPDESC as description,
+            A.MG_CIFHISTORICAL as history_type,
+            A.MG_CIFCOMPANYTYPE as company_type,
+            A.MG_CIFEDITABLE as edit_able,
+            A.MG_CCATEGORYID as category_id,
+            B.MGC_CCATEGORYNAME as category_name
         FROM
             MAST_GENERIC A
                 LEFT JOIN MAST_GENERIC_CATEGORY B ON A.MG_CCUSTOMERID_CK_FK = B.MGC_CCUSTOMERID AND A.MG_CCATEGORYID = B.MGC_CCATEGORYID
-                LEFT JOIN MAST_GENERIC_DETAIL C ON A.MG_CGENERICGROUPID_CK = C.MGD_CGENERICGROUPID
-                     AND MGD_CCUSTOMERID = '01'
-                     AND MGD_CCOMPANYID_CK_FK = '01'
-                     AND MGD_CLANGUAGE_CK = 'ja'
-                     AND MGD_DSTART_CK <![CDATA[<=]]> #{searchDate}
-                     AND MGD_DEND >= #{searchDate}
         WHERE
             A.MG_CCUSTOMERID_CK_FK = '01'
           AND A.MG_CLANGUAGE_CK = 'ja'
-          AND	A.MG_CCATEGORYID = #{categoryId}
+          AND	A.MG_CCATEGORYID = #{value}
         ORDER BY
-            A.MG_CGENERICGROUPID_CK,
-            C.MGD_CGENERICGROUPID
+            A.MG_CGENERICGROUPID_CK
     </select>
 
 </mapper>

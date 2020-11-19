@@ -15,7 +15,7 @@ public class CategoryGenericDetailItemVO {
     private String groupId;
     private String detailId;
     private String masterCode;
-    private String desc;
+    private String description;
     private Date startDate;
     private Date endDate;
 
