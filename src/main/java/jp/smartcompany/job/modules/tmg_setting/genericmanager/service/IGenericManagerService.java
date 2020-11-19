@@ -13,4 +13,6 @@ public interface IGenericManagerService extends IService<MastGenericDO> {
 
     Map<String,Object> getGenericDetailList(Map<String,Object> conditions);
 
+    String deleteSelectedDetails(List<Long> ids);
+
 }

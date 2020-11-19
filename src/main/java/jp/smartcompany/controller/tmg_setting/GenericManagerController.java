@@ -3,10 +3,7 @@ package jp.smartcompany.controller.tmg_setting;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.service.IGenericManagerService;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +25,11 @@ public class GenericManagerController {
   @GetMapping("detail")
   public Map<String,Object> getGenericDetailList(@RequestParam Map<String,Object> conditions) {
       return genericManagerService.getGenericDetailList(conditions);
+  }
+
+  @PostMapping("delete")
+  public String removeSelectedDetails(@RequestBody List<Long> ids) {
+      return genericManagerService.deleteSelectedDetails(ids);
   }
 
 }

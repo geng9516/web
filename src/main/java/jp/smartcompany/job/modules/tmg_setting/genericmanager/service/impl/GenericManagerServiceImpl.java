@@ -11,6 +11,7 @@ import jp.smartcompany.boot.util.PageQuery;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDO;
+import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.dto.GenericHistoryDetail;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper;
@@ -19,6 +20,7 @@ import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGeneric
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -30,6 +32,7 @@ public class GenericManagerServiceImpl extends ServiceImpl<GenericManagerMapper,
 implements IGenericManagerService {
 
     private static final String FLAG_VALUE_1 = "1";
+    private final IMastGenericDetailService mastGenericDetailService;
 
     @Override
     public List<CategoryGenericDetailVO> listCategoryGenericDetail(String categoryId) {
@@ -88,6 +91,13 @@ implements IGenericManagerService {
                 .put("pastList",pastList)
                 .put("futureList",futureList)
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public String deleteSelectedDetails(List<Long> ids) {
+        mastGenericDetailService.removeByIds(ids);
+        return "削除成功";
     }
 
 }
