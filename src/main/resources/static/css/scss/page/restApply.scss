@@ -110,9 +110,6 @@
     // 将滚动条隐藏
     overflow-x: hidden;
     min-height: 80vh;
-   .ivu-card-body {
-      padding-bottom: 0;
-    }
     &.rotate-360 {
       display: block;
       transform: rotateY(-360deg);
