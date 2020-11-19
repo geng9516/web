@@ -153,46 +153,7 @@
 <!--                                </Row>-->
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
-                                        <Poptip trigger="hover" class="cursor tl" placement="left-start" title="申請履歴" transfer>
-                                            {{ `申請日時：${item.tntfDnotification}` }}
-                                            <div slot="content" style="width: 800px;color: rgb(104, 109, 116);" class="tc">
-                                                <Row class="ft13 mb5 mt10">
-                                                    <i-col span="4">
-                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">操作</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">状態</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新日時</p>
-                                                    </i-col>
-                                                    <i-col span="8">
-                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者コメント</p>
-                                                    </i-col>
-                                                </Row>
-                                                <Row class="mb20 ft13" style="border: 1px solid rgb(234,235,236);border-top: 0;border-radius: 3px;">
-                                                    <i-col span="4" class="mb10">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.empname }}</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.ntfactionname }}</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.statusname }}</p>
-                                                    </i-col>
-                                                    <i-col span="4">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.tnalDmodifieddate }}</p>
-                                                    </i-col>
-                                                    <i-col span="8">
-                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList"  :style="getDisplayValue(e.tnalCupdateccomment)" >{{ e.tnalCupdateccomment }}</p>
-                                                    </i-col>
-                                                </Row>
-                                                <!-- <div class="mb2 blue" v-for="(e, i) of item.tmgNtfactionlogDOList">{{ `${e.empname} ${e.ntfactionname} ${e.statusname}` }}</div> -->
-                                            </div>
-                                        </Poptip>
+                                        <span style="padding-bottom: 1px; border-bottom: 1px solid var(--text-light-grey);" @click="()=> {isShow = true; modalData = item}">{{ `申請日時：${item.tntfDnotification}` }}</span>
                                     </i-col>
                                 </Row>
                             </li>
@@ -361,6 +322,44 @@
                     </Card>
                 </i-col>
             </Row>
+            <Modal v-model="isShow" title="申請履歴" width="830" footer-hide :mask-closable="false" class="tc">
+                <div style="width: 800px;color: rgb(104, 109, 116);" class="tc">
+                    <Row class="ft13 mb5 mt10">
+                        <i-col span="4">
+                            <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">操作</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">状態</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新日時</p>
+                        </i-col>
+                        <i-col span="8">
+                            <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者コメント</p>
+                        </i-col>
+                    </Row>
+                    <Row class="mb20 ft13" style="border: 1px solid rgb(234,235,236);border-top: 0;border-radius: 3px;">
+                        <i-col span="4" class="mb10">
+                            <p v-for="(e, j) of modalData.tmgNtfactionlogDOList">{{ e.empname }}</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p v-for="(e, j) of modalData.tmgNtfactionlogDOList">{{ e.ntfactionname }}</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p v-for="(e, j) of modalData.tmgNtfactionlogDOList">{{ e.statusname }}</p>
+                        </i-col>
+                        <i-col span="4">
+                            <p v-for="(e, j) of modalData.tmgNtfactionlogDOList">{{ e.tnalDmodifieddate }}</p>
+                        </i-col>
+                        <i-col span="8">
+                            <p v-for="(e, j) of modalData.tmgNtfactionlogDOList"  :style="getDisplayValue(e.tnalCupdateccomment)" >{{ e.tnalCupdateccomment }}</p>
+                        </i-col>
+                    </Row>
+                </div>
+            </Modal>
         </div>
         <div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 999999;" v-if="loading"></div>
     </main>
@@ -370,6 +369,8 @@
             el: '.restApply-warp',
             data() {
                 return {
+                    isShow: false,
+                    modalData: [],
                     hasPassedTimeCheck: true,
                     week: [
                         { name: '月', value: 1 },
