@@ -76,6 +76,48 @@ public class TmgLiquidationPeriodDO implements Serializable {
     @TableField("tlp_cworktypeid")
     private String tlpCworktypeid;
 
+
+    /**
+     *
+     */
+    @TableField("tlp_cavgworktime")
+    private long tlpCavgworktime;
+
+    /**
+     *
+     */
+    @TableField("tlp_cmaxdayhours")
+    private long tlpCmaxdayhours;
+
+    /**
+     *
+     */
+    @TableField("tlp_cmaxweekhours")
+    private long tlpCmaxweekhours;
+
+    /**
+     *
+     */
+    @TableField("tlp_ctotalworkdays")
+    private long tlpCtotalworkdays;
+
+    /**
+     *
+     */
+    @TableField("tlp_cmaxcontiweek")
+    private long tlpCmaxcontiweek;
+
+    /**
+     *
+     */
+    @TableField("tlp_cmaxcontiday")
+    private long tlpCmaxcontiday;
+
+    /**
+     *
+     */
+    @TableField("tlp_coverweekcount")
+    private long tlpCoverweekcount;
     /**
      * 予備文字列1
      */

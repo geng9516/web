@@ -236,7 +236,7 @@ public class TmgLiquidationPeriodBean {
 
 
 
-
+        monthlyMap.put("workPatternList", 111);
         return monthlyMap;
     }
 

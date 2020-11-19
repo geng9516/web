@@ -363,7 +363,7 @@
               <form-item label="日付" v-show="!selectedRestInfo.transfer">
                 <date-picker type="date" class="datepicker-single width100 tl" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付" ref="datepicker"></date-picker>
                 <span v-if="timerangeType === 2">
-                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -5px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付" ref="datepicker2"></date-picker>
+                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -8px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付" ref="datepicker2"></date-picker>
                 </span>
               </form-item>
               <!-- 有振休 -->

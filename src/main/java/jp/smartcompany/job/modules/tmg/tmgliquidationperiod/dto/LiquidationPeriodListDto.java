@@ -19,6 +19,9 @@ public class LiquidationPeriodListDto {
     private String enddate;
     private String modifieduser;
     private String modifieddate;
+    private String dailymaxworktime;
+    private String weeklymaxworktime;
+    private String totalworkdays;
     private String newflag;
     private String status;
     private String statusname;
