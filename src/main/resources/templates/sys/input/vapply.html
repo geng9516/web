@@ -157,7 +157,7 @@
                                     </i-col>
                                 </Row>
                             </li>
-                            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 72vh;"></Spin>
+                            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 96%;"></Spin>
                             <!-- 还有更多数据的时候 -->
                             <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
