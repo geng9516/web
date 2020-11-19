@@ -5,5 +5,134 @@
 </head>
 
 <body>
-ルグビューア
+    <div th:replace="layout/loadingBar::loadingBar"></div>
+    <!-- 菜单导航栏 -->
+    <div th:replace="layout/sider"></div>
+    <main class="content logsettings-warp" ref="layout">
+        <div class="content_head"></div>
+          <div class="header">
+            <div class="title1">
+              <h1>
+                <Icon type="i-emeer colored"></Icon>
+                {{ `ルグビューア` }}
+              </h1>
+            </div>
+            <div class="btnbox">
+              <span style="flex:1"></span>
+              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
+            </div>
+          </div>
+        </div>
+        <div class="content_body">
+          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
+          <div class="table-top">
+            <Row :gutter="16">
+              <i-col span="24" class="tr">
+              </i-col>
+            </Row>
+          </div>
+          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+            :loading="loading" ref="table">
+          </i-table>
+        </div>
+        <back-top></back-top>
+      </main>
+    <div th:replace="layout/head::header"></div>
+    <script type="text/babel" th:inline="javascript">
+        new Vue({
+          el: '.logsettings-warp',
+          data() {
+            return {
+              isShow: false,
+              loading: true,
+              editLoading: false,
+              btnLoading: false,
+              hasChange: false,
+              defaultOption: false,
+              psSite: Utils.getUrlParam(location.href, 'psSite'),
+              psApp: Utils.getUrlParam(location.href, 'psApp'),
+              updateValue: {},
+              columns: [
+              ],
+              opts: {
+                systemId: '01',
+                appId: '0',
+                siteId: '0',
+                companyId: '0',
+                date: '',
+                groupId: '0',
+                isAll: false,
+              },
+              tableData: [],
+              conditionsList: [],
+              contentScrollTop: 0
+            }
+          },
+          async created() {
+            this.getTableData()
+            window.addEventListener('scroll', this.handleScroll, { passive: true })
+          },
+          beforeDestroy() {
+            window.removeEventListener('scroll', this.handleScroll, { passive: true })
+          },
+          computed: {
+            tableHeadFixed() {
+              if (this.contentScrollTop > 110) return true
+              else return false
+            }
+          },
+          methods: {
+            async getTableData() {
+              const OPTS = { ...this.opts }
+              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+              Object.keys(OPTS).forEach(key => {
+                if (OPTS[key] === '0') {
+                  delete OPTS[key]
+                }
+              })
+              this.loading = true
+              try {
+                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
+                this.tableData = data
+              } catch (error) {
+              } finally {
+                this.loading = false
+              }
+            },
+            async update() {
+              this.$Modal.confirm({
+                title: '注意',
+                content: '入力内容を保存します。よろしいですか？',
+                okText: 'OK',
+                cancelText: 'キャンセル',
+                onOk: async () => {
+                  this.loading = true
+                  const update = this.tableData.map((e, i)=> {
+                    return {
+                      ...e,
+                      templateId: e.templateId === 'null' ? null : e.templateId,
+                      permissionType: e.permissionType === 'null' ? null : e.permissionType
+                    }
+                  })
+                  try {
+                    const { data } = await this.http.post('sys/appmanager/update', update)
+                    this.$Message.success('更新完了')
+                    this.getTableData()
+                    this.updateValue = {}
+                  } catch (error) {
+                  } finally {
+                    history.go(0)
+                    this.loading = false
+                  }
+                }
+              })
+            },
+            handleScroll: Throttle(function (e) {
+              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50)
+          }
+        })
+      </script>
 </body>
