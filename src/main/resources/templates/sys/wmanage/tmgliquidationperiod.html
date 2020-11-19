@@ -75,6 +75,12 @@
                  border :row-class-name="() => 'select-col'"
                 :data="tableData" :loading="loading" :columns="columns"
                  no-data-text="123">
+            <template slot-scope="{ row }" slot="dailymaxworktime">{{row.dailymaxworktime}}分
+            </template>
+            <template slot-scope="{ row }" slot="weeklymaxworktime">{{row.weeklymaxworktime}}時
+            </template>
+            <template slot-scope="{ row }" slot="totalworkdays" v-if="row.totalworkdays">{{row.totalworkdays}}日
+            </template>
             <template slot-scope="{ row }" slot="detail">
                 <i-button class="width100" size="small" v-if="row.newflag" @click="showDetails(row)">{{row.statusname}}</i-button>
                 <i-button class="width100" size="small" v-else @click="showDetails(row)">新規</i-button>
@@ -145,22 +151,24 @@
             </div>
             <i-table
                     class="mt10"
-                    @on-row-click="handleClickRow(arguments)"
                     max-height="730"
                     border
                     :columns="columns4Year"
                     :data="tableData4Year"
                     :loading="loading"
                     :span-method="handleSpan"
-                    ref="table"
+                    ref="tableDisp"
             >
+                <template slot-scope="{ row }" slot="yyyymm">
+                    <span style="text-decoration: underline" @click="showMonth(row.yyyymm)" >{{ row.yyyymm }}</span>
+                </template>
                 <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`m${j + 1}`">
                     <div :class="i === 0 ? `sum-row ${item.color}` : `divi-hour-line sum-row ${item.color}`" v-for="(item, i) of row[`m${j + 1}`]" :key="i">{{ item.label || '&nbsp;' }}</div>
                 </template>
             </i-table>
         </Modal>
 
-        <Modal title="新規精算期間"  width="50" :mask-closable="false" footer-hide v-model="newFlg">
+        <Modal title="新規精算期間"  width="40" :mask-closable="false" footer-hide v-model="newFlg">
             <Row :gutter="10">
                 <i-col span="8">
                     <div class="label" style="padding:1px 0">所属</div>
@@ -180,96 +188,35 @@
                 <Icon type="logo-buffer"></Icon>
                 新規精算
             </div>
-
+            <Alert type="error" class="error-info" v-if="newErrorMsg">{{newErrorMsg}}</Alert>
             <div class="tr mb20">
-                <Row>
-                    <i-col span="12">
-                        <div class="label mr20">
-                            精算期間
-                        </div>
-                    </i-col>
-                    <i-col span="6">
-                        <date-picker class="mar width100"  type="month" v-model="newLiquidationInfo.curDateFrom" :editable="false" :clearable="false"
-                                     format="yyyy年MM月"></date-picker>
-                    </i-col>
-                    <i-col span="6">
-                        <date-picker class="mar width100"  type="month" v-model="newLiquidationInfo.curDateTo" :editable="false" :clearable="false"
-                                     format="yyyy年MM月"></date-picker>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        一週間の平均労働時間数
-                    </div>
-                    </i-col>
-                    <i-col span="12">
+                <i-form :label-width="300" ref="newLiquidationInfo" :model="newLiquidationInfo" @submit.native.prevent>
+                    <form-item label="精算期間">
+                        <date-picker style="width:48.3%" type="date" class="datepicker-single tl" transfer v-model="newLiquidationInfo.curDateFrom" format="yyyy/MM/dd" placeholder="日付"></date-picker>&nbsp;<span style="position: relative; top: -8px;">-</span>&nbsp;<date-picker style="width:48.3%" type="date" class="datepicker-single tl" transfer v-model="newLiquidationInfo.curDateTo" format="yyyy/MM/dd" :editable="false" placeholder="日付" ></date-picker>
+                    </form-item>
+                    <form-item label="一週間の平均労働時間数">
                         <input-number class="width100" v-model="newLiquidationInfo.avgWorkTime" placeholder="分"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        一日最大労働時間
-                    </div>
-                    </i-col>
-                    <i-col span="12">
+                    </form-item>
+                    <form-item label="一日最大労働時間">
                         <input-number class="width100" v-model="newLiquidationInfo.dailyMaxWorkTime" placeholder="分"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        一週最大労働時間
-                    </div>
-                    </i-col>
-                    <i-col span="12">
-                        <input-number class="width100" v-model="newLiquidationInfo.weeklyMaxWorkTime" placeholder="分"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        総労働日数
-                    </div>
-                    </i-col>
-                    <i-col span="12">
+                    </form-item>
+                    <form-item label="一週最大労働時間">
+                        <input-number class="width100" v-model="newLiquidationInfo.weeklyMaxWorkTime" placeholder="日"/>
+                    </form-item>
+                    <form-item label="総労働日数">
                         <input-number class="width100" v-model="newLiquidationInfo.totalWorkDays" placeholder="日"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        最も長い連続労働日数
-                    </div>
-                    </i-col>
-                    <i-col span="12">
-                        <input-number class="width100" v-model="newLiquidationInfo.maxContiDays" placeholder="日"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        ４８時間を超える週の最長連続週数
-                    </div>
-                    </i-col>
-                    <i-col span="12">
+                    </form-item>
+                    <form-item label="最も長い連続労働日数">
+                        <input-number class="width100" v-model="newLiquidationInfo.maxContiDays" placeholder="週"/>
+                    </form-item>
+                    <form-item label="４８時間を超える週の最長連続週数">
                         <input-number class="width100" v-model="newLiquidationInfo.maxContiWeeks" placeholder="週"/>
-                    </i-col>
-                </Row>
-                <Row>
-                    <i-col span="12">
-                    <div class="label mr20">
-                        三っ月の労働時間が４８時間を超える週数
-                    </div>
-                    </i-col>
-                    <i-col span="12">
+                    </form-item>
+                    <form-item label="三っ月の労働時間が４８時間を超える週数">
                         <input-number class="width100" v-model="newLiquidationInfo.contiWeeks" placeholder="週"/>
-                    </i-col>
-                </Row>
-
+                    </form-item>
+                </i-form>
             </div>
-
             <div class="tr">
                 <i-button type="primary" @click="makeNewLiquidation" ghost>期間作成</i-button>
             </div>
@@ -345,60 +292,92 @@
         <Modal title = "月編集画面"　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
             <Row class="mb10">
                 <i-col span="4">
-                    <div class="label tc">勤務パターン</div>
-                </i-col>
+                    <div class="label tc">勤務パターン</div></i-col>
                 <i-col span="20">
-
+                    <template>
+                    <radio-group v-model="workPattern" type="button">
+                        <Radio v-for="(item, i) of workPatternList" :label="item.patternId">{{item.patternName}}</Radio>
+                        <Radio label="TMG_PATTERN|CUSTOMIZE">カスタマイズ</Radio>
+                    </radio-group>
+                    </template>
+                    <i-button  @onclick="makeNewPattern">新規</i-button>
                 </i-col>
             </Row>
 
 
-            <i-table border :columns="columnsMonth" :data="columnsMonthData" :row-class-name="() => 'select-col'"  @on-row-click="patternSet">
-
-                <template slot-scope="{ row }" slot="workFar">
-                    <i-select transfer  v-model="pattern.bussinessTripid">
-                        <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
-                    </i-select>
+            <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="() => 'select-col'"  @on-row-click="patternSet">
+                <template slot-scope="{ row, index }" slot="kuben">
+                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].kuben}}</span>
+                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].kuben}}</span>
+                    <i-input v-model="monthData[index].kuben"  v-if="colClick(row)"></i-input>
                 </template>
 
-                <template slot-scope="{ row }" slot="pattern">
-                    <i-input v-model="pattern.nopen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nopen', $event.target)"/>
+                <template slot-scope="{ row, index }" slot="patternid">
+                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].patternid}}</span>
+                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].patternid}}</span>
+                    <i-input v-model="monthData[index].patternid" v-if="colClick(row)"/>
                 </template>
 
-                <template slot-scope="{ row }" slot="startTime">
-                    <i-input v-model="pattern.nopen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nopen', $event.target)"/>
+                <template slot-scope="{ row, index }" slot="startTime">
+                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].starttime}}</span>
+                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].starttime}}</span>
+                    <i-input v-model="monthData[index].starttime" v-if="colClick(row)"　@on-blur="handleInputChange(index,monthData[index],'starttime', $event.target)"/>
                 </template>
 
-                <template slot-scope="{ row }" slot="endTime">
-                    <i-input v-model="pattern.nclose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nclose', $event.target)"/>
+                <template slot-scope="{ row, index }" slot="endTime">
+                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].endtime}}</span>
+                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].endtime}}</span>
+                    <i-input v-model="monthData[index].endtime" v-if="colClick(row)" @on-blur="handleInputChange(index,monthData[index],'endtime', $event.target)"/>
                 </template>
 
-                <template slot-scope="{ row }" slot="restTime" >
-                    <Row :gutter="10" v-for="(item, i) of pattern.restList" :key="i" class="mb5" >
-                        <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                            <i-input v-model="pattern.restList[i].restOpen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restOpen', $event.target)"/>
-                        </i-col>
-                        <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                            <i-input v-model="pattern.restList[i].restClose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restClose', $event.target)"/>
-                        </i-col>
-                        <i-col span="8" v-show="pattern.restList.length > 1">
-                            <i-button ghost type="error" @click="handleMinusRest(pattern.restList, i)">-</i-button>
-                        </i-col>
-                    </Row>
-                    <i-button
-                            :disabled="!patternDisabled"
-                            class="mt5"
-                            size="small"
-                            ghost
-                            type="success"
-                            long
-                            @click="handleAddRest(pattern.restList)"
-                            v-show="pattern.restList.length < 4"
-                    >+</i-button>
+                <template slot-scope="{ row, index }" slot="restTime" >
+                    <div v-if="colClick(row)">
+                        <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
+                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
+                                <i-input v-model="monthData[index].restTime[i].restOpen" @on-blur="handleInputChange(index, monthData[index].restTime[i],'restOpen', $event.target)"/>
+                            </i-col>
+                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
+                                <i-input v-model="monthData[index].restTime[i].restClose" @on-blur="handleInputChange(index, monthData[index].restTime[i],'restClose', $event.target)"/>
+                            </i-col>
+                            <i-col span="8" v-show="monthData[index].restTime.length > 1">
+                                <i-button ghost type="error" @click="handleMinusRest(monthData[index].restTime, i)">-</i-button>
+                            </i-col>
+                        </Row>
+                        <i-button
+                                class="mt5"
+                                size="small"
+                                ghost
+                                type="success"
+                                long
+                                @click="handleAddRest(monthData[index].restTime)"
+                                v-show="monthData[index].restTime.length < 4"
+                        >+</i-button>
+                    </div>
+                    <div :v-if="monthColDisabled(row)">
+                        <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
+                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
+                                <span class="input-like-span" >{{monthData[index].restTime[i].restOpen}}</span>
+                            </i-col>
+                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
+                                <span class="input-like-span" >{{monthData[index].restTime[i].restClose}}</span>
+                            </i-col>
+                        </Row>
+                    </div>
+                    <div v-else>
+                        <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
+                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
+                                <span class="input-like-span" >{{monthData[index].restTime[i].restOpen}}</span>
+                            </i-col>
+                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
+                                <span class="input-like-span" >{{monthData[index].restTime[i].restClose}}</span>
+                            </i-col>
+                        </Row>
+                    </div>
                 </template>
 
-                <template slot-scope="{ row }" slot="comment">
-                    <i-input v-model="pattern.nclose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nclose', $event.target)"/>
+                <template slot-scope="{ row, index }" slot="comment">
+                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].comment}}</span>
+                    <i-input v-model="monthData[index].comment" v-else/>
                 </template>
             </i-table>
         </Modal>
@@ -421,7 +400,7 @@
                     {
                         title: '氏名',
                         key: 'employeename',
-                        minWidth: 100,
+                        minWidth: 60,
                         align: 'left'
                     },
                     {
@@ -432,7 +411,7 @@
                     },
                     {
                         title: '種別',
-                        minWidth: 36,
+                        minWidth: 100,
                         key: 'worktypename',
                         align: 'center'
                     },
@@ -447,20 +426,35 @@
                         align: 'center'
                     },
                     {
+                        title: '日最大労働時間',
+                        slot: 'dailymaxworktime',
+                        align: 'center'
+                    },
+                    {
+                        title: '週最大労働時間',
+                        slot: 'weeklymaxworktime',
+                        align: 'center'
+                    },
+                    {
+                        title: '総労働日数',
+                        slot: 'totalworkdays',
+                        align: 'center'
+                    },
+                    {
                         title: '更新者',
-                        minWidth: 70,
+                        minWidth: 60,
                         key: 'modifieduser',
                         align: 'center'
                     },
                     {
                         title: '更新日付',
-                        minWidth: 70,
+                        minWidth: 60,
                         key: 'modifieddate',
                         align: 'center'
                     },
                     {
                         title: '登録内容',
-                        Width: 70,
+                        Width: 40,
                         slot: 'detail',
                         align: 'center'
                     },
@@ -535,6 +529,7 @@
 
                 //新規画面
                 newFlg:false,
+                newErrorMsg:'',
                 newLiquidationInfo:{
                     empId:'',
                     sectionId:'',
@@ -833,28 +828,34 @@
                     },
                     {
                         title: '区分',
-                        slot: 'workFar',
+                        slot: 'kuben',
                         minWidth: 100,
                         align: 'left'
                     },
                     {
                         title: 'パターン',
-                        slot: 'pattern',
+                        slot: 'patternid',
                         minWidth: 100,
                         align: 'left'
+                    },
+                    {
+                        title: '労働時間',
+                        slot: 'workhours',
+                        minWidth: 100,
+                        align: 'center'
                     },
                     {
                         title: '勤務時間',
                         children:[
                             {
                                 title: '開始時間',
-                                slot: 'startTime',
+                                slot: 'starttime',
                                 minWidth: 100,
                                 align: 'left'
                             },
                             {
                                 title: '終了時間',
-                                slot: 'endTime',
+                                slot: 'endtime',
                                 minWidth: 100,
                                 align: 'left'
                             },
@@ -873,9 +874,18 @@
                         align: 'left'
                     },
                 ],
-                columnsMonthData:[],
+                monthData:[],
                 monthlyEditFlg:false,
-                workPatternList:[],
+                workPattern:'',
+                workPatternList:[
+                    {
+                    patternId:'1',
+                    patternName:'1'
+                },
+                    {
+                    patternId:'2',
+                    patternName:'2'
+                }],
 
 
 
@@ -889,37 +899,33 @@
         async mounted() {
             this.getWorkTypeList()
 
-            this.centerTable = this.$refs.table.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
-            this.leftTable = this.$refs.table.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
-            this.rightTable = this.$refs.table.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
-
         },
 
         computed: {
-            autoTotalDate(){
-                if(!this.editTableDate) return
-                let totalStandard=0
-                let totalResult=0
-                let totalAdjust=0
-                this.$refs.table && this.$refs.table.rebuildData.map(e=> {
-                    totalStandard += (+e.standard)
-                    totalResult += (+e.result)
-                    totalAdjust += (+e.result)-(+e.standard)
-                })
-                let result=[{
-                    yyyymm:Utils.formatDate(this.curDateFrom,'yyyy/mm')+'-'+Utils.formatDate(this.curDateTo,'yyyy/mm'),
-                    totalStandard:totalStandard,
-                    totalResult:totalResult,
-                    totalAdjust:totalAdjust
-                }]
-                return result
-            },
+            // autoTotalDate(){
+            //     if(!this.editTableDate) return
+            //     let totalStandard=0
+            //     let totalResult=0
+            //     let totalAdjust=0
+            //     this.$refs.table && this.$refs.table.rebuildData.map(e=> {
+            //         totalStandard += (+e.standard)
+            //         totalResult += (+e.result)
+            //         totalAdjust += (+e.result)-(+e.standard)
+            //     })
+            //     let result=[{
+            //         yyyymm:Utils.formatDate(this.curDateFrom,'yyyy/mm')+'-'+Utils.formatDate(this.curDateTo,'yyyy/mm'),
+            //         totalStandard:totalStandard,
+            //         totalResult:totalResult,
+            //         totalAdjust:totalAdjust
+            //     }]
+            //     return result
+            // },
 
             columns4Year() {
                     let result = [
                         {
                             title: '年月',
-                            key: 'yyyymm',
+                            slot: 'yyyymm',
                             width: 100,
                             align: 'center',
                             fixed: 'left'
@@ -1061,6 +1067,12 @@
                         this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                         this.editTableDate = data.monthDtoList
+
+
+                        console.log(this.$refs.tableDisp)
+                        this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
+                        this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
+                        this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
                         this.editFlag = true;
                     } catch (error) {
                         return
@@ -1092,11 +1104,11 @@
                 } finally {
                 }
             },
+            //删除清算
             deleteLiquidation(){
 
             },
-
-            handleClickRow() {},
+            //清算详细表格合并
             handleSpan ({ row, column, rowIndex, columnIndex }) {
 
                 //每月第三行时 日期列 合并整行 非日期列 不合并
@@ -1131,26 +1143,86 @@
                     return [0, 0];
                 }
             },
+            //时间转换
             handleInputChange(object, index, el) {
                 if (object) {
                     this.hasPassedTimeCheck = Utils.checkTime(object, index)
                     this.$set(object, index, object[index])
                 }
             },
+            //新规清算区间
             async makeNewLiquidation() {
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    width: 480,
+                    title: '注意',
+                    content: 'この精算期間を新規します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        try {
+                            const { msg } = await this.http.post('sys/tmgliquidationperiod/insertLiquidation', this.newLiquidationInfo)
+                            this.newFlg = false;
+                        } catch (error) {
+                            return
+                        } finally {
+                        }
+                    }
+                })
+            },
 
+            //日期天数差
+            DateDiff(sDate1,  sDate2){
+                iDays  =  parseInt(Math.abs(oDate1-oDate2)/1000/60/60/24)    //把相差的毫秒数转换为天数
+                return  iDays
+            },
+            //月编辑画面显示
+            async showMonth(e) {
+                let OPTS={
+                    empId:this.empInfo.empId,
+                    yyyymm:e
+                }
                 try {
-                    const { msg } = await this.http.post('sys/tmgliquidationperiod/insertLiquidation', this.newLiquidationInfo)
-                    this.newFlg = false;
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/EditMonthDisp', OPTS)
+                    this.monthData = data.liquidationDailyInfoVoList;
+                    //this.workPatternList =data.workPatternList
+                    this.monthlyEditFlg = true
                 } catch (error) {
                     return
                 } finally {
                 }
-            },
-            patternSet(){
 
             },
-            handleAddRest(){
+            //休息时间的减号处理
+            handleMinusRest(e, i) {
+                e.splice(i, 1)
+            },
+            //休息时间的加号处理
+            handleAddRest(e) {
+                e.push({ restOpen: '', restClose: '' })
+            },
+            //控制行disabled
+            monthColDisabled(e){
+                return true
+            },
+            //控制行pattern
+            colClick(e){
+                if(e.patternid === 'TMG_PATTERN|CUSTOMIZE'){
+                    return true
+                }else{
+                    return false
+                }
+            },
+            //将此行设置为当前点击pattern
+            patternSet(row,index){
+                console.log(this.workPattern)
+                if(this.workPattern && this.workPattern != 'TMG_PATTERN|CUSTOMIZE'){
+
+                }else if(this.workPattern && this.workPattern === 'TMG_PATTERN|CUSTOMIZE'){
+                    this.monthData[index].patternid='TMG_PATTERN|CUSTOMIZE'
+                }
+            },
+            makeNewPattern(){
 
             }
 

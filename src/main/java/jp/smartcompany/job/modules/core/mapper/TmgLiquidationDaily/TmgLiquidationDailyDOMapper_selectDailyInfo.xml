@@ -20,7 +20,7 @@
         FROM
             TMG_LIQUIDATION_DAILY
         WHERE
-            TRUNC(TLDD_DYYYYMMDD, 'mm') = #{yyyymm}
+            TRUNC(TLDD_DYYYYMMDD, 'mm') = TO_DATE(#{yyyymm},'yyyy/mm')
             AND TLDD_CEMPLOYEEID = #{empId}
             AND TLDD_CCUSTOMERID = #{custID}
             AND TLDD_CCOMPANYID = #{compCode}
