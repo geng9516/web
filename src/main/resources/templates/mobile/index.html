@@ -85,20 +85,13 @@
           <Row class="mb5">
             <i-col span="8" class="label tc">出張</i-col>
             <i-col span="16" class="no-border-radius" v-if="!bDisable">
-              <i-select v-model="businessTrip" clearable ref="select2" class="mr30" @on-change=""
-                v-if="(!bHoliday && !bFixed)">
-                <i-option v-for="(item, index) of businessTripList" :key="index" :label="item.mgdCgenericdetaildesc"
-                  　:value="item.mgdCmastercode">
-                </i-option>
-              </i-select>
+              <cube-select v-model="businessTrip" title="出張" :options="businessTripList" placeholder="選んでください。" class="width100 mr30" v-if="(!bHoliday && !bFixed)">
+              </cube-select>
               <p v-else class="tc input-like-span">{{dailyEdit.tdaCbusinesstripidRName}}</p>
             </i-col>
             <i-col span="8" class="no-border-radius" v-else>
-              <i-select v-model="businessTrip" class="mr30" @on-change="" disabled v-if="(!bHoliday && !bFixed)">
-                <i-option v-for="(item, index) of businessTripList" :key="index" :label="item.mgdCgenericdetaildesc"
-                  　:value="item.mgdCmastercode">
-                </i-option>
-              </i-select>
+              <cube-select v-model="businessTrip" title="出張" :options="businessTripList" placeholder="選んでください。" disabled class="width100 mr30" v-if="(!bHoliday && !bFixed)">
+              </cube-select>
               <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
             </i-col>
           </Row>
@@ -125,12 +118,8 @@
           非勤務
         </div>
         <div class="mb10 tr" v-if="!bHoliday && !bFixed">
-          <i-select style="display: inline-block;" v-model="categoryNonduty" class="mr15 width50" ref="select3"
-            clearable v-if="!bDisable && categoryNondutyList.length > 0 ">
-            <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
-              　:value="item.itemCode">
-            </i-option>
-          </i-select>
+          <cube-select v-model="categoryNonduty" title="非勤務" :options="categoryNondutyList" placeholder="選んでください。" class="width50" style="display: inline-block;" v-if="!bDisable && categoryNondutyList.length > 0 ">
+         </cube-select>
           <!--                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>-->
           <i-button style="display: inline-block;" type="primary" ghost @click="addNotWork" v-if="!bDisable">追加
           </i-button>
@@ -162,12 +151,14 @@
             超過勤務
           </div>
           <div class="mb10 tr" v-if="!bHoliday && !bFixed">
-            <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
-              ref="select4" clearable v-if="!bDisable && categoryOverhoursList.length>0 ">
+            <!-- <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
+              ref="select4" clearable v-if="!bDisable && categoryOverhoursList.length>0">
               <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
                 　:value="item.itemCode">
               </i-option>
-            </i-select>
+            </i-select> -->
+            <cube-select v-model="categoryOverhours" title="超過勤務" style="display: inline-block;" :options="categoryOverhoursList" placeholder="選んでください。" class="width50" v-if="!bDisable && categoryOverhoursList.length>0">
+            </cube-select>
             <!--                <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>-->
             <i-button style="display: inline-block;" type="primary" ghost @click="addOverWork" v-if="!bDisable">追加
             </i-button>
