@@ -27,8 +27,8 @@
       &.white td {
         background-color: var(--modal-bg)
       }
-      &.disbaled td {
-        background-color: var(--table-disbaled-row)
+      &.disabled td {
+        background-color: var(--table-disabled-row)
       }
       // 表格 hover单行class
       &.select-col:hover td {
