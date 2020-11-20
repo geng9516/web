@@ -6,6 +6,12 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<style>
+    .ivu-table .table-info-row td{
+        background-color: #D3D3D3;
+        color: #fff;
+    }
+</style>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
 <main class="content tmgliquidationperiod-warp" ref="layout">
@@ -296,7 +302,7 @@
                 <i-col span="20">
                     <template>
                     <radio-group v-model="workPattern" type="button">
-                        <Radio v-for="(item, i) of workPatternList" :label="item.patternId">{{item.patternName}}</Radio>
+                        <Radio v-for="(item, i) of workPatternList" :label="item.patternId">{{item.patternname}}</Radio>
                         <Radio label="TMG_PATTERN|CUSTOMIZE">カスタマイズ</Radio>
                     </radio-group>
                     </template>
@@ -305,29 +311,20 @@
             </Row>
 
 
-            <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="() => 'select-col'"  @on-row-click="patternSet">
-                <template slot-scope="{ row, index }" slot="kuben">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].kuben}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].kuben}}</span>
-                    <i-input v-model="monthData[index].kuben"  v-if="colClick(row)"></i-input>
-                </template>
+            <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="monthColDisabled"  @on-row-click="patternSet">
 
-                <template slot-scope="{ row, index }" slot="patternid">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].patternid}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].patternid}}</span>
-                    <i-input v-model="monthData[index].patternid" v-if="colClick(row)"/>
+                <template slot-scope="{ row, index }" slot="workhours">
+                    {{monthData[index].endtime - monthData[index].starttime}}
                 </template>
 
                 <template slot-scope="{ row, index }" slot="startTime">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].starttime}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].starttime}}</span>
                     <i-input v-model="monthData[index].starttime" v-if="colClick(row)"　@on-blur="handleInputChange(index,monthData[index],'starttime', $event.target)"/>
+                    <span class="input-like-span" v-else>{{monthData[index].starttime}}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="endTime">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].endtime}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].endtime}}</span>
                     <i-input v-model="monthData[index].endtime" v-if="colClick(row)" @on-blur="handleInputChange(index,monthData[index],'endtime', $event.target)"/>
+                    <span class="input-like-span" v-else>{{monthData[index].endtime}}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="restTime" >
@@ -353,16 +350,6 @@
                                 v-show="monthData[index].restTime.length < 4"
                         >+</i-button>
                     </div>
-                    <div :v-if="monthColDisabled(row)">
-                        <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
-                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
-                                <span class="input-like-span" >{{monthData[index].restTime[i].restOpen}}</span>
-                            </i-col>
-                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
-                                <span class="input-like-span" >{{monthData[index].restTime[i].restClose}}</span>
-                            </i-col>
-                        </Row>
-                    </div>
                     <div v-else>
                         <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
                             <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
@@ -373,11 +360,6 @@
                             </i-col>
                         </Row>
                     </div>
-                </template>
-
-                <template slot-scope="{ row, index }" slot="comment">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].comment}}</span>
-                    <i-input v-model="monthData[index].comment" v-else/>
                 </template>
             </i-table>
         </Modal>
@@ -828,13 +810,13 @@
                     },
                     {
                         title: '区分',
-                        slot: 'kuben',
+                        key: 'kuben',
                         minWidth: 100,
                         align: 'left'
                     },
                     {
                         title: 'パターン',
-                        slot: 'patternid',
+                        key: 'patternname',
                         minWidth: 100,
                         align: 'left'
                     },
@@ -869,7 +851,7 @@
                     },
                     {
                         title: 'コメント',
-                        slot: 'comment',
+                        key: 'comment',
                         minWidth: 100,
                         align: 'left'
                     },
@@ -880,11 +862,11 @@
                 workPatternList:[
                     {
                     patternId:'1',
-                    patternName:'1'
+                        patternname:'1'
                 },
                     {
                     patternId:'2',
-                    patternName:'2'
+                        patternname:'2'
                 }],
 
 
@@ -1052,7 +1034,6 @@
                 }
             },
             async showDetails(e) {
-                console.log(e)
                 this.empInfo.empId=e.employeeid
                 this.empInfo.empWorkTypeId=e.worktypeid
                 this.empInfo.deptName=e.deptname
@@ -1067,9 +1048,6 @@
                         this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                         this.editTableDate = data.monthDtoList
-
-
-                        console.log(this.$refs.tableDisp)
                         this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                         this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
                         this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
@@ -1202,8 +1180,17 @@
                 e.push({ restOpen: '', restClose: '' })
             },
             //控制行disabled
-            monthColDisabled(e){
-                return true
+            monthColDisabled(row,index){
+                //customize下都不显示
+                if(row.patternid === 'TMG_PATTERN|CUSTOMIZE'){
+                    return 'white select-col'
+                }
+                //確定状態变灰
+                if(row.status === 'TMG_DATASTATUS|9'){
+                    console.log(111)
+                    return 'disabled'
+                }
+                return 'white select-col'
             },
             //控制行pattern
             colClick(e){
@@ -1215,11 +1202,11 @@
             },
             //将此行设置为当前点击pattern
             patternSet(row,index){
-                console.log(this.workPattern)
                 if(this.workPattern && this.workPattern != 'TMG_PATTERN|CUSTOMIZE'){
 
                 }else if(this.workPattern && this.workPattern === 'TMG_PATTERN|CUSTOMIZE'){
                     this.monthData[index].patternid='TMG_PATTERN|CUSTOMIZE'
+                    this.monthData[index].patternname='カスタマイズ'
                 }
             },
             makeNewPattern(){
