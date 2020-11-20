@@ -250,9 +250,9 @@
                :loading="loading">申請
             </i-button>
             <i-button v-show="this.isReApplyIng" class="btn" long type="primary"
-               ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
+               ghost @click="apply(true)" icon="md-create" :loading="loading" :disabled="disableReapply">再申請
             </i-button>
-            <i-button v-show="this.isReApplyIng" class="mt10" long
+            <i-button v-show="this.isReApplyIng" class="mt10" long :disabled="loading"
                @click="resetReApply">キャンセル
             </i-button>
          </div>
@@ -316,7 +316,7 @@
                </Row>
                <div class="description cursor light-grey mt10 tr mr5">{{ `申請日時：${item.tntfDnotification}` }}</div>
             </li>
-            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 88vh;">
+            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 96%;">
             </Spin>
             <!-- 还有更多数据的时候 -->
             <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" long

@@ -99,7 +99,7 @@ public class TmgLiquidationPeriodController {
 
 
     /**
-     * 月編集画面
+     * 編集画面
      * @return　エラー
      */
     @GetMapping("getEditDisop")

@@ -19,22 +19,31 @@
             </div>
             <div class="btnbox">
               <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
+              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
             </div>
           </div>
         </div>
         <div class="content_body">
-          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
           <div class="table-top">
             <Row :gutter="16">
               <i-col span="24" class="tr">
               </i-col>
             </Row>
           </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
-          </i-table>
+          <Row :gutter="16">
+            <i-col span="6" class="">
+                <Card class="mb5" v-for="item of listData" style="background: var(--content-bg);">
+                  <p class="mb2"><span style="color: var(--text-light-grey)">名称: </span>{{ item.description }}</p>
+                  <p><span style="color: var(--text-light-grey)">コード: </span>{{ item.groupId }}</p>
+                  <p class="tr" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}" >{{ item.editAble === '1' ? '変更可' : '変更不可'}}</p>
+                </Card>
+            <!-- <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+                :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+                :loading="loading" ref="table">
+                <template slot-scope="{ row }" slot="status"><span :class="row.editAble === '1'  ? 'blue' : 'red'">{{ row.editAble === '1' ? '〇' : '✖'}}</span></template>
+             </i-table> -->
+            </i-col>
+          </Row>
         </div>
         <back-top></back-top>
       </main>
@@ -48,23 +57,29 @@
               loading: true,
               editLoading: false,
               btnLoading: false,
-              hasChange: false,
               defaultOption: false,
               psSite: Utils.getUrlParam(location.href, 'psSite'),
               psApp: Utils.getUrlParam(location.href, 'psApp'),
               updateValue: {},
               columns: [
-               
+               {
+                   title:'コード',
+                   key:'groupId',
+               },
+               {
+                   title:'名称',
+                   key:'description',
+               },
+               {
+                   title:'変更可否',
+                   slot:'status',
+                   align:'center',
+                   width: 50
+               }
               ],
               opts: {
-                systemId: '01',
-                appId: '0',
-                siteId: '0',
-                companyId: '0',
-                date: '',
-                groupId: '0',
-                isAll: false,
               },
+              listData:[],
               tableData: [],
               conditionsList: [],
               contentScrollTop: 0
@@ -85,17 +100,13 @@
           },
           methods: {
             async getTableData() {
-              const OPTS = { ...this.opts }
+              const OPTS = {}
               OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
               OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              Object.keys(OPTS).forEach(key => {
-                if (OPTS[key] === '0') {
-                  delete OPTS[key]
-                }
-              })
               this.loading = true
               try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
+                const { data } = await this.http.get('sys/genericmanager/cates', OPTS)
+                this.listData = data
                 this.tableData = data
               } catch (error) {
               } finally {

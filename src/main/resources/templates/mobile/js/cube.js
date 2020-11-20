@@ -153,7 +153,7 @@ const cubeSelect = {
         selectedIndex: 'selectedIndex',
         cancelTxt: '_cancelTxt',
         confirmTxt: '_confirmTxt',
-        zIndex:900
+        zIndex:1200
       },
       $events: {
         select: 'selectHandler',

@@ -21,4 +21,5 @@ public class LiquidationDailyInfoVo {
     private String holflg;
     private String ntftype;
     private String patternid;
+    private String patternname;
 }
