@@ -587,4 +587,22 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public  List<WorkTypeDto> selectWorkerType4Flex(String custID, String compCode, String baseDate){
         return baseMapper.selectWorkerType4Flex( custID, compCode, baseDate);
     }
+
+    @Override
+    public Date getMaxEndDate(String groupId,String detailId,String searchDate) {
+        return baseMapper.selectMaxEndDate(groupId,detailId,searchDate);
+    }
+
+    @Override
+    public MastGenericDetailDO getGenericDetail(String groupId,String detailId,String searchDate) {
+        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
+        qw.eq("MGD_CCUSTOMERID","01")
+          .eq("MGD_CCOMPANYID_CK_FK","01")
+          .eq("MGD_CGENERICGROUPID",groupId)
+          .eq("MGD_CGENERICDETAILID_CK",detailId)
+          .eq("MGD_CLANGUAGE_CK","ja")
+          .le("MGD_DSTART_CK",searchDate)
+          .ge("MGD_DEND",searchDate);
+        return getOne(qw);
+    }
 }

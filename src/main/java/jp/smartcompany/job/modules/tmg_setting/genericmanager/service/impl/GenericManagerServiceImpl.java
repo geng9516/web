@@ -11,7 +11,11 @@ import jp.smartcompany.boot.util.PageQuery;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
+import jp.smartcompany.job.modules.core.service.IMastCompanyService;
+import jp.smartcompany.job.modules.core.service.IMastGenericCategoryService;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
+import jp.smartcompany.job.modules.core.service.IMastGenericService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.dto.GenericHistoryDetail;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper;
@@ -33,6 +37,9 @@ implements IGenericManagerService {
 
     private static final String FLAG_VALUE_1 = "1";
     private final IMastGenericDetailService mastGenericDetailService;
+    private final IMastGenericService mastGenericService;
+    private final IMastGenericCategoryService mastGenericCategoryService;
+    private final IMastCompanyService mastCompanyService;
 
     @Override
     public List<CategoryGenericDetailVO> listCategoryGenericDetail(String categoryId) {
@@ -96,8 +103,59 @@ implements IGenericManagerService {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public String deleteSelectedDetails(List<Long> ids) {
+        // todo 检测此group是否允许删除，不允许的话则抛出异常
         mastGenericDetailService.removeByIds(ids);
         return "削除成功";
+    }
+
+    public Map<String,Object> getGenericDetail(String categoryId,String groupId,Date searchDate,String detailId) {
+       Date now = DateUtil.date();
+       if (searchDate == null) {
+           searchDate = now;
+       }
+       String categoryName = mastGenericCategoryService.getNameByCateId(categoryId);
+       String strSearchDate = SysUtil.transDateToString(searchDate);
+       MastGenericDO generic = mastGenericService.getByGroupId(groupId);
+       String companyName = mastCompanyService.getCompanyName(strSearchDate);
+       // 新規追加処理
+       Date maxEndDate = null;
+       MastGenericDetailDO detailDO;
+       if (StrUtil.isBlank(detailId)) {
+           detailDO = getNewDetailDto();
+          if (StrUtil.equals(FLAG_VALUE_1,generic.getMgCifhistorical())) {
+               maxEndDate = SysUtil.getMaxDateObject();
+           }
+       // 更新処理
+       } else {
+           detailDO = mastGenericDetailService.getGenericDetail(groupId,detailId,strSearchDate);
+           if (StrUtil.equals(FLAG_VALUE_1,generic.getMgCifhistorical())) {
+               maxEndDate = mastGenericDetailService.getMaxEndDate(groupId,detailId,strSearchDate);
+               if (maxEndDate == null) {
+                   maxEndDate = SysUtil.getMaxDateObject();
+               }
+           }
+       }
+       return MapUtil.<String,Object>builder()
+               .put("categoryName",categoryName)
+               .put("group",generic)
+               .put("companyName",companyName)
+               .put("detail",detailDO)
+               .put("maxEndDate",maxEndDate)
+               .build();
+    }
+
+    /**
+     * 新規登録用明細データDTO取得<br/>
+     * 新規登録で使用する明細データDTOを生成し、返却します
+     * @author Y.Sato
+     * @return 明細データDTO
+     */
+    private MastGenericDetailDO getNewDetailDto() {
+        MastGenericDetailDO oDto = new MastGenericDetailDO();
+        oDto.setMgdDstartCk(SysUtil.getMinDateObject());
+        oDto.setMgdDend(null);
+        oDto.setMgdCcompanyidCkFk("01");
+        return oDto;
     }
 
 }

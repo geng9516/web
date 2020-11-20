@@ -62,4 +62,9 @@ public class MastCompanyServiceImpl extends ServiceImpl<MastCompanyMapper, MastC
                }
                return baseMapper.selectCompanyList(customerId,language,strDate, companyList);
         }
+
+        @Override
+        public String getCompanyName(String searchDate) {
+           return baseMapper.getCompanyName(searchDate);
+        }
 }
