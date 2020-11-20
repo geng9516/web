@@ -250,7 +250,7 @@
                :loading="loading">申請
             </i-button>
             <i-button v-show="this.isReApplyIng" class="btn" long type="primary"
-               ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
+               ghost @click="apply(true)" icon="md-create" :loading="loading" :disabled="disableReapply">再申請
             </i-button>
             <i-button v-show="this.isReApplyIng" class="mt10" long :disabled="loading"
                @click="resetReApply">キャンセル
