@@ -24,6 +24,12 @@
       &.highlight td {
         background-color: var(--table-checkin-bg);
       }
+      &.white td {
+        background-color: var(--modal-bg)
+      }
+      &.disbaled td {
+        background-color: var(--table-disbaled-row)
+      }
       // 表格 hover单行class
       &.select-col:hover td {
         background-color: var(--table-td-hover-bg);
