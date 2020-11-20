@@ -7,7 +7,7 @@
 
 ```js
 // 为了避免刀耕火种，采用自动生成浏览器兼容前缀和scss编译后压缩
-👍 请下载`vscode` 的 live scss compiler (集成了`autoprefixer`)
+👍 请下载`vscode` 的 live sass compiler (集成了`autoprefixer`)
    或  `webstorm` 的 `autoprefixer` 插件
 😂 开始愉快的样式编程吧
 
