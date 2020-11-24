@@ -34,6 +34,6 @@ public interface MastCompanyMapper extends BaseMapper<MastCompanyDO> {
                                              @Param("date") String date,
                                              @Param("companies") List<String> companyList);
 
-       @Select("SELECT PSMASTER.FUNC_GET_COMP_NAME('01',psCompanyId'01','${searchDate}', 'ja') AS MAC_CCOMPANYNAME FROM DUAL")
+       @Select("SELECT PSMASTER.FUNC_GET_COMP_NAME('01','01','${searchDate}', 'ja') AS MAC_CCOMPANYNAME FROM DUAL")
        String getCompanyName(String searchDate);
 }

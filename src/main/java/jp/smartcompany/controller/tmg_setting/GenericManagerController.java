@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGeneric
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class GenericManagerController {
       return genericManagerService.listCategoryGenericDetail(categoryId);
   }
 
-  // http://localhost:6879/sys/genericmanager/detail?groupId=CP_SUSP_CATEGORY&page=1&size=10&historyType=1
+  // http://localhost:6879/sys/genericmanager/detail?groupId=CP_SUSP_CATEGORY&page=1&limit=10&historyType=1
   @GetMapping("detail")
   public Map<String,Object> getGenericDetailList(@RequestParam Map<String,Object> conditions) {
       return genericManagerService.getGenericDetailList(conditions);
@@ -31,5 +32,13 @@ public class GenericManagerController {
   public String removeSelectedDetails(@RequestBody List<Long> ids) {
       return genericManagerService.deleteSelectedDetails(ids);
   }
+
+  // http://localhost:6879/sys/genericmanager/detail/item?groupId=HS_SUSP&detailId=800
+  @GetMapping("detail/item")
+  public Map<String,Object> getGenericDetail(@RequestParam(defaultValue = "TMG") String categoryId, String groupId, Date searchDate, String detailId) {
+      return genericManagerService.getGenericDetail(categoryId,groupId,searchDate,detailId);
+  }
+
+
 
 }

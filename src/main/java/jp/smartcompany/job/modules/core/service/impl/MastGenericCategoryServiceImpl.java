@@ -17,7 +17,7 @@ implements IMastGenericCategoryService {
         QueryWrapper<MastGenericCategoryDO> qw = SysUtil.query();
         return getOne(qw.eq("MGC_CCUSTOMERID","01")
           .eq("MGC_CCATEGORYID",cateId)
-          .select("MGC_CCATEGORYNAME")).getMccCcategoryname();
+          .select("MGC_CCATEGORYNAME")).getMgcCcategoryname();
     }
 
 }

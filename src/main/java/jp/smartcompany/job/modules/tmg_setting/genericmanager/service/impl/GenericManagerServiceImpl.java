@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.common.GlobalException;
@@ -103,11 +104,13 @@ implements IGenericManagerService {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public String deleteSelectedDetails(List<Long> ids) {
-        // todo 检测此group是否允许删除，不允许的话则抛出异常
+//        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
+//        List<String> groupIds = mastGenericDetailService.list();
         mastGenericDetailService.removeByIds(ids);
         return "削除成功";
     }
 
+    @Override
     public Map<String,Object> getGenericDetail(String categoryId,String groupId,Date searchDate,String detailId) {
        Date now = DateUtil.date();
        if (searchDate == null) {

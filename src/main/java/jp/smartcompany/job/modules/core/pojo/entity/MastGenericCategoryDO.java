@@ -30,7 +30,7 @@ public class MastGenericCategoryDO implements Serializable {
 
     private String mgcCcategoryid;
 
-    private String mccCcategoryname;
+    private String mgcCcategoryname;
 
     private String mgcCmodifieruserid;
 
