@@ -5,146 +5,211 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <main class="content namesettings-warp" ref="layout">
-        <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `汎用マスタ設定` }}
-              </h1>
-            </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
-            </div>
-          </div>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content namesettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `汎用マスタ設定` }}
+          </h1>
         </div>
-        <div class="content_body">
-          <div class="table-top">
-            <Row :gutter="16">
-              <i-col span="24" class="tr">
-              </i-col>
-            </Row>
-          </div>
-          <Row :gutter="16">
-            <i-col span="6" class="">
-                <Card class="mb5" v-for="item of listData" style="background: var(--content-bg);">
-                  <p class="mb2"><span style="color: var(--text-light-grey)">名称: </span>{{ item.description }}</p>
-                  <p><span style="color: var(--text-light-grey)">コード: </span>{{ item.groupId }}</p>
-                  <p class="tr" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}" >{{ item.editAble === '1' ? '変更可' : '変更不可'}}</p>
-                </Card>
-            <!-- <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-                :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-                :loading="loading" ref="table">
-                <template slot-scope="{ row }" slot="status"><span :class="row.editAble === '1'  ? 'blue' : 'red'">{{ row.editAble === '1' ? '〇' : '✖'}}</span></template>
-             </i-table> -->
-            </i-col>
-          </Row>
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
         </div>
-        <back-top></back-top>
-      </main>
-    <div th:replace="layout/head::header"></div>
-    <script type="text/babel" th:inline="javascript">
-        new Vue({
-          el: '.namesettings-warp',
-          data() {
-            return {
-              isShow: false,
-              loading: true,
-              editLoading: false,
-              btnLoading: false,
-              defaultOption: false,
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp'),
-              updateValue: {},
-              columns: [
-               {
-                   title:'コード',
-                   key:'groupId',
-               },
-               {
-                   title:'名称',
-                   key:'description',
-               },
-               {
-                   title:'変更可否',
-                   slot:'status',
-                   align:'center',
-                   width: 50
-               }
-              ],
-              opts: {
-              },
-              listData:[],
-              tableData: [],
-              conditionsList: [],
-              contentScrollTop: 0
-            }
-          },
-          async created() {
-            this.getTableData()
-            window.addEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          computed: {
-            tableHeadFixed() {
-              if (this.contentScrollTop > 110) return true
-              else return false
-            }
-          },
-          methods: {
-            async getTableData() {
-              const OPTS = {}
-              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              this.loading = true
-              try {
-                const { data } = await this.http.get('sys/genericmanager/cates', OPTS)
-                this.listData = data
-                this.tableData = data
-              } catch (error) {
-              } finally {
-                this.loading = false
-              }
+      </div>
+    </div>
+    <div class="content_body">
+      <Alert class="primary-info tl">左側のカードをクリックして詳細が照会できます。</Alert>
+      <Row :gutter="16">
+        <i-col span="8">
+          <div class="label tc">名称マスタ区分</div>
+          <i-select v-model="opts.groupId" editable filterable clearable @on-change="handleNameType" class="mb5 no-border-radius">
+              <i-option v-for="(item, i) of listData" :value="item.groupId" :key="i" :label="item.description">
+                <div>{{ item.description }}</div>
+                <span style="font-size: 12px;">{{ item.groupId }}</span>
+                <span style="float:right;" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}">{{ item.editAble === '1' ? '変更可' : '変更不可'}}</span>
+              </i-option>
+          </i-select>
+          <div class="tr mb5">
+            <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+            :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
+          </div>
+          <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);"
+            @click.native="">
+            <div class="card-del-btn cursor">✖</div>
+            <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+              <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
+              <span class="tl width100"> {{ item.description }}</span>
+            </div>
+            <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+              <span style="display: inline-block;width: 55px;color: var(--text-light-grey)">コード: </span>
+              <span class="tl width100"> {{ item.detailId }}</span>
+            </div>
+            <p class="tr">{{ `${Utils.formatDate(item.startDate, 'yyyy/mm/dd')} ～ ${ item.endDate === 7983759600000 ? '' : Utils.formatDate(item.endDate, 'yyyy/mm/dd')}` }}</p>
+          </Card>
+        </i-col>
+        <i-col span="16">
+          <!-- <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">法人</span>
+            <i-select v-model="groupInfoData[0].companyId" @on-change="handleChangeCompanyId">
+              <i-option value="*" label="全社区分"></i-option>
+              <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">
+                {{ item.macCcompanyname }}</i-option>
+            </i-select>
+          </div> -->
+          <!-- <i-table border
+            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+            :loading="loading" ref="table">
+            <template slot-scope="{ row }" slot="date">{{ `${Utils.formatDate(row.startDate, 'yyyy/mm/dd')} ～ ${ row.endDate === 7983759600000 ? '' : Utils.formatDate(row.endDate, 'yyyy/mm/dd')}` }}</template>
+            <template slot-scope="{ row }" slot="action">
+              <i-button type="error" ghost size="small">削除</i-button>
+            </template>
+          </i-table> -->
+        </i-col>
+      </Row>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    new Vue({
+      el: '.namesettings-warp',
+      data() {
+        return {
+          isShow: false,
+          loading: true,
+          editLoading: false,
+          btnLoading: false,
+          defaultOption: false,
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
+          updateValue: {},
+          columns: [
+            {
+              title: '期間',
+              slot: 'date',
             },
-            async update() {
-              this.$Modal.confirm({
-                title: '注意',
-                content: '入力内容を保存します。よろしいですか？',
-                okText: 'OK',
-                cancelText: 'キャンセル',
-                onOk: async () => {
-                  this.loading = true
-                  const update = this.tableData.map((e, i)=> {
-                    return {
-                      ...e,
-                      templateId: e.templateId === 'null' ? null : e.templateId,
-                      permissionType: e.permissionType === 'null' ? null : e.permissionType
-                    }
-                  })
-                  try {
-                    const { data } = await this.http.post('sys/appmanager/update', update)
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                    this.updateValue = {}
-                  } catch (error) {
-                  } finally {
-                    history.go(0)
-                    this.loading = false
-                  }
+            {
+              title: '明細コード',
+              key: 'detailId',
+            },
+            {
+              title: '名称',
+              key: 'description',
+            },
+            {
+              title: '削除',
+              slot: 'action',
+              align: 'center',
+              width: 50
+            }
+          ],
+          pageValue: {
+            amount: 0,
+            curPage: 1,
+            curSize: 50
+          },
+          opts: {
+            page: 1,
+            limit: 50
+          },
+          listData: [],
+          tableData: [],
+          conditionsList: [],
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        await this.getTableData()
+        this.getDetails(false)
+      },
+      computed: {
+      },
+      methods: {
+        async getTableData() {
+          const OPTS = {}
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+          // this.loading = true
+          try {
+            const { data } = await this.http.get('sys/genericmanager/cates', OPTS)
+            this.listData = data
+          } catch (error) {
+          } finally {
+            // this.loading = false
+          }
+        },
+        async getDetails(opts) {
+          if (!opts) {
+            this.opts = {
+              ...this.opts,
+              groupId: this.opts.groupId || this.listData[0].groupId,
+              historyType: this.opts.historyType || this.listData[0].historyType
+            }
+          } else {
+            this.pageValue.curPage = 1
+            this.opts.page = 1
+            this.opts = {
+              ...this.opts,
+              groupId: opts.groupId,
+              historyType: opts.historyType
+            }
+          }
+          // http://localhost:6879/sys/genericmanager/detail?groupId=CP_SUSP_CATEGORY&page=1&size=10&historyType=1
+          try {
+            this.loading = true
+            const { data } = await this.http.get('sys/genericmanager/detail', this.opts)
+            // this.listData = data
+            this.tableData = data.listPage.list
+            this.pageValue.amount = data.listPage.totalCount
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
+        },
+        handleNameType(name) {
+          const target = this.listData.find(e => e.groupId === name)
+          this.getDetails(target)
+        },
+        pageChange(e) {
+          this.opts.page = e
+          this.pageValue.curPage = e
+          this.getDetails(false)
+        },
+        async update() {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '入力内容を保存します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              this.loading = true
+              const update = this.tableData.map((e, i) => {
+                return {
+                  ...e,
+                  templateId: e.templateId === 'null' ? null : e.templateId,
+                  permissionType: e.permissionType === 'null' ? null : e.permissionType
                 }
               })
-            },
-            handleScroll: Throttle(function (e) {
-              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50)
-          }
-        })
-      </script>
+              try {
+                const { data } = await this.http.post('sys/appmanager/update', update)
+                this.$Message.success('更新完了')
+                this.getTableData()
+                this.updateValue = {}
+              } catch (error) {
+              } finally {
+                history.go(0)
+                this.loading = false
+              }
+            }
+          })
+        }
+      }
+    })
+  </script>
 </body>
