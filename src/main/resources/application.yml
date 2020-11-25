@@ -21,8 +21,6 @@ server:
     encoding:
       charset: utf-8
       force: on
-    session:
-      timeout: 600s
 spring:
   profiles:
     active: test

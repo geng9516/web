@@ -24,7 +24,7 @@ axios.interceptors.response.use(
   },
   error => {
     if (error.response.status === 408 || error.response.status === 403) {
-      location.href = BASE_PATH
+      location.reload()
       return
     }
     Vue.prototype.$Notice.error({

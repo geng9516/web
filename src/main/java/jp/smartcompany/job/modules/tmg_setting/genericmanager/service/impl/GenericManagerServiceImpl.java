@@ -18,11 +18,11 @@ import jp.smartcompany.job.modules.core.service.IMastGenericCategoryService;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.service.IMastGenericService;
 import jp.smartcompany.job.modules.core.util.PsConst;
-import jp.smartcompany.job.modules.tmg_setting.genericmanager.dto.GenericHistoryDetail;
+import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.dto.GenericHistoryDetailDTO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.service.IGenericManagerService;
-import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailItemVO;
-import jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO;
+import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailItemVO;
+import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -67,8 +68,8 @@ implements IGenericManagerService {
         Date prevRevisionDate = null;
         Date nextRevisionDate = null;
         Date validRevisionDate;
-        List<GenericHistoryDetail> pastList = CollUtil.newArrayList();
-        List<GenericHistoryDetail> futureList =CollUtil.newArrayList();
+        List<GenericHistoryDetailDTO> pastList = CollUtil.newArrayList();
+        List<GenericHistoryDetailDTO> futureList =CollUtil.newArrayList();
         // 履歴作成区分が履歴作成の場合に改定日、無効明細情報取得
         if (StrUtil.isNotBlank(historyType) && StrUtil.equals(FLAG_VALUE_1,historyType)) {
             // 検索対象日で有効な改定日取得
@@ -104,8 +105,12 @@ implements IGenericManagerService {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public String deleteSelectedDetails(List<Long> ids) {
-//        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
-//        List<String> groupIds = mastGenericDetailService.list();
+        List<String> groupIds = mastGenericDetailService.listByIds(ids).stream().map(MastGenericDetailDO::getMgdCgenericgroupid).collect(Collectors.toList());
+        QueryWrapper<MastGenericDO> qw = SysUtil.query();
+        qw.in("mgCgenericgroupidCk",groupIds).eq("mg_cifeditable","0");
+        if (count(qw)>0) {
+            throw new GlobalException("削除できません");
+        }
         mastGenericDetailService.removeByIds(ids);
         return "削除成功";
     }

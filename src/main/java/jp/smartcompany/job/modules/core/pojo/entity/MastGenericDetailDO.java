@@ -404,5 +404,23 @@ public class MastGenericDetailDO implements Serializable {
     @TableField("versionno")
         private Long versionno;
 
+    // 追加字段 ----------2020/11/25
+    private String mgdCsparechar1Desc;
+    private String mgdCsparechar2Desc;
+    private String mgdCsparechar3Desc;
+    private String mgdCsparechar4Desc;
+    private String mgdCsparechar5Desc;
 
-        }
+    private String mgdNsparenum1Desc;
+    private String mgdNsparenum2Desc;
+    private String mgdNsparenum3Desc;
+    private String mgdNsparenum4Desc;
+    private String mgdNsparenum5Desc;
+
+    private String mgdDsparedate1Desc;
+    private String mgdDsparedate2Desc;
+    private String mgdDsparedate3Desc;
+    private String mgdDsparedate4Desc;
+    private String mgdDsparedate5Desc;
+
+}
