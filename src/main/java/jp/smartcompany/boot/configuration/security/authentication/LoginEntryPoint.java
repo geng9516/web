@@ -1,9 +1,11 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.util.SysUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -20,6 +22,9 @@ import java.io.IOException;
  */
 @Component
 public class LoginEntryPoint implements AuthenticationEntryPoint {
+
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse resp, AuthenticationException e) throws IOException {
@@ -46,7 +51,9 @@ public class LoginEntryPoint implements AuthenticationEntryPoint {
 //                }
 //                return;
 //            }
-            resp.sendRedirect("/login");
+            if (StrUtil.equals(profile,"prod")) {
+                resp.sendRedirect("/spwm/login");
+            }
         }
     }
 
