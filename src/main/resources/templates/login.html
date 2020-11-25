@@ -142,13 +142,13 @@
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.post('/login', this.login)
-                        var href = location.href
-                        var fromIndex = href.indexOf('from');
-                        if (fromIndex>-1){
-                            location = href.substring(fromIndex+5)
-                        } else {
+                        // var href = location.href
+                        // var fromIndex = href.indexOf('from');
+                        // if (fromIndex>-1){
+                        //     location = href.substring(fromIndex+5)
+                        // } else {
                             location.href = BASE_PATH
-                        }
+                        // }
                         // 以防不备时的原生提交，应给form加上method, action以及password和username加上name就好
                         // this.$refs.login.$el.submit()
                     } catch (error) {

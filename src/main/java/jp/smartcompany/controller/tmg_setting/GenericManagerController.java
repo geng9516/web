@@ -54,6 +54,7 @@ public class GenericManagerController {
      */
   @PostMapping("detail")
   public String execute(@RequestBody @Valid UpdateDetailDTO info) {
+      genericManagerService.execute(info);
       return "変更成功しました";
   }
 

@@ -20,6 +20,7 @@ import jp.smartcompany.job.modules.core.service.IMastGenericService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.dto.GenericHistoryDetailDTO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper;
+import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.dto.UpdateDetailDTO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.service.IGenericManagerService;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailItemVO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailVO;
@@ -130,6 +131,7 @@ implements IGenericManagerService {
        MastGenericDetailDO detailDO;
        if (StrUtil.isBlank(detailId)) {
            detailDO = getNewDetailDto();
+           detailDO.setMgdCgenericgroupid(generic.getMgCgenericgroupidCk());
           if (StrUtil.equals(FLAG_VALUE_1,generic.getMgCifhistorical())) {
                maxEndDate = SysUtil.getMaxDateObject();
            }
@@ -150,6 +152,11 @@ implements IGenericManagerService {
                .put("detail",detailDO)
                .put("maxEndDate",maxEndDate)
                .build();
+    }
+
+    @Override
+    public void execute(UpdateDetailDTO info) {
+
     }
 
     /**
