@@ -33,7 +33,8 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgLiquidationPeriodBean {
 
-    private final ITmgEmployeesService iTmgEmployeesService;
+    private final ITmgLiquidationPatternService iTmgLiquidationPatternService;
+    private final ITmgLiquidationPatternRestService iTmgLiquidationPatternRestService;
     private final ITmgliquidationPeriodService iTmgliquidationPeriodService;
     private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
@@ -109,6 +110,7 @@ public class TmgLiquidationPeriodBean {
     }
 
 
+    //新規精算期間
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse insertLiquidation(LiquidationUpdateListDto updateDto, PsDBBean psDBBean) {
         //sequence 获取
@@ -143,6 +145,22 @@ public class TmgLiquidationPeriodBean {
         tlpDo.setTlpDstartdate(DateUtil.parseDate(updateDto.getCurDateFrom()));
         tlpDo.setTlpDenddate(DateUtil.parseDate(updateDto.getCurDateTo()));
         tlpDo.setTlpCworktypeid(updateDto.getWorkTypeId());
+
+        //週平均勤務時間数
+        tlpDo.setTlpCavgworktime(!StrUtil.hasEmpty(updateDto.getAvgWorkTime())?Long.parseLong(updateDto.getAvgWorkTime()):(long)40);
+        //最長働く一日労働時間上限
+        tlpDo.setTlpCmaxdayhours(!StrUtil.hasEmpty(updateDto.getDailyMaxWorkTime())?Long.parseLong(updateDto.getDailyMaxWorkTime()):(long)600);
+        //最長働く週間労働時間上限
+        tlpDo.setTlpCmaxweekhours(!StrUtil.hasEmpty(updateDto.getWeeklyMaxWorkTime())?Long.parseLong(updateDto.getWeeklyMaxWorkTime()):(long)52);
+        //一年間総労働日数
+        tlpDo.setTlpCtotalworkdays(!StrUtil.hasEmpty(updateDto.getTotalWorkDays())?Long.parseLong(updateDto.getTotalWorkDays()):(long)280);
+        //最長連続働く日数上限
+        tlpDo.setTlpCmaxcontiday(!StrUtil.hasEmpty(updateDto.getMaxContiDays())?Long.parseLong(updateDto.getMaxContiDays()):(long)6);
+        //最長連続働く週数上限
+        tlpDo.setTlpCmaxcontiweek(!StrUtil.hasEmpty(updateDto.getMaxContiWeeks())?Long.parseLong(updateDto.getMaxContiWeeks()):(long)3);
+        //週間労働時間上限超過可能回数
+        tlpDo.setTlpCoverweekcount(!StrUtil.hasEmpty(updateDto.getOverContiWeeks())?Long.parseLong(updateDto.getOverContiWeeks()):(long)3);
+
         tlpDo.setTlpCtlpid(seq);
         return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);
     }
@@ -196,9 +214,10 @@ public class TmgLiquidationPeriodBean {
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
                 tlddDo.setTlddCstarttime(dailyDto.getStarttime());
                 tlddDo.setTlddCendtime(dailyDto.getEndtime());
-                tlddDo.setTlddCreststarttime(dailyDto.getResttimestart());
-                tlddDo.setTlddCrestendtime(dailyDto.getResttimeend());
-
+                tlddDo.setTlddCreststarttime1(dailyDto.getResttimestart1());
+                tlddDo.setTlddCrestendtime1(dailyDto.getResttimeend1());
+                tlddDo.setTlddCreststarttime2(dailyDto.getResttimestart2());
+                tlddDo.setTlddCrestendtime2(dailyDto.getResttimeend2());
             }
             //原值
             if(dailyDto.getKubun().indexOf("TMG_WORK")> -1){
@@ -228,7 +247,26 @@ public class TmgLiquidationPeriodBean {
         Map<String, Object> monthlyMap = MapUtil.newHashMap();
         //月data
         List<LiquidationDailyInfoVo> liquidationDailyInfoVoList = iTmgliquidationDailyService.selectDailyInfo(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
+        for (int i=0;i<liquidationDailyInfoVoList.size();i++) {
 
+            if(liquidationDailyInfoVoList.get(i).getStatus().equals("TMG_DATASTATUS|9")){
+                //確定状態变灰
+                liquidationDailyInfoVoList.get(i).setDisabled(true);
+                continue;
+            }else if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getNtfStatus()) && liquidationDailyInfoVoList.get(i).getNtfStatus().equals("TMG_NTFSTATUS|5") &&
+                    !StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getNtftype())&&liquidationDailyInfoVoList.get(i).getNtftype().indexOf("TMG_WORK")>-1){
+                //全休の時に、編集できません（時間休暇の時に、編集できます）
+                liquidationDailyInfoVoList.get(i).setDisabled(true);
+                continue;
+            }else if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getKubenid())&& (liquidationDailyInfoVoList.get(i).getKubenid().equals("TMG_WORK|451") ||
+                    liquidationDailyInfoVoList.get(i).getKubenid().equals("TMG_WORK|452") )){
+                //振替休日（法定）及び　振替休日（法定外）の場合、編集できません
+                liquidationDailyInfoVoList.get(i).setDisabled(true);
+                continue;
+            }else{
+                liquidationDailyInfoVoList.get(i).setDisabled(false);
+            }
+        }
 
         monthlyMap.put("liquidationDailyInfoVoList", liquidationDailyInfoVoList);
         //todo:pattern list（选取用）
@@ -241,8 +279,43 @@ public class TmgLiquidationPeriodBean {
     }
 
     //新规pattern
-    public void insertPattern(PatternInfoDto patternInfoDto){
+    public GlobalResponse insertPattern(PatternInfoDto patternInfoDto,PsDBBean psDBBean){
+        //新规TmgLiquidationPattern
+        TmgLiquidationPatternDO tlpDo=new TmgLiquidationPatternDO();
+        tlpDo.setTpaCcompanyid(psDBBean.getCompCode());
+        tlpDo.setTpaCcustomerid(psDBBean.getCustID());
+        tlpDo.setTpaDstartdate(TmgUtil.minDate);
+        tlpDo.setTpaDenddate(TmgUtil.maxDate);
+        tlpDo.setTpaCmodifieruserid(psDBBean.getUserCode());
+        tlpDo.setTpaDmodifieddate(DateTime.now());
 
+        tlpDo.setTpaCemployeeid(patternInfoDto.getEmpId());
+        tlpDo.setTpaCsectionid(patternInfoDto.getSectionId());
+        tlpDo.setTpaCworktypeid(patternInfoDto.getWorktypeId());
+        tlpDo.setTpaCpatternid("TMG_LIQUIDATION_PATTERN|"+patternInfoDto.getPatternId());
+        tlpDo.setTpaCpatternname(patternInfoDto.getPatternName());
+        tlpDo.setTpaNopen(Long.parseLong(patternInfoDto.getStartTime()));
+        tlpDo.setTpaNclose(Long.parseLong(patternInfoDto.getEndTime()));
+        iTmgLiquidationPatternService.getBaseMapper().insert(tlpDo);
+
+        //新规TmgLiquidationPatternRest
+        for (int i=0;i<patternInfoDto.getRestTIme().size();i++) {
+            TmgLiquidationPatternRestDO tlprDo=new TmgLiquidationPatternRestDO();
+            tlprDo.setTprCcompanyid(psDBBean.getCompCode());
+            tlprDo.setTprCcustomerid(psDBBean.getCustID());
+            tlprDo.setTprCmodifieruserid(psDBBean.getUserCode());
+            tlprDo.setTprDmodifieddate(DateTime.now());
+            tlprDo.setTprDstartdate(TmgUtil.minDate);
+            tlprDo.setTprDenddate(TmgUtil.maxDate);
+
+            tlprDo.setTprCpatternid("TMG_LIQUIDATION_PATTERN|"+patternInfoDto.getPatternId());
+            tlprDo.setTprNrestopen(Long.parseLong(patternInfoDto.getRestTIme().get(i)[0]));
+            tlprDo.setTprNrestclose(Long.parseLong(patternInfoDto.getRestTIme().get(i)[1]));
+            tlprDo.setTprSeq((long)i);
+
+            iTmgLiquidationPatternRestService.getBaseMapper().insert(tlprDo);
+        }
+        return GlobalResponse.ok();
     }
 
 

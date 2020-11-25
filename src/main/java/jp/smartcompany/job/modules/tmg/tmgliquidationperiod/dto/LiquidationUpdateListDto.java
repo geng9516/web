@@ -21,5 +21,5 @@ public class LiquidationUpdateListDto {
     private String totalWorkDays;
     private String maxContiDays;
     private String maxContiWeeks;
-    private String contiWeeks;
+    private String overContiWeeks;
 }

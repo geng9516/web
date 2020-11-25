@@ -99,14 +99,24 @@ public class TmgLiquidationDailyDO {
     /**
      * 休憩開始時間
      */
-    @TableField("tldd_creststarttime")
-    private String tlddCreststarttime;
+    @TableField("tldd_creststarttime1")
+    private String tlddCreststarttime1;
     /**
      * 休憩終了時間
      */
-    @TableField("tldd_crestendtime")
-    private String tlddCrestendtime;
+    @TableField("tldd_crestendtime1")
+    private String tlddCrestendtime1;
 
+    /**
+     * 休憩開始時間
+     */
+    @TableField("tldd_creststarttime2")
+    private String tlddCreststarttime2;
+    /**
+     * 休憩終了時間
+     */
+    @TableField("tldd_crestendtime2")
+    private String tlddCrestendtime2;
     /**
      * 休暇申請type
      */
