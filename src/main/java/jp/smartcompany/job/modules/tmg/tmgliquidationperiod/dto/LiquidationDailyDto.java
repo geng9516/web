@@ -14,6 +14,8 @@ public class LiquidationDailyDto {
     private String kubun;
     private String starttime;
     private String endtime;
-    private String resttimestart;
-    private String resttimeend;
+    private String resttimestart1;
+    private String resttimeend1;
+    private String resttimestart2;
+    private String resttimeend2;
 }
