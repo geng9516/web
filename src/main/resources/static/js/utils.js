@@ -324,11 +324,11 @@ const Utils = {
    */
   getUrlParam(sUrl, sKey) {
     let result, Oparam = {};
-    sUrl.replace(/[\?&]?(\w+)=(\w+)/g, function ($0, $1, $2) {
-      Oparam[$1] === void 0 ? Oparam[$1] = $2 : Oparam[$1] = [].concat(Oparam[$1], $2);
+    sUrl.replace(/[\?&]?(\w+)=(\/?\w+)+/g, function ($0, $1, $2) {
+      Oparam[$1] === undefined ? Oparam[$1] = $0.split(`${$1}=`)[1] : Oparam[$1] = [].concat(Oparam[$1], $2);
     });
-    sKey === void 0 || sKey === '' ? result = Oparam : result = Oparam[sKey] || '';
-    return result;
+    if(!sKey) return Oparam
+    else return Oparam[sKey] || ''
   },
   /**
    * 向下找到所有的子组件
