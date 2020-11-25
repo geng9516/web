@@ -23,8 +23,8 @@ import java.io.IOException;
 @Component
 public class LoginEntryPoint implements AuthenticationEntryPoint {
 
-    @Value("${spring.profiles.active}")
-    private String profile;
+    @Value("${info.basePath}")
+    private String basePath;
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse resp, AuthenticationException e) throws IOException {
@@ -51,9 +51,7 @@ public class LoginEntryPoint implements AuthenticationEntryPoint {
 //                }
 //                return;
 //            }
-            if (StrUtil.equals(profile,"prod")) {
-                resp.sendRedirect("/spwm/login");
-            }
+            resp.sendRedirect(basePath+"login");
         }
     }
 
