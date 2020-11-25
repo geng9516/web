@@ -22,25 +22,27 @@
           <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
         </div>
       </div>
+      <div class="searchwrap">
+        <div class="label">名称マスタ区分</div>
+        <i-select v-model="opts.groupId" editable filterable clearable @on-change="handleNameType" style="width: 35%;">
+            <i-option v-for="(item, i) of listData" :value="item.groupId" :key="i" :label="item.description">
+              <div>{{ item.description }}</div>
+              <span style="font-size: 12px;">{{ item.groupId }}</span>
+              <span style="float:right;" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}">{{ item.editAble === '1' ? '変更可' : '変更不可'}}</span>
+            </i-option>
+        </i-select>
+      </div>
     </div>
     <div class="content_body">
       <Alert class="primary-info tl">左側のカードをクリックして詳細が照会できます。</Alert>
       <Row :gutter="16">
-        <i-col span="8">
-          <div class="label tc">名称マスタ区分</div>
-          <i-select v-model="opts.groupId" editable filterable clearable @on-change="handleNameType" class="mb5 no-border-radius">
-              <i-option v-for="(item, i) of listData" :value="item.groupId" :key="i" :label="item.description">
-                <div>{{ item.description }}</div>
-                <span style="font-size: 12px;">{{ item.groupId }}</span>
-                <span style="float:right;" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}">{{ item.editAble === '1' ? '変更可' : '変更不可'}}</span>
-              </i-option>
-          </i-select>
+        <i-col span="10">
           <div class="tr mb5">
             <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
             :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
           </div>
           <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);"
-            @click.native="">
+            @click.native="getDetails(item)">
             <div class="card-del-btn cursor">✖</div>
             <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
               <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
@@ -53,23 +55,170 @@
             <p class="tr">{{ `${Utils.formatDate(item.startDate, 'yyyy/mm/dd')} ～ ${ item.endDate === 7983759600000 ? '' : Utils.formatDate(item.endDate, 'yyyy/mm/dd')}` }}</p>
           </Card>
         </i-col>
-        <i-col span="16">
-          <!-- <div v-if="isAdding" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
-            <span class="label tr" style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 5px;">法人</span>
-            <i-select v-model="groupInfoData[0].companyId" @on-change="handleChangeCompanyId">
-              <i-option value="*" label="全社区分"></i-option>
-              <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">
-                {{ item.macCcompanyname }}</i-option>
-            </i-select>
-          </div> -->
-          <!-- <i-table border
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
-            <template slot-scope="{ row }" slot="date">{{ `${Utils.formatDate(row.startDate, 'yyyy/mm/dd')} ～ ${ row.endDate === 7983759600000 ? '' : Utils.formatDate(row.endDate, 'yyyy/mm/dd')}` }}</template>
-            <template slot-scope="{ row }" slot="action">
-              <i-button type="error" ghost size="small">削除</i-button>
-            </template>
-          </i-table> -->
+        <i-col span="14">
+          <Row :gutter="10">
+            <i-col span="8">
+              <div class="label pl10 tc">名称</div>
+              <div class="person-info"><i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">日本語</span></i-input>
+              </div>
+            </i-col>
+            <i-col span="8">
+              <div class="label pl10 tc">明細コード</div>
+              <div class="person-info">{{ detailData.mgdCgenericdetailidCk }}</div>
+            </i-col>
+            <i-col span="8">
+              <div class="label pl10 tc">期間</div>
+              <div class="person-info">{{ `${Utils.formatDate(detailData.mgdDstartCk, 'yyyy/mm/dd')} ～ ${ detailData.mgdDend === 7983759600000 ? '' : Utils.formatDate(detailData.mgdDend, 'yyyy/mm/dd')}` }}</div>
+            </i-col>
+            <i-col span="24" class="mt10">
+              <div class="label pl10 tc">予備文字</div>
+              <div class="person-info">
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">1</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCsparechar2"><span slot="prepend">2</span></i-input>
+                  </i-col>
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCsparechar3"><span slot="prepend">3</span></i-input>
+                  </i-col>
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCsparechar4"><span slot="prepend">4</span></i-input>
+                  </i-col>
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCsparechar5"><span slot="prepend">5</span></i-input>
+                  </i-col>
+                  <i-col span="12">
+                    <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                  </i-col>
+                </Row>
+              </div>
+            </i-col>
+
+            <i-col span="24" class="mt10">
+              <Row :gutter="8">
+                <i-col span="12">
+                  <div class="label pl10 tc">予備数字</div>
+                  <div class="person-info">
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum1"><span slot="prepend">1</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum2"><span slot="prepend">2</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum3"><span slot="prepend">3</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum4"><span slot="prepend">4</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum5"><span slot="prepend">5</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                  </div>
+                </i-col>
+
+                <i-col span="12">
+                  <div class="label pl10 tc">予備日付</div>
+                  <div class="person-info">
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate1" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate2" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate3" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate4" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate5" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">備考</span></i-input>
+                      </i-col>
+                    </Row>
+                  </div>
+                </i-col>
+              </Row>
+            </i-col>
+          </Row>
+          <Spin size="large" fix v-if="detailLoading"></Spin>
         </i-col>
       </Row>
     </div>
@@ -85,30 +234,12 @@
           loading: true,
           editLoading: false,
           btnLoading: false,
+          detailLoading: false,
           defaultOption: false,
+          detailData: {},
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
           updateValue: {},
-          columns: [
-            {
-              title: '期間',
-              slot: 'date',
-            },
-            {
-              title: '明細コード',
-              key: 'detailId',
-            },
-            {
-              title: '名称',
-              key: 'description',
-            },
-            {
-              title: '削除',
-              slot: 'action',
-              align: 'center',
-              width: 50
-            }
-          ],
           pageValue: {
             amount: 0,
             curPage: 1,
@@ -126,7 +257,7 @@
       },
       async created() {
         await this.getTableData()
-        this.getDetails(false)
+        this.getCardList(false)
       },
       computed: {
       },
@@ -144,7 +275,7 @@
             // this.loading = false
           }
         },
-        async getDetails(opts) {
+        async getCardList(opts) {
           if (!opts) {
             this.opts = {
               ...this.opts,
@@ -172,14 +303,31 @@
             this.loading = false
           }
         },
+        async getDetails(opts) {
+          try {
+            this.detailLoading = true
+            const { data } = await this.http.get('sys/genericmanager/detail/item', {
+              groupId: opts.groupId,
+              detailId: opts.detailId
+            })
+            this.detailData = data.detail
+            console.log(data)
+            // this.listData = data
+            // this.tableData = data.listPage.list
+            // this.pageValue.amount = data.listPage.totalCount
+          } catch (error) {
+          } finally {
+            this.detailLoading = false
+          }
+        },
         handleNameType(name) {
           const target = this.listData.find(e => e.groupId === name)
-          this.getDetails(target)
+          this.getCardList(target)
         },
         pageChange(e) {
           this.opts.page = e
           this.pageValue.curPage = e
-          this.getDetails(false)
+          this.getCardList(false)
         },
         async update() {
           this.$Modal.confirm({
