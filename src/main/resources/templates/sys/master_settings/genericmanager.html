@@ -31,6 +31,7 @@
               <span style="float:right;" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}">{{ item.editAble === '1' ? '変更可' : '変更不可'}}</span>
             </i-option>
         </i-select>
+        <span class="ml15" :style="{ color: editable ? 'var(--login-svg-fill)' : 'var(--text-light-grey)', 'font-size': '16px'}">{{ editable ? '変更可' : '変更不可'}}</span>
       </div>
       <Divider size="small" style="margin: 0;"/>
     </div>
@@ -56,6 +57,7 @@
               <span class="tl width100"> {{ item.detailId }}</span>
             </div>
             <p class="tr">{{ `${Utils.formatDate(item.startDate, 'yyyy/mm/dd')} ～ ${ item.endDate === 7983759600000 ? '' : Utils.formatDate(item.endDate, 'yyyy/mm/dd')}` }}</p>
+            <div v-show="curCard === item.mgdId" style="position: absolute;bottom: 0;left: 0; width: 80px;height: 30px;background: var(--error-background)"><div style="position: absolute;bottom: 0;left: 0; width: 80px;height: 30px;background: var(--content-bg);clip-path: circle(111% at 71% -112%);"></div></div>
           </Card>
           </span>
           <Spin size="large" fix v-if="loading"></Spin>
@@ -294,10 +296,12 @@
           isShow: false,
           loading: true,
           editLoading: false,
+          editable: false,
           btnLoading: false,
           detailLoading: false,
           defaultOption: false,
           detailData: {},
+          curCard: '',
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
           updateValue: {},
@@ -320,6 +324,7 @@
         await this.getTableData()
         await this.getCardList(false)
         if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
+        this.editable = this.listData[0].editAble === '1'
 
       },
       computed: {
@@ -358,8 +363,11 @@
             this.loading = true
             const { data } = await this.http.get('sys/genericmanager/detail', this.opts)
             this.tableData = data.listPage.list
+
             if(this.tableData.length === 0) {
               this.detailData = {}
+            } else {
+              this.curCard = this.tableData[0].mgdId
             }
             this.pageValue.amount = data.listPage.totalCount
           } catch (error) {
@@ -368,6 +376,7 @@
           }
         },
         async getDetails(opts) {
+          this.curCard = opts.mgdId
           try {
             this.detailLoading = true
             const { data } = await this.http.get('sys/genericmanager/detail/item', {
@@ -382,6 +391,7 @@
         },
         async handleNameType(name) {
           const target = this.listData.find(e => e.groupId === name)
+          this.editable = target.editAble === '1'
           await this.getCardList(target)
           if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
         },
