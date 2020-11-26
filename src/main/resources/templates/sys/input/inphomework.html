@@ -74,7 +74,7 @@
 
                 <template slot-scope="{ row }" slot="hwCommute">
                     <span :class="dayRedStatus(row)"v-if="row.hwCommute=='1'">対象外</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwCommute=='0'">対象</span>
+                    <span :class="dayRedStatus(row)"v-else-if="row.hwCommute=='0' && row.hwStatus != '0' ">対象</span>
                     <span :class="dayRedStatus(row)"v-else></span>
                 </template>
 
@@ -138,21 +138,21 @@
             </template>
 
             <template slot-scope="{ row, index }" slot="hwHomework" >
-                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30" @on-change="" placeholder="" :disabled="row.hwStatus == 2">
+                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30" @on-change="" placeholder="" :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null">
                     <i-option  v-for="(item, index) of homeworkList"  :value="item.value" :key="item.value" >{{ item.label }}</i-option>
                 </i-select>
             </template>
 
             <template slot-scope="{ row, index }" slot="hwStart">
-                <i-input v-model="HomeWorkVOListEditBack[index].hwStart"  @on-blur="handleInputChange(index, HomeWorkVOListEditBack[index],'hwStart', $event.target)" :disabled="row.hwStatus == 2 || row.hwHomework　!= 4"></i-input>
+                <i-input v-model="HomeWorkVOListEditBack[index].hwStart"  @on-blur="handleInputChange(index, HomeWorkVOListEditBack[index],'hwStart', $event.target)" :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null|| row.hwHomework　!= 4"></i-input>
             </template>
 
             <template slot-scope="{ row, index }" slot="hwEnd">
-                <i-input v-model="HomeWorkVOListEditBack[index].hwEnd"  @on-blur="handleInputChange(index, HomeWorkVOListEditBack[index],'hwEnd', $event.target)" :disabled="row.hwStatus == 2 || row.hwHomework　!= 4"></i-input>
+                <i-input v-model="HomeWorkVOListEditBack[index].hwEnd"  @on-blur="handleInputChange(index, HomeWorkVOListEditBack[index],'hwEnd', $event.target)" :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null|| row.hwHomework　!= 4"></i-input>
             </template>
 
             <template slot-scope="{ row, index }" slot="hwCommute">
-                <checkbox v-model="HomeWorkVOListEditBack[index].hwCommute == 1 " :disabled="row.hwStatus == 2"></checkbox>
+                <checkbox v-model="HomeWorkVOListEditBack[index].hwCommute" true-value="1" false-value="0" :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null" ></checkbox>
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApplicationcomment">
@@ -213,18 +213,13 @@
                         label: '在宅勤務（時間）'
                     }
                 ],
-                model1: '1',
                 defaultDate: '', //年月选择（Date）
                 dispMonthlyList: [],       //年月リスト
-                hatuReiName:'',
-                hatuResTimeRange:'',
-                today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 HomeWorkVOList:[],
                 HomeWorkVOListEditBack:[],
                 yyyyMMdd:'',
                 loading: false,　       //ローディングアクション
                 hasPassedTimeCheck: false,
-                index: 0,
                 contentScrollTop: 0,
                 kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
                 loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
@@ -363,10 +358,6 @@
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    // const query = {txtBaseDate:txtBaseDate}
-                    // const { data } =  await this.http.get(`sys/homeWork/hatuRei`, query)
-                    // this.hatuReiName=data.name
-                    // this.hatuResTimeRange=data.timerange
                 } catch (error) {
                     return
                 }finally {
@@ -397,6 +388,12 @@
                 console.log(this.HomeWorkVOListEditBack)
                 let checkFlg=false
                 for (let i = 0; i < this.HomeWorkVOListEditBack.length; i++) {
+                    if (this.HomeWorkVOListEditBack[i].hwStatus != null  && this.HomeWorkVOListEditBack[i].hwCommute == null){
+                        this.HomeWorkVOListEditBack[i].hwCommute="0";
+                    }
+                    if (this.HomeWorkVOListEditBack[i].hwStatus == null  && this.HomeWorkVOListEditBack[i].hwApplicationcomment != null){
+                        this.HomeWorkVOListEditBack[i].hwStatus="0";
+                    }
                     let msday=this.HomeWorkVOListEditBack[i].hwApplicationdate + " : ";
                     if (this.HomeWorkVOListEditBack[i].hwStatus == 1 ) {
                         if( this.HomeWorkVOListEditBack[i].hwHomework == 0 ){
@@ -420,6 +417,8 @@
                                 return checkFlg=true;
                             }
                         }
+                        this.HomeWorkVOListEditBack[i].hwStart = Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwStart);
+                        this.HomeWorkVOListEditBack[i].hwEnd = Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwEnd);
                     }
                 }
                 if(checkFlg){
@@ -433,7 +432,6 @@
                     cancelText: 'キャンセル',
                     onOk: async () => {
                         let query={ homeWorkVO:this.HomeWorkVOListEditBack }
-                        console.log(query)
                         try{
                             await this.http.post(`sys/homeWork/updateHmoeWork`,query)
                         }catch (e) {
@@ -446,6 +444,21 @@
                     onCancel: () => {
                     }
                 })
+            },
+            // 年月選択
+            async handleStartMonth(e) {
+                if(e){
+                    this.query.baseDate = this.dateFormat(e)
+                    this.getHomeWorkInfo()
+                }
+
+            },
+            dateFormat(e) {
+                //YYYY年MM月からYYYY/MM/01へ変換する
+                let yearMMDD = e.replace("年","/")
+                yearMMDD = yearMMDD.replace("月","/")
+                yearMMDD = yearMMDD+"01"
+                return  yearMMDD
             },
             handleScroll: Throttle(function(e) {
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
