@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgHomeWork.TmgHomeWorkMapper">
+
+    <select id="selectHomeWork" resultType="jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO">
+        SELECT
+              TO_CHAR(d.TDA_DYYYYMMDD, 'dd') AS tdaDd 							        		                        <!-- 0 日 -->
+            , TO_CHAR(d.TDA_DYYYYMMDD,'DY') AS tdaDy 									                                            <!-- 1 曜日 -->
+            , TO_CHAR(d.TDA_DYYYYMMDD, 'YYYY/MM/DD')  AS hwApplicationdate                                                          <!-- 2 勤務年月日 -->
+            ,TMG_F_GET_EMPLOYEES_WORKDAY(d.TDA_CWORKINGID_P, d.TDA_CCUSTOMERID, d.TDA_CCOMPANYID) AS mgdCsparechar                  <!-- 3 休日区分 -->
+            ,hh.HW_STATUS AS hwStatus                                                                                               <!-- 4 申請状態 -->
+            ,hh.HW_HOMEWORK AS hwHomework                                                                                           <!-- 5 在宅勤務状態 -->
+        ,TMG_F_CONV_MIN2HHMI(hh.HW_START) AS hwStart                                                                                <!-- 6 開始時間 -->
+            ,TMG_F_CONV_MIN2HHMI(hh.HW_END) AS hwEnd                                                                                <!-- 7 終了時間 -->
+            ,hh.HW_COMMUTE AS hwCommute                                                                                             <!-- 8 通勤FLG -->
+            ,hh.HW_APPLICATIONCOMMENT AS hwApplicationcomment                                                                       <!-- 9 申請コメント -->
+            ,hh.HW_APPROVALCOMMENT AS hwApprovalcomment                                                                             <!-- 10 c承認コメント -->
+        FROM TMG_DAILY d
+        left join
+        (SELECT
+             h.HW_STATUS
+            ,h.HW_HOMEWORK
+            ,h.HW_START
+            ,h.HW_END
+            ,h.HW_COMMUTE
+            ,h.HW_APPLICATIONCOMMENT
+            ,h.HW_APPROVALCOMMENT
+            ,h.HW_CEMPLOYEEID AS HW_CEMPLOYEEID
+            ,h.HW_APPLICATIONDATE AS HW_APPLICATIONDATE
+        FROM TMG_HOMEWORKDATA h
+        WHERE   TO_CHAR(HW_APPLICATIONDATE,'YYYY/MM') = TO_CHAR(TO_DATE(#{baseDate},'YYYY/MM/DD'),'YYYY/MM')
+        ) hh
+        ON  d.TDA_CEMPLOYEEID = hh.HW_CEMPLOYEEID
+        AND d.TDA_DYYYYMMDD = to_char(hh.HW_APPLICATIONDATE,'yyyy/mm/dd')
+        WHERE   TDA_CEMPLOYEEID  = #{employeeId}
+        AND     TDA_CCOMPANYID   = '01'
+        AND     TDA_CCUSTOMERID  = '01'
+        AND TDA_DYYYYMMDD    >= trunc(add_months(last_day(#{baseDate}), -1) + 1)
+        AND TDA_DYYYYMMDD    <![CDATA[<=]]> last_day(TO_DATE(#{baseDate}, 'yyyy/MM/dd'))
+                ORDER BY TDA_DYYYYMMDD
+
+    </select>
+
+</mapper>

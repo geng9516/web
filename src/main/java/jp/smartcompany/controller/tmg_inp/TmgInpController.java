@@ -79,5 +79,16 @@ public class TmgInpController {
         }
         return "sys/input/oconfirm";
     }
-
+    /**
+     * 跳转到在宅勤务
+     */
+    @GetMapping("TmgHomeWork")
+    public String toHomeWork(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
+                             @RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
+                             @RequestAttribute("isAndroid") Boolean isAndroid) {
+//        if (isIPhoneOrIPod || isAndroid) {
+//            return "mobile/restapply";
+//        }
+        return "sys/input/inphomework";
+    }
 }
