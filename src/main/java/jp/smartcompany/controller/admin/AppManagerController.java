@@ -1,5 +1,6 @@
 package jp.smartcompany.controller.admin;
 
+import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.logic.AppManagerMainLogic;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
@@ -18,7 +19,7 @@ public class AppManagerController {
 
   // http://localhost:6879/sys/appmanager/applist
   @GetMapping("applist")
-  public List<MastAppDTO> getAppList() {
+  public List<MastAppTreeDTO> getAppList() {
       return appManagerMainLogic.getAppList();
   }
 

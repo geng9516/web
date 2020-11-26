@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
+import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
 import jp.smartcompany.admin.appmanager.handler.MastTemplateHandler;
 import jp.smartcompany.admin.appmanager.logic.AppManagerMainLogic;
@@ -39,7 +40,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
     private final TimedCache<String,Object> timedCache;
 
     @Override
-    public List<MastAppDTO> getAppList() {
+    public List<MastAppTreeDTO> getAppList() {
        return appTreeService.selectMastAppList();
     }
 

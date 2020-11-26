@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.io.Serializable;
 
 @Getter
 @Setter
 @ToString
-public class MastAppDTO implements Serializable {
+public class MastAppTreeDTO implements Serializable {
 
     private static final long serialVersionUID = 5489976098618866643L;
 
@@ -33,7 +34,8 @@ public class MastAppDTO implements Serializable {
     private String autoUpload;
     private String defaultTargetUser;
     private String baseDateType;
-    private String parentId;
     private String appLevel;
+    private String parentId;
 
+    private List<MastAppTreeDTO> children;
 }

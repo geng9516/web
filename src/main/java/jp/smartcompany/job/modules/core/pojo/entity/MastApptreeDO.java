@@ -242,6 +242,11 @@ private static final long serialVersionUID=1L;
     @TableField("mtr_dmodifieddate")
         private Date mtrDmodifieddate;
 
+    @TableField("parent_id")
+    private String parentId;
+
+    @TableField("app_level")
+    private String appLevel;
         /**
          * バージョンno
          */
