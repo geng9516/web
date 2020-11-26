@@ -33,5 +33,7 @@ public class MastAppDTO implements Serializable {
     private String autoUpload;
     private String defaultTargetUser;
     private String baseDateType;
+    private String parentId;
+    private String appLevel;
 
 }

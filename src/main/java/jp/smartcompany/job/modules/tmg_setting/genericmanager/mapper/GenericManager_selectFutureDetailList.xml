@@ -3,7 +3,7 @@
 
 <mapper namespace="jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper">
 
-    <select id="selectFutureDetailList" parameterType="map" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.dto.GenericHistoryDetail">
+    <select id="selectFutureDetailList" parameterType="map" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.dto.GenericHistoryDetailDTO">
         SELECT
             DISTINCT a.MGD_CGENERICDETAILID_CK detail_id,
             PSMASTER.FUNC_GET_GENERICDETAIL_DESC(

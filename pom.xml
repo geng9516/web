@@ -166,7 +166,7 @@
     </dependencies>
 
     <build>
-        <finalName>web-work</finalName>
+        <finalName>spwm</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

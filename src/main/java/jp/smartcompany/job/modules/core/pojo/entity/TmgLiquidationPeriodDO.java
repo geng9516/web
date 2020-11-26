@@ -78,43 +78,43 @@ public class TmgLiquidationPeriodDO implements Serializable {
 
 
     /**
-     *
+     *週平均勤務時間数
      */
     @TableField("tlp_cavgworktime")
     private long tlpCavgworktime;
 
     /**
-     *
+     *最長働く一日労働時間上限
      */
     @TableField("tlp_cmaxdayhours")
     private long tlpCmaxdayhours;
 
     /**
-     *
+     *最長働く週間労働時間上限
      */
     @TableField("tlp_cmaxweekhours")
     private long tlpCmaxweekhours;
 
     /**
-     *
+     *一年間総労働日数
      */
     @TableField("tlp_ctotalworkdays")
     private long tlpCtotalworkdays;
 
     /**
-     *
+     *最長連続働く週数上限
      */
     @TableField("tlp_cmaxcontiweek")
     private long tlpCmaxcontiweek;
 
     /**
-     *
+     *最長連続働く日数上限
      */
     @TableField("tlp_cmaxcontiday")
     private long tlpCmaxcontiday;
 
     /**
-     *
+     *週間労働時間上限超過可能回数
      */
     @TableField("tlp_coverweekcount")
     private long tlpCoverweekcount;

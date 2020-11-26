@@ -3,7 +3,7 @@
 
 <mapper namespace="jp.smartcompany.job.modules.tmg_setting.genericmanager.mapper.GenericManagerMapper">
 
-    <select id="listCategoryGenericDetail" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.vo.CategoryGenericDetailVO">
+    <select id="listCategoryGenericDetail" resultType="jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailVO">
         SELECT
             A.MG_ID,
             A.MG_CGENERICGROUPID_CK as group_id,

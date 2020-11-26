@@ -93,25 +93,23 @@ new Vue({
           {
             title: '内容',
             align: 'center',
-            minWidth: '100',
+            width: '100',
             key: 'itemName'
           },
           {
             title: '開始',
-            minWidth: '90',
             slot: 'tdadNopen',
             align: 'center'
           },
           {
             title: '終了',
             slot: 'tdadNclose',
-            minWidth: '90',
             align: 'center'
           },
           {
             title: '削除',
             slot: 'tdadNdeleteflg',
-            minWidth: '60',
+            width: '60',
             align: 'center'
           }
         ],
@@ -120,25 +118,23 @@ new Vue({
           {
             title: '内容',
             align: 'center',
-            minWidth: '100',
+            width: '100',
             key: 'itemName'
           },
           {
             title: '開始',
-            minWidth: '90',
             slot: 'tdadNopen',
             align: 'center'
           },
           {
             title: '終了',
             slot: 'tdadNclose',
-            minWidth: '90',
             align: 'center'
           },
           {
             title: '削除',
             slot: 'tdadNdeleteflg',
-            minWidth: '60',
+            width: '60',
             align: 'center'
           }
         ],
@@ -302,16 +298,34 @@ new Vue({
         const { data } = await this.http.get('sys/tmgResults/dailyDetail', this.query)
 
         // 出張ドロップダウン
-        this.businessTripList = data.businessTripList
+        this.businessTripList = data.businessTripList.map(e=> {
+          return {
+            ...e,
+            text: e.mgdCgenericdetaildesc,
+            value:e.mgdCmastercode
+          }
+        })
 
         // 非勤務ドロップダウン
-        this.categoryNondutyList = data.categoryNondutyList
+        this.categoryNondutyList = data.categoryNondutyList.map(e=> {
+          return {
+            ...e,
+            text: e.itemName,
+            value:e.itemCode
+          }
+        })
         if(this.categoryNondutyList.length>0){
           this.categoryNonduty = this.categoryNondutyList[0].itemCode
         }
 
         // 超過勤務ドロップダウン
-        this.categoryOverhoursList = data.categoryOverhoursList
+        this.categoryOverhoursList = data.categoryOverhoursList.map(e=> {
+          return {
+            ...e,
+            text: e.itemName,
+            value:e.itemCode
+          }
+        })
         if(this.categoryNondutyList.length>0){
           this.categoryOverhours = this.categoryOverhoursList[0].itemCode
         }

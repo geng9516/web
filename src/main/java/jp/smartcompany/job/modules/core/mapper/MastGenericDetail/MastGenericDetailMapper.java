@@ -1,33 +1,30 @@
 package jp.smartcompany.job.modules.core.mapper.MastGenericDetail;
 
-import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
+import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
-import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
-import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
-import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -243,5 +240,9 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     List<WorkTypeDto> selectWorkerType4Flex(@Param("custID")String custID,
                                             @Param("compCode")String compCode,
                                             @Param("baseDate")String baseDate);
+
+    @Select("SELECT CASE WHEN MIN(MGD_DSTART_CK) IS NULL THEN null ELSE MIN(MGD_DSTART_CK) - 1 END MaxEndDate FROM MAST_GENERIC_DETAIL WHERE MGD_CCUSTOMERID = '01' AND MGD_CCOMPANYID_CK_FK = '01' AND MGD_CGENERICGROUPID = #{groupId} AND MGD_CGENERICDETAILID_CK = #{detailId} AND MGD_CLANGUAGE_CK = 'ja' AND MGD_DSTART_CK > #{searchDate}")
+    Date selectMaxEndDate(@Param("groupId") String groupId,@Param("detailId") String detailId,@Param("searchDate") String searchDate);
+
 }
 

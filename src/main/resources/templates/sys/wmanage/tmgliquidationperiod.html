@@ -222,7 +222,7 @@
             </div>
         </Modal>
         <!-- 勤務パターンSTART -->
-        <Modal title="新規パターン" width="30" v-model="patternFlg"  footer-hide :mask-closable="false">
+        <Modal title="新規パターン" width="40" v-model="patternFlg"  footer-hide :mask-closable="false">
             <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
             <i-form :label-width="120" ref="localValue">
                 <form-item label="所属">
@@ -240,14 +240,14 @@
 
                 <form-item label="勤務時間">
                     <Row>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.tpa_nopen" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.TPA_NOPEN,0,$event.target)"></i-input>
                         </i-col>
-                        <i-col span="4">
+                        <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.tpa_nclose" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.nclose,1,$event.target)"></i-input>
                         </i-col>
@@ -256,14 +256,14 @@
 
                 <form-item label="休憩時間1">
                     <Row>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.restopen1" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.restopen1,0,$event.target)"></i-input>
                         </i-col>
-                        <i-col span="4">
+                        <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.restclose1" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.restclose1,1,$event.target)"></i-input>
                         </i-col>
@@ -271,19 +271,23 @@
                 </form-item>
                 <form-item label="休憩時間2">
                     <Row>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.restopen2" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.restopen2,0,$event.target)"></i-input>
                         </i-col>
-                        <i-col span="4">
+                        <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
-                        <i-col span="8">
+                        <i-col span="11">
                             <i-input v-model="rawData.restclose2" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
                                      @on-blur="handleInputChange(rawData.restclose2,1,$event.target)"></i-input>
                         </i-col>
                     </Row>
                 </form-item>
+                <div class="tr" >
+                    <i-button @click="insertNewPattern">登録</i-button>
+                </div>
+
             </i-form>
         </Modal>
 
@@ -296,48 +300,38 @@
                 <i-col span="20">
                     <template>
                     <radio-group v-model="workPattern" type="button">
-                        <Radio v-for="(item, i) of workPatternList" :label="item.patternId">{{item.patternName}}</Radio>
+                        <Radio v-for="(item, i) of workPatternList" :label="item.patternid">{{item.patternname}}</Radio>
                         <Radio label="TMG_PATTERN|CUSTOMIZE">カスタマイズ</Radio>
                     </radio-group>
                     </template>
-                    <i-button  @onclick="makeNewPattern">新規</i-button>
+                    <i-button  @click="makeNewPattern">新規</i-button>
                 </i-col>
             </Row>
 
 
-            <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="() => 'select-col'"  @on-row-click="patternSet">
-                <template slot-scope="{ row, index }" slot="kuben">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].kuben}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].kuben}}</span>
-                    <i-input v-model="monthData[index].kuben"  v-if="colClick(row)"></i-input>
+            <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="monthColDisabled"  @on-row-click="patternSet">
+
+                <template slot-scope="{ row, index }" slot="workhours">{{computeWorkTime(monthData[index].starttime,monthData[index].endtime,monthData[index].restTime) }}
                 </template>
 
-                <template slot-scope="{ row, index }" slot="patternid">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].patternid}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].patternid}}</span>
-                    <i-input v-model="monthData[index].patternid" v-if="colClick(row)"/>
+                <template slot-scope="{ row, index }" slot="starttime">
+                    <i-input v-model="monthData[index].starttime" v-if="colClick(index)"　@on-blur="handleInputChange(monthData[index],'starttime', $event.target)"></i-input>
+                    <span class="input-like-span" v-else>{{monthData[index].starttime}}</span>
                 </template>
 
-                <template slot-scope="{ row, index }" slot="startTime">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].starttime}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].starttime}}</span>
-                    <i-input v-model="monthData[index].starttime" v-if="colClick(row)"　@on-blur="handleInputChange(index,monthData[index],'starttime', $event.target)"/>
-                </template>
-
-                <template slot-scope="{ row, index }" slot="endTime">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].endtime}}</span>
-                    <span class="input-like-span" style="color: gray" v-else>{{monthData[index].endtime}}</span>
-                    <i-input v-model="monthData[index].endtime" v-if="colClick(row)" @on-blur="handleInputChange(index,monthData[index],'endtime', $event.target)"/>
+                <template slot-scope="{ row, index }" slot="endtime">
+                    <i-input v-model="monthData[index].endtime" v-if="colClick(index)" @on-blur="handleInputChange(monthData[index],'endtime', $event.target)"></i-input>
+                    <span class="input-like-span" v-else>{{monthData[index].endtime}}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="restTime" >
-                    <div v-if="colClick(row)">
+                    <div v-if="colClick(index)">
                         <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
                             <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
-                                <i-input v-model="monthData[index].restTime[i].restOpen" @on-blur="handleInputChange(index, monthData[index].restTime[i],'restOpen', $event.target)"/>
+                                <i-input v-model="monthData[index].restTime[i].restOpen" @on-blur="handleInputChange(monthData[index].restTime[i],'restOpen', $event.target)"/>
                             </i-col>
-                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
-                                <i-input v-model="monthData[index].restTime[i].restClose" @on-blur="handleInputChange(index, monthData[index].restTime[i],'restClose', $event.target)"/>
+                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
+                                <i-input v-model="monthData[index].restTime[i].restClose" @on-blur="handleInputChange(monthData[index].restTime[i],'restClose', $event.target)"/>
                             </i-col>
                             <i-col span="8" v-show="monthData[index].restTime.length > 1">
                                 <i-button ghost type="error" @click="handleMinusRest(monthData[index].restTime, i)">-</i-button>
@@ -350,34 +344,19 @@
                                 type="success"
                                 long
                                 @click="handleAddRest(monthData[index].restTime)"
-                                v-show="monthData[index].restTime.length < 4"
+                                v-show="monthData[index].restTime.length < 2 && monthData[index].patternid === 'TMG_PATTERN|CUSTOMIZE' "
                         >+</i-button>
-                    </div>
-                    <div :v-if="monthColDisabled(row)">
-                        <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
-                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
-                                <span class="input-like-span" >{{monthData[index].restTime[i].restOpen}}</span>
-                            </i-col>
-                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
-                                <span class="input-like-span" >{{monthData[index].restTime[i].restClose}}</span>
-                            </i-col>
-                        </Row>
                     </div>
                     <div v-else>
                         <Row :gutter="10" v-for="(item, i) of monthData[index].restTime" :key="i" class="mb5" >
                             <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
                                 <span class="input-like-span" >{{monthData[index].restTime[i].restOpen}}</span>
                             </i-col>
-                            <i-col :span="monthData.restTime.length > 1 ? 8 : 12">
+                            <i-col :span="monthData[index].restTime.length > 1 ? 8 : 12">
                                 <span class="input-like-span" >{{monthData[index].restTime[i].restClose}}</span>
                             </i-col>
                         </Row>
                     </div>
-                </template>
-
-                <template slot-scope="{ row, index }" slot="comment">
-                    <span class="input-like-span" :v-if="monthColDisabled(row)">{{monthData[index].comment}}</span>
-                    <i-input v-model="monthData[index].comment" v-else/>
                 </template>
             </i-table>
         </Modal>
@@ -550,7 +529,7 @@
                 button4Pattern:['1','2'],
                 tableData4Year: [
                     {
-                        yyyymm: '2020/01',
+                        yyyymm: '2020/07',
                         m1: [
                             { label: '', color: '' },
                             { label: 'ﾆA', color: '' },
@@ -741,43 +720,7 @@
                         yeahrest: '3'
                     },
                     {
-                        yyyymm: '2020/01',
-                        m1: '',
-                        m2: '',
-                        m3: '',
-                        m4: '',
-                        m5: '',
-                        m6: '',
-                        m7: '',
-                        m8: '',
-                        m9: '',
-                        m10: '',
-                        m11: '',
-                        m12: '',
-                        m13: '',
-                        m14: '',
-                        m15: '',
-                        m16: '',
-                        m17: '',
-                        m18: '',
-                        m19: '',
-                        m20: '',
-                        m21: '',
-                        m22: '',
-                        m23: '',
-                        m24: '',
-                        m25: '',
-                        m26: '',
-                        m27: '',
-                        m28: '',
-                        m29: '',
-                        m30: '',
-                        m31: '',
-                        workTime: '',
-                        yeahrest: ''
-                    },
-                    {
-                        yyyymm: '2020/01',
+                        yyyymm: '2020/07',
                         m1: '',
                         m2: '',
                         m3: '',
@@ -828,13 +771,13 @@
                     },
                     {
                         title: '区分',
-                        slot: 'kuben',
+                        key: 'kuben',
                         minWidth: 100,
                         align: 'left'
                     },
                     {
                         title: 'パターン',
-                        slot: 'patternid',
+                        key: 'patternname',
                         minWidth: 100,
                         align: 'left'
                     },
@@ -869,22 +812,23 @@
                     },
                     {
                         title: 'コメント',
-                        slot: 'comment',
+                        key: 'comment',
                         minWidth: 100,
                         align: 'left'
                     },
                 ],
                 monthData:[],
                 monthlyEditFlg:false,
+                dailyDisabedArr:[],
                 workPattern:'',
                 workPatternList:[
                     {
-                    patternId:'1',
-                    patternName:'1'
+                        patternid:'1',
+                        patternname:'1'
                 },
                     {
-                    patternId:'2',
-                    patternName:'2'
+                        patternid:'2',
+                        patternname:'2'
                 }],
 
 
@@ -999,7 +943,6 @@
                                     // 前两层级默认展开方便查看
                                     expand: true,
                                     children: this.convertTreeData(children)
-
                         }
                     } else {
                         return {
@@ -1052,7 +995,6 @@
                 }
             },
             async showDetails(e) {
-                console.log(e)
                 this.empInfo.empId=e.employeeid
                 this.empInfo.empWorkTypeId=e.worktypeid
                 this.empInfo.deptName=e.deptname
@@ -1067,9 +1009,6 @@
                         this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                         this.editTableDate = data.monthDtoList
-
-
-                        console.log(this.$refs.tableDisp)
                         this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                         this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
                         this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
@@ -1110,36 +1049,27 @@
             },
             //清算详细表格合并
             handleSpan ({ row, column, rowIndex, columnIndex }) {
-
-                //每月第三行时 日期列 合并整行 非日期列 不合并
-                if (rowIndex % 3 === 2 && columnIndex === 1) {
-                    return  [1, 31];
-                }else if(rowIndex % 3 === 2 && columnIndex > 1 && columnIndex < 32){
-                    return  [0, 0];
-                }
                 //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
-                if(rowIndex % 3 === 1  && columnIndex === 1){
+                if(rowIndex % 2 === 1  && columnIndex === 1){
                     return [1,(8-new Date("1/1/2020").getDay())];
-                }else if(rowIndex % 3 === 1  && columnIndex > 1 && columnIndex < (9-new Date("1/1/2020").getDay())){
+                }else if(rowIndex % 2 === 1  && columnIndex > 1 && columnIndex < (9-new Date("1/1/2020").getDay())){
                     return [0,0];
                 }
                 //每月第二行时 非第一列 合并（周一为周开始日的情况下）
-                if (rowIndex % 3 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) &&  (columnIndex-8+new Date("1/1/2020").getDay()) % 7 === 1 && columnIndex < 32) {
+                if (rowIndex % 2 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) &&  (columnIndex-8+new Date("1/1/2020").getDay()) % 7 === 1 && columnIndex < 32) {
                     //最后一个只合并剩余
                     if((31-columnIndex) < 7){
                         return [1,31-columnIndex+1];
                     }else{
                         return [1, 7];
                     }
-                }else if(rowIndex % 3 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) && (columnIndex-8+new Date("1/1/2020").getDay()) % 7 != 1 && columnIndex < 32){
+                }else if(rowIndex % 2 === 1  && columnIndex > (8-new Date("1/1/2020").getDay()) && (columnIndex-8+new Date("1/1/2020").getDay()) % 7 != 1 && columnIndex < 32){
                     return [0,0];
                 }
                 //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分
-                if(column.title != '1日'  && rowIndex % 3 === 0 &&  columnIndex < 2 ){
-                    return [3, 1];
-                } else if(column.title != '1日'  && rowIndex % 3 === 1 &&   columnIndex  < 2 ){
-                    return [0, 0];
-                } else if(column.title != '1日'  && rowIndex % 3 === 2 &&   columnIndex < 2  ){
+                if(column.title != '1日'  && rowIndex % 2 === 0 &&  columnIndex < 2 ){
+                    return [2, 1];
+                } else if(column.title != '1日'  && rowIndex % 2 === 1 &&   columnIndex  < 2 ){
                     return [0, 0];
                 }
             },
@@ -1184,7 +1114,37 @@
                 }
                 try {
                     const {data} = await this.http.get('sys/tmgliquidationperiod/EditMonthDisp', OPTS)
-                    this.monthData = data.liquidationDailyInfoVoList;
+                    let monthInfo= data.liquidationDailyInfoVoList.map(e => {
+                        if(e.reststarttime2){
+                            return{
+                                ...e,
+                                restTime: [
+                                    {
+                                        restOpen: e.reststarttime1,
+                                        restClose: e.restendtime1
+                                    },
+                                    {
+                                        restOpen: e.reststarttime2,
+                                        restClose: e.restendtime2
+                                    },
+                                ]
+                            }}
+                        if(e.reststarttime1){
+                            return{
+                                ...e,
+                                restTime: [{
+                                    restOpen: e.reststarttime1,
+                                    restClose: e.restendtime1
+                                }]}
+                        }else{
+                            return{
+                                ...e,
+                                restTime: []
+                            }
+                        }
+                    })
+                    this.monthData = monthInfo
+                    console.log(this.monthData)
                     //this.workPatternList =data.workPatternList
                     this.monthlyEditFlg = true
                 } catch (error) {
@@ -1202,27 +1162,78 @@
                 e.push({ restOpen: '', restClose: '' })
             },
             //控制行disabled
-            monthColDisabled(e){
-                return true
+            monthColDisabled(row,index){
+                //customize下都不显示
+                if(row.disabled){
+                    return 'disabled'
+                }else{
+                    return 'white select-col'
+                }
             },
             //控制行pattern
             colClick(e){
-                if(e.patternid === 'TMG_PATTERN|CUSTOMIZE'){
+                if(this.monthData[e].patternid === 'TMG_PATTERN|CUSTOMIZE'){
                     return true
                 }else{
                     return false
                 }
             },
             //将此行设置为当前点击pattern
-            patternSet(row,index){
-                console.log(this.workPattern)
+            async patternSet(row,index){
+                //如果此行disabled 不可更新
+                if(this.monthData[index].disabled) return
+                //重复点击
+                if(this.workPattern === this.monthData[index].patternid) return
+                //非customize按钮
                 if(this.workPattern && this.workPattern != 'TMG_PATTERN|CUSTOMIZE'){
-
+                    this.monthData[index].patternid=this.workPattern
+                    this.monthData[index].patternname=this.workPatternList.some(e => {
+                                                                                if(e.patternid=this.workPattern){
+                                                                                    return e.patternname
+                                                                                }
+                                                                            })
+                    //todo
+                    this.monthData[index].starttime=''
+                    this.monthData[index].endtime=''
+                    this.monthData[index].restTime=[]
                 }else if(this.workPattern && this.workPattern === 'TMG_PATTERN|CUSTOMIZE'){
+                    //customize按钮
                     this.monthData[index].patternid='TMG_PATTERN|CUSTOMIZE'
+                    this.monthData[index].patternname='カスタマイズ'
+                    this.monthData[index].starttime=''
+                    this.monthData[index].endtime=''
+                    this.monthData[index].restTime.push({ restOpen: '', restClose: '' })
+                    console.log(this.monthData)
                 }
             },
+
+            // 计算单日劳动时间
+            computeWorkTime (startTime,endTime,restTimeList) {
+                if (!startTime || !endTime) return ''
+
+                let checkRestTime=restTimeList.every(e=> {
+                    //休息在工作时间范围内
+                    if(Utils.timeToMinute(endTime)>Utils.timeToMinute(e.restClose) && Utils.timeToMinute(e.restOpen)>Utils.timeToMinute(startTime)){
+                        //休息结束大于休息开始
+                        if(Utils.timeToMinute(e.restClose) > Utils.timeToMinute(e.restOpen)){
+                            return true
+                        }
+                    }
+                    return false
+                })
+                if(!checkRestTime) return ''
+                let computeTime =0
+                restTimeList.forEach(e=> {
+                    computeTime=computeTime+Utils.timeToMinute(e.restClose) - Utils.timeToMinute(e.restOpen)
+                })
+                return Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime;
+            },
+
+            //新規パターン画面の表示
             makeNewPattern(){
+                this.patternFlg=true
+            },
+            insertNewPattern(){
 
             }
 

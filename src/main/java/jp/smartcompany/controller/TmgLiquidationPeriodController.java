@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.TmgLiquidationPeriodBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationUpdateListDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.PatternInfoDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeGroupDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
@@ -99,7 +100,7 @@ public class TmgLiquidationPeriodController {
 
 
     /**
-     * 月編集画面
+     * 編集画面
      * @return　エラー
      */
     @GetMapping("getEditDisop")
@@ -139,6 +140,19 @@ public class TmgLiquidationPeriodController {
             List<LiquidationDailyDto> monthList,
             @RequestAttribute("BeanName") PsDBBean psDBBean){
         return tmgLiquidationPeriodBean.UpdateLiquidationDaily(monthList,empId,startDate,endDate,psDBBean);
+    }
+
+
+    /**
+     * 新規パターン
+     * @return　エラー
+     */
+    @PostMapping("insertPattern")
+    @ResponseBody
+    public GlobalResponse insertPattern(
+            PatternInfoDto patternInfoDto,
+            @RequestAttribute("BeanName") PsDBBean psDBBean){
+         return tmgLiquidationPeriodBean.insertPattern(patternInfoDto,psDBBean);
     }
 
     /**

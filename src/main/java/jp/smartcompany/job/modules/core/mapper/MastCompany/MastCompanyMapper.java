@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -32,4 +33,7 @@ public interface MastCompanyMapper extends BaseMapper<MastCompanyDO> {
                                              @Param("language") String language,
                                              @Param("date") String date,
                                              @Param("companies") List<String> companyList);
+
+       @Select("SELECT PSMASTER.FUNC_GET_COMP_NAME('01','01','${searchDate}', 'ja') AS MAC_CCOMPANYNAME FROM DUAL")
+       String getCompanyName(String searchDate);
 }

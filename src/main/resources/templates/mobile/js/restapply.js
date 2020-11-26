@@ -17,6 +17,7 @@ new Vue({
          statusList: [],
          timerangeType: 1,
          loading: false,
+         disableReapply: false,
          moreDataLoading: false,
          rotate: false,
          restInfoLoading: false,
@@ -548,7 +549,7 @@ new Vue({
          this.restApply.txtSickName = data.tntfCsickName
       },
       resetReApply() {
-         this.loading = true
+         this.disableReapply = true
          history.go(0)
       },
       handleBeforeUpload(files) {

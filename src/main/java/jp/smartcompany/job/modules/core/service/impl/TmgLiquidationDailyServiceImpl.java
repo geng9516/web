@@ -7,11 +7,11 @@ import jp.smartcompany.job.modules.core.service.ITmgliquidationDailyService;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Service
+@Repository
 public class TmgLiquidationDailyServiceImpl extends ServiceImpl<TmgLiquidationDailyMapper, TmgLiquidationDailyDO> implements ITmgliquidationDailyService {
     @Override
     public List<String> getMonthList(String empId, String startDate, String endDate){

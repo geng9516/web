@@ -30,7 +30,9 @@
             MTR_CCRITERIALDATETYPE as baseDateType,
             MTR_CONLINEHELPURL as help_doc_url,
             MTR_CONLINEHELPATTR as help_attribute,
-            MTR_CDOMAINID as domain_id
+            MTR_CDOMAINID as domain_id,
+            PARENT_ID,
+            APP_LEVEL
         FROM
             MAST_APPTREE
         ORDER BY

@@ -1,13 +1,22 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.multi.ListValueMap;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
+import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
+import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
+import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.mapper.MastApptree.MastApptreeMapper;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -40,12 +49,75 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
         }
 
         @Override
-        public List<MastAppDTO> selectMastAppList() {
-                return baseMapper.selectMastAppList();
+        public List<MastAppTreeDTO> selectMastAppList() {
+           List<MastAppDTO> appList = baseMapper.selectMastAppList();
+           List<MastAppTreeDTO> treeList = CollUtil.newArrayList();
+           for (MastAppDTO mastAppDTO : appList) {
+                   MastAppTreeDTO treeItem = new MastAppTreeDTO();
+                   BeanUtil.copyProperties(mastAppDTO,treeItem);
+                   treeList.add(treeItem);
+           }
+           generateTreeList(treeList, "0");
+                System.out.println(treeList.size());
+           return CollUtil.newArrayList(treeList.get(0));
         }
 
         @Override
         public int removeAll() {
                 return baseMapper.removeAll();
+        }
+
+
+        private List<MastAppTreeDTO> generateTreeList(List<MastAppTreeDTO> treeVoList, String level) {
+                if (CollUtil.isEmpty(treeVoList)) {
+                        return CollUtil.newArrayList();
+                }
+                ListValueMap<String, MastAppTreeDTO> appTreeMap = new ListValueMap<>();
+                List<MastAppTreeDTO> rootList = CollUtil.newArrayList();
+                for (MastAppTreeDTO treeVo : treeVoList) {
+                        appTreeMap.putValue(treeVo.getAppLevel(), treeVo);
+                        if (StrUtil.equals(level,treeVo.getAppLevel())) {
+                                rootList.add(treeVo);
+                        }
+                }
+                rootList.sort(Comparator.comparing(MastAppTreeDTO::getSort));
+                // 递归生成树
+                transformTreeList(rootList, level, appTreeMap);
+                return rootList;
+        }
+
+        private void transformTreeList(List<MastAppTreeDTO> treeList, String level,
+                                       ListValueMap<String, MastAppTreeDTO> deptTreeMap) {
+                treeList.forEach(treeItem -> {
+                        // 处理当前层级的数据
+                        System.out.println(level);
+                        String nextLevel = calculateLevel(level, treeItem.getObjectId());
+                        System.out.println(nextLevel);
+                        // 处理下一层
+                        List<MastAppTreeDTO> tempDeptList = deptTreeMap.get(nextLevel);
+                        System.out.println(tempDeptList);
+                        if (CollUtil.isNotEmpty(tempDeptList)) {
+                                // 排序
+                                tempDeptList.sort(Comparator.comparing(MastAppTreeDTO::getSort));
+                                // 设置下一层部门
+                                if(CollUtil.isNotEmpty(tempDeptList)){
+                                        treeItem.setChildren(tempDeptList);
+                                }
+                                // 进入到下一层处理
+                                transformTreeList(tempDeptList, nextLevel, deptTreeMap);
+                        }
+                });
+        }
+
+        private final static String SEPARATOR = ".";
+
+        private final static String ROOT = "0";
+
+        private static String calculateLevel(String parentLevel, String parentId) {
+                if (StrUtil.isBlank(parentLevel)) {
+                        return ROOT;
+                } else {
+                        return StrUtil.join(SEPARATOR,parentLevel, parentId);
+                }
         }
 }

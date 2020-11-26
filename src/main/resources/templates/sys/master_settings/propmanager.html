@@ -5,26 +5,16 @@
 </head>
 
 <body>
-プロパティ設定
-</body>
-
-<!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
-
-<head th:replace="layout/header::common_header(title='メール設定',cssPaths='/pages/content.min.css')">
-</head>
-
-<body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
     <main class="content protosettings-warp" ref="layout">
-        <div class="content_head"></div>
+        <div class="content_head">
           <div class="header">
             <div class="title1">
               <h1>
                 <Icon type="i-emeer colored"></Icon>
-                {{ `メール設定` }}
+                {{ `プロパティ設定` }}
               </h1>
             </div>
             <div class="btnbox">

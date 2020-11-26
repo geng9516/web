@@ -21,8 +21,6 @@ server:
     encoding:
       charset: utf-8
       force: on
-    session:
-      timeout: 600s
 spring:
   profiles:
     active: test
@@ -66,6 +64,8 @@ management:
   endpoint:
     health:
       show-details: always
+info:
+  basePath: /
 security:
   csrfWhiteList:
     - /login
@@ -98,16 +98,16 @@ security:
     - /stamping
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
-    - /
-    - /index
-    - /sys/**
-    - /tmg_admin/**
-    - /tmg_inp/**
-    - /admin/**
-    - /tmg_setting/**
-    - /expirePassword
-    - /changeExpirePassword
-    - /changePassword
+    - ${info.basePath}
+    - ${info.basePath}index
+    - ${info.basePath}sys/**
+    - ${info.basePath}tmg_admin/**
+    - ${info.basePath}tmg_inp/**
+    - ${info.basePath}admin/**
+    - ${info.basePath}tmg_setting/**
+    - ${info.basePath}expirePassword
+    - ${info.basePath}changeExpirePassword
+    - ${info.basePath}changePassword
   # 需要忽略的静态资源url
   resourceList:
     - /favicon.ico

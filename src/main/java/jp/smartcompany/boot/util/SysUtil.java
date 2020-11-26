@@ -489,6 +489,28 @@ public class SysUtil {
         }
     }
 
+    /**
+     * <B>【最小日付取得（Date型）】</B><BR>
+     * P@Sにて使用可能である最小日付を、Date型にて返却する。（非推奨）<BR>
+     * @return Date 最小日付
+     */
+    public static Date getMinDateObject() {
+
+        // 日付の出力形式を設定
+        SimpleDateFormat fFormat = new SimpleDateFormat();
+        Date dRetDate = new Date();
+
+        try {
+            fFormat.applyPattern("yyyy/MM/dd");
+            return fFormat.parse(PsConst.MINDATE);
+
+        } catch (ParseException e) {
+            // APIでは、特にエラーメッセージなどは返却しない
+            e.printStackTrace();
+            return dRetDate;
+        }
+    }
+
 
     public static boolean isAjaxRequest(HttpServletRequest request) {
         return StrUtil.equalsIgnoreCase("XMLHttpRequest",request.getHeader(Constant.HEADER_XMLHTTPREQUEST));

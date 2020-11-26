@@ -5,135 +5,430 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <main class="content namesettings-warp" ref="layout">
-        <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `汎用マスタ設定` }}
-              </h1>
-            </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
-            </div>
-          </div>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content namesettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `汎用マスタ設定` }}
+          </h1>
         </div>
-        <div class="content_body">
-          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-          <div class="table-top">
-            <Row :gutter="16">
-              <i-col span="24" class="tr">
-              </i-col>
-            </Row>
-          </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
-          </i-table>
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録</i-button>
         </div>
-        <back-top></back-top>
-      </main>
-    <div th:replace="layout/head::header"></div>
-    <script type="text/babel" th:inline="javascript">
-        new Vue({
-          el: '.namesettings-warp',
-          data() {
-            return {
-              isShow: false,
-              loading: true,
-              editLoading: false,
-              btnLoading: false,
-              hasChange: false,
-              defaultOption: false,
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp'),
-              updateValue: {},
-              columns: [
-               
-              ],
-              opts: {
-                systemId: '01',
-                appId: '0',
-                siteId: '0',
-                companyId: '0',
-                date: '',
-                groupId: '0',
-                isAll: false,
-              },
-              tableData: [],
-              conditionsList: [],
-              contentScrollTop: 0
+      </div>
+      <div class="searchwrap">
+        <div class="label">名称マスタ区分</div>
+        <i-select v-model="opts.groupId" editable filterable clearable @on-change="handleNameType" style="width: 35%;">
+            <i-option v-for="(item, i) of listData" :value="item.groupId" :key="i" :label="item.description">
+              <div>{{ item.description }}</div>
+              <span style="font-size: 12px;">{{ item.groupId }}</span>
+              <span style="float:right;" :style="{ color: item.editAble === '1' ? 'var(--login-svg-fill)' : 'var(--text-light-grey)'}">{{ item.editAble === '1' ? '変更可' : '変更不可'}}</span>
+            </i-option>
+        </i-select>
+        <span class="ml15" :style="{ color: editable ? 'var(--login-svg-fill)' : 'var(--text-light-grey)', 'font-size': '16px'}">{{ editable ? '変更可' : '変更不可'}}</span>
+      </div>
+      <Divider size="small" style="margin: 0;"/>
+    </div>
+    <div class="content_body">
+      <Row :gutter="16">
+        <i-col :span="tableData.length === 0 ? 24 : 10">
+          <div class="tr mb5">
+            <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+            :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
+          </div>
+          <span v-if="tableData.length === 0">
+            <Alert class="error-info tl">選択中の区分マスタが現在参照可能な設定はございません。</Alert>
+          </span>
+          <span v-else>
+            <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);" @click.native="getDetails(item)">
+            <div class="card-del-btn cursor">✖</div>
+            <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+              <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
+              <span class="tl width100"> {{ item.description }}</span>
+            </div>
+            <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+              <span style="display: inline-block;width: 55px;color: var(--text-light-grey)">コード: </span>
+              <span class="tl width100"> {{ item.detailId }}</span>
+            </div>
+            <p class="tr">{{ `${Utils.formatDate(item.startDate, 'yyyy/mm/dd')} ～ ${ item.endDate === 7983759600000 ? '' : Utils.formatDate(item.endDate, 'yyyy/mm/dd')}` }}</p>
+            <div v-show="curCard === item.mgdId" style="position: absolute;bottom: 0;left: 0; width: 80px;height: 30px;background: var(--error-background)"><div style="position: absolute;bottom: 0;left: 0; width: 80px;height: 30px;background: var(--content-bg);clip-path: circle(111% at 71% -112%);"></div></div>
+          </Card>
+          </span>
+          <Spin size="large" fix v-if="loading"></Spin>
+        </i-col>
+        <i-col span="14">
+          <Row :gutter="10" v-if="detailData.mgdCgenericdetaildesc">
+            <i-col span="10">
+              <div class="label pl10 tc">名称</div>
+              <div class="person-info">
+                <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">日本語</span></i-input>
+              </div>
+            </i-col>
+            <i-col span="6">
+              <div class="label pl10 tc">明細コード</div>
+              <div class="person-info">{{ detailData.mgdCgenericdetailidCk }}</div>
+            </i-col>
+            <i-col span="8">
+              <div class="label pl10 tc">期間</div>
+              <div class="person-info">{{ `${Utils.formatDate(detailData.mgdDstartCk, 'yyyy/mm/dd')} ～ ${ detailData.mgdDend === 7983759600000 ? '' : Utils.formatDate(detailData.mgdDend, 'yyyy/mm/dd')}` }}</div>
+            </i-col>
+
+            <i-col span="24" class="mt10">
+              <div class="label pl10 tc">予備文字</div>
+              <div class="person-info">
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">1</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar1" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">2</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar2" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">3</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar3" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">4</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar4" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+                <Row :gutter="8">
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">5</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar5" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                  <i-col span="12">
+                    <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                      <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                        <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                    </div>
+                  </i-col>
+                </Row>
+              </div>
+            </i-col>
+
+            <i-col span="24" class="mt10">
+              <Row :gutter="8">
+                <i-col span="12">
+                  <div class="label pl10 tc">予備数字</div>
+                  <div class="person-info">
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum1"><span slot="prepend">1</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum2"><span slot="prepend">2</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum3"><span slot="prepend">3</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum4"><span slot="prepend">4</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <i-input class="tl" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdNsparenum5"><span slot="prepend">5</span></i-input>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                  </div>
+                </i-col>
+
+                <i-col span="12">
+                  <div class="label pl10 tc">予備日付</div>
+                  <div class="person-info">
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate1" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate2" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate3" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate4" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                    <Row :gutter="8">
+                      <i-col span="12">
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate5" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                      </i-col>
+                      <i-col span="12">
+                        <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
+                          <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
+                            <i-input class="tl" v-model="detailData.mgdCgenericdetaildescja" type="textarea" :autosize="true"></i-input>
+                        </div>
+                      </i-col>
+                    </Row>
+                  </div>
+                </i-col>
+              </Row>
+            </i-col>
+          </Row>
+          <Spin size="large" fix v-if="detailLoading"></Spin>
+        </i-col>
+      </Row>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    new Vue({
+      el: '.namesettings-warp',
+      data() {
+        return {
+          isShow: false,
+          loading: true,
+          editLoading: false,
+          editable: false,
+          btnLoading: false,
+          detailLoading: false,
+          defaultOption: false,
+          detailData: {},
+          curCard: '',
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
+          updateValue: {},
+          pageValue: {
+            amount: 0,
+            curPage: 1,
+            curSize: 50
+          },
+          opts: {
+            page: 1,
+            limit: 50
+          },
+          listData: [],
+          tableData: [],
+          conditionsList: [],
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        await this.getTableData()
+        await this.getCardList(false)
+        if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
+        this.editable = this.listData[0].editAble === '1'
+
+      },
+      computed: {
+      },
+      methods: {
+        async getTableData() {
+          const OPTS = {}
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+          // this.loading = true
+          try {
+            const { data } = await this.http.get('sys/genericmanager/cates', OPTS)
+            this.listData = data
+          } catch (error) {
+          } finally {
+            // this.loading = false
+          }
+        },
+        async getCardList(opts) {
+          if (!opts) {
+            this.opts = {
+              ...this.opts,
+              groupId: this.opts.groupId || this.listData[0].groupId,
+              historyType: this.opts.historyType || this.listData[0].historyType
             }
-          },
-          async created() {
-            this.getTableData()
-            window.addEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          computed: {
-            tableHeadFixed() {
-              if (this.contentScrollTop > 110) return true
-              else return false
+          } else {
+            this.pageValue.curPage = 1
+            this.opts.page = 1
+            this.opts = {
+              ...this.opts,
+              groupId: opts.groupId,
+              historyType: opts.historyType
             }
-          },
-          methods: {
-            async getTableData() {
-              const OPTS = { ...this.opts }
-              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              Object.keys(OPTS).forEach(key => {
-                if (OPTS[key] === '0') {
-                  delete OPTS[key]
+          }
+          try {
+            this.loading = true
+            const { data } = await this.http.get('sys/genericmanager/detail', this.opts)
+            this.tableData = data.listPage.list
+
+            if(this.tableData.length === 0) {
+              this.detailData = {}
+            } else {
+              this.curCard = this.tableData[0].mgdId
+            }
+            this.pageValue.amount = data.listPage.totalCount
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
+        },
+        async getDetails(opts) {
+          this.curCard = opts.mgdId
+          try {
+            this.detailLoading = true
+            const { data } = await this.http.get('sys/genericmanager/detail/item', {
+              groupId: opts.groupId,
+              detailId: opts.detailId
+            })
+            this.detailData = data.detail
+          } catch (error) {
+          } finally {
+            this.detailLoading = false
+          }
+        },
+        async handleNameType(name) {
+          const target = this.listData.find(e => e.groupId === name)
+          this.editable = target.editAble === '1'
+          await this.getCardList(target)
+          if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
+        },
+        pageChange(e) {
+          this.opts.page = e
+          this.pageValue.curPage = e
+          this.getCardList(false)
+        },
+        async update() {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '入力内容を保存します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              this.loading = true
+              const update = this.tableData.map((e, i) => {
+                return {
+                  ...e,
+                  templateId: e.templateId === 'null' ? null : e.templateId,
+                  permissionType: e.permissionType === 'null' ? null : e.permissionType
                 }
               })
-              this.loading = true
               try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-                this.tableData = data
+                const { data } = await this.http.post('sys/appmanager/update', update)
+                this.$Message.success('更新完了')
+                this.getTableData()
+                this.updateValue = {}
               } catch (error) {
               } finally {
+                history.go(0)
                 this.loading = false
               }
-            },
-            async update() {
-              this.$Modal.confirm({
-                title: '注意',
-                content: '入力内容を保存します。よろしいですか？',
-                okText: 'OK',
-                cancelText: 'キャンセル',
-                onOk: async () => {
-                  this.loading = true
-                  const update = this.tableData.map((e, i)=> {
-                    return {
-                      ...e,
-                      templateId: e.templateId === 'null' ? null : e.templateId,
-                      permissionType: e.permissionType === 'null' ? null : e.permissionType
-                    }
-                  })
-                  try {
-                    const { data } = await this.http.post('sys/appmanager/update', update)
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                    this.updateValue = {}
-                  } catch (error) {
-                  } finally {
-                    history.go(0)
-                    this.loading = false
-                  }
-                }
-              })
-            },
-            handleScroll: Throttle(function (e) {
-              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50)
-          }
-        })
-      </script>
+            }
+          })
+        }
+      }
+    })
+  </script>
 </body>

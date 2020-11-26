@@ -39,6 +39,21 @@
         padding-left: 0;
       }
     }
+    .card-del-btn {
+      display: inline-block;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      min-height: 26px;
+      line-height: 1.2;
+      padding: 2px 12px 5px 15px;
+      color: var(--white);
+      background: var(--error-background);
+      border-bottom-left-radius: 100%;
+      &:hover {
+        background: var(--error-hover);
+      }
+    }
   }
   .searchwrap {
     // background-color: var(--searchwrap-background);

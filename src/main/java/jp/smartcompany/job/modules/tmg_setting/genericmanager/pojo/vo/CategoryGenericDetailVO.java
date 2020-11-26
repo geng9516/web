@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.tmg_setting.genericmanager.vo;
+package jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo;
 
 import lombok.Getter;
 import lombok.Setter;

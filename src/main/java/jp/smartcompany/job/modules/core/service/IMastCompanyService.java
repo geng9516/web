@@ -25,4 +25,6 @@ public interface IMastCompanyService extends IService<MastCompanyDO> {
 
         List<MastCompanyDO> selectCompanyList(String customerId,String language,Date date,
                                               List<String> companyList);
+
+        String getCompanyName(String searchDate);
 }

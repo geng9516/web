@@ -344,4 +344,9 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     List<WorkTypeDto> selectWorkerType4Variational(String custID, String compCode, String baseDate);
 
     List<WorkTypeDto> selectWorkerType4Flex(String custID, String compCode, String baseDate);
+
+    Date getMaxEndDate(String groupId,String detailId,String searchDate);
+
+    MastGenericDetailDO getGenericDetail(String groupId,String detailId,String searchDate);
+
 }
