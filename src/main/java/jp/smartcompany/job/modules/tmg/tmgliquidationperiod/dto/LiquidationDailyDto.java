@@ -10,12 +10,13 @@ import lombok.ToString;
 public class LiquidationDailyDto {
     private String yyyymmdd;
     private String week;
+    private String patternid;
     private String workhours;
-    private String kubun;
+    private String kubunid;
     private String starttime;
     private String endtime;
-    private String resttimestart1;
-    private String resttimeend1;
-    private String resttimestart2;
-    private String resttimeend2;
+    private String reststarttime1;
+    private String restendtime1;
+    private String reststarttime2;
+    private String restendtime2;
 }

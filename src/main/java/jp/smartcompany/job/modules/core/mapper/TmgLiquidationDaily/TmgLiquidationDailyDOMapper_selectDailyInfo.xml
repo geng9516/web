@@ -5,9 +5,9 @@
             resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo">
         SELECT
             TO_CHAR(TLDD_DYYYYMMDD, 'yyyy/mm/dd') AS YYYYMMDD,
-            TMG_F_GET_MGD(TLDD_CKUBEN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBEN,
-            TLDD_CKUBEN AS KUBENID,
-            TMG_F_CONV_MIN2HHMI(TLDD_CWORKHOURS) AS WORKHOURS,
+            TMG_F_GET_MGD(TLDD_CKUBEN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBUN,
+            TLDD_CKUBEN AS KUBUNID,
+            TLDD_CWORKHOURS AS WORKHOURS,
             TLDD_CWEEKS              AS WEEK,
             NVL(TMG_F_CONV_MIN2HHMI(TLDD_CSTARTTIME), '') AS STARTTIME,
             NVL(TMG_F_CONV_MIN2HHMI(TLDD_CENDTIME), '') AS ENDTIME,

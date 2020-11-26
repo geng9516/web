@@ -9,8 +9,8 @@ import lombok.ToString;
 @ToString
 public class LiquidationDailyInfoVo {
     private String yyyymmdd;
-    private String kuben;
-    private String kubenid;
+    private String kubun;
+    private String kubunid;
     private String workhours;
     private String week;
     private String starttime;

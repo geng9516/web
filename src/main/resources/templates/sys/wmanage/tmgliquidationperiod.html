@@ -294,6 +294,14 @@
 
 
         <Modal title = "月編集画面"　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
+            <div class="tr">
+                <i-button @click="updateMonthInfo"　icon="md-filing">登録</i-button>
+            </div>
+
+            <div class="titlenorm mb10 ">
+                <Icon type="logo-buffer"></Icon>
+                パターン一覧
+            </div>
             <Row class="mb10">
                 <i-col span="4">
                     <div class="label tc">勤務パターン</div></i-col>
@@ -308,10 +316,10 @@
                 </i-col>
             </Row>
 
-
+            <Alert class="primary-info tl">123</Alert>
             <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="monthColDisabled"  @on-row-click="patternSet">
 
-                <template slot-scope="{ row, index }" slot="workhours">{{computeWorkTime(monthData[index].starttime,monthData[index].endtime,monthData[index].restTime) }}
+                <template slot-scope="{ row, index }" slot="workhours">{{computeWorkTime( monthData[index].starttime,monthData[index].endtime,monthData[index].restTime,index ) }}
                 </template>
 
                 <template slot-scope="{ row, index }" slot="starttime">
@@ -1003,7 +1011,6 @@
                 this.empInfo.empWorkTypeName=e.worktypename
                 if(e.newflag){
                     try {
-
                         this.optsEmp.empId = e.employeeid
                         this.optsEmp.startDate = e.startdate
                         this.optsEmp.endDate = e.enddate
@@ -1023,7 +1030,6 @@
                     this.newLiquidationInfo.workTypeId=this.empInfo.empWorkTypeId
                     this.newFlg=true
                 }
-
             },
 
             async insertLiquidation() {
@@ -1208,7 +1214,7 @@
             },
 
             // 计算单日劳动时间
-            computeWorkTime (startTime,endTime,restTimeList) {
+            computeWorkTime (startTime,endTime,restTimeList,index) {
                 if (!startTime || !endTime) return ''
 
                 let checkRestTime=restTimeList.every(e=> {
@@ -1226,12 +1232,40 @@
                 restTimeList.forEach(e=> {
                     computeTime=computeTime+Utils.timeToMinute(e.restClose) - Utils.timeToMinute(e.restOpen)
                 })
-                return Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime;
+                this.monthData[index].workhours=Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime
+                return Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime
             },
+           async updateMonthInfo(){
+               console.log(this.monthData)
+               this.monthData.forEach((e,i)=>{
+                   if(e.restTime.length === 1){
+                       this.monthData[i].reststarttime1=this.monthData[i].restTime[0].restOpen
+                       this.monthData[i].restendtime1=this.monthData[i].restTime[0].restClose
+                   }else if(e.restTime.length === 2){
+                       this.monthData[i].reststarttime2=this.monthData[i].restTime[1].restOpen
+                       this.monthData[i].restendtime2=this.monthData[i].restTime[1].restClose
+                       this.monthData[i].reststarttime1=this.monthData[i].restTime[0].restOpen
+                       this.monthData[i].restendtime1=this.monthData[i].restTime[0].restClose
+                   }
+               })
+               let OPTS={
+                   empId:this.optsEmp.empId,
+                   startDate:this.optsEmp.startDate,
+                   endDate:this.optsEmp.endDate,
+                   monthList:this.monthData,
+               }
+               try {
+                   const { data } = await this.http.post('sys/tmgliquidationperiod/UpdateLiquidationDaily', OPTS)
+               } catch (error) {
+                   return
+               } finally {
 
+               }
+            },
             //新規パターン画面の表示
             makeNewPattern(){
                 this.patternFlg=true
+
             },
             insertNewPattern(){
 

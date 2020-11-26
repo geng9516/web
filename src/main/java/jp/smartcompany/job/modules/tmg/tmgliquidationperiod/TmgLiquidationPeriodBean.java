@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,51 +197,7 @@ public class TmgLiquidationPeriodBean {
         return errList;
     }
 
-    //月数据更新
-    public int UpdateLiquidationDaily(List<LiquidationDailyDto> monthList,String empid,String startDate,String endDate,PsDBBean psDBBean) {
-        int updateNum=0;
-        int errNum=0;
-        for (LiquidationDailyDto dailyDto: monthList) {
-            TmgLiquidationDailyDO tlddDo= new TmgLiquidationDailyDO();
-            //定休日调整
-            if(dailyDto.getKubun().indexOf("TMG_HOLFLG")> -1){
-                tlddDo.setTlddCsparechar3(dailyDto.getKubun());
-                tlddDo.setTlddCkuben(dailyDto.getKubun());
-                tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
-            }
-            //出勤或者休出 选用pattern
-            if(dailyDto.getKubun().indexOf("TMG_PATTERN")> -1){
-                tlddDo.setTlddCpattern(dailyDto.getKubun());
-                tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
-                tlddDo.setTlddCstarttime(dailyDto.getStarttime());
-                tlddDo.setTlddCendtime(dailyDto.getEndtime());
-                tlddDo.setTlddCreststarttime1(dailyDto.getResttimestart1());
-                tlddDo.setTlddCrestendtime1(dailyDto.getResttimeend1());
-                tlddDo.setTlddCreststarttime2(dailyDto.getResttimestart2());
-                tlddDo.setTlddCrestendtime2(dailyDto.getResttimeend2());
-            }
-            //原值
-            if(dailyDto.getKubun().indexOf("TMG_WORK")> -1){
-                break;
-            }
-            tlddDo.setTlddCmodifieruserid(psDBBean.getUserCode());
-            tlddDo.setTlddDmodifieddate(DateTime.now());
-            //数据插入
-            updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
-                    SysUtil.<TmgLiquidationDailyDO>query()
-                            .eq("TLDD_CCUSTOMERID", psDBBean.getCustID())
-                            .eq("TLDD_CCOMPANYID", psDBBean.getCompCode())
-                            .eq("TLDD_DSTARTDATE", startDate)
-                            .eq("TLDD_DENDDATE", endDate)
-                            .eq("TLDD_CEMPLOYEEID", empid)
-                            .eq("TLDD_DYYYYMMDD", dailyDto.getYyyymmdd()) );
-        }
-        if (updateNum>0){
-            //check LiquidationDaily 执行
-            errNum=iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empid,monthList.get(0).getYyyymmdd());
-        }
-        return  errNum;
-    }
+
 
     //月編集画面表示
     public Map<String, Object> EditMonthDisp(String empId, String yyyymm, PsDBBean psDBBean) {
@@ -258,8 +215,8 @@ public class TmgLiquidationPeriodBean {
                 //全休の時に、編集できません（時間休暇の時に、編集できます）
                 liquidationDailyInfoVoList.get(i).setDisabled(true);
                 continue;
-            }else if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getKubenid())&& (liquidationDailyInfoVoList.get(i).getKubenid().equals("TMG_WORK|451") ||
-                    liquidationDailyInfoVoList.get(i).getKubenid().equals("TMG_WORK|452") )){
+            }else if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getKubunid())&& (liquidationDailyInfoVoList.get(i).getKubunid().equals("TMG_WORK|451") ||
+                    liquidationDailyInfoVoList.get(i).getKubunid().equals("TMG_WORK|452") )){
                 //振替休日（法定）及び　振替休日（法定外）の場合、編集できません
                 liquidationDailyInfoVoList.get(i).setDisabled(true);
                 continue;
@@ -272,10 +229,63 @@ public class TmgLiquidationPeriodBean {
         //todo:pattern list（选取用）
 
 
-
+        List<PatternInfoVo> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode());
 
         monthlyMap.put("workPatternList", 111);
         return monthlyMap;
+    }
+
+    //月数据更新
+    public int UpdateLiquidationDaily(MonthDto monthDto,String empid,String startDate,String endDate,PsDBBean psDBBean) {
+        List<LiquidationDailyDto> monthList=monthDto.getMonthList();
+        int updateNum=0;
+        int errNum=0;
+        for (LiquidationDailyDto dailyDto: monthList) {
+            TmgLiquidationDailyDO tlddDo= new TmgLiquidationDailyDO();
+            //定休日调整
+            if(dailyDto.getKubunid().indexOf("TMG_HOLFLG")> -1){
+                tlddDo.setTlddCsparechar3(dailyDto.getKubunid());
+                tlddDo.setTlddCkuben(dailyDto.getKubunid());
+                tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
+                tlddDo.setTlddCstarttime(null);
+                tlddDo.setTlddCendtime(null);
+                tlddDo.setTlddCreststarttime1(null);
+                tlddDo.setTlddCrestendtime1(null);
+                tlddDo.setTlddCreststarttime2(null);
+                tlddDo.setTlddCrestendtime2(null);
+            }
+            //出勤或者休出 选用pattern
+            if(dailyDto.getKubunid().indexOf("TMG_PATTERN")> -1){
+                tlddDo.setTlddCpattern(dailyDto.getKubunid());
+                tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
+                tlddDo.setTlddCstarttime(dailyDto.getStarttime());
+                tlddDo.setTlddCendtime(dailyDto.getEndtime());
+                tlddDo.setTlddCreststarttime1(dailyDto.getReststarttime1());
+                tlddDo.setTlddCrestendtime1(dailyDto.getRestendtime1());
+                tlddDo.setTlddCreststarttime2(dailyDto.getReststarttime2());
+                tlddDo.setTlddCrestendtime2(dailyDto.getRestendtime2());
+            }
+            //原值
+//            if(dailyDto.getKubunid().indexOf("TMG_WORK")> -1){
+//                break;
+//            }
+            tlddDo.setTlddCmodifieruserid(psDBBean.getUserCode());
+            tlddDo.setTlddDmodifieddate(DateTime.now());
+            //数据插入
+            updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
+                    SysUtil.<TmgLiquidationDailyDO>query()
+                            .eq("TLDD_CCUSTOMERID", psDBBean.getCustID())
+                            .eq("TLDD_CCOMPANYID", psDBBean.getCompCode())
+                            .eq("TLDD_DSTARTDATE", startDate)
+                            .eq("TLDD_DENDDATE", endDate)
+                            .eq("TLDD_CEMPLOYEEID", empid)
+                            .eq("TLDD_DYYYYMMDD", dailyDto.getYyyymmdd()) );
+        }
+        if (updateNum>0){
+            //check LiquidationDaily 执行
+            errNum=iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empid,monthList.get(0).getYyyymmdd());
+        }
+        return  errNum;
     }
 
     //新规pattern

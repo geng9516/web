@@ -4,10 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.TmgLiquidationPeriodBean;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationUpdateListDto;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.PatternInfoDto;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.WorkTypeGroupDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
@@ -134,12 +131,9 @@ public class TmgLiquidationPeriodController {
     @PostMapping("UpdateLiquidationDaily")
     @ResponseBody
     public int UpdateLiquidationDaily(
-            @RequestParam(value = "empId",required = false) String empId,
-            @RequestParam(value = "startDate",required = false) String startDate,
-            @RequestParam(value = "endDate",required = false) String endDate,
-            List<LiquidationDailyDto> monthList,
+            @RequestBody MonthDto monthList,
             @RequestAttribute("BeanName") PsDBBean psDBBean){
-        return tmgLiquidationPeriodBean.UpdateLiquidationDaily(monthList,empId,startDate,endDate,psDBBean);
+        return tmgLiquidationPeriodBean.UpdateLiquidationDaily(monthList,monthList.getEmpId(),monthList.getStartDate(),monthList.getEndDate(),psDBBean);
     }
 
 
