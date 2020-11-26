@@ -107,7 +107,7 @@
 
             <template slot-scope="{ row, index }" slot="hwStatus" >
                 <span v-if="HomeWorkVOListEditBack[index].hwStatus=='1'">
-                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="" :class="dayRedStatus(row)">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="">
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
@@ -124,7 +124,7 @@
                     </i-select>
                 </span>
                 <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='4'">
-                    <i-select v-model="row.hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" :class="dayRedStatus(row)">
+                    <i-select v-model="row.hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="">
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[3].value">{{ StatusList[3].label }}</i-option>
@@ -156,17 +156,14 @@
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApplicationcomment">
-                    <i-input v-model=" HomeWorkVOListEditBack[index].hwApplicationcomment " type="textarea" class="tl dayRedStatus(row)"
+                    <i-input v-model=" HomeWorkVOListEditBack[index].hwApplicationcomment " type="textarea" class="tl"
                              :autosize="{ minRows: 2, maxRows: 5 }"
                              :maxlength="100"
                              @on-blur="handleInputChange(index, false)"></i-input>
             </template>
 
             <template slot-scope="{ row }" slot="hwApprovalcomment">
-                <i-input v-model=" HomeWorkVOListEditBack[index].hwApprovalcomment " type="textarea" class="tl dayRedStatus(row)"
-                         :autosize="{ minRows: 2, maxRows: 5 }"
-                         :maxlength="100"
-                         @on-blur="handleInputChange(index, false)"></i-input>
+                <span >{{ row.hwApprovalcomment }}</span>
             </template>
 
         </i-table>
