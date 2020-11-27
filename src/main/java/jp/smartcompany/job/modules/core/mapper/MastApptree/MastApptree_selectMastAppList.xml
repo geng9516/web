@@ -4,6 +4,7 @@
 
     <select id="selectMastAppList" resultType="jp.smartcompany.admin.appmanager.dto.MastAppDTO">
         SELECT
+            MTR_ID as id,
             MTR_COBJECTID as object_id,
             MTR_CSITEID as site_id,
             MTR_CAPPID as app_id,

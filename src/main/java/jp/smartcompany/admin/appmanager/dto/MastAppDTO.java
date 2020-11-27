@@ -14,6 +14,7 @@ public class MastAppDTO implements Serializable {
 
     private static final long serialVersionUID = 5489976098618866643L;
 
+    private Long id;
     private String objectId;
     private String siteId;
     private String appId;
