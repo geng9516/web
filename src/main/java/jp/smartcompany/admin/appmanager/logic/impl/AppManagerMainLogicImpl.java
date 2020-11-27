@@ -65,6 +65,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         String username = SecurityUtil.getUsername();
 
         MastApptreeDO treeDO = new MastApptreeDO();
+        treeDO.setMtrId(dto.getId());
         treeDO.setMtrCurl(dto.getUrl());
         treeDO.setMtrCtype(dto.getType());
         treeDO.setMtrCtemplateid(dto.getTemplateId());
