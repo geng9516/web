@@ -230,26 +230,23 @@
                         {{ empInfo.deptName }}
                     </span>
                 </form-item>
-                <form-item label="パターンコード">
-                    <i-input v-model="rawData.tpa_cpatternid"　placeholder="入力してください"></i-input>
-                </form-item>
 
                 <form-item label="名称">
-                    <i-input v-model="rawData.tpa_cpatternname" placeholder="入力してください"></i-input>
+                    <i-input v-model="patternInfo.patternName" placeholder="入力してください"></i-input>
                 </form-item>
 
                 <form-item label="勤務時間">
                     <Row>
                         <i-col span="11">
-                            <i-input v-model="rawData.tpa_nopen" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.TPA_NOPEN,0,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.startTime" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo,'startTime',$event.target)"></i-input>
                         </i-col>
                         <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
                         <i-col span="11">
-                            <i-input v-model="rawData.tpa_nclose" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.nclose,1,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.endTime" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo,'endTime',$event.target)"></i-input>
                         </i-col>
                     </Row>
                 </form-item>
@@ -257,30 +254,30 @@
                 <form-item label="休憩時間1">
                     <Row>
                         <i-col span="11">
-                            <i-input v-model="rawData.restopen1" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.restopen1,0,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.restTime[0].restOpen" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[0],'restOpen',$event.target)"></i-input>
                         </i-col>
                         <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
                         <i-col span="11">
-                            <i-input v-model="rawData.restclose1" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.restclose1,1,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.restTime[0].restClose" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[0],'restClose',$event.target)"></i-input>
                         </i-col>
                     </Row>
                 </form-item>
                 <form-item label="休憩時間2">
                     <Row>
                         <i-col span="11">
-                            <i-input v-model="rawData.restopen2" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.restopen2,0,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.restTime[1].restOpen" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[1],'restOpen',$event.target)"></i-input>
                         </i-col>
                         <i-col span="2">
                             <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
                         </i-col>
                         <i-col span="11">
-                            <i-input v-model="rawData.restclose2" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
-                                     @on-blur="handleInputChange(rawData.restclose2,1,$event.target)"></i-input>
+                            <i-input v-model="patternInfo.restTime[1].restClose" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[1],'restClose',$event.target)"></i-input>
                         </i-col>
                     </Row>
                 </form-item>
@@ -308,8 +305,10 @@
                 <i-col span="20">
                     <template>
                     <radio-group v-model="workPattern" type="button">
-                        <Radio v-for="(item, i) of workPatternList" :label="item.patternid">{{item.patternname}}</Radio>
-                        <Radio label="TMG_PATTERN|CUSTOMIZE">カスタマイズ</Radio>
+                        <Radio v-for="(item, i) of workPatternList" :label="item.patternId" :key="i" >{{item.patternName}}</Radio>
+                        <Radio label="TMG_HOLFLG|1" key="4">法休</Radio>
+                        <Radio label="TMG_HOLFLG|3" key="5">定休</Radio>
+                        <Radio label="TMG_LIQUIDATION_PATTERN|CUSTOMIZE" key="6">カスタマイズ</Radio>
                     </radio-group>
                     </template>
                     <i-button  @click="makeNewPattern">新規</i-button>
@@ -352,7 +351,7 @@
                                 type="success"
                                 long
                                 @click="handleAddRest(monthData[index].restTime)"
-                                v-show="monthData[index].restTime.length < 2 && monthData[index].patternid === 'TMG_PATTERN|CUSTOMIZE' "
+                                v-show="monthData[index].restTime.length < 2 && monthData[index].patternid === 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE' "
                         >+</i-button>
                     </div>
                     <div v-else>
@@ -770,6 +769,7 @@
                 rightTable: [],
 
                 //月编辑画面
+                editMonth:'',
                 columnsMonth:[
                     {
                         title: '日付',
@@ -829,21 +829,30 @@
                 monthlyEditFlg:false,
                 dailyDisabedArr:[],
                 workPattern:'',
-                workPatternList:[
-                    {
-                        patternid:'1',
-                        patternname:'1'
-                },
-                    {
-                        patternid:'2',
-                        patternname:'2'
-                }],
+                workPatternList:[],
 
 
 
                 //pattern編集画面
 
-                rawData:[],
+                patternInfo:{
+                    sectionId:'',
+                    worktypeId:'',
+                    empId:'',
+                    patternName:'',
+                    startTime:'',
+                    endTime:'',
+                    restTime:[
+                        {
+                            restOpen:'',
+                            restClose:''
+                        },
+                        {
+                            restOpen:'',
+                            restClose:''
+                        },
+                    ]
+                },
                 patternFlg:false,
                 patternErrorMsg:'',
             }
@@ -854,25 +863,6 @@
         },
 
         computed: {
-            // autoTotalDate(){
-            //     if(!this.editTableDate) return
-            //     let totalStandard=0
-            //     let totalResult=0
-            //     let totalAdjust=0
-            //     this.$refs.table && this.$refs.table.rebuildData.map(e=> {
-            //         totalStandard += (+e.standard)
-            //         totalResult += (+e.result)
-            //         totalAdjust += (+e.result)-(+e.standard)
-            //     })
-            //     let result=[{
-            //         yyyymm:Utils.formatDate(this.curDateFrom,'yyyy/mm')+'-'+Utils.formatDate(this.curDateTo,'yyyy/mm'),
-            //         totalStandard:totalStandard,
-            //         totalResult:totalResult,
-            //         totalAdjust:totalAdjust
-            //     }]
-            //     return result
-            // },
-
             columns4Year() {
                     let result = [
                         {
@@ -1033,7 +1023,6 @@
             },
 
             async insertLiquidation() {
-                console.log(this.$refs.table.rebuildData)
                 const OPTS = {
                     empId: this.empInfo.empId,
                     worktypeId: this.empInfo.empWorkTypeId,
@@ -1041,7 +1030,6 @@
                     endDate: Utils.formatDate(this.curDateTo, 'yyyy/mm/dd'),
                     tldDtos: this.$refs.table.rebuildData
                 }
-                console.log(OPTS)
                 try {
                     const {data} = await this.http.post('sys/tmgliquidationperiod/InsertLiquidation', OPTS)
                 } catch (error) {
@@ -1114,6 +1102,7 @@
             },
             //月编辑画面显示
             async showMonth(e) {
+                this.editMonth=e
                 let OPTS={
                     empId:this.empInfo.empId,
                     yyyymm:e
@@ -1150,8 +1139,9 @@
                         }
                     })
                     this.monthData = monthInfo
-                    console.log(this.monthData)
-                    //this.workPatternList =data.workPatternList
+                    //获取patternList
+                    this.workPatternList = data.workPatternList
+                    console.log(this.workPatternList)
                     this.monthlyEditFlg = true
                 } catch (error) {
                     return
@@ -1178,7 +1168,7 @@
             },
             //控制行pattern
             colClick(e){
-                if(this.monthData[e].patternid === 'TMG_PATTERN|CUSTOMIZE'){
+                if(this.monthData[e].patternid === 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE'){
                     return true
                 }else{
                     return false
@@ -1189,35 +1179,51 @@
                 //如果此行disabled 不可更新
                 if(this.monthData[index].disabled) return
                 //重复点击
-                if(this.workPattern === this.monthData[index].patternid) return
+                if(this.workPattern === this.monthData[index].kubunid) return
                 //非customize按钮
-                if(this.workPattern && this.workPattern != 'TMG_PATTERN|CUSTOMIZE'){
-                    this.monthData[index].patternid=this.workPattern
-                    this.monthData[index].patternname=this.workPatternList.some(e => {
-                                                                                if(e.patternid=this.workPattern){
-                                                                                    return e.patternname
-                                                                                }
-                                                                            })
-                    //todo
-                    this.monthData[index].starttime=''
-                    this.monthData[index].endtime=''
-                    this.monthData[index].restTime=[]
-                }else if(this.workPattern && this.workPattern === 'TMG_PATTERN|CUSTOMIZE'){
+                if(this.workPattern && this.workPattern === 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE'){
+                    console.log(this.workPattern)
                     //customize按钮
-                    this.monthData[index].patternid='TMG_PATTERN|CUSTOMIZE'
+                    this.monthData[index].kubunid=this.workPattern
+                    this.monthData[index].kubun='出勤'
+                    this.monthData[index].patternid='TMG_LIQUIDATION_PATTERN|CUSTOMIZE'
                     this.monthData[index].patternname='カスタマイズ'
                     this.monthData[index].starttime=''
                     this.monthData[index].endtime=''
-                    this.monthData[index].restTime.push({ restOpen: '', restClose: '' })
-                    console.log(this.monthData)
+                    this.monthData[index].restTime=[{ restOpen: '', restClose: '' }]
+                }else if(this.workPattern && this.workPattern.indexOf('TMG_HOLFLG') > -1){
+                    console.log(this.workPattern)
+                    this.monthData[index].kubunid=this.workPattern
+                    this.monthData[index].kubun=this.workPattern === 'TMG_HOLFLG|3'? '所定休' : '法定休'
+                    this.monthData[index].patternid=''
+                    this.monthData[index].patternname=''
+                    this.monthData[index].starttime=''
+                    this.monthData[index].endtime=''
+                    this.monthData[index].restTime=[]
+                } else if(this.workPattern && this.workPattern != 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE'){
+                    console.log(this.workPattern)
+                    this.monthData[index].patternid=this.workPattern
+                    this.workPatternList.some(e => {
+                        if(e.patternId===this.workPattern){
+                            console.log(e)
+                            this.monthData[index].kubunid=this.workPattern
+                            this.monthData[index].kubun='出勤'
+                            this.monthData[index].patternid= this.workPattern
+                            this.monthData[index].patternname = e.patternName
+                            this.monthData[index].starttime=e.startTime
+                            this.monthData[index].endtime=e.endTime
+                            this.monthData[index].restTime=e.restTime
+                            return
+                        }
+                    })
                 }
             },
 
             // 计算单日劳动时间
             computeWorkTime (startTime,endTime,restTimeList,index) {
                 if (!startTime || !endTime) return ''
-
                 let checkRestTime=restTimeList.every(e=> {
+                    if (!e.restOpen || !e.restClose) return true
                     //休息在工作时间范围内
                     if(Utils.timeToMinute(endTime)>Utils.timeToMinute(e.restClose) && Utils.timeToMinute(e.restOpen)>Utils.timeToMinute(startTime)){
                         //休息结束大于休息开始
@@ -1232,11 +1238,13 @@
                 restTimeList.forEach(e=> {
                     computeTime=computeTime+Utils.timeToMinute(e.restClose) - Utils.timeToMinute(e.restOpen)
                 })
-                this.monthData[index].workhours=Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime
+                if(index){
+                    this.monthData[index].workhours=Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime
+                }
                 return Utils.timeToMinute(endTime)-Utils.timeToMinute(startTime)-computeTime
             },
+            //更新月数据
            async updateMonthInfo(){
-               console.log(this.monthData)
                this.monthData.forEach((e,i)=>{
                    if(e.restTime.length === 1){
                        this.monthData[i].reststarttime1=this.monthData[i].restTime[0].restOpen
@@ -1265,10 +1273,58 @@
             //新規パターン画面の表示
             makeNewPattern(){
                 this.patternFlg=true
-
+                //重制新规pattern
+                this.patternInfo={
+                        sectionId:'',
+                        worktypeId:'',
+                        empId:'',
+                        patternName:'',
+                        startTime:'',
+                        endTime:'',
+                        restTime:[
+                            {
+                                restOpen:'',
+                                restClose:''
+                            },
+                            {
+                                restOpen:'',
+                                restClose:''
+                            },
+                        ]
+                }
             },
-            insertNewPattern(){
+            //登陆新规pattern
+            async insertNewPattern() {
+                this.patternInfo.restTime.every((e,i)=> {
+                    //休息在工作时间范围内
+                    if(Utils.timeToMinute(this.patternInfo.endTime)>Utils.timeToMinute(e.restClose) && Utils.timeToMinute(e.restOpen)>Utils.timeToMinute(this.patternInfo.startTime)){
+                        //休息结束大于休息开始
+                        if(!(Utils.timeToMinute(e.restClose) > Utils.timeToMinute(e.restOpen))){
+                            this.$Notice.error({desc: "终了时间小于开始时间"})
+                        }
+                    }else{
+                        this.$Notice.error({desc: "休息时间不在工作时间范围内"})
+                    }
+                })
+                let workTime = this.computeWorkTime(this.patternInfo.startTime, this.patternInfo.endTime, this.patternInfo.restTime)
+                if(workTime === ''){
+                    return
+                }
+                if (workTime > 600) {
+                    this.$Notice.error({desc: "工作时间超过法定上限"})
+                    return
+                }
+                try {
+                    //登陆新规pattern
+                    const {data} = await this.http.post('sys/tmgliquidationperiod/insertPattern', this.patternInfo)
+                    //重新加载页面
+                    this.showMonth(this.editMonth)
+                    this.patternFlg=false
+                } catch (error) {
+                    return
+                } finally {
 
+                }
             }
 
         }

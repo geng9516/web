@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,5 +18,5 @@ public class PatternInfoDto {
     private String patternId;
     private String startTime;
     private String endTime;
-    private List<String[]> restTIme;
+    private List<PattternRestTime> restTime=new ArrayList<>();
 }

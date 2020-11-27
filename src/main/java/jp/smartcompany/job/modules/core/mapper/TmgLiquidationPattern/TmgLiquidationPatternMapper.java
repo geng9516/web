@@ -2,12 +2,12 @@ package jp.smartcompany.job.modules.core.mapper.TmgLiquidationPattern;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPatternDO;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -21,8 +21,11 @@ import java.util.Map;
 @Mapper
 public interface TmgLiquidationPatternMapper extends BaseMapper<TmgLiquidationPatternDO> {
 
-    List<PatternInfoVo> selectLiquidationPatternInfo(@Param("empId") String empId,
-                                                     @Param("yyyymm")String yyyymm,
-                                                     @Param("custID")String custID,
-                                                     @Param("compCode")String compCode);
+    List<SelectPatternDto> selectLiquidationPatternInfo(@Param("empId") String empId,
+                                                        @Param("yyyymm")String yyyymm,
+                                                        @Param("custID")String custID,
+                                                        @Param("compCode")String compCode);
+
+    @Select("select TMG_LIQUIDATION_PATTERN_SEQ.nextval from dual ")
+    String selectSeq();
 }

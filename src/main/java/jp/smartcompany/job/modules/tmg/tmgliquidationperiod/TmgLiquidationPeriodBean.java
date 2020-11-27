@@ -14,7 +14,7 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *  清算期間設定bean
@@ -229,9 +231,36 @@ public class TmgLiquidationPeriodBean {
         //todo:pattern list（选取用）
 
 
-        List<PatternInfoVo> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode());
+        List<SelectPatternDto> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode());
+        List<PatternInfoDto> patternInfoDtoList=new ArrayList<PatternInfoDto>();
 
-        monthlyMap.put("workPatternList", 111);
+        for (SelectPatternDto selectPatternDto:patternInfoVos){
+            boolean exist=false;
+            for(int i=0 ;i<patternInfoDtoList.size();i++){
+                if(patternInfoDtoList.get(i).getPatternId().equals(selectPatternDto.getPatternid())){
+                    if(selectPatternDto.getSeq()>1){
+                        exist=true;
+                        PattternRestTime restTime=new PattternRestTime();
+                        restTime.setRestClose(selectPatternDto.getRestclose());
+                        restTime.setRestOpen(selectPatternDto.getRestopen());
+                        patternInfoDtoList.get(i).getRestTime().add(restTime);
+                    }
+                }
+            }
+            if(!exist){
+                PatternInfoDto patternInfoDto=new PatternInfoDto();
+                patternInfoDto.setPatternId(selectPatternDto.getPatternid());
+                patternInfoDto.setPatternName(selectPatternDto.getPatternname());
+                patternInfoDto.setStartTime(selectPatternDto.getOpentime());
+                patternInfoDto.setEndTime(selectPatternDto.getClosetime());
+                PattternRestTime restTime=new PattternRestTime();
+                restTime.setRestClose(selectPatternDto.getRestclose());
+                restTime.setRestOpen(selectPatternDto.getRestopen());
+                patternInfoDto.getRestTime().add(restTime);
+                patternInfoDtoList.add(patternInfoDto);
+            }
+        }
+        monthlyMap.put("workPatternList", patternInfoDtoList);
         return monthlyMap;
     }
 
@@ -255,7 +284,7 @@ public class TmgLiquidationPeriodBean {
                 tlddDo.setTlddCrestendtime2(null);
             }
             //出勤或者休出 选用pattern
-            if(dailyDto.getKubunid().indexOf("TMG_PATTERN")> -1){
+            if(dailyDto.getKubunid().indexOf("TMG_LIQUIDATION_PATTERN")> -1){
                 tlddDo.setTlddCpattern(dailyDto.getKubunid());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
                 tlddDo.setTlddCstarttime(dailyDto.getStarttime());
@@ -289,8 +318,10 @@ public class TmgLiquidationPeriodBean {
     }
 
     //新规pattern
-    public GlobalResponse insertPattern(PatternInfoDto patternInfoDto,PsDBBean psDBBean){
+    public GlobalResponse insertPattern(PatternInfoDto patternInfoDto, PsDBBean psDBBean){
         //新规TmgLiquidationPattern
+        String seq = iTmgLiquidationPatternService.selectSeq();
+
         TmgLiquidationPatternDO tlpDo=new TmgLiquidationPatternDO();
         tlpDo.setTpaCcompanyid(psDBBean.getCompCode());
         tlpDo.setTpaCcustomerid(psDBBean.getCustID());
@@ -302,14 +333,15 @@ public class TmgLiquidationPeriodBean {
         tlpDo.setTpaCemployeeid(patternInfoDto.getEmpId());
         tlpDo.setTpaCsectionid(patternInfoDto.getSectionId());
         tlpDo.setTpaCworktypeid(patternInfoDto.getWorktypeId());
-        tlpDo.setTpaCpatternid("TMG_LIQUIDATION_PATTERN|"+patternInfoDto.getPatternId());
+        tlpDo.setTpaCpatternid("TMG_LIQUIDATION_PATTERN|"+seq);
         tlpDo.setTpaCpatternname(patternInfoDto.getPatternName());
-        tlpDo.setTpaNopen(Long.parseLong(patternInfoDto.getStartTime()));
-        tlpDo.setTpaNclose(Long.parseLong(patternInfoDto.getEndTime()));
+        tlpDo.setTpaNopen(timeToMin(patternInfoDto.getStartTime()));
+        tlpDo.setTpaNclose(timeToMin(patternInfoDto.getEndTime()));
         iTmgLiquidationPatternService.getBaseMapper().insert(tlpDo);
 
         //新规TmgLiquidationPatternRest
-        for (int i=0;i<patternInfoDto.getRestTIme().size();i++) {
+        for (int i=0;i<patternInfoDto.getRestTime().size();i++) {
+            if (StrUtil.hasEmpty(patternInfoDto.getRestTime().get(i).getRestOpen())){break;}
             TmgLiquidationPatternRestDO tlprDo=new TmgLiquidationPatternRestDO();
             tlprDo.setTprCcompanyid(psDBBean.getCompCode());
             tlprDo.setTprCcustomerid(psDBBean.getCustID());
@@ -318,10 +350,10 @@ public class TmgLiquidationPeriodBean {
             tlprDo.setTprDstartdate(TmgUtil.minDate);
             tlprDo.setTprDenddate(TmgUtil.maxDate);
 
-            tlprDo.setTprCpatternid("TMG_LIQUIDATION_PATTERN|"+patternInfoDto.getPatternId());
-            tlprDo.setTprNrestopen(Long.parseLong(patternInfoDto.getRestTIme().get(i)[0]));
-            tlprDo.setTprNrestclose(Long.parseLong(patternInfoDto.getRestTIme().get(i)[1]));
-            tlprDo.setTprSeq((long)i);
+            tlprDo.setTprCpatternid("TMG_LIQUIDATION_PATTERN|"+seq);
+            tlprDo.setTprNrestopen(timeToMin(patternInfoDto.getRestTime().get(i).getRestOpen()));
+            tlprDo.setTprNrestclose(timeToMin(patternInfoDto.getRestTime().get(i).getRestClose()));
+            tlprDo.setTprSeq((long)i+1);
 
             iTmgLiquidationPatternRestService.getBaseMapper().insert(tlprDo);
         }
@@ -346,5 +378,17 @@ public class TmgLiquidationPeriodBean {
         }else{
             return GlobalResponse.ok();
         }
+    }
+
+    //时间转分钟
+    private long timeToMin(String time){
+        if(StrUtil.hasEmpty(time) || time.indexOf(":") < 0){ return 0;}
+        int hour =Integer.valueOf(time.split(":")[0]);
+        int min =Integer.valueOf(time.split(":")[1]);
+        if(hour == 0 && min == 0){
+            return 0;
+        }
+        long mins= hour* 60 + min;
+        return mins;
     }
 }

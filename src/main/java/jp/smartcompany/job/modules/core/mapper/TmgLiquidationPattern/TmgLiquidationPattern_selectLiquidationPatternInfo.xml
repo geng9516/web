@@ -3,7 +3,27 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgLiquidationPattern.TmgLiquidationPatternMapper">
 
     <select id="selectLiquidationPatternInfo"
-            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo">
-
+            resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto">
+            SELECT
+                tlp.TPA_CPATTERNID as patternId,
+                tlp.TPA_CPATTERNNAME as patternname,
+                TMG_F_CONV_MIN2HHMI(tlp.TPA_NOPEN) as opentime,
+                TMG_F_CONV_MIN2HHMI(tlp.TPA_NCLOSE) as closetime,
+                TMG_F_CONV_MIN2HHMI(tlpr.TPR_NRESTOPEN) as restopen,
+                TMG_F_CONV_MIN2HHMI(tlpr.TPR_NRESTCLOSE)  as restclose,
+                tlpr.TPR_SEQ as seq
+            FROM
+                TMG_LIQUIDATION_PATTERN tlp
+                LEFT JOIN TMG_LIQUIDATION_PATTERN_REST tlpr
+                on tlp.TPA_CPATTERNID=tlpr.TPR_CPATTERNID
+                and tlp.TPA_CCOMPANYID=tlpr.TPR_CCOMPANYID
+                and tlp.TPA_CCUSTOMERID=tlpr.TPR_CCUSTOMERID
+                and sysdate BETWEEN tlpr.TPR_DSTARTDATE and tlpr.TPR_DENDDATE
+            where
+                    tlp.TPA_CCOMPANYID=#{compCode}
+                and tlp.TPA_CCUSTOMERID=#{custID}
+                and sysdate BETWEEN tlp.TPA_DSTARTDATE and tlp.TPA_DENDDATE
+            order by
+                tlp.TPA_CPATTERNID,tlpr.TPR_SEQ
     </select>
 </mapper>

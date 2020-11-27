@@ -2,11 +2,8 @@ package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPatternDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDetailRow;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,5 +16,7 @@ import java.util.List;
  */
 public interface ITmgLiquidationPatternService extends IService<TmgLiquidationPatternDO> {
 
-    List<PatternInfoVo> selectLiquidationPatternInfo(String empId, String yyyymm, String custID, String compCode);
+    List<SelectPatternDto> selectLiquidationPatternInfo(String empId, String yyyymm, String custID, String compCode);
+
+    String selectSeq();
 }

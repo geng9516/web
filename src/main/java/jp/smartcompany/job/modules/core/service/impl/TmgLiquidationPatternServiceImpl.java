@@ -1,20 +1,13 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.TmgLiquidationPattern.TmgLiquidationPatternMapper;
-import jp.smartcompany.job.modules.core.mapper.TmgPattern.TmgPatternMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationPatternDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import jp.smartcompany.job.modules.core.service.ITmgLiquidationPatternService;
-import jp.smartcompany.job.modules.core.service.ITmgPatternService;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDetailRow;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.PatternInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -28,7 +21,12 @@ import java.util.Map;
         public class TmgLiquidationPatternServiceImpl extends ServiceImpl<TmgLiquidationPatternMapper, TmgLiquidationPatternDO> implements ITmgLiquidationPatternService {
 
         @Override
-       public List<PatternInfoVo> selectLiquidationPatternInfo(String empId, String yyyymm, String custID, String compCode){
+       public List<SelectPatternDto> selectLiquidationPatternInfo(String empId, String yyyymm, String custID, String compCode){
                 return getBaseMapper().selectLiquidationPatternInfo( empId, yyyymm, custID, compCode);
+        }
+
+        @Override
+        public String selectSeq(){
+            return getBaseMapper().selectSeq();
         }
 }

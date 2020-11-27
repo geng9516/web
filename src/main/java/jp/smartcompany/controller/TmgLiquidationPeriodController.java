@@ -144,7 +144,7 @@ public class TmgLiquidationPeriodController {
     @PostMapping("insertPattern")
     @ResponseBody
     public GlobalResponse insertPattern(
-            PatternInfoDto patternInfoDto,
+            @RequestBody PatternInfoDto patternInfoDto,
             @RequestAttribute("BeanName") PsDBBean psDBBean){
          return tmgLiquidationPeriodBean.insertPattern(patternInfoDto,psDBBean);
     }
