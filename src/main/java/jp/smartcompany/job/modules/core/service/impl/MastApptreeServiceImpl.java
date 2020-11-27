@@ -65,7 +65,7 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
         @Override
         public MastApptreeDO getByParentId(String parentId) {
                 QueryWrapper<MastApptreeDO> qw = SysUtil.query();
-                qw.eq("parent_id",parentId);
+                qw.eq("MTR_COBJECTID",parentId);
                 return getOne(qw);
         }
 
