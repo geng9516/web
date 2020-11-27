@@ -42,12 +42,12 @@
         </div>
         <div class="btnbox">
           <span style="flex:1"></span>
-          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
+          <i-button type="primary" icon="md-refresh" @click="()=> history.go(0)" :disabled="!hasChange">再表示</i-button>
         </div>
       </div>
     </div>
     <div class="content_body">
-      <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
+      <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 再表示ボタンでを押してください。</Alert>
       <div class="table-top">
         <Row :gutter="16">
           <i-col span="24" class="tr">
@@ -58,7 +58,70 @@
           </i-col>
         </Row>
       </div>
-      <dtree :data="dTreeData" @drag="onTreeDataChange(arguments)" border></dtree>
+      <dtree :data="dTreeData" @drag="sortTableByDrag(arguments)" border :isdraggable="isDraggable">
+        <!-- type: "0" トップページ   <Icon type="md-compass" />
+        type: "1" サイト   <Icon type="md-compass" />
+        type: "3" アプリケーション ml10 <Icon type="md-desktop" />
+        type: "4" サブアプリケーション <Icon type="md-easel" />
+        type: "2" ダイアログアプリケーション ml10 <Icon type="ios-photos" />
+        type: "5" 画面 ml20  <Icon type="md-browsers" />
+        type: "6" 機能ボタン ml30 <Icon type="md-disc" /> -->
+        <template #selection="{row}">
+          <span v-if="row.type === '0'" class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-cloud" class="mr5"></Icon>{{row.name}}
+          </span>
+          <span v-if="row.type === '1'" class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-compass" class="mr5"></Icon>{{row.name}}
+          </span>
+          <span v-if="row.type === '3'" class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-desktop" class="mr5"></Icon>{{row.name}}
+          </span>
+          <span v-if="row.type === '6'" class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-disc" class="mr5"></Icon>{{row.name}}
+          </span>
+        </template>
+
+        <template #type="{row}">
+          <span class="ver-center">
+          <span v-if="row.type === '0'" style="color: var(--row-label-primary);">
+            <Icon type="md-cloud" class="mr5"></Icon>トップページ
+          </span>
+          <span v-if="row.type === '1'" style="color: var(--row-label-primary)">
+            <Icon type="md-compass" class="mr5"></Icon>サイト
+          </span>
+          <span v-if="row.type === '3'" style="color: var(--row-label-primary)">
+            <Icon type="md-desktop" class="mr5"></Icon>アプリケーション
+          </span>
+          <span v-if="row.type === '6'" style="color: var(--row-label-primary)">
+            <Icon type="md-disc" class="mr5"></Icon>機能ボタン
+          </span>
+        </span>
+        </template>
+        <template #action="{row}">
+          <span style="display: inline-block; margin-top: 6px;">
+          <span v-if="row.type === '0'" style="color: var(--row-label-primary)">
+            <i-button type="primary" ghost icon="md-create" size="small" @click.stop="handleBtn(row, '0')">トップページ編集
+            </i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click.stop="handleBtn(row, '1', true)">サイト追加
+            </i-button>
+          </span>
+          <span v-if="row.type === '1'" style="color: var(--row-label-primary)">
+            <i-button type="primary" ghost icon="md-create" size="small" @click.stop="handleBtn(row, '1')">サイト編集</i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click.stop="handleBtn(row, '3', true)">アプリ追加
+            </i-button>
+          </span>
+          <span v-if="row.type === '3'" style="color: var(--row-label-primary)">
+            <i-button type="primary" ghost icon="md-create" size="small" @click.stop="handleBtn(row, '3')">アプリ編集</i-button>
+            <i-button type="success" ghost icon="md-add" size="small" @click.stop="handleBtn(row, '6', true)">ボタン追加
+            </i-button>
+          </span>
+          <span v-if="row.type === '6'" style="color: var(--row-label-primary)">
+            <i-button type="primary" ghost icon="md-create" size="small" @click.stop="handleBtn(row, '6')">ボタン編集</i-button>
+          </span>
+          <i-button v-if="'12356'.indexOf(row.type) > -1" type="error" ghost icon="md-trash" size="small" @click.stop="handleDelete(row.objectId)">{{ handleDeleteTitle(row.type) }}</i-button>
+        </span>
+        </template>
+      </dtree>
     </div>
     <Modal class="tc" v-model="isShow" title="対象範囲設定" width="650" :mask-closable="false" footer-hide>
       <Alert class="error-info tl">入力内容は登録するまで保持されます。</Alert>
@@ -198,31 +261,6 @@
     <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
-  <script>
-    // type: "0" トップページ   <Icon type="md-compass" />
-    // type: "1" サイト   <Icon type="md-compass" />
-    // type: "3" アプリケーション ml10 <Icon type="md-desktop" />
-    // type: "4" サブアプリケーション <Icon type="md-easel" />
-    // type: "2" ダイアログアプリケーション ml10 <Icon type="ios-photos" />
-    // type: "5" 画面 ml20  <Icon type="md-browsers" />
-    // type: "6" 機能ボタン ml30 <Icon type="md-disc" />
-    var SITE_NAME = (e) => {
-      if (e.type === '0') return `<span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary"><i class="mr5 ivu-icon ivu-icon-md-cloud"></i>${e.name}</span>`
-      if (e.type === '1') return `<span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary"><i class="mr5 ivu-icon ivu-icon-md-compass"></i>${e.name}</span>`
-      if (e.type === '3') return `<span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary"><i class="mr5 ivu-icon ivu-icon-md-desktop"></i>${e.name}</span>`
-      if (e.type === '6') return `<span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary"><i class="mr5 ivu-icon ivu-icon-md-disc"></i>${e.name}</span>`
-    }
-
-    var TYPE_NAME = (e) => {
-      if (e.type === '0') return `<span style="color: var(--row-label-primary);position: absolute; top: 50%; transform: translateY(-50%);"><i class="mr5 ivu-icon ivu-icon-md-cloud"></i>トップページ</span>`
-      if (e.type === '1') return `<span style="color: var(--row-label-primary);position: absolute; top: 50%; transform: translateY(-50%);"><i class="mr5 ivu-icon ivu-icon-md-compass"></i>サイト</span>`
-      if (e.type === '3') return `<span style="color: var(--row-label-primary);position: absolute; top: 50%; transform: translateY(-50%);"><i class="mr5 ivu-icon ivu-icon-md-desktop"></i>アプリケーション</span>`
-      if (e.type === '6') return `<span style="color: var(--row-label-primary);position: absolute; top: 50%; transform: translateY(-50%);"><i class="mr5 ivu-icon ivu-icon-md-disc"></i>機能ボタン</span>`
-    }
-
-    var BTN_ADD = (e) => '<i>查看角色</i>'
-    var SITE_ADD = (e) => '<button type="button" class="ivu-btn ivu-btn-primary ivu-btn-small ivu-btn-ghost"><i class="ivu-icon ivu-icon-md-create"></i> <span>トップページ編集</span></button>'
-  </script>
   <script type="text/babel" th:inline="javascript">
     const START_REGISTER_SETTINGS = new Vue({
       el: '.startregistersettings-warp',
@@ -231,7 +269,6 @@
           isShow: false,
           isDraggable: true,
           loading: true,
-          editLoading: false,
           btnLoading: false,
           hasChange: false,
           defaultOption: false,
@@ -241,45 +278,21 @@
                 type: 'selection',
                 title: '菜单名称',
                 align: 'left',
-                flex: 2,
-                formatter: (item) => {
-                  return SITE_NAME(item)
-                }
+                flex: 2
               },
               {
-                type: 'default',
+                type: 'slot',
+                slot: 'type',
                 title: '種別',
                 align: 'left',
-                flex: 1,
-                formatter: (item) => {
-                  return TYPE_NAME(item)
-                }
+                flex: 1
               },
               {
-                type: 'action',
+                type: 'slot',
+                slot: 'action',
                 title: '操作',
                 align: 'right',
                 flex: 3,
-                actions: !function () {
-                  return [
-                  {
-                    onclick: (item) => {
-                      console.log(item)
-                    },
-                    formatter: (item) => {
-                      return SITE_ADD()
-                    }
-                  },
-                  {
-                    onclick: (item) => {
-                      console.log(item)
-                    },
-                    formatter: (item) => {
-                      return 
-                    }
-                  }
-                ]
-                }()
               },
             ],
             lists: [],
@@ -293,27 +306,6 @@
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
           updateValue: {},
-          columns: [
-            {
-              title: 'アプリケーション名',
-              minWidth: 400,
-              maxWidth: 600,
-              slot: 'objectName'
-            },
-            {
-              title: '種別',
-              minWidth: 220,
-              maxWidth: 320,
-              slot: 'type'
-            },
-            {
-              title: '操作',
-              minWidth: 560,
-              maxWidth: 900,
-              slot: 'action',
-              align: 'right'
-            }
-          ],
           opts: {
             systemId: '01',
             appId: '0',
@@ -355,8 +347,8 @@
           this.loading = true
           try {
             const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-            this.tableData = data
             this.dTreeData.lists = data
+            this.dTreeData.lists[0].open = true
           } catch (error) {
           } finally {
             this.loading = false
@@ -406,38 +398,6 @@
               this.updateValue = { ...row }
             }
           }
-
-          if (type === '2') {
-            if (isAdd) {
-              this.updateValue = {
-                templateId: 'ContentSearchResultEmp',
-                objectId: row.objectId,
-                _index: row._index,
-                type: '2',
-                systemId: '01',
-                siteId: row.siteId, appId: row.appId, screenId: row.screenId
-              }
-            } else {
-              this.updateValue = { ...row }
-            }
-          }
-
-          if (type === '5') {
-            this.defaultOption = true
-            if (isAdd) {
-              this.updateValue = {
-                templateId: 'null',
-                objectId: row.objectId,
-                _index: row._index,
-                systemId: '01',
-                type: '5',
-                permissionType: 'null',
-                siteId: row.siteId, appId: row.appId, screenId: row.screenId
-              }
-            } else {
-              this.updateValue = { ...row, templateId: row.templateId ? row.templateId : 'null', permissionType: row.permissionType ? row.permissionType : 'null' }
-            }
-          }
           if (type === '6') {
             if (isAdd) {
               this.updateValue = { systemId: '01', _index: row._index, type: '6', objectId: row.objectId, siteId: row.siteId, appId: row.appId, screenId: row.screenId }
@@ -449,33 +409,17 @@
           this.updateValue._type = type
           this.isShow = true
         },
-        async update() {
-          this.$Modal.confirm({
-            title: '注意',
-            content: '入力内容を保存します。よろしいですか？',
-            okText: 'OK',
-            cancelText: 'キャンセル',
-            onOk: async () => {
-              this.loading = true
-              const update = this.tableData.map((e, i) => {
-                return {
-                  ...e,
-                  templateId: e.templateId === 'null' ? null : e.templateId,
-                  permissionType: e.permissionType === 'null' ? null : e.permissionType
-                }
-              })
-              try {
-                const { data } = await this.http.post('sys/appmanager/update', update)
-                this.$Message.success('更新完了')
-                this.getTableData()
-                this.updateValue = {}
-              } catch (error) {
-              } finally {
-                history.go(0)
-                this.loading = false
-              }
-            }
-          })
+        async update(update) {
+          this.loading = true
+          try {
+            const { data } = await this.http.post('sys/appmanager/update', update)
+            this.$Message.success('更新完了')
+            this.getTableData()
+            this.updateValue = {}
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
         },
         joinUpdate() {
           this.hasChange = true
@@ -498,82 +442,25 @@
             if (this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.appId}`)
           }
 
-          // 添加画面編集
-          if (this.updateValue.type === '5') {
-            if (!this.updateValue.appId || !this.updateValue.appId.trim()) return this.$Notice.warning({ title: '注意', desc: '画面IDを入力してください', duration: 6.5 })
-            if (!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: '画面の名称(日本語)を入力してください', duration: 6.5 })
-            if (!this.updateValue.url || !this.updateValue.url.trim()) return this.$Notice.warning({ title: '注意', desc: '画面URLを入力してください', duration: 6.5 })
-
-            if (this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.screenId}`)
-          }
-
           // 添加ボタン追加
           if (this.updateValue.type === '6') {
             if (!this.updateValue.buttonId || !this.updateValue.buttonId.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンIDを入力してください', duration: 6.5 })
             if (!this.updateValue.name || !this.updateValue.name.trim()) return this.$Notice.warning({ title: '注意', desc: 'ボタンの名称(日本語)を入力してください', duration: 6.5 })
 
-            if (this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`_${this.updateValue.buttonId}`)
+            if (this.updateValue.isAdd) this.updateValue.objectId = this.updateValue.objectId.concat(`__${this.updateValue.buttonId}`)
           }
           if (this.updateValue.isAdd) {
-            this.tableData.splice(index + 1, 0, { ...this.updateValue })
+
           } else {
-            this.$set(this.tableData, index, { ...this.updateValue })
+
           }
+          this.update(this.updateValue)
           this.isShow = false
         },
-        onTreeDataChange(e) {
-          console.log(e)
+        sortTableByDrag(e) {
+          if(e[3] === 'center') return
           this.dTreeData.lists = e[0]
-        },
-        sortTableByDrag(list) {
-          console.log(list)
-          // const fromUnits = this.tableData[from].objectId.split('_')
-          // const toUnits = this.tableData[to].objectId.split('_')
-          // if(fromUnits.length === toUnits.length) {
-          //   let pass = true
-          //   fromUnits.forEach((e,i)=> {
-          //     if(i < fromUnits.length - 1 && e !== toUnits[i] ){
-          //       pass = false
-          //     }
-          //   })
-          //   if(pass) {
-          //     // 这里如果又子集应该将子集一起拖动了
-          //     let type = this.tableData[from].type
-          //     let fromArray = [{...this.tableData[from]}]
-          //     let type2 = this.tableData[to].type
-          //     let toArray = [{...this.tableData[to]}]
-          //     this.tableData.some((e, i)=> {
-          //       const len = e.objectId.split('_').length
-          //       if(i > from && len > fromUnits.length) {
-          //         fromArray.push(e)
-          //       }
-          //       if(i > from && len === fromUnits.length) return true
-          //     })
-
-          //     this.tableData.some((e, i)=> {
-          //       const len = e.objectId.split('_').length
-          //       if(i > to && len > toUnits.length) {
-          //         toArray.push(e)
-          //       }
-          //       if(i > to && len === toUnits.length) return true
-          //     })
-          //     // 交换复数的位置
-          //     // 先切掉form再塞to进去
-          //     // console.log(fromArray.map(e=>e.name))
-          //     // console.log(toArray.map(e=>e.name))
-          //     this.tableData.splice(from, fromArray.length, ...toArray)
-          //     // 删掉原来to的地方，将from塞进去
-          //     // 如果时从下面往上面拖
-          //     if(from > to) {
-          //       this.tableData.splice(to, toArray.length, ...fromArray)
-          //     } else {
-          //       this.tableData.splice(to - fromArray.length + toArray.length, toArray.length, ...fromArray)
-          //     }
-          //     this.hasChange = true
-          //   }
-          // } else {
-          //   this.$Notice.warning({ title: '注意', desc: 'これ以上、上に移動することはできません', duration: 6.5 })
-          // }
+          console.log(e)
         },
         handleDelete(id) {
           this.$Modal.confirm({
