@@ -21,9 +21,9 @@
                 <div class="btnbox">
                     <span style="flex:1"></span>
                     <i-button type="primary" icon="md-create"  @click="editshow"
-                        v-if="isEditable && !isDisable && !nodata">新規</i-button>
+                        v-if="isEditable && !isDisable && !nodata" :disabled="loading">新規</i-button>
                     <i-button type="primary" icon="md-create"  @click="editshow"
-                        v-if="!isEditable && !isDisable && !nodata">編集</i-button>
+                        v-if="!isEditable && !isDisable && !nodata" :disabled="loading">編集</i-button>
                     <i-button type="success" icon="md-done-all"  @click="updateCalendar" v-if="isDisable" :loading="updateLoading">登録</i-button>
                     <i-button type="error" icon="md-trash"  @click="deleteCalendar" v-if="isDisable && !isEditable" :loading="updateLoading">削除</i-button>
                     <i-button  @click="cancel" v-if="isDisable">キャンセル</i-button>
