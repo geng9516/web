@@ -1,9 +1,11 @@
 package jp.smartcompany.admin.appmanager.logic.impl;
 
 import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
+import jp.smartcompany.admin.appmanager.dto.AppSortDTO;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.dto.MastTemplateDTO;
@@ -100,5 +102,17 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         return "変更しました";
     }
 
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void updateMenuSort(List<AppSortDTO> list) {
+       List<MastApptreeDO> doList = CollUtil.newArrayList();
+       list.forEach(sortItem -> {
+           MastApptreeDO mastApptreeDO = new MastApptreeDO();
+           mastApptreeDO.setMtrId(sortItem.getId());
+           mastApptreeDO.setMtrNseq(sortItem.getSort());
+           doList.add(mastApptreeDO);
+       });
+       appTreeService.updateBatchById(doList);
+    }
 
 }

@@ -1,5 +1,6 @@
 package jp.smartcompany.controller.admin;
 
+import jp.smartcompany.admin.appmanager.dto.AppSortDTO;
 import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
 import jp.smartcompany.admin.appmanager.logic.AppManagerMainLogic;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
@@ -32,6 +33,12 @@ public class AppManagerController {
   @PostMapping("update")
   public String updateMenuList(@RequestBody MastAppDTO dto) {
     return appManagerMainLogic.updateMenuList(dto);
+  }
+
+  @PostMapping("sort")
+  public String sort(@RequestBody List<AppSortDTO> list) {
+    appManagerMainLogic.updateMenuSort(list);
+    return "変更成功";
   }
 
 }
