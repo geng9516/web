@@ -109,7 +109,7 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
 
         private final static String SEPARATOR = ".";
 
-        private final static String ROOT = "0";
+        public final static String ROOT = "0";
 
         public static String calculateLevel(String parentLevel, String parentId) {
                 if (StrUtil.isBlank(parentLevel)) {

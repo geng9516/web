@@ -41,4 +41,10 @@ public class AppManagerController {
     return "変更成功";
   }
 
+  @GetMapping("delete")
+  public String delete(@RequestParam Long id) {
+    appManagerMainLogic.delete(id);
+    return "削除成功";
+  }
+
 }

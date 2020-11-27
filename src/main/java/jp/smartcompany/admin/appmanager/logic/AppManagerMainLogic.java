@@ -16,4 +16,6 @@ public interface AppManagerMainLogic {
 
     void updateMenuSort(List<AppSortDTO> list);
 
+    void delete(Long id);
+
 }

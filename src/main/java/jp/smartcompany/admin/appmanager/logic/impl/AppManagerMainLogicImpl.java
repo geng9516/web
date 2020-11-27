@@ -3,6 +3,7 @@ package jp.smartcompany.admin.appmanager.logic.impl;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.appmanager.dto.AppSortDTO;
@@ -15,6 +16,7 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import jp.smartcompany.job.modules.core.service.impl.MastApptreeServiceImpl;
@@ -30,6 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -113,6 +116,29 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
            doList.add(mastApptreeDO);
        });
        appTreeService.updateBatchById(doList);
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void delete(Long id) {
+       MastApptreeDO appTreeDO = appTreeService.getById(id);
+       if (appTreeDO == null) {
+          throw new GlobalException("メニューは存在しません");
+       }
+       if (StrUtil.equals(MastApptreeServiceImpl.ROOT,appTreeDO.getParentId())) {
+           throw new GlobalException("ルート部門の削除ができません");
+       }
+       List<MastApptreeDO> children = appTreeService.list(
+            SysUtil.<MastApptreeDO>query().likeRight("app_level",MastApptreeServiceImpl.calculateLevel(appTreeDO.getAppLevel(),appTreeDO.getMtrCobjectid()))
+       );
+       List<Long> removeIds = CollUtil.newArrayList(id);
+       if (CollUtil.isNotEmpty(children)){
+           List<Long> childrenIds = children.stream()
+                   .map(MastApptreeDO::getMtrId)
+                   .collect(Collectors.toList());
+           CollUtil.addAllIfNotContains(removeIds,childrenIds);
+       }
+       appTreeService.removeByIds(removeIds);
     }
 
 }
