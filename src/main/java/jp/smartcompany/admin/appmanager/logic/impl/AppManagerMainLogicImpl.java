@@ -1,7 +1,6 @@
 package jp.smartcompany.admin.appmanager.logic.impl;
 
 import cn.hutool.cache.impl.TimedCache;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
@@ -16,6 +15,7 @@ import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
+import jp.smartcompany.job.modules.core.service.impl.MastApptreeServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,59 +59,45 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public String updateMenuList(List<MastAppDTO> paramList) {
+    public String updateMenuList(MastAppDTO dto) {
         HttpSession session = ContextUtil.getSession();
-        appTreeService.removeAll();
         Date date = DateUtil.date();
         String username = SecurityUtil.getUsername();
 
-        List<MastApptreeDO> updateList = CollUtil.newArrayList();
+        MastApptreeDO treeDO = new MastApptreeDO();
+        treeDO.setMtrCurl(dto.getUrl());
+        treeDO.setMtrCtype(dto.getType());
+        treeDO.setMtrCtemplateid(dto.getTemplateId());
+        treeDO.setMtrCappautoload(dto.getAutoUpload());
+        treeDO.setMtrCappid(dto.getAppId());
+        treeDO.setMtrCbuttonid(dto.getButtonId());
+        treeDO.setMtrCcriterialdatetype(dto.getBaseDateType());
+        treeDO.setMtrCdatapermissiontype(dto.getPermissionType());
+        treeDO.setMtrCdefaulttargetuser(dto.getDefaultTargetUser());
+        treeDO.setMtrCdomainid(dto.getDomainId());
+        treeDO.setMtrCimageurl(dto.getIcon());
+        treeDO.setMtrCobjectid(dto.getObjectId());
+        treeDO.setMtrCobjname(dto.getName());
+        treeDO.setMtrCobjnameja(dto.getName());
+        treeDO.setMtrConlinehelpurl(dto.getHelpDocUrl());
+        treeDO.setMtrCsitecaption(dto.getRemark());
+        treeDO.setMtrCsitecaptionja(dto.getRemark());
+        treeDO.setMtrCsiteid(dto.getSiteId());
+        treeDO.setMtrCscreenid(dto.getScreenId());
+        treeDO.setMtrCsubappid(dto.getSubAppId());
+        treeDO.setMtrCsystemid("01");
 
-        for (int i = 0; i < paramList.size(); i++) {
-            MastAppDTO dto = paramList.get(i);
-            MastApptreeDO treeDO = new MastApptreeDO();
-            treeDO.setMtrCurl(dto.getUrl());
-            treeDO.setMtrCtype(dto.getType());
-            treeDO.setMtrCtemplateid(dto.getTemplateId());
-            treeDO.setMtrCappautoload(dto.getAutoUpload());
-            treeDO.setMtrCappid(dto.getAppId());
-            treeDO.setMtrCbuttonid(dto.getButtonId());
-            treeDO.setMtrCcriterialdatetype(dto.getBaseDateType());
-            treeDO.setMtrCdatapermissiontype(dto.getPermissionType());
-            treeDO.setMtrCdefaulttargetuser(dto.getDefaultTargetUser());
-            treeDO.setMtrCdomainid(dto.getDomainId());
-            treeDO.setMtrCimageurl(dto.getIcon());
-            treeDO.setMtrCobjectid(dto.getObjectId());
-            treeDO.setMtrCobjname(dto.getName());
-            treeDO.setMtrCobjnameja(dto.getName());
-            treeDO.setMtrConlinehelpurl(dto.getHelpDocUrl());
-            treeDO.setMtrCsitecaption(dto.getRemark());
-            treeDO.setMtrCsitecaptionja(dto.getRemark());
-            treeDO.setMtrCsiteid(dto.getSiteId());
-            treeDO.setMtrCscreenid(dto.getScreenId());
-            treeDO.setMtrCsubappid(dto.getSubAppId());
-            treeDO.setMtrCsystemid("01");
+        treeDO.setMtrDmodifieddate(date);
+        treeDO.setMtrNseq(dto.getSort());
+        treeDO.setMtrCmodifieruserid(username);
+        MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());
+        treeDO.setAppLevel(MastApptreeServiceImpl.calculateLevel(parentTree.getAppLevel(), dto.getParentId()));
 
-            treeDO.setMtrDmodifieddate(date);
-            treeDO.setVersionno(1L);
-            treeDO.setMtrNseq((long)i);
-            treeDO.setMtrCmodifieruserid(username);
-            updateList.add(treeDO);
-        }
-
-        appTreeService.saveBatch(updateList);
+        appTreeService.updateById(treeDO);
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更しました";
     }
-    /**
-     *  层级： application -> site -> application -> 页面 -> 按钮
-     *                       dialog application -> 页面 -> 按钮
-     *
-     *                          编辑自身信息
-     *   根节点（application）   添加dialog application
-     *                          添加site
-     */
 
 
 }

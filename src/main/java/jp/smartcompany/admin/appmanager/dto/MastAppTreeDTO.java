@@ -1,5 +1,7 @@
 package jp.smartcompany.admin.appmanager.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of="objectId")
 public class MastAppTreeDTO implements Serializable {
 
     private static final long serialVersionUID = 5489976098618866643L;
@@ -37,5 +40,6 @@ public class MastAppTreeDTO implements Serializable {
     private String appLevel;
     private String parentId;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<MastAppTreeDTO> children;
 }

@@ -4,8 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.multi.ListValueMap;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.admin.appmanager.dto.MastAppTreeDTO;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
@@ -57,16 +59,15 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
                    BeanUtil.copyProperties(mastAppDTO,treeItem);
                    treeList.add(treeItem);
            }
-           generateTreeList(treeList, "0");
-                System.out.println(treeList.size());
-           return CollUtil.newArrayList(treeList.get(0));
+           return generateTreeList(treeList, "0");
         }
 
         @Override
-        public int removeAll() {
-                return baseMapper.removeAll();
+        public MastApptreeDO getByParentId(String parentId) {
+                QueryWrapper<MastApptreeDO> qw = SysUtil.query();
+                qw.eq("parent_id",parentId);
+                return getOne(qw);
         }
-
 
         private List<MastAppTreeDTO> generateTreeList(List<MastAppTreeDTO> treeVoList, String level) {
                 if (CollUtil.isEmpty(treeVoList)) {
@@ -90,12 +91,9 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
                                        ListValueMap<String, MastAppTreeDTO> deptTreeMap) {
                 treeList.forEach(treeItem -> {
                         // 处理当前层级的数据
-                        System.out.println(level);
                         String nextLevel = calculateLevel(level, treeItem.getObjectId());
-                        System.out.println(nextLevel);
                         // 处理下一层
                         List<MastAppTreeDTO> tempDeptList = deptTreeMap.get(nextLevel);
-                        System.out.println(tempDeptList);
                         if (CollUtil.isNotEmpty(tempDeptList)) {
                                 // 排序
                                 tempDeptList.sort(Comparator.comparing(MastAppTreeDTO::getSort));
@@ -113,7 +111,7 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
 
         private final static String ROOT = "0";
 
-        private static String calculateLevel(String parentLevel, String parentId) {
+        public static String calculateLevel(String parentLevel, String parentId) {
                 if (StrUtil.isBlank(parentLevel)) {
                         return ROOT;
                 } else {

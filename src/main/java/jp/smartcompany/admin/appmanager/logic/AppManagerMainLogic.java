@@ -11,6 +11,6 @@ public interface AppManagerMainLogic {
 
     List<MastTemplateDTO> getTemplateList();
 
-    String updateMenuList(List<MastAppDTO> paramList);
+    String updateMenuList(MastAppDTO paramList);
 
 }

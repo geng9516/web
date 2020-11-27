@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.appmanager.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,7 +26,7 @@ public class MastAppDTO implements Serializable {
     private String url;
     private String icon;
     private String remark;
-    private Integer sort;
+    private Long sort;
     private String systemId;
     private String domainId;
     private String helpDocUrl;
@@ -34,6 +35,7 @@ public class MastAppDTO implements Serializable {
     private String defaultTargetUser;
     private String baseDateType;
     private String parentId;
+    @JsonIgnore
     private String appLevel;
 
 }

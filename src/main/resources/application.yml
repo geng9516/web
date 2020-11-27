@@ -68,6 +68,7 @@ info:
   basePath: /
 security:
   csrfWhiteList:
+    - /stamping
     - /login
     - /logout
     - /McSrvs01

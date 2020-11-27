@@ -29,6 +29,6 @@ public interface IMastApptreeService extends IService<MastApptreeDO> {
 
         List<MastAppTreeDTO> selectMastAppList();
 
-        int removeAll();
+        MastApptreeDO getByParentId(String parentId);
 
 }

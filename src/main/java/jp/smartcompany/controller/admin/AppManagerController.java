@@ -30,8 +30,8 @@ public class AppManagerController {
   }
 
   @PostMapping("update")
-  public String updateMenuList(@RequestBody List<MastAppDTO> paramList) {
-    return appManagerMainLogic.updateMenuList(paramList);
+  public String updateMenuList(@RequestBody MastAppDTO dto) {
+    return appManagerMainLogic.updateMenuList(dto);
   }
 
 }

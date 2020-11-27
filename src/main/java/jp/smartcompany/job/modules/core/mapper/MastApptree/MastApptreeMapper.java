@@ -1,10 +1,9 @@
 package jp.smartcompany.job.modules.core.mapper.MastApptree;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,8 +32,5 @@ public interface MastApptreeMapper extends BaseMapper<MastApptreeDO> {
                                                 @Param("siteId") String psSiteId);
 
   List<MastAppDTO> selectMastAppList();
-
-  @Delete("delete from MAST_APPTREE")
-  int removeAll();
 
 }
