@@ -226,10 +226,13 @@
   padding-left: 10px;
 }
 .table-head-fixed {
-  .ivu-table-header {
+  .ivu-table-header,.drag-tree-table-header {
     position: fixed;
     top: 50px;
     z-index: 4;
+  }
+  .drag-tree-table-header {
+    width: calc(100% - 93px);
   }
 }
 .with-split {

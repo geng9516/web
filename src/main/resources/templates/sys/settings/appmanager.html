@@ -59,7 +59,7 @@
           </i-col>
         </Row>
       </div>
-      <dtree :data="dTreeData" @drag="sortTableByDrag(arguments)" border :isdraggable="isDraggable" ref="table">
+      <dtree :class="tableHeadFixed ? 'table-head-fixed' : ''" :data="dTreeData" @drag="sortTableByDrag(arguments)" border :isdraggable="isDraggable" ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
         type: "1" サイト   <Icon type="md-compass" />
         type: "3" アプリケーション ml10 <Icon type="md-desktop" />
