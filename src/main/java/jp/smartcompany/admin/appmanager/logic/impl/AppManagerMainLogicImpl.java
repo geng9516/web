@@ -98,7 +98,7 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         treeDO.setMtrCmodifieruserid(username);
         MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());
         treeDO.setAppLevel(MastApptreeServiceImpl.calculateLevel(parentTree.getAppLevel(), dto.getParentId()));
-
+        treeDO.setParentId(dto.getParentId());
         if (dto.getId() == null) {
             appTreeService.save(treeDO);
         }else {
