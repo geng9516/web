@@ -99,7 +99,11 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());
         treeDO.setAppLevel(MastApptreeServiceImpl.calculateLevel(parentTree.getAppLevel(), dto.getParentId()));
 
-        appTreeService.updateById(treeDO);
+        if (dto.getId() == null) {
+            appTreeService.save(treeDO);
+        }else {
+            appTreeService.updateById(treeDO);
+        }
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更しました";
