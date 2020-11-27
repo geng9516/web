@@ -25,12 +25,12 @@ import jp.smartcompany.job.modules.tmg_setting.genericmanager.service.IGenericMa
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailItemVO;
 import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -155,8 +155,31 @@ implements IGenericManagerService {
     }
 
     @Override
+    @Transactional(rollbackFor = GlobalException.class)
     public void execute(UpdateDetailDTO info) {
+        MastGenericDetailDO detailDO = info.getInfo();
+        if (detailDO.getMgdId() == null) {
+            mastGenericDetailService.save(detailDO);
+        } else {
+            mastGenericDetailService.updateById(detailDO);
+        }
+        if (info.getNewHistory()) {
+            // 新しい歴の追加
+            if (detailDO.getMgdDend().before(SysUtil.getMaxDateObject())) {
+                Calendar oCalender = GregorianCalendar.getInstance();
+                oCalender.setTime(detailDO.getMgdDend());
+                oCalender.add(GregorianCalendar.DATE, 1);
+                // 開始日・終了日セット
+                detailDO.setMgdDstartCk(oCalender.getTime());
+                detailDO.setMgdDend(detailDO.getMgdDend());
 
+                // 項目値クリア
+                detailDO.setMgdId(null);
+                detailDO.setVersionno(1L);
+                // 追加
+                mastGenericDetailService.save(detailDO);
+            }
+        }
     }
 
     /**
