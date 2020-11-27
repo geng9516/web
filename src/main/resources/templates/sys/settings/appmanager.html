@@ -464,36 +464,28 @@
           this.isShow = false
         },
         sortTableByDrag(e) {
-          if (e[3] === 'center' || e[2].type === '0') return
-          this.dTreeData.lists = e[0]
-          console.log(e[1].objectId)
-          console.log(e[2].objectId)
+          let samesite = true
           const fromUnits = e[1].objectId.split('_')
           const toUnits = e[2].objectId.split('_')
-          let samesite = true
           fromUnits.forEach((e,i)=> {
               if(i < fromUnits.length - 1 && e !== toUnits[i] ){
                 samesite = false
               }
           })
-          // this.findNodes(this.dTreeData.lists, e[1].id, (nodes) => {
-          //   this.sortList = this.sortList.concat(...nodes.map((t, i) => {
-          //     return {
-          //       id: t.id,
-          //       sort: i
-          //     }
-          //   }))
-          // })
+          if (e[3] === 'center' || e[2].type === '0' || !samesite) return
+          this.dTreeData.lists = e[0]
+          let sort = 0
+          this.deepNodes(this.dTreeData.lists, e[1].id, (nodes) => {
+            this.sortList = this.sortList.concat({id:nodes.id, sort: sort++})
+          })
+
         },
-        findNodes(nodes, id, cb) {
+        deepNodes(nodes, id, cb) {
           const that = this
-          nodes.some((e, i) => {
-            if (e.id === id) {
-              cb(nodes, i, e)
-              return true
-            }
+          nodes.forEach((e, i) => {
+            cb(e)
             if (e.children && e.children.length > 0) {
-              that.findNodes(e.children, id, cb)
+              that.deepNodes(e.children, id, cb)
             }
           })
         },
