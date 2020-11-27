@@ -27,6 +27,10 @@
     .drag-tree-table-header  .tree-column{
       background-color: var(--table-head);
     }
+    .tree-row:hover .tree-column {
+      background-color: var(--table-td-hover-bg);
+      color: var(--table-tr-hover);
+    }
   </style>
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <!-- 菜单导航栏 -->
@@ -43,12 +47,11 @@
         <div class="btnbox">
           <span style="flex:1"></span>
           <i-button type="primary" icon="md-create" @click="updateSort" :disabled="sortList.length === 0">ソード更新</i-button>
-          <i-button type="primary" icon="md-refresh" @click="()=> history.go(0)" :disabled="!hasChange">再表示</i-button>
         </div>
       </div>
     </div>
     <div class="content_body">
-      <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 再表示ボタンでを押してください。</Alert>
+      <Alert v-show="hasChange" class="error-info tl">設定した内容を反映する場合、再度ログインする必要があります</Alert>
       <div class="table-top">
         <Row :gutter="16">
           <i-col span="24" class="tr">
@@ -59,7 +62,7 @@
           </i-col>
         </Row>
       </div>
-      <dtree :data="dTreeData" @drag="sortTableByDrag(arguments)" border :isdraggable="isDraggable" ref="table">
+      <dtree :class="tableHeadFixed ? 'table-head-fixed' : ''" :data="dTreeData" @drag="sortTableByDrag(arguments)" border :isdraggable="isDraggable" ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
         type: "1" サイト   <Icon type="md-compass" />
         type: "3" アプリケーション ml10 <Icon type="md-desktop" />
@@ -124,8 +127,7 @@
         </template>
       </dtree>
     </div>
-    <Modal class="tc" v-model="isShow" title="対象範囲設定" width="650" :mask-closable="false" footer-hide>
-      <Alert class="error-info tl">入力内容は登録するまで保持されます。</Alert>
+    <Modal class="tc" v-model="isShow" :title="updateValue.cardTitle" width="650" :mask-closable="false" footer-hide>
       <i-form :label-width="200" :model="updateValue" class="tl" style="margin: 10px 10px 0;">
         <form-item v-if="updateValue._type === '0'" label="ホームページURL">
           <i-input v-model="updateValue.url" placeholder="ホームページURL"></i-input>
@@ -361,15 +363,17 @@
           this.conditionsList = data
         },
         handleBtn(row, type, isAdd) {
+          console.log(row)
           this.defaultOption = false
           if (type === '0') {
-            this.updateValue = { ...row }
+            this.updateValue = { ...row, cardTitle: row.name }
           }
           if (type === '1') {
             if (isAdd) {
               this.updateValue = {
                 templateId: 'ContentSearchResultEmp',
                 systemId: '01',
+                cardTitle: row.name,
                 objectId: row.objectId,
                 _index: row._index,
                 parentId: row.objectId,
@@ -381,7 +385,7 @@
                 autoUpload: '0'
               }
             } else {
-              this.updateValue = { ...row }
+              this.updateValue = { ...row, cardTitle: row.name }
             }
           }
 
@@ -393,6 +397,7 @@
                 _index: row._index,
                 objectId: row.objectId,
                 parentId: row.objectId,
+                cardTitle: row.name,
                 sort: row.children && row.children.length > 0 ? row.children[row.children.length - 1].sort + 1 : 0,
                 type: '3',
                 systemId: '01',
@@ -401,14 +406,14 @@
                 siteId: row.siteId, appId: row.appId, screenId: row.screenId
               }
             } else {
-              this.updateValue = { ...row }
+              this.updateValue = { ...row, cardTitle: row.name }
             }
           }
           if (type === '6') {
             if (isAdd) {
-              this.updateValue = { systemId: '01', _index: row._index, type: '6', objectId: row.objectId, parentId: row.objectId, siteId: row.siteId, appId: row.appId, screenId: row.screenId,sort: row.children && row.children.length > 0 ? row.children[row.children.length - 1].sort + 1 : 0,}
+              this.updateValue = { systemId: '01', cardTitle: row.name, _index: row._index, type: '6', objectId: row.objectId, parentId: row.objectId, siteId: row.siteId, appId: row.appId, screenId: row.screenId,sort: row.children && row.children.length > 0 ? row.children[row.children.length - 1].sort + 1 : 0,}
             } else {
-              this.updateValue = { ...row }
+              this.updateValue = { ...row, cardTitle: row.name }
             }
           }
           this.updateValue.isAdd = isAdd
@@ -464,36 +469,28 @@
           this.isShow = false
         },
         sortTableByDrag(e) {
-          if (e[3] === 'center' || e[2].type === '0') return
-          this.dTreeData.lists = e[0]
-          console.log(e[1].objectId)
-          console.log(e[2].objectId)
+          let samesite = true
           const fromUnits = e[1].objectId.split('_')
           const toUnits = e[2].objectId.split('_')
-          let samesite = true
           fromUnits.forEach((e,i)=> {
               if(i < fromUnits.length - 1 && e !== toUnits[i] ){
                 samesite = false
               }
           })
-          // this.findNodes(this.dTreeData.lists, e[1].id, (nodes) => {
-          //   this.sortList = this.sortList.concat(...nodes.map((t, i) => {
-          //     return {
-          //       id: t.id,
-          //       sort: i
-          //     }
-          //   }))
-          // })
+          if (e[3] === 'center' || e[2].type === '0' || !samesite) return
+          this.dTreeData.lists = e[0]
+          let sort = 0
+          this.deepNodes(this.dTreeData.lists, e[1].id, (nodes) => {
+            this.sortList = this.sortList.concat({id:nodes.id, sort: sort++})
+          })
+
         },
-        findNodes(nodes, id, cb) {
+        deepNodes(nodes, id, cb) {
           const that = this
-          nodes.some((e, i) => {
-            if (e.id === id) {
-              cb(nodes, i, e)
-              return true
-            }
+          nodes.forEach((e, i) => {
+            cb(e)
             if (e.children && e.children.length > 0) {
-              that.findNodes(e.children, id, cb)
+              that.deepNodes(e.children, id, cb)
             }
           })
         },

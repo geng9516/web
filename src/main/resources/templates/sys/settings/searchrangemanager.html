@@ -480,7 +480,14 @@
           this.tableData.some(e=> {
             if(e[this.updateValueIndex].hgpId ===this.updateValue.hgpId) {
               e[this.updateValueIndex] = this.updateValue
-              this.updateList = this.updateList.concat(this.updateValue)
+              const result = this.updateList.some((t,j)=> {
+                if(t.hgpId === this.updateValue.hgpId) {
+                  this.updateList[j] = this.updateValue
+                  return true
+                }
+              })
+
+              if(!result) this.updateList = this.updateList.concat(this.updateValue)
               return true
             }
           })
