@@ -58,7 +58,7 @@
           </span>
           <span v-show="tableData.length > 0">
             <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);" @click.native="getDetails(item)">
-            <div v-if="editable" class="card-del-btn cursor">✖</div>
+            <div v-if="editable" class="card-del-btn cursor">✗</div>
             <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
               <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
               <span class="tl width100"> {{ item.description }}</span>
@@ -78,7 +78,7 @@
             <i-col span="10">
               <div class="label pl10 tc">名称</div>
               <div class="person-info">
-                <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="detailData.mgdCgenericdetaildescja"><span slot="prepend">日本語</span></i-input>
+                <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="detailData.mgdCgenericdetaildescja" :maxlength="1000"><span slot="prepend">日本語</span></i-input>
               </div>
             </i-col>
             <i-col span="6">
@@ -91,7 +91,7 @@
             <i-col span="8">
               <div class="label pl10 tc">期間</div>
               <div class="person-info">
-                <span v-if="!editable">{{ `${detailData.mgdDstartCk} ～ ${ detailData.mgdDend}` }}</span>
+                <span v-if="!editable">{{ `${Utils.formatDate(detailData.mgdDstartCk, 'yyyy/mm/dd')} ～ ${ detailData.mgdDend && Utils.formatDate(detailData.mgdDend, 'yyyy/mm/dd') }` }}</span>
                 <Row :gutter="8" v-else>
                   <i-col span="12">
                     <date-picker v-model="detailData.mgdDstartCk" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd" :disabled="!isAdd"></date-picker>
@@ -111,13 +111,13 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">1</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar1" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar1" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar1Desc" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -125,13 +125,13 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">2</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar2" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar2" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar2Desc" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -139,13 +139,13 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">3</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar3" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar3" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar3Desc" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -153,13 +153,13 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">4</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar4" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar4" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar4Desc" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -167,13 +167,13 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 23px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">5</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar5" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar5" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar5Desc" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="detailData.mgdCsparechar5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -192,7 +192,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum1Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdNsparenum1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -203,7 +203,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum2Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdNsparenum2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -214,7 +214,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum3Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdNsparenum3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -225,7 +225,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum4Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdNsparenum4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -236,7 +236,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum5Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdNsparenum5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -248,56 +248,56 @@
                   <div class="person-info">
                     <Row :gutter="8">
                       <i-col span="12">
-                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate1" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdDsparedate1" :options="rangeOptions" placeholder="日付" format="yyyy/MM/dd"></date-picker>
                       </i-col>
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate1Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdDsparedate1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
                     <Row :gutter="8">
                       <i-col span="12">
-                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate2" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdDsparedate2" :options="rangeOptions" placeholder="日付" format="yyyy/MM/dd"></date-picker>
                       </i-col>
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate2Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdDsparedate2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
                     <Row :gutter="8">
                       <i-col span="12">
-                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate3" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdDsparedate3" :options="rangeOptions" placeholder="日付" format="yyyy/MM/dd"></date-picker>
                       </i-col>
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate3Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdDsparedate3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
                     <Row :gutter="8">
                       <i-col span="12">
-                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate4" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdDsparedate4" :options="rangeOptions" placeholder="日付" format="yyyy/MM/dd"></date-picker>
                       </i-col>
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate4Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdDsparedate4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
                     <Row :gutter="8">
                       <i-col span="12">
-                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" :value="detailData.mgdDsparedate5" placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                        <date-picker type="date" class="width100" style="padding: 3px;margin-left: -6px;" v-model="detailData.mgdDsparedate5" :options="rangeOptions" placeholder="日付" format="yyyy/MM/dd"></date-picker>
                       </i-col>
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate5Desc" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="detailData.mgdDsparedate5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -424,8 +424,16 @@
               groupId: opts.groupId,
               detailId: opts.detailId
             })
-            this.detailData = {...data.detail, mgdDstartCk: Utils.formatDate(data.detail.mgdDstartCk, 'yyyy/mm/dd'), mgdDend: data.detail.mgdDend === 7983759600000 ? '' : Utils.formatDate(data.detail.mgdDend, 'yyyy/mm/dd')}
-            console.log(this.detailData.mgdDstartCk)
+            this.detailData = {
+              ...data.detail,
+              mgdDsparedate1: data.detail.mgdDsparedate1 && new Date(data.detail.mgdDsparedate1),
+              mgdDsparedate2: data.detail.mgdDsparedate2 && new Date(data.detail.mgdDsparedate2),
+              mgdDsparedate3: data.detail.mgdDsparedate3 && new Date(data.detail.mgdDsparedate3),
+              mgdDsparedate4: data.detail.mgdDsparedate4 && new Date(data.detail.mgdDsparedate4),
+              mgdDsparedate5: data.detail.mgdDsparedate5 && new Date(data.detail.mgdDsparedate5),
+              mgdDstartCk: new Date(data.detail.mgdDstartCk),
+              mgdDend: data.detail.mgdDend === 7983759600000 ? '' : data.detail.mgdDend && new Date(data.detail.mgdDend),
+            }
           } catch (error) {
           } finally {
             this.detailLoading = false
@@ -448,28 +456,58 @@
           this.getCardList(false)
         },
         async update() {
+          const hasPassed = this.checkData(this.detailData)
+          if(!hasPassed) return
           this.$Modal.confirm({
             title: '注意',
             content: '入力内容を保存します。よろしいですか？',
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              console.log(this.detailData.mgdDstartCk)
               this.detailLoading = true
-              // try {
-              //   const { data } = await this.http.post('sys/genericmanager/detail', {
-              //     newHistory: this.detailData.newHistory ? true : false,
-              //     info: this.detailData
-              //   })
-              //   this.$Message.success('更新完了')
-              //   this.getTableData()
-              //   this.updateValue = {}
-              // } catch (error) {
-              // } finally {
-              //   this.detailLoading = false
-              // }
+              try {
+                if(this.detailData.mgdId === null) delete this.detailData.mgdId
+                const { data } = await this.http.post('sys/genericmanager/detail', {
+                  newHistory: this.detailData.newHistory ? true : false,
+                  info: this.detailData
+                })
+                this.$Message.success('更新完了')
+                this.getTableData()
+                this.updateValue = {}
+              } catch (error) {
+              } finally {
+                this.detailLoading = false
+              }
             }
           })
+        },
+        checkData(data) {
+          let msg = ''
+          if(!data.mgdCgenericdetailidCk || !data.mgdCgenericdetailidCk.trim()) {
+            msg = msg.concat(`明細データコードを入力してください。\n`)
+          }
+
+          if(!data.mgdCgenericdetaildescja || !data.mgdCgenericdetaildescja.trim()) {
+            msg = msg.concat(`明細データ内容（日本語）を入力してください。\n`)
+          }
+          // 予備数字1の入力文字数が設定値を超えています。半角数字整数8桁、小数4桁以内で入力してください。
+          const regx = /^\d{1,8}\.?\d{0,4}$/
+          let num = ''
+          for(let i = 1; i < 6; i ++) {
+            if(data[`mgdNsparenum${i}`] && !regx.test(data[`mgdNsparenum${i}`])) {
+              num = num.concat(`${i}, `)
+            }
+          }
+          if(num) {
+            msg = msg.concat(`予備数字${num.slice(0, -2)}の入力文字数が設定値を超えています。半角数字整数8桁、小数4桁以内で入力してください。\n`)
+          }
+
+          if(msg) {
+            this.$Notice.warning({ title: '注意', desc: msg, duration: 0 })
+            return false
+          }
+          return true
+
         },
         add() {
           this.isAdd = true
