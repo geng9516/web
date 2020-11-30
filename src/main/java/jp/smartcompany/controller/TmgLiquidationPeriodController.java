@@ -153,6 +153,19 @@ public class TmgLiquidationPeriodController {
      * 最後登録
      * @return　エラー
      */
+    @PostMapping("checkLiquidationDaily")
+    public int checkLiquidationDaily(
+            @RequestParam(value = "empId",required = false) String empId,
+            @RequestParam(value = "startDate",required = false) String startDate,
+            @RequestParam(value = "endDate",required = false) String endDate,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgLiquidationPeriodBean.checkLiquidationDaily(empId,startDate,psDBBean);
+    }
+
+    /**
+     * 最後登録
+     * @return　エラー
+     */
     @PostMapping("upload")
     public GlobalResponse upload(
             @RequestParam(value = "empId",required = false) String empId,

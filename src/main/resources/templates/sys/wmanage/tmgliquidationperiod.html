@@ -75,9 +75,9 @@
                  border :row-class-name="() => 'select-col'"
                 :data="tableData" :loading="loading" :columns="columns"
                  no-data-text="123">
-            <template slot-scope="{ row }" slot="dailymaxworktime">{{row.dailymaxworktime}}分
+            <template slot-scope="{ row }" slot="dailymaxworktime" v-if="row.dailymaxworktime">{{row.dailymaxworktime}}分
             </template>
-            <template slot-scope="{ row }" slot="weeklymaxworktime">{{row.weeklymaxworktime}}時
+            <template slot-scope="{ row }" slot="weeklymaxworktime" v-if="row.dailymaxworktime">{{row.weeklymaxworktime}}時
             </template>
             <template slot-scope="{ row }" slot="totalworkdays" v-if="row.totalworkdays">{{row.totalworkdays}}日
             </template>
@@ -136,14 +136,13 @@
             <div class="table-top">
                 <Row  class="mb10">
                     <i-col span="24" class="tr">
-                        <i-button type="primary" class="mr5" @click="" ghost icon="md-podium">精算</i-button>
-                        <i-button type="primary" class="mr5" ghost icon="ios-briefcase">一時保存</i-button>
+                        <i-button type="primary" class="mr5" @click="checkLiquidationDaily" ghost icon="md-podium">精算</i-button>
                         <i-button type="primary" class="mr5" ghost icon="md-print">印刷</i-button>
-                        <i-button type="primary" ghost icon="md-filing">登録</i-button>
+                        <i-button type="primary" ghost @click="uploadLiquidation" icon="md-filing">登録</i-button>
                     </i-col>
                 </Row>
             </div>
-            <Alert type="error" class="error-info" >123 123 123 123 123 123</Alert>
+            <Alert type="error" class="error-info tl" v-if="errList.length > 1 " v-for="(item) of errList">{{item}}</Alert>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
                 精算期間一覧
@@ -168,8 +167,8 @@
             <div v-if="tableData4Year.lenght > 10">
                 <Row  class="mt20">
                     <i-col span="24" class="tr">
-                        <i-button type="primary" class="mr5" ghost icon="md-podium">精算</i-button>
-                        <i-button type="primary" class="mr5" ghost icon="ios-briefcase">一時保存</i-button>
+                        <i-button type="primary" class="mr5" ghost @click="checkLiquidationDaily" icon="md-podium">精算</i-button>
+                        <i-button type="primary" ghost @click="uploadLiquidation" icon="md-filing">登録</i-button>
                     </i-col>
                 </Row>
             </div>
@@ -548,6 +547,7 @@
                 //編集画面
                 show3:true,
                 button4Pattern:['1','2'],
+                errList:[],
                 tableData4Year: [
                     {
                         yyyymm: '2020/07',
@@ -1007,19 +1007,22 @@
                 }
             },
             async showDetails(e) {
-                this.empInfo.empId=e.employeeid
-                this.empInfo.empWorkTypeId=e.worktypeid
-                this.empInfo.deptName=e.deptname
-                this.empInfo.sectionId=e.sectionid
-                this.empInfo.empName=e.employeename
-                this.empInfo.empWorkTypeName=e.worktypename
-                if(e.newflag){
+                if (e) {
+                    this.empInfo.empId=e.employeeid
+                    this.empInfo.empWorkTypeId=e.worktypeid
+                    this.empInfo.deptName=e.deptname
+                    this.empInfo.sectionId=e.sectionid
+                    this.empInfo.empName=e.employeename
+                    this.empInfo.empWorkTypeName=e.worktypename
+                    this.optsEmp.empId = e.employeeid
+                    this.optsEmp.startDate = e.startdate
+                    this.optsEmp.endDate = e.enddate
+                }
+                if(e.newflag || !e){
                     try {
-                        this.optsEmp.empId = e.employeeid
-                        this.optsEmp.startDate = e.startdate
-                        this.optsEmp.endDate = e.enddate
                         const {data} = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                         this.editTableDate = data.monthDtoList
+                        this.errList = data.errList
                         this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                         this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
                         this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
@@ -1115,6 +1118,27 @@
             DateDiff(sDate1,  sDate2){
                 iDays  =  parseInt(Math.abs(oDate1-oDate2)/1000/60/60/24)    //把相差的毫秒数转换为天数
                 return  iDays
+            },
+
+            //精算button
+            async checkLiquidationDaily() {
+                let OPTS = {
+                    empId: this.optsEmp.empId,
+                    startDate: this.optsEmp.startDate,
+                    endDate: this.optsEmp.endDate,
+                }
+                try {
+                    await this.http.postForm('sys/tmgliquidationperiod/checkLiquidationDaily', OPTS)
+                    this.showDetails()
+                } catch (error) {
+                    return
+                } finally {
+
+                }
+            },
+            //最後登録
+            uploadLiquidation(){
+
             },
             //月编辑画面显示
             async showMonth(e) {
@@ -1280,12 +1304,15 @@
                }
                try {
                    const { data } = await this.http.post('sys/tmgliquidationperiod/UpdateLiquidationDaily', OPTS)
+                   this.showDetails()
+                   this.monthlyEditFlg=false
                } catch (error) {
                    return
                } finally {
 
                }
             },
+
             //新規パターン画面の表示
             makeNewPattern(){
                 this.patternFlg=true

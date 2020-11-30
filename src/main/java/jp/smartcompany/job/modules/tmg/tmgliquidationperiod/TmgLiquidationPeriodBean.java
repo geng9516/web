@@ -228,9 +228,7 @@ public class TmgLiquidationPeriodBean {
         }
 
         monthlyMap.put("liquidationDailyInfoVoList", liquidationDailyInfoVoList);
-        //todo:pattern list（选取用）
-
-
+        //pattern list（选取用）
         List<SelectPatternDto> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode());
         List<PatternInfoDto> patternInfoDtoList=new ArrayList<PatternInfoDto>();
 
@@ -312,9 +310,13 @@ public class TmgLiquidationPeriodBean {
         }
         if (updateNum>0){
             //check LiquidationDaily 执行
-            errNum=iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empid,monthList.get(0).getYyyymmdd());
+            errNum=checkLiquidationDaily(empid,monthList.get(0).getYyyymmdd(),psDBBean);
         }
         return  errNum;
+    }
+
+    public int checkLiquidationDaily(String empId, String yyyymm, PsDBBean psDBBean){
+        return iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
     }
 
     //新规pattern
