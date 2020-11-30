@@ -34,7 +34,7 @@ const login = new Vue({
                 location.href = BASE_PATH
             } catch (error) {
                 this.loading = false
-                return this.$Notice.error({ title: '注意', desc: error, duration: 6.5 })
+                // return this.$Notice.error({ title: '注意', desc: error, duration: 6.5 })
             }
 
         }),
