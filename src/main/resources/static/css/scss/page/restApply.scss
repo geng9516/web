@@ -108,7 +108,7 @@
     display: none;
     width: 800px;
     // 将滚动条隐藏
-    overflow-x: hidden;
+    overflow: hidden;
     min-height: 80vh;
     &.rotate-360 {
       display: block;
