@@ -163,20 +163,20 @@
 }
 .card {
   border-radius: 5px;
-  height: 163px;
+  height: 153px;
   box-shadow: var(--card-boxshadow);
   background: var(--login-panel-bg);
   .title {
     text-align: left;
     color: var(--card-title);
     font-size: 20px;
-    padding: 20px 0 0 18px;
+    padding: 15px 0 0 18px;
   }
   .num {
     display: inline-block;
-    margin-top: 5px;
+    margin-top: 10px;
     margin-right: 3px;
-    font-size: 45px;
+    font-size: 43px;
   }
   .lp {
     font-size: 24px;
@@ -252,8 +252,8 @@
   .card {
     height: 109px;
     .num {
-      margin-top: 10px;
-      font-size: 30px;
+      margin-top: 7px;
+      font-size: 28px;
     }
   }
 }
