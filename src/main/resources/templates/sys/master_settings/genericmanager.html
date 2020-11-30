@@ -58,7 +58,7 @@
           </span>
           <span v-show="tableData.length > 0">
             <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);" @click.native="getDetails(item)">
-            <div v-if="editable" class="card-del-btn cursor">✗</div>
+            <div v-if="editable" class="card-del-btn cursor" @click.stop="remove(item)">✗</div>
             <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
               <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
               <span class="tl width100"> {{ item.description }}</span>
@@ -472,7 +472,8 @@
                   info: this.detailData
                 })
                 this.$Message.success('更新完了')
-                this.getTableData()
+                this.getCardList(false)
+                this.isAdd = false
                 this.updateValue = {}
               } catch (error) {
               } finally {
@@ -512,6 +513,28 @@
         add() {
           this.isAdd = true
           this.getDetails({groupId: this.groupId}, true)
+        },
+        remove(item) {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '削除します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              try {
+                this.loading = true
+                this.detailLoading = true
+                const { data } = await this.http.get('sys/genericmanager/delete/item', {groupId:item.groupId,detailId:item.detailId})
+                this.$Message.success('削除完了')
+                await this.getCardList(item)
+                if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
+              } catch (error) {
+              } finally {
+                this.loading = false
+                this.detailLoading = false
+              }
+            }
+          })
         },
         cancel() {
           this.isAdd = false
