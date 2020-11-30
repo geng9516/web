@@ -524,7 +524,7 @@
               try {
                 this.loading = true
                 this.detailLoading = true
-                const { data } = await this.http.get('sys/genericmanager/delete/item', {groupId:item.groupId,detailId:item.detailId})
+                const { data } = await this.http.post('sys/genericmanager/delete', [item.mgdId])
                 this.$Message.success('削除完了')
                 await this.getCardList(item)
                 if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
