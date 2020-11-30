@@ -74,7 +74,7 @@ public class TmgLiquidationPeriodController {
      * 新规
      * @return　エラー
      */
-    @PostMapping("InsertLiquidation")
+    @PostMapping("insertLiquidation")
     @ResponseBody
     public GlobalResponse insertLiquidation(
             @RequestBody LiquidationUpdateListDto liquidationUpdateListDto,

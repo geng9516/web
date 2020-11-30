@@ -7,7 +7,7 @@
             TO_CHAR(A.TLDD_DYYYYMMDD, 'yyyy/mm/dd') AS YYYYMMDD,
             A.TLDD_CWEEKS           AS WEEK,
             A.TLDD_CWORKHOURS       AS WORKHOURS,
-            A.TLDD_CKUBEN           AS KUBUN,
+            A.TLDD_CKUBUN           AS KUBUN,
             A.TLDD_CSTARTTIME       AS STARTTIME,
             A.TLDD_CENDTIME         AS ENDTIME,
             A.TLDD_CRESTSTARTTIME1   AS RESTTIMESTART1,

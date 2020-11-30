@@ -274,7 +274,7 @@ public class TmgLiquidationPeriodBean {
             //定休日调整
             if(dailyDto.getKubunid().indexOf("TMG_HOLFLG")> -1){
                 tlddDo.setTlddCsparechar3(dailyDto.getKubunid());
-                tlddDo.setTlddCkuben(dailyDto.getKubunid());
+                tlddDo.setTlddCkubun(dailyDto.getKubunid());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
                 tlddDo.setTlddCstarttime(null);
                 tlddDo.setTlddCendtime(null);

@@ -71,8 +71,8 @@ public class TmgLiquidationDailyDO {
     /**
      * 适用区分
      */
-    @TableField("tldd_ckuben")
-    private String tlddCkuben;
+    @TableField("tldd_ckubun")
+    private String tlddCkubun;
 
     /**
      * 适用日
