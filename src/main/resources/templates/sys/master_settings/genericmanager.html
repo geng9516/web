@@ -28,9 +28,9 @@
         </div>
         <div class="btnbox">
           <span style="flex:1"></span>
-          <i-button type="primary" icon="md-add" @click="add" :loading="editLoading" v-if="editable && !isAdd">新規</i-button>
-          <i-button @click="isAdd = false" v-if="isAdd">キャンセル</i-button>
-          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" v-if="editable && tableData.length !== 0 || isAdd">登録</i-button>
+          <i-button type="primary" icon="md-add" @click="add" :loading="editLoading" v-show="editable && !isAdd">新規</i-button>
+          <i-button @click="cancel" v-show="isAdd">キャンセル</i-button>
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" v-show="editable && tableData.length !== 0 || isAdd">登録</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -48,15 +48,15 @@
     </div>
     <div class="content_body">
       <Row :gutter="16">
-        <i-col :span="tableData.length === 0 ? 24 : 10">
+        <i-col :span="tableData.length === 0 ? 24 : 10" v-show="!isAdd">
           <div class="tr mb5">
             <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
             :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
           </div>
-          <span v-show="tableData.length === 0 && !isAdd">
+          <span v-show="tableData.length === 0">
             <Alert class="error-info tl">選択中の区分マスタが現在参照可能な設定はございません。</Alert>
           </span>
-          <span v-show="tableData.length > 0 && !isAdd">
+          <span v-show="tableData.length > 0">
             <Card class="mb5" v-for="item of tableData" style="background: var(--content-bg);" @click.native="getDetails(item)">
             <div v-if="editable" class="card-del-btn cursor">✖</div>
             <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
@@ -74,7 +74,7 @@
           <Spin size="large" fix v-if="loading"></Spin>
         </i-col>
         <i-col span="14" :class="tableHeadFixed ? 'block-fixed' : ''">
-          <Row :gutter="10" v-if="detailData.mgdCgenericdetaildesc || isAdd">
+          <Row :gutter="10" v-show="detailData.mgdCgenericdetaildesc || isAdd">
             <i-col span="10">
               <div class="label pl10 tc">名称</div>
               <div class="person-info">
@@ -94,10 +94,10 @@
                 <span v-if="!editable">{{ `${detailData.mgdDstartCk} ～ ${ detailData.mgdDend}` }}</span>
                 <Row :gutter="8" v-else>
                   <i-col span="12">
-                    <date-picker v-model="detailData.mgdDstartCk" type="date" size="small" :clearable="false" :options="rangeOptions" @on-change="detailData.mgdDstartCk = $event" format="yyyy/MM/dd" :disabled="!isAdd"></date-picker>
+                    <date-picker v-model="detailData.mgdDstartCk" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd" :disabled="!isAdd"></date-picker>
                   </i-col>
                   <i-col span="12">
-                    <date-picker v-model="detailData.mgdDend" type="date" size="small" :clearable="false" :options="rangeOptions" @on-change="detailData.mgdDend = $event" format="yyyy/MM/dd" ></date-picker>
+                    <date-picker v-model="detailData.mgdDend" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd" ></date-picker>
                   </i-col>
                   <checkbox v-if="!isAdd" v-model="detailData.newHistory" style="margin-left: 5px;">新しい歴を終了日以降に作成</checkbox>
                 </Row>
@@ -425,6 +425,7 @@
               detailId: opts.detailId
             })
             this.detailData = {...data.detail, mgdDstartCk: Utils.formatDate(data.detail.mgdDstartCk, 'yyyy/mm/dd'), mgdDend: data.detail.mgdDend === 7983759600000 ? '' : Utils.formatDate(data.detail.mgdDend, 'yyyy/mm/dd')}
+            console.log(this.detailData.mgdDstartCk)
           } catch (error) {
           } finally {
             this.detailLoading = false
@@ -453,17 +454,19 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              // this.detailLoading = true
-              console.log(this.detailData)
+              console.log(this.detailData.mgdDstartCk)
+              this.detailLoading = true
               // try {
-              //   const { data } = await this.http.post('sys/genericmanager/detail', update)
+              //   const { data } = await this.http.post('sys/genericmanager/detail', {
+              //     newHistory: this.detailData.newHistory ? true : false,
+              //     info: this.detailData
+              //   })
               //   this.$Message.success('更新完了')
               //   this.getTableData()
               //   this.updateValue = {}
               // } catch (error) {
               // } finally {
-              //   history.go(0)
-              //   this.loading = false
+              //   this.detailLoading = false
               // }
             }
           })
@@ -471,6 +474,10 @@
         add() {
           this.isAdd = true
           this.getDetails({groupId: this.groupId}, true)
+        },
+        cancel() {
+          this.isAdd = false
+          if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
         }
       }
     })
