@@ -46,8 +46,8 @@
         </template>
 
         <template slot-scope="{ row }" slot="createTime">{{ Utils.formatDate(row.createTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
-        <template slot-scope="{ row }" slot="requestTime">{{ Utils.formatDate(row.createTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
-        <template slot-scope="{ row }" slot="responseTime">{{ Utils.formatDate(row.createTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
+        <template slot-scope="{ row }" slot="requestTime">{{ Utils.formatDate(row.requestTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
+        <template slot-scope="{ row }" slot="responseTime">{{ Utils.formatDate(row.responseTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
       </i-table>
       <Drawer :title="drawer.username" :closable="false" v-model="isShow" width="30">
         <div class="label pl10 tc">{{ drawer.requestMethod || '-' }}</div>
