@@ -5,134 +5,247 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <main class="content logsettings-warp" ref="layout">
-        <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `ルグビューア` }}
-              </h1>
-            </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
-            </div>
-          </div>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content logsettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `ルグビューア` }}
+          </h1>
         </div>
-        <div class="content_body">
-          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-          <div class="table-top">
-            <Row :gutter="16">
-              <i-col span="24" class="tr">
-              </i-col>
-            </Row>
-          </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
-          </i-table>
+      </div>
+      <div class="searchwrap">
+        <div class="label">ルグ区分</div>
+        <i-select v-model="requestUrl" @on-change="changeRequestUrl">
+          <i-option value="sys/log/error" label="エラー"></i-option>
+          <i-option value="sys/log/access" label="アクセス"></i-option>
+          <i-option value="sys/log/login" label="ログイン"></i-option>
+        </i-select>
+      </div>
+    </div>
+    <div class="content_body">
+      <div class="table-top">
+        <div class="tr mb5">
+          <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+            :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple />
         </div>
-        <back-top></back-top>
-      </main>
-    <div th:replace="layout/head::header"></div>
-    <script type="text/babel" th:inline="javascript">
-        new Vue({
-          el: '.logsettings-warp',
-          data() {
-            return {
-              isShow: false,
-              loading: true,
-              editLoading: false,
-              btnLoading: false,
-              hasChange: false,
-              defaultOption: false,
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp'),
-              updateValue: {},
-              columns: [
-              ],
-              opts: {
-                systemId: '01',
-                appId: '0',
-                siteId: '0',
-                companyId: '0',
-                date: '',
-                groupId: '0',
-                isAll: false,
+      </div>
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''" :row-class-name="() => 'select-col'"
+        :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" ref="table">
+        <template slot-scope="{ row }" slot="msg">
+          <i-button type="primary" ghost @click="handleMsg(row)">詳細</i-button>
+        </template>
+
+        <template slot-scope="{ row }" slot="status">
+          <i-button type="success" size="small" ghost v-if="row.status">OK</i-button>
+          <i-button type="error" size="small" ghost v-else >Bad</i-button>
+        </template>
+
+        <template slot-scope="{ row }" slot="createTime">{{ Utils.formatDate(row.createTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
+        <template slot-scope="{ row }" slot="requestTime">{{ Utils.formatDate(row.requestTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
+        <template slot-scope="{ row }" slot="responseTime">{{ Utils.formatDate(row.responseTime, 'yyyy/mm/dd hh:ff:ss') }}</template>
+      </i-table>
+      <Drawer :title="drawer.username" :closable="false" v-model="isShow" width="30">
+        <div class="label pl10 tc">{{ drawer.requestMethod || '-' }}</div>
+        <div class="person-info">{{ drawer.url }}</div>
+        <div class="label mt10 pl10">{{ drawer.userAgent || ' UserAgent' }}</div>
+        <div class="person-info">{{ drawer.calledMethod }}</div>
+        <div class="label mt10 tc">パラメータ</div>
+        <div class="person-info">
+          <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="drawer.params" type="textarea" :autosize="{maxRows: 15}"></i-input>
+        </div>
+        <div class="label mt10 tc">詳細</div>
+        <div class="person-info">
+          <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="drawer.message"
+            type="textarea" :autosize="{maxRows: 15}"></i-input>
+        </div>
+      </Drawer>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    new Vue({
+      el: '.logsettings-warp',
+      data() {
+        return {
+          isShow: false,
+          loading: true,
+          drawer: {},
+          requestUrl: 'sys/log/error',
+          columnsMap: {
+            'sys/log/error': [
+              {
+                title: '用户名',
+                key: 'username',
+                width: 100
               },
-              tableData: [],
-              conditionsList: [],
-              contentScrollTop: 0
-            }
+              {
+                title: '请求路径',
+                key: 'url',
+                maxWidth: 450
+              },
+              {
+                title: '请求方法',
+                key: 'requestMethod',
+                width: 80
+              },
+              {
+                title: '方法名',
+                key: 'calledMethod'
+              },
+              {
+                title: 'IP',
+                key: 'ip',
+                width: 120
+              },
+              {
+                title: '详情',
+                slot: 'msg',
+                width: 100,
+                align: 'center'
+              },
+              {
+                title: '创建时间',
+                slot: 'createTime',
+                align: 'center',
+                width: 180
+              },
+            ],
+            'sys/log/access': [
+              {
+                title: 'Path',
+                key: 'url'
+              },
+              {
+                title: 'Method',
+                key: 'method'
+              },
+              {
+                title: 'http状態',
+                key: 'httpStatus'
+              },
+              {
+                title: '時間かかり(ms)',
+                key: 'time'
+              },
+              {
+                title: 'IP',
+                key: 'ip'
+              },
+              {
+                title: 'http状態',
+                key: 'httpStatus'
+              },
+              {
+                title: 'Request Time',
+                align: 'center',
+                slot: 'requestTime'
+              },
+              {
+                title: 'Response Time',
+                align: 'center',
+                slot: 'responseTime'
+              },
+            ],
+            'sys/log/login': [
+              {
+                title: '用户名',
+                key: 'username',
+                width: 100
+              },
+              {
+                title: '操作',
+                key: 'operation',
+                width: 100
+              },
+              {
+                title: '状態',
+                slot: 'status',
+                align: 'center',
+                width: 80
+              },
+              {
+                title: 'IP',
+                key: 'ip',
+                width: 120
+              },
+              {
+                title: 'ターミナル',
+                key: 'userAgent'
+              },
+              {
+                title: 'Created Time',
+                slot: 'createTime',
+                width: 180
+              },
+            ],
           },
-          async created() {
-            this.getTableData()
-            window.addEventListener('scroll', this.handleScroll, { passive: true })
+          pageValue: {
+            amount: 0,
+            curPage: 1,
+            curSize: 50
           },
-          beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, { passive: true })
+          opts: {
+            order: 'desc',
+            page: null,
+            keyword: null,
+            limit: 50
           },
-          computed: {
-            tableHeadFixed() {
-              if (this.contentScrollTop > 110) return true
-              else return false
-            }
-          },
-          methods: {
-            async getTableData() {
-              const OPTS = { ...this.opts }
-              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              Object.keys(OPTS).forEach(key => {
-                if (OPTS[key] === '0') {
-                  delete OPTS[key]
-                }
-              })
-              this.loading = true
-              try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-                this.tableData = data
-              } catch (error) {
-              } finally {
-                this.loading = false
-              }
-            },
-            async update() {
-              this.$Modal.confirm({
-                title: '注意',
-                content: '入力内容を保存します。よろしいですか？',
-                okText: 'OK',
-                cancelText: 'キャンセル',
-                onOk: async () => {
-                  this.loading = true
-                  const update = this.tableData.map((e, i)=> {
-                    return {
-                      ...e,
-                      templateId: e.templateId === 'null' ? null : e.templateId,
-                      permissionType: e.permissionType === 'null' ? null : e.permissionType
-                    }
-                  })
-                  try {
-                    const { data } = await this.http.post('sys/appmanager/update', update)
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                    this.updateValue = {}
-                  } catch (error) {
-                  } finally {
-                    history.go(0)
-                    this.loading = false
-                  }
-                }
-              })
-            },
-            handleScroll: Throttle(function (e) {
-              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50)
+          tableData: [],
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        this.getTableData()
+        window.addEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 110) return true
+          else return false
+        },
+        columns() {
+          return this.columnsMap[this.requestUrl]
+        }
+      },
+      methods: {
+        async getTableData() {
+          this.loading = true
+          try {
+            const { data } = await this.http.get(this.requestUrl, this.opts)
+            this.tableData = data.list
+            this.pageValue.amount = data.totalCount
+          } catch (error) {
+          } finally {
+            this.loading = false
           }
-        })
-      </script>
+        },
+        changeRequestUrl() {
+          this.pageValue.curPage = 1
+          this.opts.page = 1
+          this.getTableData()
+        },
+        handleMsg(e) {
+          this.isShow = true
+          this.drawer = { ...e }
+        },
+        pageChange(e) {
+          this.opts.page = e
+          this.pageValue.curPage = e
+          this.getTableData()
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+        }, 50)
+      }
+    })
+  </script>
 </body>
