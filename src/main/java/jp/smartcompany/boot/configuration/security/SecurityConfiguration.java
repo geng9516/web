@@ -32,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final SecurityProperties securityProperties;
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public void configure(HttpSecurity http) throws Exception {
           http.csrf().ignoringAntMatchers(securityProperties.getCsrfWhiteList())
                 .and().cors()
                 .and().formLogin().usernameParameter("username").passwordParameter("password")
@@ -42,16 +42,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
-                .antMatchers(securityProperties.getWhiteList()).permitAll()
-                .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
+                  .antMatchers(securityProperties.getWhiteList()).permitAll()
+                  .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
                 .and()
                   .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
-                  // 自定义过滤器在登录时认证用户名、密码
-                  .exceptionHandling()
-                  // 未登录认证异常
-                  .authenticationEntryPoint(loginEntryPoint)
-                  // 登录过后访问无权限的接口时自定义403响应内容
-                  .accessDeniedHandler(accessDeniedHandler);
+                    // 自定义过滤器在登录时认证用户名、密码
+                    .exceptionHandling()
+                    // 未登录认证异常
+                    .authenticationEntryPoint(loginEntryPoint)
+                    // 登录过后访问无权限的接口时自定义403响应内容
+                    .accessDeniedHandler(accessDeniedHandler);
     }
 
     @Override

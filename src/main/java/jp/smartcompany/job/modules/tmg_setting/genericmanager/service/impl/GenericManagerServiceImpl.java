@@ -161,6 +161,10 @@ implements IGenericManagerService {
     @Transactional(rollbackFor = GlobalException.class)
     public void execute(UpdateDetailDTO info) {
         MastGenericDetailDO detailDO = info.getInfo();
+        String masterCode = detailDO.getMgdCgenericgroupid()+"|"+detailDO.getMgdCgenericdetailidCk();
+        detailDO.setMgdClanguageCk("ja");
+        detailDO.setMgdCmastercode(masterCode);
+        detailDO.setMgdCcustomerid("01");
         if (detailDO.getMgdId() == null) {
             mastGenericDetailService.save(detailDO);
         } else {
@@ -175,7 +179,7 @@ implements IGenericManagerService {
                 // 開始日・終了日セット
                 detailDO.setMgdDstartCk(oCalender.getTime());
                 detailDO.setMgdDend(detailDO.getMgdDend());
-
+                detailDO.setMgdClanguageCk("ja");
                 // 項目値クリア
                 detailDO.setMgdId(null);
                 detailDO.setVersionno(1L);
