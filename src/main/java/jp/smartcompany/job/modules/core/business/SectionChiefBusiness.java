@@ -139,7 +139,7 @@ public class SectionChiefBusiness {
         if (request==null) {
             return null;
         }
-        PsSession psSession = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
+        PsSession psSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         String sLanguage = psSession.getLanguage();
 //        String sLanguage = "ja";
         List<EvaluatorBO> evaluatorList = iHistDesignationService.selectAllEvaluator("01", userId, searchDate, sLanguage);

@@ -69,7 +69,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
                 }
             }
         }
-        HttpSession httpSession = request.getSession();
+        HttpSession httpSession = request.getSession(false);
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
@@ -114,7 +114,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     // 设置PsDBBean和PsSession
     public void configGlobalParameters(HttpServletRequest request,MastSystemDO mastSystemDO) {
-        HttpSession httpSession = request.getSession();
+        HttpSession httpSession = request.getSession(false);
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         // 登录后且还未设置PsSession里的值则需要进行设置
         Hashtable<String,Object> hashtable = new Hashtable<>();

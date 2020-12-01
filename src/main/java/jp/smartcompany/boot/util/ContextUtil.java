@@ -43,11 +43,7 @@ public class ContextUtil {
     if (request == null) {
       throw new GlobalException("リクエストオブジェクトが存在しません。");
     }
-    HttpSession session = request.getSession();
-    if (session == null) {
-      throw new GlobalException("セッションオブジェクトが存在しません。");
-    }
-    return session;
+    return request.getSession(false);
   }
 
   public static String getParam(String key) {

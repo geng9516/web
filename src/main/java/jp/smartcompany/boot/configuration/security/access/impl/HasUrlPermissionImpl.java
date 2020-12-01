@@ -67,7 +67,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     public boolean hasPermission(HttpServletRequest request, Authentication authentication) throws SQLException {
         String siteId = request.getParameter("psSite");
 //        String appId = request.getParameter("psAppId");
-        HttpSession httpSession = request.getSession();
+        HttpSession httpSession = request.getSession(false);
         // 根据psSite和psApp查询出当前登录用户在当前模块可访问的url
         boolean hasPermission = false;
 
@@ -149,7 +149,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         executeLoginSequence(systemList, httpSession);
 
         if (timedCache.get(Constant.getSessionMenuId(httpSession.getId()),false) == null) {
-            loadMenus(systemList, request.getSession());
+            loadMenus(systemList, request.getSession(false));
         }
     }
 

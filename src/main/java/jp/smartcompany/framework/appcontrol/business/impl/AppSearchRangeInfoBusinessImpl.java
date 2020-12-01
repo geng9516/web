@@ -262,7 +262,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      */
     public void setRequest(HttpServletRequest pRequest) {
         gRequest = pRequest;
-        gPsSession = (PsSession) pRequest.getSession().getAttribute(Constant.PS_SESSION);
+        gPsSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         // setPsSecurityDateがDIされないので、リクエストから設定
         setPsSecurityDate(gRequest.getParameter("psSecurityDate"));
     }

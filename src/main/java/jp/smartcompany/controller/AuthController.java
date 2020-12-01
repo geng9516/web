@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 /**
@@ -77,7 +78,7 @@ public class AuthController {
      */
     @PostMapping("stamping")
     @ResponseBody
-    public ClockResultVO stamping(String username, String password, String pAction) {
+    public ClockResultVO stamping(String username, String password, String pAction, HttpServletRequest request) {
         LoginAccountBO loginAccountBo = null;
         ClockResultVO clockResultVO = new ClockResultVO();
         //1.decode　又は　md5+salt
