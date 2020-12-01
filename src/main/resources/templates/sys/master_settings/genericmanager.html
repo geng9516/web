@@ -35,7 +35,7 @@
       </div>
       <div class="searchwrap">
         <div class="label">名称マスタ区分</div>
-        <i-select v-model="opts.groupId" editable filterable clearable @on-change="handleNameType" style="width: 35%;">
+        <i-select v-model="opts.groupId" editable filterable @on-change="handleNameType" style="width: 35%;">
             <i-option v-for="(item, i) of listData" :value="item.groupId" :key="i" :label="item.description">
               <div>{{ item.description }}</div>
               <span style="font-size: 12px;">{{ item.groupId }}</span>
@@ -117,7 +117,7 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="groupData.strDesc1" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -131,7 +131,7 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="groupData.strDesc2" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -145,7 +145,7 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="groupData.strDesc3" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -159,7 +159,7 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="groupData.strDesc4" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -173,7 +173,7 @@
                   <i-col span="12">
                     <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                       <span class="ivu-input-group-prepend" style="width: 45px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                        <i-input class="tl" v-model="detailData.mgdCsparechar5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                        <i-input class="tl" v-model="groupData.strDesc5" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                     </div>
                   </i-col>
                 </Row>
@@ -192,7 +192,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.numDesc1" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -203,7 +203,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.numDesc2" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -214,7 +214,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.numDesc3" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -225,7 +225,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.numDesc4" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -236,7 +236,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdNsparenum5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.numDesc5" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -253,7 +253,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate1Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.dateDesc1" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -264,7 +264,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate2Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.dateDesc2" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -275,7 +275,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate3Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.dateDesc3" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -286,7 +286,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate4Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.dateDesc4" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -297,7 +297,7 @@
                       <i-col span="12">
                         <div class="no-left-border-radius " style="display: flex; align-items: stretch;padding: 3px 10px 3px 3px;margin-left: -6px;">
                           <span class="ivu-input-group-prepend" style="width: 48px;"><span style="position: absolute; top: 50%;transform: translate(-50%,-50%);">備考</span></span>
-                            <i-input class="tl" v-model="detailData.mgdDsparedate5Desc" :maxlength="1000" type="textarea" :autosize="true"></i-input>
+                            <i-input class="tl" v-model="groupData.dateDesc5" :maxlength="1000" type="textarea" :autosize="true" disabled></i-input>
                         </div>
                       </i-col>
                     </Row>
@@ -327,6 +327,7 @@
           detailLoading: false,
           defaultOption: false,
           detailData: {},
+          groupData:{},
           curCard: '',
           psSite: Utils.getUrlParam(location.href, 'psSite'),
           psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -357,6 +358,7 @@
         if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
         this.editable = this.listData[0].editAble === '1'
         this.groupId = this.listData[0].groupId
+        this.groupData = this.listData[0]
 
         window.addEventListener('scroll', this.handleScroll, { passive: true })
       },
@@ -442,6 +444,7 @@
         async handleNameType(name) {
           this.isAdd = false
           const target = this.listData.find(e => e.groupId === name)
+          this.groupData = { ...target }
           this.editable = target.editAble === '1'
           this.groupId = target.groupId
           await this.getCardList(target)
