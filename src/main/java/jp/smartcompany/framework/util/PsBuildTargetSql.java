@@ -97,7 +97,7 @@ public class PsBuildTargetSql {
      * 通常はアプリケーションのドメイン属性となる。
      * コンポーネント等の場合は、サイトのドメイン属性となる。
      */
-    private String domain = null;
+    private String domain = "01";
     /** ドメイン判定モード true:判定する(デフォルト)、false:判定しない */
     private Boolean domainCheckMode = true;
     /** 検索対象範囲のクエリ部品：From句 */

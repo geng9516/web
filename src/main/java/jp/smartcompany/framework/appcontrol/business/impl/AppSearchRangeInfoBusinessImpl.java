@@ -308,21 +308,21 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
         }
 
         /* ドメインコード取得 */
-        String sDomainCode = "";
+        String sDomainCode = "01";
         /* システムコード取得 */
         String sSystemCode = "01";
 
-        if (sApplicationId == null) {
+//        if (sApplicationId == null) {
             // アプリケーションIDが取得できなかった場合は、サイト情報より取得
-            sDomainCode = this.gAppAuthInfoLogic.getSiteInfo(sSiteId).getDomainId();
+//            sDomainCode = this.gAppAuthInfoLogic.getSiteInfo(sSiteId).getDomainId();
             /* システムコード取得 */
 //            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId);
-        } else {
+//        } else {
             // アプリケーションIDが取得できた場合は、アプリケーション情報より取得
-            sDomainCode = this.gAppAuthInfoLogic.getAppInfo(sSiteId, sApplicationId).getDomainId();
+//            sDomainCode = this.gAppAuthInfoLogic.getAppInfo(sSiteId, sApplicationId).getDomainId();
             /* システムコード取得 */
 //            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId, sApplicationId);
-        }
+//        }
         // PsSessionパラメータチェック
         if (this.checkSession()) {
             /* グループ判定結果情報(HashMap)を取得 */
