@@ -108,7 +108,7 @@ implements IGenericManagerService {
     public String deleteSelectedDetails(List<Long> ids) {
         List<String> groupIds = mastGenericDetailService.listByIds(ids).stream().map(MastGenericDetailDO::getMgdCgenericgroupid).collect(Collectors.toList());
         QueryWrapper<MastGenericDO> qw = SysUtil.query();
-        qw.in("mgCgenericgroupidCk",groupIds).eq("mg_cifeditable","0");
+        qw.in("mg_cgenericgroupid_ck",groupIds).eq("mg_cifeditable","0");
         if (count(qw)>0) {
             throw new GlobalException("削除できません");
         }
