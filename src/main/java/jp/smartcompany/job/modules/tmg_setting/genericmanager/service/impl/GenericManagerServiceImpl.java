@@ -145,6 +145,9 @@ implements IGenericManagerService {
                }
            }
        }
+       if (maxEndDate == null) {
+           maxEndDate = SysUtil.getMaxDateObject();
+       }
        return MapUtil.<String,Object>builder()
                .put("categoryName",categoryName)
                .put("group",generic)
