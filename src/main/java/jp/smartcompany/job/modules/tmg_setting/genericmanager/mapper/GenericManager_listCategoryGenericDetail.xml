@@ -12,7 +12,22 @@
             A.MG_CIFCOMPANYTYPE as company_type,
             A.MG_CIFEDITABLE as edit_able,
             A.MG_CCATEGORYID as category_id,
-            B.MGC_CCATEGORYNAME as category_name
+            B.MGC_CCATEGORYNAME as category_name,
+            A.MGD_CSPARECHAR_DESC_1 as strDesc1,
+            A.MGD_CSPARECHAR_DESC_2 as strDesc2,
+            A.MGD_CSPARECHAR_DESC_3 as strDesc3,
+            A.MGD_CSPARECHAR_DESC_4 as strDesc4,
+            A.MGD_CSPARECHAR_DESC_5 as strDesc5,
+            A.MGD_NSPARENUM_DESC_1 as numDesc1,
+            A.MGD_NSPARENUM_DESC_2 as numDesc2,
+            A.MGD_NSPARENUM_DESC_3 as numDesc3,
+            A.MGD_NSPARENUM_DESC_4 as numDesc4,
+            A.MGD_NSPARENUM_DESC_5 as numDesc5,
+            A.MGD_DSPAREDATE_DESC_1 as dateDesc1,
+            A.MGD_DSPAREDATE_DESC_2 as dateDesc2,
+            A.MGD_DSPAREDATE_DESC_3 as dateDesc3,
+            A.MGD_DSPAREDATE_DESC_4 as dateDesc4,
+            A.MGD_DSPAREDATE_DESC_5 as dateDesc5
         FROM
             MAST_GENERIC A
                 LEFT JOIN MAST_GENERIC_CATEGORY B ON A.MG_CCUSTOMERID_CK_FK = B.MGC_CCUSTOMERID AND A.MG_CCATEGORYID = B.MGC_CCATEGORYID

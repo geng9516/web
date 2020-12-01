@@ -122,5 +122,20 @@ private static final long serialVersionUID=1L;
     @TableField("versionno")
         private Long versionno;
 
+    private String mgdCsparecharDesc1;
+    private String mgdCsparecharDesc2;
+    private String mgdCsparecharDesc3;
+    private String mgdCsparecharDesc4;
+    private String mgdCsparecharDesc5;
+    private String mgdNsparenumDesc1;
+    private String mgdNsparenumDesc2;
+    private String mgdNsparenumDesc3;
+    private String mgdNsparenumDesc4;
+    private String mgdNsparenumDesc5;
+    private String mgdDsparedateDesc1;
+    private String mgdDsparedateDesc2;
+    private String mgdDsparedateDesc3;
+    private String mgdDsparedateDesc4;
+    private String mgdDsparedateDesc5;
 
-        }
+}
