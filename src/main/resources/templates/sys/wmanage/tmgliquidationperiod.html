@@ -142,7 +142,11 @@
                     </i-col>
                 </Row>
             </div>
-            <Alert type="error" class="error-info tl" v-if="errList.length > 1 " v-for="(item) of errList">{{item}}</Alert>
+            <Alert type="error" class="error-info tl" v-if="errList.length > 1 " >エラーメッセージ
+                <template slot="desc" v-for="(item) of errList">
+                    <p>{{item}}</p>
+                </template>
+            </Alert>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
                 精算期間一覧
@@ -317,10 +321,9 @@
                         <Radio label="TMG_LIQUIDATION_PATTERN|CUSTOMIZE" key="6">カスタマイズ</Radio>
                     </radio-group>
                     </template>
-                    <i-button  @click="makeNewPattern" icon="ios-add-circle-outline">新規</i-button>
+                    <i-button  @click="makeNewPattern" type="dashed" icon="ios-add">新規</i-button>
                 </i-col>
             </Row>
-
             <Alert class="primary-info tl">123</Alert>
             <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData" :row-class-name="monthColDisabled"  @on-row-click="patternSet">
 
@@ -1007,6 +1010,7 @@
                 }
             },
             async showDetails(e) {
+                console.log(123)
                 if (e) {
                     this.empInfo.empId=e.employeeid
                     this.empInfo.empWorkTypeId=e.worktypeid

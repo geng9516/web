@@ -150,7 +150,7 @@ public class TmgLiquidationPeriodController {
     }
 
     /**
-     * 最後登録
+     * 精算check
      * @return　エラー
      */
     @PostMapping("checkLiquidationDaily")

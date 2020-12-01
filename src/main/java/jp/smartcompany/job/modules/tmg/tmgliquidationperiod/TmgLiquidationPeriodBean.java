@@ -3,7 +3,9 @@ package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
@@ -17,6 +19,7 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Case;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,7 +111,11 @@ public class TmgLiquidationPeriodBean {
                 SysUtil.<TmgLiquidationDailyCheckDO>query().eq("TLDC_CEMPLOYEEID", empId)
                         .eq("TLDC_DSTARTDATE", startDate)
                         .eq("TLDC_DENDDATE", endDate));
-        editVo.setErrList(LiquidationCheck(errList));
+        TmgLiquidationPeriodDO tlpInfo = iTmgliquidationPeriodService.getBaseMapper().selectOne(
+                SysUtil.<TmgLiquidationPeriodDO>query().eq("TLP_CEMPLOYEEID", empId)
+                        .eq("TLP_DSTARTDATE", startDate)
+                        .eq("TLP_DENDDATE", endDate));
+        editVo.setErrList(LiquidationCheck(errList,tlpInfo));
         return editVo;
     }
 
@@ -174,32 +181,86 @@ public class TmgLiquidationPeriodBean {
     }
 
     //errmsg 生成
-    private List<String> LiquidationCheck(List<TmgLiquidationDailyCheckDO> errDo) {
+    private List<String> LiquidationCheck(List<TmgLiquidationDailyCheckDO> errDo,TmgLiquidationPeriodDO tlpInfo) {
         List<String> errList = new ArrayList<>();
-
         for (TmgLiquidationDailyCheckDO errCheckDo : errDo) {
-            String errMsg;
-            errList.add(errCheckDo.getTldcCerrmsg());
-            //1 日check。每天最大工作时间10小时
-
-            //2	周check。每周最大工作小时52小时
-
-            //3	连续工作日数 不能超过6天
-
-            //4	不能连续3周超过48小时
-
-            //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
-
-            //6	期间内最大工作日数		280* （日数/365）
-
-            //7	期间内平均每周不能超过 周法定
+            String errMg = null;
+            errMg=errCheckDo.getTldcCerrmsg().replace("@DAY",DateUtil.format(errCheckDo.getTldcDyyyymmdd(),"yyyy/MM/dd"));
+            switch(errCheckDo.getTldcCerrcode()){
+                //1 日check。每天最大工作时间10小时
+                case "TMG_ERRCODE|LIQUIDATION_001" :
+                    if(tlpInfo.getTlpCmaxdayhours() != 0){
+                        errMg=errMg.replace("@MAXDAYHOURS",minToHours("600"));
+                    }else{
+                        errMg=errMg.replace("@MAXDAYHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxdayhours())));
+                    }
+                    break;
+                //2	周check。每周最大工作小时52小时
+                case "TMG_ERRCODE|LIQUIDATION_002" :
+                    if(tlpInfo.getTlpCmaxweekhours() != 0 ){
+                        errMg=errMg.replace("@MAXWEEKHOURS",minToHours("3120"));
+                    }else{
+                        errMg=errMg.replace("@MAXWEEKHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxweekhours())));
+                    }
+                    break;
+                //3	连续工作日数 不能超过6天
+                case "TMG_ERRCODE|LIQUIDATION_003" :
+                    if(tlpInfo.getTlpCmaxcontiday() != 0){
+                        errMg=errMg.replace("@MAXCONTIDAY",minToHours("6"));
+                    }else{
+                        errMg=errMg.replace("@MAXCONTIDAY",minToHours(String.valueOf(tlpInfo.getTlpCmaxcontiday())));
+                    }
+                    break;
+                //4	不能连续3周超过48小时
+                case "TMG_ERRCODE|LIQUIDATION_004" :
+                    if(tlpInfo.getTlpCmaxcontiweek() != 0){
+                        errMg=errMg.replace("@MAXCONTIWEEK",minToHours("3"));
+                    }else{
+                        errMg=errMg.replace("@MAXCONTIWEEK",minToHours(String.valueOf(tlpInfo.getTlpCmaxcontiweek())));
+                    }
+                    break;
+                //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
+                case "TMG_ERRCODE|LIQUIDATION_005" :
+                    errMg=errMg.replace("@MONTH",DateUtil.format(errCheckDo.getTldcDyyyymm(),"yyyy年mm月"));
+                    if(tlpInfo.getTlpCoverweekcount() != 0){
+                        errMg=errMg.replace("@OVERWEEKCOUNT",minToHours("3"));
+                    }else{
+                        errMg=errMg.replace("@OVERWEEKCOUNT",minToHours(String.valueOf(tlpInfo.getTlpCoverweekcount())));
+                    }
+                    break;
+                //6	期间内最大工作日数		280* （日数/365）
+                case "TMG_ERRCODE|LIQUIDATION_006" :
+                    String maxDays;
+                    if(tlpInfo.getTlpCtotalworkdays() != 0){
+                        maxDays="280";
+                    }else{
+                        maxDays=String.valueOf(tlpInfo.getTlpCtotalworkdays());
+                    }
+                    String days=String.valueOf(DateUtil.betweenDay(tlpInfo.getTlpDstartdate(),tlpInfo.getTlpDenddate(),true));
+                    days= String.valueOf(NumberUtil.round(NumberUtil.mul( NumberUtil.div(Double.valueOf(days),Double.valueOf("365"),4),Double.parseDouble(maxDays)),0));
+                    errMg=errMg.replace("@TOTALWORKDAYS",days);
+                    break;
+                //7	期间内平均每周不能超过 周法定
+                case "TMG_ERRCODE|LIQUIDATION_007" :
+                    if(StrUtil.hasEmpty(String.valueOf(tlpInfo.getTlpCavgworktime()))){
+                        errMg=errMg.replace("@AVGWORKTIME",minToHours("3"));
+                    }else{
+                        errMg=errMg.replace("@AVGWORKTIME",minToHours(String.valueOf(tlpInfo.getTlpCavgworktime())));
+                    }
+                    break;
+            }
+            if(!StrUtil.hasEmpty(errMg)){
+                errList.add(errMg);
+            }
         }
-
-
         return errList;
     }
 
 
+    private String minToHours(String min){
+        String hours=(Integer.valueOf(min)/60)+"."+(Integer.valueOf(min)%60);
+        return hours;
+    }
 
     //月編集画面表示
     public Map<String, Object> EditMonthDisp(String empId, String yyyymm, PsDBBean psDBBean) {
