@@ -469,10 +469,15 @@
                 if(this.detailData.mgdId === null) delete this.detailData.mgdId
                 const { data } = await this.http.post('sys/genericmanager/detail', {
                   newHistory: this.detailData.newHistory ? true : false,
-                  info: {...this.detailData, mgdDend: this.detailData.mgdDend || new Date(7983759600000)}
+                  info: {
+                    ...this.detailData,
+                    mgdCgenericdetaildesc: this.detailData.mgdCgenericdetaildescja,
+                    mgdDend: this.detailData.mgdDend || new Date(7983759600000)
+                  }
                 })
                 this.$Message.success('更新完了')
-                this.getCardList(false)
+                await this.getCardList(false)
+                if(this.tableData.length > 0 ) this.getDetails(this.tableData[0])
                 this.isAdd = false
                 this.updateValue = {}
               } catch (error) {
