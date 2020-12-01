@@ -125,6 +125,7 @@ public class AuthController {
             clockResultVO.setResultCode("10");
             clockResultVO.setResultMsg("チェック失敗しました、もう一度ユーザー又はパスワードを入力し直してください");
         }
+        request.getSession().invalidate();
         return clockResultVO;
     }
 

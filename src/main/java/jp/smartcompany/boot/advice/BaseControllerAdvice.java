@@ -34,12 +34,14 @@ public class BaseControllerAdvice {
     public void addAttributes(Model model) {
         HttpSession session =  ContextUtil.getSession();
         model.addAttribute("enableSSL",securityProperties.getSsl());
-        // 如果tmgreferlist里不存在系统时间，则设置一个默认时间
-        String currentDate = (String)session.getAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE);
-        if (currentDate==null) {
-            session.setAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE, SysUtil.transDateToString(DateUtil.date()));
+        if (session != null) {
+            // 如果tmgreferlist里不存在系统时间，则设置一个默认时间
+            String currentDate = (String) session.getAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE);
+            if (currentDate == null) {
+                session.setAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE, SysUtil.transDateToString(DateUtil.date()));
+            }
+            model.addAttribute(Constant.TOP_NAVS, timedCache.get(Constant.getSessionMenuId(session.getId()), false));
         }
-        model.addAttribute( Constant.TOP_NAVS, timedCache.get(Constant.getSessionMenuId(session.getId()),false));
     }
 
 }
