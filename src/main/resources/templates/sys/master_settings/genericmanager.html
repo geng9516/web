@@ -469,7 +469,7 @@
                 if(this.detailData.mgdId === null) delete this.detailData.mgdId
                 const { data } = await this.http.post('sys/genericmanager/detail', {
                   newHistory: this.detailData.newHistory ? true : false,
-                  info: this.detailData
+                  info: {...this.detailData, mgdDend: this.detailData.mgdDend || new Date(7983759600000)}
                 })
                 this.$Message.success('更新完了')
                 this.getCardList(false)
@@ -491,7 +491,15 @@
           if(!data.mgdCgenericdetaildescja || !data.mgdCgenericdetaildescja.trim()) {
             msg = msg.concat(`明細データ内容（日本語）を入力してください。\n`)
           }
-          // 予備数字1の入力文字数が設定値を超えています。半角数字整数8桁、小数4桁以内で入力してください。
+
+          if(!data.mgdDstartCk) {
+            msg = msg.concat(`開始日を入力してください。\n`)
+          }
+
+          if(data.mgdDend && data.mgdDstartCk > data.mgdDend) {
+            msg = msg.concat(`開始日＜終了日となるようにしてください。\n`)
+          }
+
           const regx = /^\d{1,8}\.?\d{0,4}$/
           let num = ''
           for(let i = 1; i < 6; i ++) {

@@ -111,17 +111,18 @@
   }
 }
 .minutes {
-  font-size: 45px;
+  font-size: 40px;
   color: rgb(169, 169, 169);
   margin-left: -15px;
 }
 
 .hour {
   display: inline-block;
+  margin-top: 11px;
+  font-size: 65px;
 }
 .hour-style {
   background-color: var(--login-panel-bg);
-  font-size: 80px;
   height: 127px;
   font-weight: 500;
   color: var(--grey);
