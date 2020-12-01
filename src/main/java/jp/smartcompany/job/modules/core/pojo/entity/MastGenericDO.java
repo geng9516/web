@@ -121,21 +121,35 @@ private static final long serialVersionUID=1L;
          */
     @TableField("versionno")
         private Long versionno;
-
+    @TableField("MGD_CSPARECHAR_DESC_1")
     private String mgdCsparecharDesc1;
+    @TableField("MGD_CSPARECHAR_DESC_2")
     private String mgdCsparecharDesc2;
+    @TableField("MGD_CSPARECHAR_DESC_3")
     private String mgdCsparecharDesc3;
+    @TableField("MGD_CSPARECHAR_DESC_4")
     private String mgdCsparecharDesc4;
+    @TableField("MGD_CSPARECHAR_DESC_5")
     private String mgdCsparecharDesc5;
+    @TableField("MGD_NSPARENUM_DESC_1")
     private String mgdNsparenumDesc1;
+    @TableField("MGD_NSPARENUM_DESC_2")
     private String mgdNsparenumDesc2;
+    @TableField("MGD_NSPARENUM_DESC_3")
     private String mgdNsparenumDesc3;
+    @TableField("MGD_NSPARENUM_DESC_4")
     private String mgdNsparenumDesc4;
+    @TableField("MGD_NSPARENUM_DESC_5")
     private String mgdNsparenumDesc5;
+    @TableField("MGD_DSPAREDATE_DESC_1")
     private String mgdDsparedateDesc1;
+    @TableField("MGD_DSPAREDATE_DESC_2")
     private String mgdDsparedateDesc2;
+    @TableField("MGD_DSPAREDATE_DESC_3")
     private String mgdDsparedateDesc3;
+    @TableField("MGD_DSPAREDATE_DESC_4")
     private String mgdDsparedateDesc4;
+    @TableField("MGD_DSPAREDATE_DESC_5")
     private String mgdDsparedateDesc5;
 
 }
