@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.event.StampEvent;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
@@ -15,22 +16,25 @@ import jp.smartcompany.job.modules.core.business.AuthBusiness;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * @author Xiao Wenpeng
  */
 @Controller(CoreBean.Controller.AUTH)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthBusiness authBusiness;
     private final TmgTimePunchBean tmgTimePunchBean;
     private final TimedCache<String,Object> timedCache;
+    private final ApplicationContext ctx;
 
     /**
      * 跳转到登录页
@@ -128,8 +132,14 @@ public class AuthController {
                     clockResultVO.setResultMsg("今日はもう出勤打刻しました");
                     return clockResultVO;
                 }
+                StampEvent stampEvent = new StampEvent(loginAccountBo,pAction);
+                clockResultVO.setEmployeeId(loginAccountBo.getHdCemployeeidCk());
+                clockResultVO.setCustomerId("01");
+                clockResultVO.setCompanyId("01");
+                clockResultVO.setResultCode("0");
+                clockResultVO.setClockTime(DateUtil.format(new Date(), "HH:mm"));
                 //打刻
-                clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
+                ctx.publishEvent(stampEvent);
                 if (StrUtil.equals(START_WORK_FLAG,pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {
                     clockResultVO.setResultMsg("今日も一日頑張りましょう");
                 }
