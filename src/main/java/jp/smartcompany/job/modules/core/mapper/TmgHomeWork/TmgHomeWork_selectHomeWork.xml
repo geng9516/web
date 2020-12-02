@@ -111,7 +111,7 @@
 
     <select id="selectAdminHomeWorkUpdateList" resultType="jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO">
         SELECT
-        e.empname                                                             <!-- 0 empName  -->
+        e.empname                                                               <!-- 0 empName  -->
         , hw.TDA_DAY                                                            <!-- 1 日 -->
         , hw.HW_STATUS                                                          <!-- 2 申請状態 -->
         , hw.HW_HOMEWORK                                                        <!-- 3 在宅勤務状態  -->
@@ -169,4 +169,46 @@
         ORDER BY hw.TDA_CEMPLOYEEID ,hw.TDA_DAY
     </select>
 
+    <select id="selectAdminHomeWorkMonthList" resultType="jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO">
+        SELECT
+          e.empname     AS empname                                                                  <!-- 0 EMPID  -->
+        , d.TDA_CHOLFLG - NVL(NOCOMMUTE,0) + NVL(COMMUTE,0)   AS commute                            <!-- 1 通勤対象  -->
+        , NVL(HOMEWORKDAy, 0)   AS day                                                              <!-- 2 在宅終日  -->
+        , NVL(HOMEWORKAM, 0)    AS am                                                               <!-- 3 在宅午前  -->
+        , NVL(HOMEWORKPM, 0)    AS pm                                                               <!-- 4 在宅午後  -->
+        , NVL(HOMEWORKTIME, 0)  AS time                                                             <!-- 5 在宅時間  -->
+        from (
+        		SELECT
+        			distinct TDA_CEMPLOYEEID AS CEMPLOYEEID
+        			,count(CASE WHEN TDA_CWORKINGID_R in ( select MGD_CSPARECHAR1 FROM MAST_GENERIC_DETAIL WHERE MGD_CCUSTOMERID = '01'  AND MGD_CCOMPANYID_CK_FK = '01'  AND MGD_CGENERICGROUPID = 'TMG_HOMEWORK') THEN '1' ELSE NULL END ) AS TDA_CHOLFLG
+        		from TMG_DAILY
+        		WHERE TDA_CCUSTOMERID = '01'
+        		AND   TDA_CCOMPANYID = '01'
+        		AND   TDA_DYYYYMMDD    >= trunc(add_months(last_day(#{baseDate}), -1) + 1)
+        		AND   TDA_DYYYYMMDD    <![CDATA[<=]]> last_day(TO_DATE(#{baseDate}, 'yyyy/MM/dd'))
+        		group BY TDA_CEMPLOYEEID
+        	) d
+        left join (
+        		SELECT
+        			HW_CEMPLOYEEID
+        			,count(CASE WHEN HW_COMMUTE  = '1' AND HW_STATUS = '2' AND HW_APPLICATIONDATE in (select TDA_DYYYYMMDD from TMG_DAILY  where TDA_CEMPLOYEEID = HW_CEMPLOYEEID and TDA_DYYYYMM = trunc(add_months(last_day(#{baseDate}), -1) + 1) and TDA_CWORKINGID_R in (select MGD_CSPARECHAR1 FROM MAST_GENERIC_DETAIL WHERE MGD_CCUSTOMERID = '01' AND MGD_CCOMPANYID_CK_FK = '01' AND MGD_CGENERICGROUPID = 'TMG_HOMEWORK')) THEN '1' ELSE NULL END) AS NOCOMMUTE
+        			,count(CASE WHEN nvl(HW_COMMUTE,'2') <![CDATA[<>]]> '1' AND HW_STATUS = '2' AND HW_APPLICATIONDATE in (select TDA_DYYYYMMDD from TMG_DAILY  where TDA_CEMPLOYEEID = HW_CEMPLOYEEID and TDA_DYYYYMM = trunc(add_months(last_day( #{baseDate}), - 1) + 1) and TDA_CWORKINGID_R not in ( select MGD_CSPARECHAR1 FROM MAST_GENERIC_DETAIL   WHERE MGD_CCUSTOMERID = '01'  AND MGD_CCOMPANYID_CK_FK = '01' AND MGD_CGENERICGROUPID = 'TMG_HOMEWORK')) THEN '1' ELSE NULL END) AS COMMUTE
+        			,count(CASE WHEN HW_HOMEWORK = '1' AND HW_STATUS='2' THEN '1' ELSE NULL END) AS HOMEWORKDAy
+        			,count(CASE WHEN HW_HOMEWORK = '2' AND HW_STATUS='2' THEN '1' ELSE NULL END) AS HOMEWORKAM
+        			,count(CASE WHEN HW_HOMEWORK = '3' AND HW_STATUS='2' THEN '1' ELSE NULL END) AS HOMEWORKPM
+        			,count(CASE WHEN HW_HOMEWORK = '4' AND HW_STATUS='2' THEN '1' ELSE NULL END) AS HOMEWORKTIME
+        		from TMG_HOMEWORKDATA
+        		WHERE HW_CCUSTOMERID = '01'
+        		AND   HW_CCOMPANYID = '01'
+        		AND   HW_APPLICATIONDATE    >= trunc(add_months(last_day(#{baseDate}), -1) + 1)
+        		AND   HW_APPLICATIONDATE    <![CDATA[<=]]> last_day(TO_DATE(#{baseDate}, 'yyyy/MM/dd'))
+        		group by HW_CEMPLOYEEID
+        	) hw
+        ON HW_CEMPLOYEEID = d.CEMPLOYEEID
+        INNER JOIN
+        ( ${employeeId} )  e
+        ON  d.CEMPLOYEEID = e.EMPID
+        WHERE d.CEMPLOYEEID = e.EMPID
+        ORDER BY d.CEMPLOYEEID
+    </select>
 </mapper>

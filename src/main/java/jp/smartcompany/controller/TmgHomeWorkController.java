@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.tmghomework.dto.UpdateDto;
 import jp.smartcompany.job.modules.tmg.tmghomework.dto.UpdateListDto;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -88,6 +89,22 @@ public class TmgHomeWorkController {
                                                              @RequestParam("baseDate") String baseDate ) throws Exception {
 
         return tmgHomeWorkBean.selectAdminHomeWorkUpdateList(psDBBean, baseDate);
+    }
+
+    /**
+     * Month表示処理
+     * http://localhost:6879/sys/homeWork/selectAdminHomeWorkMonthList
+     *
+     * @param psDBBean
+     * @param baseDate
+     * @return
+     */
+    @GetMapping("selectAdminHomeWorkMonthList")
+    @ResponseBody
+    public List<HomeWorkMonthVO> selectAdminHomeWorkMonthList(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                                              @RequestParam("baseDate") String baseDate ) throws Exception {
+
+        return tmgHomeWorkBean.selectAdminHomeWorkMonthList(psDBBean, baseDate);
     }
 
     /**

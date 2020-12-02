@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.core.service.ITmgHomeWorkService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.RequiredArgsConstructor;
@@ -177,11 +178,22 @@ public class TmgHomeWorkBean {
                     true, true, false, false, true
             );
 
-            List<HomeWorkAdminVO> homeWorkAdminVO = iTmgHomeWorkService.selectAdminHomeWorkUpdateList(referList.buildSQLForSelectEmployees(),baseDate);
-
-            return homeWorkAdminVO;
+        return iTmgHomeWorkService.selectAdminHomeWorkUpdateList(referList.buildSQLForSelectEmployees(),baseDate);
 
         }
+
+    public List<HomeWorkMonthVO>  selectAdminHomeWorkMonthList(PsDBBean psDBBean, String baseDate)  throws Exception {
+        if (null == baseDate || "".equals(baseDate)) {
+            //初期化
+            baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+        }
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "TmgHomeWork", baseDate, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
+
+        return iTmgHomeWorkService.selectAdminHomeWorkMonthList(referList.buildSQLForSelectEmployees(),baseDate);
+    }
 
     public void updateHmoeWorkData(PsDBBean psDBBean, List<HomeWorkVO> homeWorkVO) {
         for (int i = 0; i < homeWorkVO.size(); i++) {

@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgHomeWork.TmgHomeWorkMapper;
 import jp.smartcompany.job.modules.core.service.ITmgHomeWorkService;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 import org.springframework.stereotype.Repository;
 
@@ -45,5 +46,11 @@ public class TmgHomeWorkServiceImpl extends ServiceImpl<TmgHomeWorkMapper, HomeW
         return baseMapper.selectAdminHomeWorkUpdateList(params);
     }
 
-
+    @Override
+    public List<HomeWorkMonthVO> selectAdminHomeWorkMonthList(String empSql, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", empSql);
+        params.put("baseDate", baseDate);
+        return baseMapper.selectAdminHomeWorkMonthList(params);
+    }
 }

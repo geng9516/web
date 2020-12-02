@@ -82,6 +82,7 @@
                             </tab-pane>
                         </Tabs>
                     </Drawer>
+                </span>
                 <!-- 共通組織図画面 end-->
             <span style="flex:1"></span>
         </div>
@@ -98,9 +99,34 @@
             </template>
 
         </i-table>
+        <div class="titlenorm mb10 mt10 ">
+            <Icon type="logo-buffer"></Icon>
+            月次勤務
+        </div>
+        <i-table  class="mb10" no-data-text="所属から職員を選んでください。" border :columns="columns3" width="555"
+                  　:row-class-name="() => 'select-col'"  :data="HomeWorkMonthVO" :loading="updateloading" >
+            <template slot-scope="{ row  }" slot="empname">
+                <span >{{row.empname}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="commute">
+                <span >{{row.commute}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="day">
+                <span >{{row.day}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="am">
+                <span >{{row.am}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="pm">
+                <span >{{row.pm}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="time">
+                <span >{{row.time}}</span>
+            </template>
+        </i-table>
     </div>
     <!-- 在宅勤務申请个人 -->
-    <Drawer class="tc" title="在宅勤務-个人" placement="right" width="70%" v-model="hwApplyShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-个人" placement="right" width="70%" v-model="hwApplyShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -187,7 +213,7 @@
         </i-table>
     </Drawer>
     <!-- 在宅勤務申请list -->
-    <Drawer class="tc" title="在宅勤務-日" placement="right" width="70%" v-model="hwApplyListShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-日" placement="right" width="70%" v-model="hwApplyListShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -331,6 +357,7 @@
                 HomeWorkVOAdminListBack:[],
                 HomeWorkVOListupdate:[],
                 HomeWorkVOListEditBack:[],
+                HomeWorkMonthVO:[],
                 slotList: Utils.getNumArray(1, 31).map(e => `hwhomeworkflg${e}`),
                 deptName:'',
                 empName:'',
@@ -563,6 +590,46 @@
                         align: 'center'
                     }
                 ]
+            },
+            columns3() {
+                return [
+                    {
+                        title: '氏名',
+                        width: 150,
+                        slot: 'empname',
+                        align: 'center'
+                    },
+                    {
+                        title: '通勤対象',
+                        minWidth: 80,
+                        slot: 'commute',
+                        align: 'center'
+                    },
+                    {
+                        title: '在宅終日',
+                        minWidth: 80,
+                        slot: 'day',
+                        align: 'center'
+                    },
+                    {
+                        title: '在宅午前',
+                        minWidth: 80,
+                        slot: 'am',
+                        align: 'center'
+                    },
+                    {
+                        title: '在宅午後',
+                        minWidth: 80,
+                        slot: 'pm',
+                        align: 'center'
+                    },
+                    {
+                        title: '在宅時間',
+                        minWidth: 80,
+                        slot: 'time',
+                        align: 'center'
+                    }
+                ]
             }
         },
         methods: {
@@ -575,6 +642,16 @@
                     return
                 } finally {
                     this.updateloading = false
+                }
+            },
+            async getHomeWorkMonthVO() {
+                try {
+                    const {data} = await this.http.get(`sys/homeWork/selectAdminHomeWorkMonthList`,this.queryList)
+                    this.HomeWorkMonthVO=data
+                    console.log(this.HomeWorkMonthVO)
+                } catch (error) {
+                    return
+                } finally {
                 }
             },
             async getHomeWorkListInfo() {
@@ -624,6 +701,7 @@
                     this.defaultDate=this.dispMonthlyList[1].tda_dyyyymm
                     this.query.txtBaseDate=this.dispMonthlyList[1].tda_firstDay
                     this.queryList.baseDate=Utils.formatDate(query.baseDate,'YYYY/MM/DD')
+                    await this.getHomeWorkMonthVO()
                     await this.getHomeWorkInfo()
                     this.getHatuRei()
                 } catch (error) {
