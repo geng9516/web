@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,7 +29,7 @@ private static final long serialVersionUID=1L;
     /**
      * 顧客ｺｰﾄﾞ
      */
-    @TableField("hw_ccustomerid")
+    @TableId
     private String hw_ccustomerid;
 
     /**

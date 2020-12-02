@@ -205,7 +205,7 @@
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApplicationcomment">
-                <span >{{ row.hwApplicationcomment }}</span>
+                <span class="ml5">{{ row.hwApplicationcomment }}</span>
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApprovalcomment">
@@ -238,7 +238,7 @@
                   :row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOAdminList" >
 
             <template slot-scope="{ row  }" slot="empname">
-                <span>{{row.empname}}</span>
+                <span class="ml5">{{row.empname}}</span>
             </template>
             <template slot-scope="{ row  }" slot="hwcworkingid">
                 <span :class="dayRed(row)">{{ row.hwcworkingid }}</span>
@@ -292,7 +292,7 @@
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApplicationcomment">
-                <span >{{ row.hwApplicationcomment }}</span>
+                <span class="ml5">{{ row.hwApplicationcomment }}</span>
             </template>
 
             <template slot-scope="{ row , index}" slot="hwApprovalcomment">
@@ -522,15 +522,12 @@
                     {
                         title: '申請コメント',
                         minWidth: 200,
-                        slot: 'hwApplicationcomment',
-                        // tooltip: true,
-                        align: 'center'
+                        slot: 'hwApplicationcomment'
                     },
                     {
                         title: '承認コメント',
                         minWidth: 200,
                         slot: 'hwApprovalcomment',
-                        // tooltip: true,
                         align: 'center'
                     }
                 ]
@@ -540,8 +537,7 @@
                     {
                         title: '氏名',
                         width: 150,
-                        slot: 'empname',
-                        align: 'center'
+                        slot: 'empname'
                     },
                     {
                         title: '区分',
@@ -582,15 +578,12 @@
                     {
                         title: '申請コメント',
                         minWidth: 200,
-                        slot: 'hwApplicationcomment',
-                        // tooltip: true,
-                        align: 'center'
+                        slot: 'hwApplicationcomment'
                     },
                     {
                         title: '承認コメント',
                         minWidth: 200,
                         slot: 'hwApprovalcomment',
-                        // tooltip: true,
                         align: 'center'
                     }
                 ]
@@ -645,7 +638,7 @@
                 } catch (error) {
                     return
                 } finally {
-                    this.updateloading = false
+
                 }
             },
             async getHomeWorkMonthVO() {
@@ -656,6 +649,7 @@
                 } catch (error) {
                     return
                 } finally {
+                    this.updateloading = false
                 }
             },
             async getHomeWorkListInfo() {
@@ -705,19 +699,12 @@
                     this.defaultDate=this.dispMonthlyList[1].tda_dyyyymm
                     this.query.txtBaseDate=this.dispMonthlyList[1].tda_firstDay
                     this.queryList.baseDate=Utils.formatDate(query.baseDate,'YYYY/MM/DD')
-                    await this.getHomeWorkMonthVO()
                     await this.getHomeWorkInfo()
+                    await this.getHomeWorkMonthVO()
                     this.getHatuRei()
                 } catch (error) {
                     return
                 }
-            },
-            async handleStartMonth(e) {
-                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
-                this.query.txtBaseDate=select.tda_firstDay
-                this.query.txtEndDate=select.tda_endDay
-
-                await this.getHomeWorkInfo()
             },
             dayRed(e) {
                 const dayOfWeek = e.mgdCsparechar
@@ -858,6 +845,7 @@
                             this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
                         }finally {
                             this.getHomeWorkInfo()
+                            this.getHomeWorkMonthVO()
                             this.hwApplyShow = false
                         }
                     },
@@ -929,6 +917,7 @@
                             this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
                         }finally {
                             this.getHomeWorkInfo()
+                            this.getHomeWorkMonthVO()
                             this.hwApplyListShow = false
                         }
                     },
@@ -939,8 +928,9 @@
             // 年月選択
             async handleStartMonth(e) {
                 if(e){
-                    this.query.baseDate = this.dateFormat(e)
+                    this.queryList.baseDate = this.dateFormat(e)
                     this.getHomeWorkInfo()
+                    this.getHomeWorkMonthVO()
                 }
             },
             async handleClickHead(e) {
