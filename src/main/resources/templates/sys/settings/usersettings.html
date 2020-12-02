@@ -102,7 +102,8 @@
       <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''" :row-class-name="rowClassName"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="" ref="table">
         <template slot-scope="{ row }" slot="meCname">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editPersonal(row)">{{ row.meCname }}</span>
+          <span v-if="row.status === '入社後未登録'">{{ row.meCname }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editPersonal(row)" v-else>{{ row.meCname }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
@@ -447,7 +448,12 @@
                 content: '指定した条件に職員はありません。'
               })
             }
-            this.tableData = data.list
+            this.tableData = data.list.map(e => {
+              return {
+                ...e,
+                _disabled: e.status === '入社後未登録'
+              }
+            })
             this.pageValue.amount = data.totalCount
           } catch (error) {
           } finally {
