@@ -712,13 +712,6 @@
                     return
                 }
             },
-            async handleStartMonth(e) {
-                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
-                this.query.txtBaseDate=select.tda_firstDay
-                this.query.txtEndDate=select.tda_endDay
-
-                await this.getHomeWorkInfo()
-            },
             dayRed(e) {
                 const dayOfWeek = e.mgdCsparechar
                 if (!dayOfWeek) {
@@ -858,6 +851,7 @@
                             this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
                         }finally {
                             this.getHomeWorkInfo()
+                            this.getHomeWorkMonthVO()
                             this.hwApplyShow = false
                         }
                     },
@@ -929,6 +923,7 @@
                             this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
                         }finally {
                             this.getHomeWorkInfo()
+                            this.getHomeWorkMonthVO()
                             this.hwApplyListShow = false
                         }
                     },
@@ -939,8 +934,9 @@
             // 年月選択
             async handleStartMonth(e) {
                 if(e){
-                    this.query.baseDate = this.dateFormat(e)
+                    this.queryList.baseDate = this.dateFormat(e)
                     this.getHomeWorkInfo()
+                    this.getHomeWorkMonthVO()
                 }
             },
             async handleClickHead(e) {
