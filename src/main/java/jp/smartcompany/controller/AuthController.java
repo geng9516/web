@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * @author Xiao Wenpeng
@@ -132,6 +133,11 @@ public class AuthController {
                     return clockResultVO;
                 }
                 StampEvent stampEvent = new StampEvent(loginAccountBo,pAction);
+                clockResultVO.setEmployeeId(loginAccountBo.getHdCemployeeidCk());
+                clockResultVO.setCustomerId("01");
+                clockResultVO.setCompanyId("01");
+                clockResultVO.setResultCode("0");
+                clockResultVO.setClockTime(DateUtil.format(new Date(), "HH:mm"));
                 //打刻
                 ctx.publishEvent(stampEvent);
                 if (StrUtil.equals(START_WORK_FLAG,pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {

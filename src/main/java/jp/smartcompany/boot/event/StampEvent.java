@@ -13,10 +13,6 @@ public class StampEvent extends ApplicationEvent {
 
     private String action;
 
-    public StampEvent(LoginAccountBO loginAccountBO) {
-        super(loginAccountBO);
-    }
-
     public StampEvent(LoginAccountBO loginAccountBO, String action) {
         super(loginAccountBO);
         this.action = action;
