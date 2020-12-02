@@ -47,43 +47,46 @@
                 <template slot-scope="{ row }" slot="tdaDd">
                     <span :class="dayRed(row)">{{`${row.tdaDd}　${row.tdaDy}`}}</span>
                 </template>
+                <template slot-scope="{ row  }" slot="hwCworkingid">
+                    <span :class="dayRed(row)">{{ row.hwCworkingid }}</span>
+                </template>
 
                 <template slot-scope="{ row }" slot="hwStatus">
-                    <span :class="dayRedStatus(row)"v-if="row.hwStatus=='1'">承認待</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwStatus=='2'">承認済</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwStatus=='3'">取下</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwStatus=='4'">差戻</span>
-                    <span :class="dayRedStatus(row)"v-else></span>
+                    <span  v-if="row.hwStatus=='1'">承認待</span>
+                    <span  v-else-if="row.hwStatus=='2'">承認済</span>
+                    <span v-else-if="row.hwStatus=='3'">取下</span>
+                    <span style="color: var(--red);" v-else-if="row.hwStatus=='4'">差戻</span>
+                    <span v-else></span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwHomework">
-                    <span :class="dayRedStatus(row)"v-if="row.hwHomework=='1'">在宅勤務（終日）</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwHomework=='2'">在宅勤務（午前）</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwHomework=='3'">在宅勤務（午後）</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwHomework=='4'">在宅勤務（時間）</span>
-                    <span :class="dayRedStatus(row)"v-else></span>
+                    <span v-if="row.hwHomework=='1'">在宅勤務（終日）</span>
+                    <span v-else-if="row.hwHomework=='2'">在宅勤務（午前）</span>
+                    <span v-else-if="row.hwHomework=='3'">在宅勤務（午後）</span>
+                    <span v-else-if="row.hwHomework=='4'">在宅勤務（時間）</span>
+                    <span v-else></span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwStart">
-                    <span :class="dayRedStatus(row)">{{ row.hwStart }}</span>
+                    <span >{{ row.hwStart }}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwEnd">
-                    <span :class="dayRedStatus(row)">{{ row.hwEnd}}</span>
+                    <span >{{ row.hwEnd}}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwCommute">
-                    <span :class="dayRedStatus(row)"v-if="row.hwCommute=='1'">対象外</span>
-                    <span :class="dayRedStatus(row)"v-else-if="row.hwCommute=='0' && row.hwStatus != '0' ">対象</span>
-                    <span :class="dayRedStatus(row)"v-else></span>
+                    <span v-if="row.hwCommute=='1'">対象外</span>
+                    <span v-else-if="row.hwCommute=='0' && row.hwStatus != '0' ">対象</span>
+                    <span v-else></span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwApplicationcomment">
-                    <span :class="dayRedStatus(row)">{{ row.hwApplicationcomment }}</span>
+                    <span >{{ row.hwApplicationcomment }}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwApprovalcomment">
-                    <span :class="dayRedStatus(row)">{{ row.hwApprovalcomment }}</span>
+                    <span>{{ row.hwApprovalcomment }}</span>
                 </template>
 
             </i-table>
@@ -103,6 +106,9 @@
 
             <template slot-scope="{ row  }" slot="tdaDd">
                 <span :class="dayRed(row)">{{`${row.tdaDd}　${row.tdaDy}`}}</span>
+            </template>
+            <template slot-scope="{ row  }" slot="hwCworkingid">
+                <span :class="dayRed(row)">{{ row.hwCworkingid }}</span>
             </template>
 
             <template slot-scope="{ row, index }" slot="hwStatus" >
@@ -246,8 +252,14 @@
                 return [
                     {
                         title: '日',
-                        width: 100,
+                        width: 80,
                         slot: 'tdaDd',
+                        align: 'center'
+                    },
+                    {
+                        title: '区分',
+                        width: 80,
+                        slot: 'hwCworkingid',
                         align: 'center'
                     },
                     {
@@ -347,14 +359,6 @@
                     return 'blue'
                 }
             },
-            dayRedStatus(e) {
-                if (!e.hwStatus) {
-                    return
-                }
-                if (e.hwStatus == '4') {
-                    return 'red'
-                }
-            },
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
@@ -385,7 +389,6 @@
             },
             //登陆处理
             async updateHomeWork() {
-                console.log(this.HomeWorkVOListEditBack)
                 let checkFlg=false
                 for (let i = 0; i < this.HomeWorkVOListEditBack.length; i++) {
                     if (this.HomeWorkVOListEditBack[i].hwStatus != null  && this.HomeWorkVOListEditBack[i].hwCommute == null){
@@ -395,13 +398,13 @@
                         this.HomeWorkVOListEditBack[i].hwStatus="0";
                     }
                     let msday=this.HomeWorkVOListEditBack[i].hwApplicationdate + " : ";
-                    if (this.HomeWorkVOListEditBack[i].hwStatus == 1 ) {
-                        if( this.HomeWorkVOListEditBack[i].hwHomework == 0 ){
+                    if (this.HomeWorkVOListEditBack[i].hwStatus === '1') {
+                        if( this.HomeWorkVOListEditBack[i].hwHomework === null){
                             this.$Notice.error({desc: msday + "在宅勤務を入力してください。"})
                             return checkFlg=true;
                         }
                     }
-                    if(this.HomeWorkVOListEditBack[i].hwHomework == 4 ){
+                    if(this.HomeWorkVOListEditBack[i].hwHomework === '4' ){
                         if (this.HomeWorkVOListEditBack[i].hwStart ==null ||  !this.time_check(this.HomeWorkVOListEditBack[i].hwStart)) {
                             this.$Notice.error({desc: msday + "開始時間は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                             return checkFlg=true;
@@ -417,8 +420,6 @@
                                 return checkFlg=true;
                             }
                         }
-                        this.HomeWorkVOListEditBack[i].hwStart = Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwStart);
-                        this.HomeWorkVOListEditBack[i].hwEnd = Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwEnd);
                     }
                 }
                 if(checkFlg){
@@ -431,6 +432,12 @@
                     width: 480,
                     cancelText: 'キャンセル',
                     onOk: async () => {
+                        for (let y = 0; y < this.HomeWorkVOListEditBack.length; y++) {
+                            if(this.HomeWorkVOListEditBack[y].hwHomework === '4' ){
+                                this.HomeWorkVOListEditBack[y].hwStart = Utils.timeToMinute(this.HomeWorkVOListEditBack[y].hwStart);
+                                this.HomeWorkVOListEditBack[y].hwEnd = Utils.timeToMinute(this.HomeWorkVOListEditBack[y].hwEnd);
+                            }
+                        }
                         let query={ homeWorkVO:this.HomeWorkVOListEditBack }
                         try{
                             await this.http.post(`sys/homeWork/updateHmoeWork`,query)

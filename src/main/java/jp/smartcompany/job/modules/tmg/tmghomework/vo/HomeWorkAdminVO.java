@@ -14,70 +14,65 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class HomeWorkVO {
-    /**
-     * 0日
-     */
-    private String tdaDd;
+public class HomeWorkAdminVO {
 
     /**
-     * 1曜日
+     * 0 empname
      */
-    private String tdaDy;
+    private String empname;
+    /**
+     * 1 日
+     */
+    private String tdaday;
 
     /**
-     *　2勤務年月日
+     * 2 申請状態
      */
-    private String hwApplicationdate;
+    private String hwstatus;
 
     /**
-     * 3休日区分
+     *　3 在宅勤務状態
      */
-    private String mgdCsparechar;
+    private String hwhomework;
 
     /**
-     * 4申請状態
-     */
-    private String hwStatus;
-
-    /**
-     * 5在宅勤務状態
-     */
-    private String hwHomework;
-
-    /**
-     * 6開始時間
+     * 4 開始時間
      */
     private String hwStart;
 
     /**
-     * 7終了時間
+     * 5 終了時間
      */
     private String hwEnd;
 
     /**
-     * 8通勤FLG
+     * 6 通勤FLG
      */
     private String hwCommute;
 
     /**
-     * 9申請コメント
+     * 7 申請コメント
      */
     private String hwApplicationcomment;
 
     /**
-     * 10承認コメント
+     * 8 承認コメント
      */
     private String hwApprovalcomment;
 
     /**
-     * 11 就業区分名称
+     * 9 時間
      */
-    private String hwCworkingid;
+    private String hwtime;
 
     /**
-     * 12 empid
+     * 10 empid
      */
-    private String empid;
+    private String EMPID;
+
+    /**
+     * 11 就業区分名称
+     */
+    private String hwcworkingid;
 
 }

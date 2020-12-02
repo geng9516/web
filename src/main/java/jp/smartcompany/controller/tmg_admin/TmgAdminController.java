@@ -373,4 +373,24 @@ public class TmgAdminController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_ADMIN_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         return "sys/wmanage/tmgliquidationperiod";
     }
+
+    /**
+     * 跳转到在宅勤务
+     */
+    @GetMapping("TmgHomeWork")
+    public String toTmgHomeWork(
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
+        modelMap
+                .addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_ADMIN_TARGET_EMP, TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_ADMIN_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+        return "sys/wmanage/wmahomework";
+    }
 }

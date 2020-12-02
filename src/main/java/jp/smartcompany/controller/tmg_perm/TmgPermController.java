@@ -204,5 +204,26 @@ public class TmgPermController {
         return "sys/manage/overtimeinstruct";
     }
 
+    /**
+     * 跳转到在宅勤务
+     */
+    @RequestMapping("TmgHomeWork")
+    public String toTmgHomeWork(
+            @RequestParam(value = "moduleIndex") Integer moduleIndex,
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            ModelMap modelMap
+    ) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+        return "sys/manage/manhomework";
+    }
 
 }

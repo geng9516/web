@@ -1,6 +1,8 @@
 package jp.smartcompany.job.modules.core.mapper.TmgHomeWork;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,12 +17,10 @@ import java.util.List;
  **/
 @Mapper
 public interface TmgHomeWorkMapper extends BaseMapper<HomeWorkVO> {
-    /**
-     * [勤怠]日別情報より予定データを取得します
-     *
-     * @param params
-     * @return
-     */
+
     List<HomeWorkVO> selectHomeWork(HashMap<String, Object> params);
 
+    List<HomeWorkAdminVO> selectAdminHomeWork(HashMap<String, Object> params);
+
+    List<HomeWorkAdminVO> selectAdminHomeWorkUpdateList(HashMap<String, Object> params);
 }

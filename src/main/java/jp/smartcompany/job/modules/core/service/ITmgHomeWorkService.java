@@ -1,7 +1,8 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 
 import java.util.List;
@@ -19,6 +20,24 @@ public interface ITmgHomeWorkService extends IService<HomeWorkVO> {
      * @param baseDate
      * @return
      */
-    List<HomeWorkVO>  selectHomeWork(String employeeId, String baseDate);
+    List<HomeWorkVO> selectHomeWork(String employeeId, String baseDate);
+
+    /**
+     * Admin在宅勤務登録情報を取得します
+     *
+     * @param employeeId
+     * @param baseDate
+     * @return
+     */
+    List<HomeWorkAdminVO> selectAdminHomeWork(String employeeId, String baseDate);
+
+    /**
+     * Admin在宅勤務编辑情報を取得します
+     *
+     * @param employeeId
+     * @param baseDate
+     * @return
+     */
+    List<HomeWorkAdminVO> selectAdminHomeWorkUpdateList(String employeeId, String baseDate);
 
 }

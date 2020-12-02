@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.core.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.TmgHomeWork.TmgHomeWorkMapper;
 import jp.smartcompany.job.modules.core.service.ITmgHomeWorkService;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
+import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkVO;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +28,22 @@ public class TmgHomeWorkServiceImpl extends ServiceImpl<TmgHomeWorkMapper, HomeW
         params.put("baseDate", baseDate);
         return baseMapper.selectHomeWork(params);
     }
+
+    @Override
+    public List<HomeWorkAdminVO> selectAdminHomeWork(String empSql, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", empSql);
+        params.put("baseDate", baseDate);
+        return baseMapper.selectAdminHomeWork(params);
+    }
+
+    @Override
+    public List<HomeWorkAdminVO> selectAdminHomeWorkUpdateList(String empSql, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", empSql);
+        params.put("baseDate", baseDate);
+        return baseMapper.selectAdminHomeWorkUpdateList(params);
+    }
+
 
 }
