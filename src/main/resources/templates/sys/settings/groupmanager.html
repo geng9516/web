@@ -955,7 +955,7 @@
             this.updateValue.weightAge = data.groupInfo.mgNweightage
             this.sectionPostList_bak = Utils.deepClone(data)
             // 条件式による定義
-            this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
+            this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList.map(e=> {return {...e, delete:false}}) : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
             // 只有单法人的情况，因为data中只有一个法人信息，且sectionList仅有一个对象且自属性中法人信息缺失
             // 所以这里直接取第一个法人的全部
             // 基点組織
