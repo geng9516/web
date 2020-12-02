@@ -16,8 +16,11 @@ import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
+import jp.smartcompany.job.modules.core.enums.MailType;
+import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.dto.TreeSearchConditionVO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
+import jp.smartcompany.job.modules.core.service.IMastMailInfoService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
@@ -39,7 +42,7 @@ import java.util.Map;
  * 部門ツリー
  * @author Xiao Wenpeng
  */
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @RestController
 @Slf4j
 @RequestMapping("sys/tree")
@@ -48,6 +51,8 @@ public class TreeController {
     private final OrgTreeListLogic orgTreeListLogic;
     private final PostGenericLogic postGenericLogic;
     private final IMastOrganisationService organisationService;
+
+    private final IMastMailInfoService mastMailInfoService;
 
     @GetMapping
     public GlobalResponse tree(@RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -314,6 +319,17 @@ public class TreeController {
                 searchDate,
                 useSearchRange
         );
+    }
+
+    @GetMapping("mail")
+    public GlobalResponse testSendMail() {
+        SendMailBO mailBO = new SendMailBO();
+        mailBO.setEmpId("46402046");
+        mailBO.setReceiver("353907887@qq.com");
+        mailBO.setStandardDate(DateUtil.date());
+        mailBO.setEmpName("明村　定弘");
+        mastMailInfoService.sendMail(MailType.TMG_NTF_APPROVED,mailBO);
+        return GlobalResponse.ok("メールが発送しました");
     }
 
     private List<OrgTreeVO> generateTreeList(List<OrgTreeVO> treeVoList, String level) {

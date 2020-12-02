@@ -7,7 +7,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgHistMaildataDO;
 import jp.smartcompany.job.modules.core.service.ITmgHistMaildataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -15,21 +14,20 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
-
 import org.thymeleaf.context.Context;
-import javax.annotation.PostConstruct;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
-import java.util.Properties;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * 发送邮件工具类
  */
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class MailUtil {
 
@@ -37,24 +35,25 @@ public class MailUtil {
     private final TemplateEngine templateEngine;
     private final ITmgHistMaildataService tmgHistMaildataService;
 
-    @PostConstruct
-    public void getSender() {
+    public void init() {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        javaMailSenderImpl.setUsername("sp_wm_dev");
-        javaMailSenderImpl.setPassword("password0");
-        javaMailSenderImpl.setPort(587);
-        javaMailSenderImpl.setHost("smtp.nisshin-sci.co.jp");
+        ScCacheUtil cacheUtil = SpringUtil.getBean(ScCacheUtil.class);
+        javaMailSenderImpl.setUsername(cacheUtil.getSystemProperty("MAIL_USERNAME"));
+        javaMailSenderImpl.setPassword(cacheUtil.getSystemProperty("MAIL_PASSWORD"));
+        javaMailSenderImpl.setPort(Integer.parseInt(cacheUtil.getSystemProperty("MAIL_PORT")));
+        javaMailSenderImpl.setHost(cacheUtil.getSystemProperty("MAIL_HOST"));
         Properties props = new Properties();
-        props.setProperty("mail.smtp.timeout","0");
-        props.setProperty("mail.smtp.auth","true");
-        props.setProperty("mail.smtp.starttls.enable","true");
-        props.setProperty("mail.smtp.starttls.required","true");
+        props.setProperty("mail.smtp.timeout", "0");
+        props.setProperty("mail.smtp.auth", "true");
+        props.setProperty("mail.smtp.starttls.enable", "true");
+        props.setProperty("mail.smtp.starttls.required", "true");
         javaMailSenderImpl.setJavaMailProperties(props);
         javaMailSender = javaMailSenderImpl;
     }
 
     @Async
     public void sendMail(MailType mailType, String sender,String empId, Date standardDate, String toAddress, String title, String content) {
+        init();
         sendText(sender,toAddress,title,content);
         saveSendMailHistory(sender,mailType.getDesc(),empId,standardDate,toAddress,title,content,1);
     }

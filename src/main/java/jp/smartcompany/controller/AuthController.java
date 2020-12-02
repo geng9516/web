@@ -1,5 +1,9 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
@@ -26,6 +30,7 @@ public class AuthController {
 
     private final AuthBusiness authBusiness;
     private final TmgTimePunchBean tmgTimePunchBean;
+    private final TimedCache<String,Object> timedCache;
 
     /**
      * 跳转到登录页
@@ -76,18 +81,28 @@ public class AuthController {
      *
      * @return
      */
+
+    private static final String START_WORK_FLAG = "ACT_EXEC_OPEN";
+    private static final String END_WORK_FLAG = "ACT_EXEC_CLOSE";
     @PostMapping("stamping")
     @ResponseBody
     public ClockResultVO stamping(String username, String password, String pAction, HttpServletRequest request) {
-        LoginAccountBO loginAccountBo = null;
+        LoginAccountBO loginAccountBo;
         ClockResultVO clockResultVO = new ClockResultVO();
         //1.decode　又は　md5+salt
         //2.チェック
         //3.打刻
-        if (null != username && null != password) {
+        if (StrUtil.isAllNotBlank(username,password)) {
             //チェック
             try {
-                loginAccountBo = authBusiness.basicStamping(username, password);
+                loginAccountBo = (LoginAccountBO)timedCache.get(getStampingKey(username),false);
+                if (loginAccountBo == null) {
+                    loginAccountBo = authBusiness.basicStamping(username, password);
+                    if (loginAccountBo!=null){
+                        // 60秒后过期
+                        timedCache.put(getStampingKey(username),loginAccountBo,6000);
+                    }
+                }
             } catch (Exception e) {
                 clockResultVO.setResultCode("10");
                 clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください");
@@ -95,13 +110,18 @@ public class AuthController {
             }
             if (null != loginAccountBo) {
                 //打刻したかしなかった
-                ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), loginAccountBo.getHdCemployeeidCk());
-                if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
+                ClockInfoVO clockInfoVO = (ClockInfoVO)timedCache.get(getClockInfoKey(loginAccountBo.getHdCemployeeidCk()),false);
+                if (clockInfoVO == null) {
+                    clockInfoVO = tmgTimePunchBean.selectClockInfo(loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), loginAccountBo.getHdCemployeeidCk());
+                    // 60秒后过期
+                    timedCache.put(getClockInfoKey(loginAccountBo.getHdCemployeeidCk()),clockInfoVO,6000);
+                }
+                if (StrUtil.isBlank(clockInfoVO.getTda_nopen_p())) {
                     //予定データがない場合、打刻しない
                     clockResultVO.setResultCode("20");
                     clockResultVO.setResultMsg("今日は出勤しない日です。");
                 }
-                if ("ACT_EXEC_OPEN".equals(pAction) && null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
+                if (StrUtil.equals(START_WORK_FLAG,pAction) && StrUtil.isNotBlank(clockInfoVO.getNopen())) {
                     //出勤打刻データがある場合、画面へ返却する
                     clockResultVO.setResultCode("0");
                     clockResultVO.setClockTime(clockInfoVO.getNopen());
@@ -110,10 +130,10 @@ public class AuthController {
                 }
                 //打刻
                 clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
-                if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+                if (StrUtil.equals(START_WORK_FLAG,pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {
                     clockResultVO.setResultMsg("今日も一日頑張りましょう");
                 }
-                if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+                if (StrUtil.equals(END_WORK_FLAG,pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {
                     clockResultVO.setResultMsg("今日も一日お疲れ様でした");
                 }
             } else {
@@ -156,6 +176,14 @@ public class AuthController {
     @GetMapping("403")
     public String error403() {
         return "403";
+    }
+
+    private String getStampingKey(String username) {
+       return username+":stamping:"+ DateUtil.format(DateUtil.date(), DatePattern.NORM_DATE_PATTERN);
+    }
+
+    private String getClockInfoKey(String username) {
+        return username+":clock:"+ DateUtil.format(DateUtil.date(), DatePattern.NORM_DATE_PATTERN);
     }
 
 }

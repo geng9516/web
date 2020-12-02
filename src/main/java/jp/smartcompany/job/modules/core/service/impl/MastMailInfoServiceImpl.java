@@ -25,8 +25,10 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
 
     @Override
     public String sendMail(MailType mailType, SendMailBO sendData) {
+        if (StrUtil.isBlank(sendData.getReceiver())){
+            throw new GlobalException("メールアドレスは空にできません");
+        }
         MastMailInfoDO mailTemplate = queryMailTemplate(mailType);
-        log.info("邮箱模板:{}",mailTemplate);
         String title = mailTemplate.getMmCtitle();
         String content = mailTemplate.getMmCcontent() + "\r\n"+ mailTemplate.getMmCdesc();
         String to = sendData.getReceiver();
@@ -41,7 +43,7 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
         } else {
             content = StrUtil.replace(content,"##0##",sendData.getEmpName());
         }
-        mailUtil.sendMail(mailType,sendData.getSender(),sendData.getEmpId(),sendData.getStandardDate(),to,title,content);
+        mailUtil.sendMail(mailType,mailTemplate.getMmCaddress(),sendData.getEmpId(),sendData.getStandardDate(),to,title,content);
         return "メールは発送されました";
     }
 
