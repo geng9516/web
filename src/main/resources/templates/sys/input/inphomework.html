@@ -113,38 +113,38 @@
 
             <template slot-scope="{ row, index }" slot="hwStatus" >
                 <span v-if="HomeWorkVOListEditBack[index].hwStatus=='1'">
-                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
                 <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='2'">
-                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" :disabled="row.hwStatus == 2">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer :disabled="row.hwStatus == 2">
                         <i-option :value="StatusList[1].value">{{ StatusList[1].label }}</i-option>
                     </i-select>
                 </span>
                 <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='3'">
-                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" :disabled="row.hwStatus == 2">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer :disabled="row.hwStatus == 2">
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
                 <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='4'">
-                    <i-select v-model="row.hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[3].value">{{ StatusList[3].label }}</i-option>
                     </i-select>
                 </span>
                 <span v-else>
-                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="">
+                    <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
                         <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                     </i-select>
                 </span>
             </template>
 
             <template slot-scope="{ row, index }" slot="hwHomework" >
-                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30" @on-change="" placeholder="" :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null">
+                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30" @on-change="editTime(index)" placeholder="" transfer :disabled="row.hwStatus == 2 || row.hwStatus == 0 || row.hwStatus == null">
                     <i-option  v-for="(item, index) of homeworkList"  :value="item.value" :key="item.value" >{{ item.label }}</i-option>
                 </i-select>
             </template>
@@ -386,6 +386,12 @@
                 this.HomeWorkVOListEditBack[index].hwStart = this.HomeWorkVOList[index].hwStart
                 this.HomeWorkVOListEditBack[index].hwEnd = this.HomeWorkVOList[index].hwEnd
                 this.HomeWorkVOListEditBack[index].hwCommute = this.HomeWorkVOList[index].hwCommute
+            },
+            editTime(index){
+                if(this.HomeWorkVOListEditBack[index].hwHomework != '4'){
+                    this.HomeWorkVOListEditBack[index].hwStart = null
+                    this.HomeWorkVOListEditBack[index].hwEnd = null
+                }
             },
             //登陆处理
             async updateHomeWork() {
