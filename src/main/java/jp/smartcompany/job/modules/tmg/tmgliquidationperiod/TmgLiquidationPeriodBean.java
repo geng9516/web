@@ -1,11 +1,11 @@
 package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
@@ -16,10 +16,8 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.SelectPatternDto;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.annotations.Case;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *  清算期間設定bean
@@ -206,26 +202,26 @@ public class TmgLiquidationPeriodBean {
                 //3	连续工作日数 不能超过6天
                 case "TMG_ERRCODE|LIQUIDATION_003" :
                     if(tlpInfo.getTlpCmaxcontiday() != 0){
-                        errMg=errMg.replace("@MAXCONTIDAY",minToHours("6"));
+                        errMg=errMg.replace("@MAXCONTIDAY","6");
                     }else{
-                        errMg=errMg.replace("@MAXCONTIDAY",minToHours(String.valueOf(tlpInfo.getTlpCmaxcontiday())));
+                        errMg=errMg.replace("@MAXCONTIDAY",String.valueOf(tlpInfo.getTlpCmaxcontiday()));
                     }
                     break;
                 //4	不能连续3周超过48小时
                 case "TMG_ERRCODE|LIQUIDATION_004" :
                     if(tlpInfo.getTlpCmaxcontiweek() != 0){
-                        errMg=errMg.replace("@MAXCONTIWEEK",minToHours("3"));
+                        errMg=errMg.replace("@MAXCONTIWEEK","3");
                     }else{
-                        errMg=errMg.replace("@MAXCONTIWEEK",minToHours(String.valueOf(tlpInfo.getTlpCmaxcontiweek())));
+                        errMg=errMg.replace("@MAXCONTIWEEK",String.valueOf(tlpInfo.getTlpCmaxcontiweek()));
                     }
                     break;
                 //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
                 case "TMG_ERRCODE|LIQUIDATION_005" :
-                    errMg=errMg.replace("@MONTH",DateUtil.format(errCheckDo.getTldcDyyyymm(),"yyyy年mm月"));
+                    errMg=errMg.replace("@MONTH",DateUtil.format(errCheckDo.getTldcDyyyymm(),"yyyy年MM月"));
                     if(tlpInfo.getTlpCoverweekcount() != 0){
-                        errMg=errMg.replace("@OVERWEEKCOUNT",minToHours("3"));
+                        errMg=errMg.replace("@OVERWEEKCOUNT","3");
                     }else{
-                        errMg=errMg.replace("@OVERWEEKCOUNT",minToHours(String.valueOf(tlpInfo.getTlpCoverweekcount())));
+                        errMg=errMg.replace("@OVERWEEKCOUNT",String.valueOf(tlpInfo.getTlpCoverweekcount()));
                     }
                     break;
                 //6	期间内最大工作日数		280* （日数/365）
@@ -256,7 +252,7 @@ public class TmgLiquidationPeriodBean {
         return errList;
     }
 
-
+    //分钟转小时
     private String minToHours(String min){
         String hours=(Integer.valueOf(min)/60)+"."+(Integer.valueOf(min)%60);
         return hours;
