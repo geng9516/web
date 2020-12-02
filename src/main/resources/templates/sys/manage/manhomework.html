@@ -695,16 +695,30 @@
                 return sTime.match(/^(([0-3]?[0-9])|([4][0-7])):([0-5]?[0-9])$/);
             },
             editBack(index) {
-                this.HomeWorkVOListEditBack[index].hwHomework = this.HomeWorkVOListupdate[index].hwHomework
-                this.HomeWorkVOListEditBack[index].hwStart = this.HomeWorkVOListupdate[index].hwStart
-                this.HomeWorkVOListEditBack[index].hwEnd = this.HomeWorkVOListupdate[index].hwEnd
-                this.HomeWorkVOListEditBack[index].hwCommute = this.HomeWorkVOListupdate[index].hwCommute
+                if (this.HomeWorkVOListEditBack[index].hwStatus === '0'){
+                    this.HomeWorkVOListEditBack[index].hwHomework = null
+                    this.HomeWorkVOListEditBack[index].hwStart = null
+                    this.HomeWorkVOListEditBack[index].hwEnd = null
+                    this.HomeWorkVOListEditBack[index].hwCommute = '0'
+                }else{
+                    this.HomeWorkVOListEditBack[index].hwHomework = this.HomeWorkVOListupdate[index].hwHomework
+                    this.HomeWorkVOListEditBack[index].hwStart = this.HomeWorkVOListupdate[index].hwStart
+                    this.HomeWorkVOListEditBack[index].hwEnd = this.HomeWorkVOListupdate[index].hwEnd
+                    this.HomeWorkVOListEditBack[index].hwCommute = this.HomeWorkVOListupdate[index].hwCommute
+                }
             },
             editlistBack(index) {
-                this.HomeWorkVOAdminList[index].hwhomework = this.HomeWorkVOAdminListBack[index].hwhomework
-                this.HomeWorkVOAdminList[index].hwStart = this.HomeWorkVOAdminListBack[index].hwStart
-                this.HomeWorkVOAdminList[index].hwEnd = this.HomeWorkVOAdminListBack[index].hwEnd
-                this.HomeWorkVOAdminList[index].hwCommute = this.HomeWorkVOAdminListBack[index].hwCommute
+                if (this.HomeWorkVOAdminList[index].hwstatus === '0'){
+                    this.HomeWorkVOAdminList[index].hwhomework = null
+                    this.HomeWorkVOAdminList[index].hwStart = null
+                    this.HomeWorkVOAdminList[index].hwEnd = null
+                    this.HomeWorkVOAdminList[index].hwCommute = '0'
+                }else{
+                    this.HomeWorkVOAdminList[index].hwhomework = this.HomeWorkVOAdminListBack[index].hwhomework
+                    this.HomeWorkVOAdminList[index].hwStart = this.HomeWorkVOAdminListBack[index].hwStart
+                    this.HomeWorkVOAdminList[index].hwEnd = this.HomeWorkVOAdminListBack[index].hwEnd
+                    this.HomeWorkVOAdminList[index].hwCommute = this.HomeWorkVOAdminListBack[index].hwCommute
+                }
             },
             //登陆处理
             async updateHomeWork() {
