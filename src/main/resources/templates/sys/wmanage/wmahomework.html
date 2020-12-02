@@ -635,7 +635,6 @@
                 } catch (error) {
                     return
                 } finally {
-                    this.updateloading = false
                 }
             },
             async getHomeWorkMonthVO() {
@@ -646,6 +645,7 @@
                 } catch (error) {
                     return
                 } finally {
+                    this.updateloading = false
                 }
             },
             async getHomeWorkListInfo() {
@@ -695,8 +695,8 @@
                     this.defaultDate=this.dispMonthlyList[1].tda_dyyyymm
                     this.query.txtBaseDate=this.dispMonthlyList[1].tda_firstDay
                     this.queryList.baseDate=Utils.formatDate(query.baseDate,'YYYY/MM/DD')
-                    await this.getHomeWorkMonthVO()
                     await this.getHomeWorkInfo()
+                    await this.getHomeWorkMonthVO()
                     this.getHatuRei()
                 } catch (error) {
                     return
