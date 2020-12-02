@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.TmgHomeWork.TmgHomeWorkMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgHomeWorkDataDO;
 import jp.smartcompany.job.modules.core.service.ITmgHomeWorkService;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
@@ -19,7 +20,7 @@ import java.util.List;
  * @date 2020/11/25
  **/
 @Repository
-public class TmgHomeWorkServiceImpl extends ServiceImpl<TmgHomeWorkMapper, HomeWorkVO> implements ITmgHomeWorkService {
+public class TmgHomeWorkServiceImpl extends ServiceImpl<TmgHomeWorkMapper, TmgHomeWorkDataDO> implements ITmgHomeWorkService {
 
 
     @Override

@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper.TmgHomeWork;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgHomeWorkDataDO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO;
@@ -17,7 +18,7 @@ import java.util.List;
  * @date 2020/11/20
  **/
 @Mapper
-public interface TmgHomeWorkMapper extends BaseMapper<HomeWorkVO> {
+public interface TmgHomeWorkMapper extends BaseMapper<TmgHomeWorkDataDO> {
 
     List<HomeWorkVO> selectHomeWork(HashMap<String, Object> params);
 
