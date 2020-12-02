@@ -163,7 +163,7 @@
             </template>
 
             <template slot-scope="{ row, index }" slot="hwHomework" >
-                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30"  placeholder="" transfer :disabled=" row.hwStatus == 0 || row.hwStatus == null || row.hwStatus == 4">
+                <i-select v-model="HomeWorkVOListEditBack[index].hwHomework" class="mr30"  @on-change="editTime(index)" placeholder="" transfer :disabled=" row.hwStatus == 0 || row.hwStatus == null || row.hwStatus == 4">
                     <i-option  v-for="(item, index) of homeworkList"  :value="item.value" :key="item.value" >{{ item.label }}</i-option>
                 </i-select>
             </template>
@@ -250,7 +250,7 @@
             </template>
 
             <template slot-scope="{ row, index }" slot="hwhomework" >
-                <i-select v-model="HomeWorkVOAdminList[index].hwhomework" class="mr30" @on-change="" placeholder="" transfer :disabled=" row.hwstatus == 0 || row.hwstatus == null || row.hwstatus == 4">
+                <i-select v-model="HomeWorkVOAdminList[index].hwhomework" class="mr30" @on-change="editListTime(index)" placeholder="" transfer :disabled=" row.hwstatus == 0 || row.hwstatus == null || row.hwstatus == 4">
                     <i-option  v-for="(item, index) of homeworkList"  :value="item.value" :key="item.value" >{{ item.label }}</i-option>
                 </i-select>
             </template>
@@ -658,6 +658,18 @@
                     return 'blue'
                 }
                 return ''
+            },
+            editTime(index){
+                if(this.HomeWorkVOListEditBack[index].hwHomework != '4'){
+                    this.HomeWorkVOListEditBack[index].hwStart = null
+                    this.HomeWorkVOListEditBack[index].hwEnd = null
+                }
+            },
+            editListTime(index){
+                if(this.HomeWorkVOAdminList[index].hwhomework != '4'){
+                    this.HomeWorkVOAdminList[index].hwStart = null
+                    this.HomeWorkVOAdminList[index].hwEnd = null
+                }
             },
             async getHatuRei() {
                 try {
