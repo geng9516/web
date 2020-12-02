@@ -242,7 +242,29 @@ public class TmgHomeWorkBean {
     public void updateHmoeWorkAdminDataList(PsDBBean psDBBean, List<HomeWorkAdminVO> homeWorkAdminVO) {
         for (int i = 0; i < homeWorkAdminVO.size(); i++) {
             TmgHomeWorkDataDO tmgHomeWorkDataDO = new TmgHomeWorkDataDO();
-            if( "2".equals(homeWorkAdminVO.get(i).getHwstatus()) || "0".equals(homeWorkAdminVO.get(i).getHwstatus())){
+            if( "0".equals(homeWorkAdminVO.get(i).getHwstatus())){
+                iTmgHomeWorkDataService.getBaseMapper().delete(SysUtil.<TmgHomeWorkDataDO>query()
+                        .eq("hw_ccustomerid", psDBBean.getCustID())
+                        .eq("hw_ccompanyid", psDBBean.getCompCode())
+                        .eq("hw_cemployeeid", homeWorkAdminVO.get(i).getEMPID())
+                        .eq("hw_applicationdate", homeWorkAdminVO.get(i).getTdaday()));
+
+                tmgHomeWorkDataDO.setHw_ccustomerid(psDBBean.getCustID());
+                tmgHomeWorkDataDO.setHw_ccompanyid(psDBBean.getCompCode());
+                tmgHomeWorkDataDO.setHw_cemployeeid(homeWorkAdminVO.get(i).getEMPID());
+                tmgHomeWorkDataDO.setHw_applicationdate(homeWorkAdminVO.get(i).getTdaday());
+                tmgHomeWorkDataDO.setHw_status("0");
+                tmgHomeWorkDataDO.setHw_homework("");
+                tmgHomeWorkDataDO.setHw_start("");
+                tmgHomeWorkDataDO.setHw_end("");
+                tmgHomeWorkDataDO.setHw_commute("");
+                tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkAdminVO.get(i).getHwApplicationcomment());
+                tmgHomeWorkDataDO.setHw_approvalcomment(homeWorkAdminVO.get(i).getHwApprovalcomment());
+
+                iTmgHomeWorkDataService.getBaseMapper().insert(tmgHomeWorkDataDO);
+
+                continue;
+            }else if( "2".equals(homeWorkAdminVO.get(i).getHwstatus())){
                 iTmgHomeWorkDataService.getBaseMapper().delete(SysUtil.<TmgHomeWorkDataDO>query()
                         .eq("hw_ccustomerid", psDBBean.getCustID())
                         .eq("hw_ccompanyid", psDBBean.getCompCode())
@@ -297,7 +319,29 @@ public class TmgHomeWorkBean {
     public void updateHmoeWorkAdminData(PsDBBean psDBBean, List<HomeWorkVO> homeWorkVO) {
         for (int i = 0; i < homeWorkVO.size(); i++) {
             TmgHomeWorkDataDO tmgHomeWorkDataDO = new TmgHomeWorkDataDO();
-            if( "2".equals(homeWorkVO.get(i).getHwStatus()) || "0".equals(homeWorkVO.get(i).getHwStatus())){
+            if( "0".equals(homeWorkVO.get(i).getHwStatus())){
+                iTmgHomeWorkDataService.getBaseMapper().delete(SysUtil.<TmgHomeWorkDataDO>query()
+                        .eq("hw_ccustomerid", psDBBean.getCustID())
+                        .eq("hw_ccompanyid", psDBBean.getCompCode())
+                        .eq("hw_cemployeeid", homeWorkVO.get(i).getEmpid())
+                        .eq("hw_applicationdate", homeWorkVO.get(i).getHwApplicationdate()));
+
+                tmgHomeWorkDataDO.setHw_ccustomerid("01");
+                tmgHomeWorkDataDO.setHw_ccompanyid("01");
+                tmgHomeWorkDataDO.setHw_cemployeeid(homeWorkVO.get(i).getEmpid());
+                tmgHomeWorkDataDO.setHw_applicationdate(homeWorkVO.get(i).getHwApplicationdate());
+                tmgHomeWorkDataDO.setHw_status("0");
+                tmgHomeWorkDataDO.setHw_homework("");
+                tmgHomeWorkDataDO.setHw_start("");
+                tmgHomeWorkDataDO.setHw_end("");
+                tmgHomeWorkDataDO.setHw_commute("");
+                tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkVO.get(i).getHwApplicationcomment());
+                tmgHomeWorkDataDO.setHw_approvalcomment(homeWorkVO.get(i).getHwApprovalcomment());
+
+                iTmgHomeWorkDataService.getBaseMapper().insert(tmgHomeWorkDataDO);
+
+                continue;
+            }else if( "2".equals(homeWorkVO.get(i).getHwStatus())){
                 iTmgHomeWorkDataService.getBaseMapper().delete(SysUtil.<TmgHomeWorkDataDO>query()
                         .eq("hw_ccustomerid", psDBBean.getCustID())
                         .eq("hw_ccompanyid", psDBBean.getCompCode())
