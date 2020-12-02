@@ -217,6 +217,7 @@
   }
   .hour {
     margin-top: 5px;
+    font-size: 55px;
   }
   .real-schedule {
     line-height: 100px;
@@ -241,6 +242,7 @@
   .stamp-warp {
     .gowork-btn, .offwork-btn, .addwork-btn {
       height: 40px;
+      font-size: 16px;
     }
   }
   .schedule {
@@ -249,7 +251,9 @@
       height: 198px;
     }
   }
-
+  .hour {
+    font-size: 44px;
+  }
   .card {
     height: 109px;
     .num {
