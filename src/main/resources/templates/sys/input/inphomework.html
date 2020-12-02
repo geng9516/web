@@ -82,11 +82,11 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="hwApplicationcomment">
-                    <span >{{ row.hwApplicationcomment }}</span>
+                    <span class="ml5">{{ row.hwApplicationcomment }}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="hwApprovalcomment">
-                    <span>{{ row.hwApprovalcomment }}</span>
+                    <span class="ml5">{{ row.hwApprovalcomment }}</span>
                 </template>
 
             </i-table>
@@ -169,7 +169,7 @@
             </template>
 
             <template slot-scope="{ row }" slot="hwApprovalcomment">
-                <span >{{ row.hwApprovalcomment }}</span>
+                <span class="ml5" >{{ row.hwApprovalcomment }}</span>
             </template>
 
         </i-table>
@@ -295,16 +295,12 @@
                     {
                         title: '申請コメント',
                         minWidth: 200,
-                        slot: 'hwApplicationcomment',
-                        // tooltip: true,
-                        align: 'center'
+                        slot: 'hwApplicationcomment'
                     },
                     {
                         title: '承認コメント',
                         minWidth: 200,
-                        slot: 'hwApprovalcomment',
-                        // tooltip: true,
-                        align: 'center'
+                        slot: 'hwApprovalcomment'
                     }
 
                 ]
