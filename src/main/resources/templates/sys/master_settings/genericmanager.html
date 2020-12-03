@@ -99,7 +99,6 @@
                   <i-col span="12">
                     <date-picker v-model="detailData.mgdDend" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd" ></date-picker>
                   </i-col>
-                  <checkbox v-if="!isAdd" v-model="detailData.newHistory" style="margin-left: 5px;">新しい歴を終了日以降に作成</checkbox>
                 </Row>
               </div>
             </i-col>
@@ -471,7 +470,7 @@
               try {
                 if(this.detailData.mgdId === null) delete this.detailData.mgdId
                 const { data } = await this.http.post('sys/genericmanager/detail', {
-                  newHistory: this.detailData.newHistory ? true : false,
+                  newHistory: false,
                   info: {
                     ...this.detailData,
                     mgdCgenericdetaildesc: this.detailData.mgdCgenericdetaildescja,
