@@ -122,7 +122,7 @@
             </Row>
         </div>
         <Alert class="primary-info tl" v-show="this.tableData.length>0">※日付をクリックすると、一括承認画面を表示します。※承認ステータスをクリックすると、就業承認コンテンツを表示します。</Alert>
-        <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
+        <i-table v-if="initLoading"  class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
                  :disabled-hover="true" :loading="listLoading" no-data-text="">
             <template slot-scope="{ row }" slot="name">
                 <span class="ml5">{{ row.empname }}</span>
@@ -402,6 +402,7 @@
                 isShow: false,
                 showPre: true,
                 listLoading: false,
+                initLoading: false,
                 sublistLoading: false,
                 showDayApply: false,
                 emplistLoading: false,
@@ -824,6 +825,8 @@
                 }
             },
             async getTableHead() {
+                this.initLoading = false
+                this.listLoading = true
                 this.queryList.txtAction = 'ACT_DISP_MONTHLY'
                 const { data } = await this.http.get('sys/permStatList/selectDayHead', this.queryList)
                 this.tableHead = data
@@ -831,6 +834,7 @@
                     this.deptName = '検索対象者一覧'
                     this.queryList.txtUserCode = null
                 }
+                this.initLoading = true
             },
             async getTableData() {
                 this.listLoading  = true
@@ -1000,8 +1004,8 @@
                 this.approval = false
                 //ツリーを選択するの場合、0で設定する
                 this.queryList.hidSelectTab='0'
-                await this.getDispTmgMonthlyList()
                 await this.getTableHead()
+                await this.getDispTmgMonthlyList()
                 // if(this.dispMonthlyList.length>0){
                     await this.getTableData()
                 // }
@@ -1035,8 +1039,8 @@
                     });
                     return
                 }
-                this.getDispTmgMonthlyList()
                 this.getTableData()
+                this.getDispTmgMonthlyList()
             },
             showName(e) {
                 const result = e.match(/^[\s\S]+(?=\()/g)
@@ -1898,9 +1902,9 @@
                 this.tableData = []
                 this.approval = false
 
+                await this.getTableHead()
                 //年月リストの取得
                 await this.getDispTmgMonthlyList()
-                await this.getTableHead()
                 if(this.dispMonthlyList.length>0){
                     await this.getTableData()
                 }
