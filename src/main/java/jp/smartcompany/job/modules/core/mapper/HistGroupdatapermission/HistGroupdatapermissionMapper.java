@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,4 +31,6 @@ public interface HistGroupdatapermissionMapper extends BaseMapper<HistGroupdatap
 
         SearchRangeManagerChangeDateDTO selectHistoryDate(@Param("custId") String custId,@Param("systemId") String systemId,
                                                           @Param("groupId") String groupId,@Param("searchDate") String searchDate);
+
+        void updateFinishHistory(@Param("hgpId") Long hgpId,@Param("searchDate") Date startDate);
 }

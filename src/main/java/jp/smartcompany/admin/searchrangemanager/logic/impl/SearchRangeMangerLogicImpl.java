@@ -3,7 +3,6 @@ package jp.smartcompany.admin.searchrangemanager.logic.impl;
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -21,7 +20,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
-import jp.smartcompany.job.modules.core.util.PsConst;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,28 +92,25 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     public void executeUpdate(List<SearchRangeManagerDataDTO> updateList) {
 
         Date startDate = SysUtil.transStringToDate(SysUtil.transDateToString(DateUtil.date()));
-        Date endDate  = SysUtil.transStringToDate(PsConst.MAXDATE);
+        String userId = SecurityUtil.getUserId();
 
-
+        Date now = DateUtil.date();
         // 更新数据库
         for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : updateList) {
             HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
+            searchRangeManagerDataDTO.setHgpDstartdate(startDate);
             BeanUtil.copyProperties(searchRangeManagerDataDTO,histDO);
-            histDO.setHgpCmodifieruserid(SecurityUtil.getUserId());
-            histDO.setHgpDmodifieddate(startDate);
-
+            histDO.setHgpCmodifieruserid(userId);
+            histDO.setHgpDmodifieddate(now);
+            System.out.println("+++");
+            System.out.println(histDO);
+            System.out.println(searchRangeManagerDataDTO.getCreateHistory());
             if (searchRangeManagerDataDTO.getCreateHistory() == 0) {
-                histDO.setHgpDenddate(DateUtil.offset(startDate, DateField.DAY_OF_MONTH,-1));
-                histGroupdatapermissionService.updateById(histDO);
+                histGroupdatapermissionService.updateFinishHistory(histDO.getHgpId(),startDate);
                 histDO.setHgpId(null);
-                histDO.setHgpDstartdate(startDate);
-                histDO.setHgpDenddate(endDate);
                 histGroupdatapermissionService.save(histDO);
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 1) {
-                histDO.setHgpDstartdate(startDate);
-                histDO.setHgpDenddate(endDate);
                 histGroupdatapermissionService.save(histDO);
-                // 如果更新前改订日和此时相同，则只更新当前数据
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 2) {
                 histGroupdatapermissionService.updateById(histDO);
             }

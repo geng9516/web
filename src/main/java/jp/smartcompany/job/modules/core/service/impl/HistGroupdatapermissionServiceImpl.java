@@ -35,4 +35,9 @@ public class HistGroupdatapermissionServiceImpl extends ServiceImpl<HistGroupdat
       return baseMapper.selectHistoryDate(custId,systemId,groupId,sSearchDate);
    }
 
+   @Override
+   public void updateFinishHistory(Long hgpId, Date startDate) {
+      baseMapper.updateFinishHistory(hgpId,startDate);
+   }
+
 }
