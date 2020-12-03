@@ -162,7 +162,7 @@
                 <i-table class="mt10" max-height="730" border :columns="columns4Year" :data="tableData4Year"
                     :loading="loading" :span-method="handleSpan" ref="tableDisp">
                     <template slot-scope="{ row }" slot="yyyymm">
-                        <span style="text-decoration: underline" @click="showMonth(row.yyyymm)">{{ row.yyyymm }}</span>
+                        <span style="text-decoration: underline" @click="showMonth(row.yyyymm)">{{ row.month }}</span>
                     </template>
                     <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j]">
