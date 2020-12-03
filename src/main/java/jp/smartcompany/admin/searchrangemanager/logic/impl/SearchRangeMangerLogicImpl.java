@@ -102,9 +102,6 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
             BeanUtil.copyProperties(searchRangeManagerDataDTO,histDO);
             histDO.setHgpCmodifieruserid(userId);
             histDO.setHgpDmodifieddate(now);
-            System.out.println("+++");
-            System.out.println(histDO);
-            System.out.println(searchRangeManagerDataDTO.getCreateHistory());
             if (searchRangeManagerDataDTO.getCreateHistory() == 0) {
                 histGroupdatapermissionService.updateFinishHistory(histDO.getHgpId(),startDate);
                 histDO.setHgpId(null);
