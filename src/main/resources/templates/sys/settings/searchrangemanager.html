@@ -321,6 +321,7 @@
             // 有几种hgpCobjectid，就有几种权限，也就是表头有多少个
             const tableHeadHelper = data.dataList[0].hgpCobjectid
             let tableHead = []
+            this._dataList = Utils.deepClone(data.dataList)
             this.tableHead = data.dataList.some(e => {
                 if(e.hgpCobjectid !== tableHeadHelper) return true
                 tableHead = tableHead.concat({title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription})
@@ -468,7 +469,15 @@
               }
               this.loading = true
               this.isEditing = false
-              const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
+              // 就算只修改一条，也以转换前的方式发送全部的数据
+              this._dataList = this._dataList.map(e => {
+                const index = this.updateList.findIndex(t=> t.hgpId === e.hgpId)
+                if( index > -1) {
+                  return this.updateList[index]
+                }
+                return e
+              })
+              const { data } = await this.http.post('sys/searchrangemanager/update', this._dataList)
               this.$Message.success('更新完了')
               this.getTableData()
               this.updateValue = {}
