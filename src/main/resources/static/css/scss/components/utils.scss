@@ -520,6 +520,31 @@
   top: 50%;
   transform: translateY(-50%);
 }
+
+.error-label {
+  background: var(--error-info-bg);
+  color: var(--red);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+//  用于清算一样的，表格内单行多行划分变色
+.sum-row {
+  cursor: pointer;
+  font-size: 12px;
+    line-height: 13px;
+}
+.divi-hour-line::before {
+  content: '';
+  display: block;
+  position: relative;
+  width: calc(100% + 16px);
+  height: 1px;
+  margin-top: 5px;
+  margin-left: -8px;
+  margin-bottom: 5px;
+  border-bottom: 1px dashed #d8d8d8;
+}
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}

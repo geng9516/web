@@ -4,7 +4,6 @@
 <head
     th:replace="layout/header::common_header(title='清算期間設定',cssPaths='/pages/content.min.css,' + '/pages/tmgliquidationperiod.min.css')">
 </head>
-
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
@@ -165,12 +164,14 @@
                         <span style="text-decoration: underline" @click="showMonth(row.yyyymm)">{{ row.month }}</span>
                     </template>
                     <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
-                        <span v-if="row[j]">
+                        <span v-if="row[j] && row._index % 2 === 0 ">
                             <div class="sum-row">{{ row[j].ntftype || '&nbsp;' }}</div>
                             <div class="divi-hour-line sum-row">{{ row[j].kubun || '&nbsp;' }}</div>
-                            <div class="divi-hour-line sum-row">{{ row[j].workhours || '&nbsp;' }}</div>
+                            <div class="divi-hour-line sum-row"><span :class="row[j].workhours && row[j].workhours.split(':')[0] > 7 && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
                             <div class="divi-hour-line sum-row">{{ row[j].resttime || '&nbsp;' }}</div>
                         </span>
+
+                        <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && row[j].weekworktime.split(':')[0] > 40 && 'error-label'">{{ row[j].weekworktime }}</span>
                     </template>
                 </i-table>
                 <div v-if="tableData4Year.lenght > 10">
@@ -821,14 +822,20 @@
                     if (e.newflag || !e) {
                         try {
                             const { data } = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
-                            this.tableData4Year = data.monthDtoList.map(t => {
+                            let list = []
+                            data.monthDtoList.forEach(t => {
                                 const month = t[0].yyyymmdd.slice(0, 7)
-                                return {
-                                    month: month,
-                                    ...t
-
-                                }
+                                list = list.concat([
+                                    {
+                                        month: month,
+                                        ...t
+                                    }, {
+                                        month: month,
+                                        ...t
+                                    }
+                                ])
                             })
+                            this.tableData4Year = list
                             console.log(this.tableData4Year)
                             this.errList = data.errList
                             this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
