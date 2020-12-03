@@ -161,7 +161,7 @@
                 <i-table class="mt10" max-height="730" border :columns="columns4Year" :data="tableData4Year"
                     :loading="loading" :span-method="handleSpan" ref="tableDisp">
                     <template slot-scope="{ row }" slot="yyyymm">
-                        <span style="text-decoration: underline" @click="showMonth(row.yyyymm)">{{ row.month }}</span>
+                        <span style="text-decoration: underline" @click="showMonth(row.month)">{{ row.month }}</span>
                     </template>
                     <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j] && row._index % 2 === 0 ">
@@ -885,21 +885,22 @@
                 },
                 //清算详细表格合并
                 handleSpan({ row, column, rowIndex, columnIndex }) {
+                    console.log(row[columnIndex])
                     //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
                     if (rowIndex % 2 === 1 && columnIndex === 1) {
-                        return [1, (8 - new Date("1/1/2020").getDay())];
-                    } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date("1/1/2020").getDay())) {
+                        return [1, (8 - new Date(row.month+'/01').getDay())];
+                    } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date(row.month+'/01').getDay())) {
                         return [0, 0];
                     }
                     //每月第二行时 非第一列 合并（周一为周开始日的情况下）
-                    if (rowIndex % 2 === 1 && columnIndex > (8 - new Date("1/1/2020").getDay()) && (columnIndex - 8 + new Date("1/1/2020").getDay()) % 7 === 1 && columnIndex < 32) {
+                    if (rowIndex % 2 === 1 && columnIndex > (8 - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 === 1 && columnIndex < 32) {
                         //最后一个只合并剩余
                         if ((31 - columnIndex) < 7) {
                             return [1, 31 - columnIndex + 1];
                         } else {
                             return [1, 7];
                         }
-                    } else if (rowIndex % 2 === 1 && columnIndex > (8 - new Date("1/1/2020").getDay()) && (columnIndex - 8 + new Date("1/1/2020").getDay()) % 7 != 1 && columnIndex < 32) {
+                    } else if (rowIndex % 2 === 1 && columnIndex > (8 - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 != 1 && columnIndex < 32) {
                         return [0, 0];
                     }
                     //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分

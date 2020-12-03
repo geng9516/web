@@ -117,6 +117,28 @@ public class TmgLiquidationDailyDO {
      */
     @TableField("tldd_crestendtime2")
     private String tlddCrestendtime2;
+
+    /**
+     * 休憩開始時間
+     */
+    @TableField("tldd_creststarttime3")
+    private String tlddCreststarttime3;
+    /**
+     * 休憩終了時間
+     */
+    @TableField("tldd_crestendtime3")
+    private String tlddCrestendtime3;
+
+    /**
+     * 休憩開始時間
+     */
+    @TableField("tldd_creststarttime4")
+    private String tlddCreststarttime4;
+    /**
+     * 休憩終了時間
+     */
+    @TableField("tldd_crestendtime4")
+    private String tlddCrestendtime4;
     /**
      * 休暇申請type
      */

@@ -4,7 +4,7 @@
     <select id="getMonthSumTime"
             resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto">
         SELECT
-            SUM(tldd_cworkhours) as sumtime,
+            TMG_F_CONV_MIN2HHMI(SUM(tldd_cworkhours)) as sumtime,
             TO_CHAR(trunc(tldd_dyyyymmdd, 'mm'),'yyyy/mm/dd') as yyyymm
         FROM
             tmg_liquidation_daily
