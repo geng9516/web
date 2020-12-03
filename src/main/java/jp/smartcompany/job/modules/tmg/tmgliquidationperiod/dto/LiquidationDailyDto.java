@@ -12,6 +12,7 @@ public class LiquidationDailyDto {
     private String week;
     private String patternid;
     private String workhours;
+    private String kubun;
     private String kubunid;
     private String starttime;
     private String endtime;
@@ -19,4 +20,7 @@ public class LiquidationDailyDto {
     private String restendtime1;
     private String reststarttime2;
     private String restendtime2;
+    private String weekworktime;
+    private String ntftype;
+    private String resttime;
 }

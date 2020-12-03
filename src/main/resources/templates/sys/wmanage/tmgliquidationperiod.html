@@ -1018,6 +1018,7 @@
 
             },
             async showDetails(e) {
+                if (e.status === 'TMG_LPSTATUS|5') return
                 console.log(123)
                 if (e) {
                     this.empInfo.empId=e.employeeid
@@ -1159,8 +1160,19 @@
                 }
             },
             //最後登録
-            uploadLiquidation(){
+            async uploadLiquidation() {
+                let OPTS = {
+                    empId: this.optsEmp.empId,
+                    startDate: this.optsEmp.startDate,
+                    endDate: this.optsEmp.endDate,
+                }
+                try {
+                    await this.http.postForm('sys/tmgliquidationperiod/upload', OPTS)
+                } catch (error) {
+                    return
+                } finally {
 
+                }
             },
             //月编辑画面显示
             async showMonth(e) {
