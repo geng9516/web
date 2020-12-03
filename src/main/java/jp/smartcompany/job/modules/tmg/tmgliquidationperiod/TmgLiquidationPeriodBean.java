@@ -93,11 +93,9 @@ public class TmgLiquidationPeriodBean {
         //清算期间月列表获取
         List<String> monthlist = iTmgliquidationDailyService.getMonthList(empId, startDate, endDate);
         for (String yyyymm : monthlist) {
-            LiquidationMonthDto dto = new LiquidationMonthDto();
             //清算月数据获取
             List<LiquidationDailyDto> monthDtos = iTmgliquidationDailyService.getMonthInfo(empId, yyyymm);
-            dto.setMonthInfo(monthDtos);
-            editVo.getMonthDtoList().add(dto);
+            editVo.getMonthDtoList().add(monthDtos);
         }
         //月工作时间合计
         List<MonthSumTimeDto> monthSumTimeDtos= iTmgliquidationDailyService.getMonthSumTime(empId, startDate, endDate,psDBBean.getCustID(),psDBBean.getCompCode());

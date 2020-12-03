@@ -1,7 +1,6 @@
 package jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo;
 
-import jp.smartcompany.job.modules.core.pojo.entity.TmgLiquidationDailyCheckDO;
-import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationMonthDto;
+import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.LiquidationDailyDto;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.MonthSumTimeDto;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ import java.util.List;
 @Setter
 @ToString
 public class EditDispVo {
-    private List<LiquidationMonthDto> monthDtoList=new ArrayList<>();
+    private List<List<LiquidationDailyDto>> monthDtoList=new ArrayList<>();
     private List<MonthSumTimeDto> monthTimeList;
     private List<String> errList;
 }
