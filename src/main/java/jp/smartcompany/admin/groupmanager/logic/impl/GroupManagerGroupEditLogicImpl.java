@@ -453,13 +453,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         BaseSectionDTO baseSectionDTO = new BaseSectionDTO();
         assembleBaseSectionList(baseSectionDTO,dto.getBaseSectionList(),startDate,endDate,groupId,belowSingle);
 
-//        // 更新前妥当性チェック
-//        // クエリ作成処理(組織・役職結合式)
-//        sectionPostLogic.createQuery(customerId,systemId,groupId,startDate,endDate,sectionPostDTO.getCompanyList(),"01");
-//        // グループ判定結果クエリ組み立て処理
-//        queryConditionLogic.createQueryCondition(
-//                customerId, "01", systemId, groupId, startDate, queryConditionDTO.getRowList());
-
         // 条件式妥当性チェック(条件式設定のみ)
         boolean checkFlag = isQueryCondition(baseFlag,queryConditionDTO.getRowList());
         int checkResult=0;
@@ -468,7 +461,22 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             checkFlag = false;
             checkResult = 1;
         }
-        String groupCheckQuery = getGroupCheckQuery(baseFlag,customerId, systemId, groupId, startDate, endDate,CollUtil.newArrayList(dto.getSectionPostList()),companyId,dto.getQueryConditionList());
+        List<SectionPostListDTO> companyList = sectionPostDTO.getCompanyList();
+        List<SectionPostListDTO> sectionPostList = CollUtil.newArrayList();
+        if (CollUtil.isNotEmpty(companyList)) {
+            companyList.forEach(companyData -> {
+               SectionPostListDTO sectionPostListDTO = new SectionPostListDTO();
+               sectionPostListDTO.setEmployList(companyData.getEmployList());
+               sectionPostListDTO.setPostList(companyData.getPostList());
+               sectionPostListDTO.setBossSectionList(companyData.getBossSectionList());
+               sectionPostListDTO.setSectionList(companyData.getSectionList());
+               sectionPostListDTO.setCompanyId("01");
+               sectionPostListDTO.setDelete(false);
+               sectionPostList.add(sectionPostListDTO);
+            });
+        }
+        String groupCheckQuery = getGroupCheckQuery(baseFlag,customerId, systemId, groupId, startDate, endDate,sectionPostList,companyId,dto.getQueryConditionList());
+
         // グループ判定クエリ妥当性チェック
         if (checkFlag) {
             if (isCheckValidQuery(groupCheckQuery) < 0) {
