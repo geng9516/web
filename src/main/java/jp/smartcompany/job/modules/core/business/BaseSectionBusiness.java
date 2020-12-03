@@ -63,7 +63,7 @@ public class BaseSectionBusiness {
         Map<String, Map<String, String>> hashMapComp = MapUtil.newHashMap(true);
         Map<String, Map<String, String>> hashMapGroup = MapUtil.newHashMap(true);
         hmGroups.forEach((key,value)->
-            queryBaseSection(userId, key, d,
+            queryBaseSection("01", key, d,
                     hashMapComp, hashMapGroup,httpSession)
         );
         log.info("【mapComp基点组织:{}】",hashMapComp);

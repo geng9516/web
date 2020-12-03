@@ -42,6 +42,9 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
             }
         } else {
             content = StrUtil.replace(content,"##0##",sendData.getEmpName());
+            if (content.contains("##1##")) {
+                content = StrUtil.replace(content,"##1##",sendData.getExtraContent());
+            }
         }
         mailUtil.sendMail(mailType,mailTemplate.getMmCaddress(),sendData.getEmpId(),sendData.getStandardDate(),to,title,content);
         return "メールは発送されました";

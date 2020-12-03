@@ -268,8 +268,10 @@ public class AuthBusiness {
             }
 
             menuGroupBO.setSecondMenuList(secondMenuList);
-
-            menuGroupList.add(menuGroupBO);
+            // 没有任何二级菜单则不用显示主菜单
+            if (CollUtil.isNotEmpty(secondMenuList)) {
+                menuGroupList.add(menuGroupBO);
+            }
         }
         return CollUtil.sort(menuGroupList,Comparator.comparingLong(MenuGroupBO::getOrderNum));
     }

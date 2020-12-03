@@ -26,5 +26,9 @@ public class SendMailBO {
      * 接收人的员工编号
      */
     private String empId;
+    /**
+     * 额外的邮件内容
+     */
+    private String extraContent;
 
 }
