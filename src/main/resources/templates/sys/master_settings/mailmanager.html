@@ -5,134 +5,204 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <main class="content mailsettings-warp" ref="layout">
-        <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `メール設定` }}
-              </h1>
-            </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
-            </div>
-          </div>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content mailsettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `メール設定` }}
+          </h1>
         </div>
-        <div class="content_body">
-          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-          <div class="table-top">
-            <Row :gutter="16">
-              <i-col span="24" class="tr">
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録
+          </i-button>
+        </div>
+      </div>
+    </div>
+    <div class="content_body">
+      <Row>
+        <i-col span="12">
+          <div class="ml20">
+            <!-- 帳票種別 -->
+            <Divider style="margin-top: 0;"></Divider>
+            <Row>
+              <i-col span="6" offse="1">
+                <h2>Host</h2>
+              </i-col>
+              <i-col span="9" offset="1">
+                <i-input v-model="updateValue.host"></i-input>
               </i-col>
             </Row>
           </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+
+          <div class="ml20 pt20">
+            <Divider></Divider>
+            <Row>
+              <i-col span="6" offse="1">
+                <h2>UserName</h2>
+              </i-col>
+              <i-col span="9" offset="1">
+                <i-input v-model="updateValue.username"></i-input>
+              </i-col>
+            </Row>
+          </div>
+
+          <div class="ml20 pt20">
+            <Divider></Divider>
+            <Row>
+              <i-col span="6" offse="1">
+                <h2>Password</h2>
+              </i-col>
+              <i-col span="9" offset="1">
+                <i-input v-model="updateValue.password"></i-input>
+              </i-col>
+            </Row>
+          </div>
+
+          <div class="ml20 pt20">
+            <Divider></Divider>
+            <Row>
+              <i-col span="6" offse="1">
+                <h2>Port</h2>
+              </i-col>
+              <i-col span="9" offset="1">
+                <i-input v-model="updateValue.port"></i-input>
+              </i-col>
+            </Row>
+          </div>
+        </i-col>
+
+        <i-col span="8" offset="1">
+          <Card class="card">
+            <Upload ref="upload" :show-upload-list="false" type="drag" class="tl mb10" action="/"
+              :before-upload="handleBeforeUpload">
+              <div style="padding: 20px 0">
+                <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                <p style="color:var(--grey)">クリックしてファイルを選択するか、</p>
+                <p style="color:var(--grey)">ここにファイルをドラッグ＆ドロップして下さい。</p>
+              </div>
+            </Upload>
+
+            <Row class="tl mb5" :gutter="8">
+              <i-col span="14">
+                <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
+                  @keyup.enter.native="handleSearchEmpt">
+                </i-input>
+              </i-col>
+              <i-col span="6" class="no-border-radius">
+                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">
+                  社員検索
+                </i-button>
+              </i-col>
+            </Row>
+          </Card>
+          <!-- <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''"
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table">
-          </i-table>
-        </div>
-        <back-top></back-top>
-      </main>
-    <div th:replace="layout/head::header"></div>
-    <script type="text/babel" th:inline="javascript">
-        new Vue({
-          el: '.mailsettings-warp',
-          data() {
-            return {
-              isShow: false,
-              loading: true,
-              editLoading: false,
-              btnLoading: false,
-              hasChange: false,
-              defaultOption: false,
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp'),
-              updateValue: {},
-              columns: [
-              ],
-              opts: {
-                systemId: '01',
-                appId: '0',
-                siteId: '0',
-                companyId: '0',
-                date: '',
-                groupId: '0',
-                isAll: false,
-              },
-              tableData: [],
-              conditionsList: [],
-              contentScrollTop: 0
-            }
+          </i-table> -->
+        </i-col>
+      </Row>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    new Vue({
+      el: '.mailsettings-warp',
+      data() {
+        return {
+          isShow: false,
+          loading: true,
+          cardLoading: false,
+          editLoading: false,
+          btnLoading: false,
+          searchEmpt: '',
+          updateValue: [],
+          columns: [
+          ],
+          opts: {
           },
-          async created() {
-            this.getTableData()
-            window.addEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          computed: {
-            tableHeadFixed() {
-              if (this.contentScrollTop > 110) return true
-              else return false
-            }
-          },
-          methods: {
-            async getTableData() {
-              const OPTS = { ...this.opts }
-              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              Object.keys(OPTS).forEach(key => {
-                if (OPTS[key] === '0') {
-                  delete OPTS[key]
-                }
-              })
+          tableData: [],
+          conditionsList: [],
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        // this.getTableData()
+        window.addEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 110) return true
+          else return false
+        }
+      },
+      methods: {
+        async getTableData() {
+          this.loading = true
+          try {
+            const { data } = await this.http.get('sys/appmanager/applist', this.opts)
+            this.tableData = data
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
+        },
+        async update() {
+          this.$Modal.confirm({
+            title: '注意',
+            content: '入力内容を保存します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
               this.loading = true
+              const update = []
               try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-                this.tableData = data
+                const { data } = await this.http.post('sys/appmanager/update', update)
+                this.$Message.success('更新完了')
+                this.getTableData()
+                this.updateValue = {}
               } catch (error) {
               } finally {
+                history.go(0)
                 this.loading = false
               }
-            },
-            async update() {
-              this.$Modal.confirm({
-                title: '注意',
-                content: '入力内容を保存します。よろしいですか？',
-                okText: 'OK',
-                cancelText: 'キャンセル',
-                onOk: async () => {
-                  this.loading = true
-                  const update = this.tableData.map((e, i)=> {
-                    return {
-                      ...e,
-                      templateId: e.templateId === 'null' ? null : e.templateId,
-                      permissionType: e.permissionType === 'null' ? null : e.permissionType
-                    }
-                  })
-                  try {
-                    const { data } = await this.http.post('sys/appmanager/update', update)
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                    this.updateValue = {}
-                  } catch (error) {
-                  } finally {
-                    history.go(0)
-                    this.loading = false
-                  }
-                }
-              })
-            },
-            handleScroll: Throttle(function (e) {
-              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50)
+            }
+          })
+        },
+        handleSearchEmpt() {},
+        handleBeforeUpload(files) {
+          // 返回false, 取消自带上传
+          let checkPassed = true
+          if (this.uploadFiles.length >= 5) {
+            this.$Notice.warning({
+              desc: '添付可能なファイル数が上限（5個）を超えました。'
+            })
+            checkPassed = false
           }
-        })
-      </script>
+          if (files.size / 1024 > 500) {
+            this.$Notice.warning({
+              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+            })
+            checkPassed = false
+          }
+          if (checkPassed) {
+            this.uploadFiles.push(files)
+          }
+          return false;
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+        }, 50)
+      }
+    })
+  </script>
 </body>
