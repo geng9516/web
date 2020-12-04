@@ -2,6 +2,8 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
+
 import java.util.List;
 
 /**
@@ -38,4 +40,10 @@ public interface IConfSyscontrolService extends IService<ConfSyscontrolDO> {
          * @return
          */
         List<ConfSyscontrolDO> getProperties();
+
+        /**
+         * 更新邮箱服务器配置
+         * @param dto
+         */
+        void updateMailConfig(MailConfigDTO dto);
 }

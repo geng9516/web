@@ -4,9 +4,7 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +33,11 @@ public class MailManagerController {
       return mailConfigDTO;
    }
 
-
+   @PostMapping("config")
+   public String updateMailConfig(@RequestBody MailConfigDTO dto) {
+      confSyscontrolService.updateMailConfig(dto);
+      return "メール設定変更成功";
+   }
 
 
 }
