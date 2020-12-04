@@ -87,7 +87,18 @@
                 <p style="color:var(--grey)">ここにファイルをドラッグ＆ドロップして下さい。</p>
               </div>
             </Upload>
-
+            <ul class="ivu-upload-list tl mb10">
+              <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+                  <span @click="">
+                      <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
+                  </span>
+                  <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
+                  <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click=""></i>
+                  <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
+              </li>
+          </ul>
+          <Alert class="primary-info mb20">各上限 500kBytes</Alert>
+            <i-button class="mb10" type="primary" ghost @click="uploadCsv" :loading="uploadCsvLoading" long>upload</i-button>
             <Row class="tl mb5" :gutter="8">
               <i-col span="14">
                 <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
@@ -120,8 +131,10 @@
           loading: true,
           cardLoading: false,
           editLoading: false,
+          uploadCsvLoading: false,
           btnLoading: false,
           searchEmpt: '',
+          uploadFiles:[],
           updateValue: [],
           columns: [
           ],
@@ -178,7 +191,19 @@
             }
           })
         },
-        handleSearchEmpt() {},
+        handleSearchEmpt() { },
+        async uploadCsv() {
+          try {
+            this.uploadCsvLoading = true
+            await this.http.uploadFiles('sys/mailmanager/upload', {
+              file: this.uploadFiles[0],
+            })
+            this.$Message.success('yes!')
+          } catch (error) {
+          } finally {
+            this.uploadCsvLoading = false
+          }
+        },
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
           let checkPassed = true
