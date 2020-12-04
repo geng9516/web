@@ -2,9 +2,11 @@ package jp.smartcompany.controller.tmg_setting;
 
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
+import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,6 +15,7 @@ public class MailManagerController {
 
    private final ScCacheUtil cacheUtil;
    private final IConfSyscontrolService confSyscontrolService;
+   private final IMastEmployeesService employeesService;
 
    private static final String MAIL_USERNAME = "MAIL_USERNAME";
    private static final String MAIL_PASSWORD = "MAIL_PASSWORD";
@@ -39,5 +42,10 @@ public class MailManagerController {
       return "メール設定変更成功";
    }
 
+   @PostMapping("upload")
+   public String uploadMailList(MultipartFile file) {
+      employeesService.uploadMailList(file);
+      return "導入成功";
+   }
 
 }

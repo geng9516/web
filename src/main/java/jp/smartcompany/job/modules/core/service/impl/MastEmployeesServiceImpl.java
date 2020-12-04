@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -18,8 +19,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.boot.util.SysUtil;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -303,4 +309,38 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
          return baseMapper.selectPersonalInfo(custId,userId,language,sBaseDate);
     }
     /*========================= 用户管理相关sql结束 ==================================*/
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void uploadMailList(MultipartFile file) {
+        Workbook workbook = null;
+        InputStream is;
+        try {
+            is = file.getInputStream();
+            workbook = WorkbookFactory.create(is);
+            is.close();
+            //工作表对象
+            Sheet sheet = workbook.getSheetAt(0);
+            //总行数
+            int totalRows = sheet.getLastRowNum() -1;
+            for (int i = 0;i<totalRows;i++) {
+               Row row = sheet.getRow(i);
+               for (int j = 0; j < row.getLastCellNum();j++) {
+                   Cell cell = row.getCell(j);
+                   System.out.println(cell.getStringCellValue());
+               }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (workbook!=null) {
+                    workbook.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
