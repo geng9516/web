@@ -1,15 +1,18 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.mapper.ConfSyscontrol.ConfSyscontrolMapper;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +28,15 @@ import java.util.Map;
  * @since 2020-04-16
  */
 @Repository
+@RequiredArgsConstructor
 public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper, ConfSyscontrolDO> implements IConfSyscontrolService {
 
         private static final String MAIL_USERNAME = "MAIL_USERNAME";
         private static final String MAIL_PASSWORD = "MAIL_PASSWORD";
         private static final String MAIL_PORT = "MAIL_PORT";
         private static final String MAIL_HOST = "MAIL_HOST";
+
+        private final LRUCache<Object,Object> lruCache;
 
         /**
          * システムプロパティを取得する
@@ -108,5 +114,7 @@ public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper,
            mailHost.setCsCpropertyvalue(dto.getHost());
 
            updateBatchById(CollUtil.newArrayList(mailUsername,mailPassword,mailPort,mailHost));
+
+           lruCache.remove(ScCacheUtil.SYSTEM_PROPERTY_MAP);
         }
 }
