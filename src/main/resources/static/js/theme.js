@@ -124,9 +124,9 @@ var THEME_CONFIG  = {
     '--label-monthSum-bg': 'white',
     '--selection-input-bg':'white',
     '--dept-select-border-left':'0',
-
     '--input-number-disabled-border':'#e3e5e8',
     '--input-number-disabled-bg':'var(--light-input-border-grey)',
+    '--poptip-arrow':'rgba(217,217,217,.5)',
     // calendar
     '--calendar-empty-bg':'rgb(245, 247, 249)',
     '--calendar-sat-bg':'var(--primary-info-bg)',
@@ -270,6 +270,7 @@ var THEME_CONFIG  = {
     '--dept-select-border-left':'0',
     '--input-number-disabled-border':'#e3e5e8',
     '--input-number-disabled-bg':'#f3f3f3',
+    '--poptip-arrow':'rgba(217,217,217,.5)',
     // calendar
     '--calendar-empty-bg':'rgb(245, 247, 249)',
     '--calendar-sat-bg':'var(--primary-info-bg)',
@@ -413,6 +414,7 @@ var THEME_CONFIG  = {
     '--dept-select-border-left':'1px dashed var(--dept-select)',
     '--input-number-disabled-border':'rgb(79,79, 79)',
     '--input-number-disabled-bg':'rgba(73, 73, 73, 0.55)',
+    '--poptip-arrow':'rgb(42,44,49)',
     // calendar
     '--calendar-empty-bg':'rgb(36, 36, 36)',
     '--calendar-sat-bg':'rgba(13,70,89,0.2',
