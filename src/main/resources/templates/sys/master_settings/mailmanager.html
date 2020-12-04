@@ -78,7 +78,7 @@
         </i-col>
 
         <i-col span="8" offset="1">
-          <Card class="card">
+          <Card style="background: var(--content-bg);">
             <Upload ref="upload" :show-upload-list="false" type="drag" class="tl mb10" action="/"
               :before-upload="handleBeforeUpload">
               <div style="padding: 20px 0">
@@ -88,11 +88,11 @@
               </div>
             </Upload>
             <ul class="ivu-upload-list tl mb10">
-              <li class="ivu-upload-list-file">
+              <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
                   <span @click="">
-                      <Icon :type="uploadFiles.type.indexOf('image') > -1 ? 'ios-image' : uploadFiles.type.indexOf('sheet') > -1 || uploadFiles.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ uploadFiles.name }}
+                      <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
                   </span>
-                  <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="uploadFiles.isDefault">既存</p>
+                  <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
                   <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click=""></i>
                   <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
               </li>
@@ -134,7 +134,7 @@
           uploadCsvLoading: false,
           btnLoading: false,
           searchEmpt: '',
-          uploadFiles: {type:''},
+          uploadFiles: [],
           updateValue: [],
           columns: [
           ],
@@ -196,7 +196,7 @@
           try {
             this.uploadCsvLoading = true
             await this.http.uploadFiles('sys/mailmanager/upload', {
-              file: this.uploadFiles,
+              file: this.uploadFiles[0],
             })
             this.$Message.success('yes!')
           } catch (error) {
@@ -214,7 +214,7 @@
             checkPassed = false
           }
           if (checkPassed) {
-            this.uploadFiles = files
+            this.$set(this.uploadFiles, 0, files)
           }
           return false;
         },
