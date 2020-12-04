@@ -1192,6 +1192,18 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 }
             }
         }
+        // 加入默认法人code为前缀，兼容检索对象范围查询
+        String prefixSectionId = ",01,,|,";
+        saveRows.forEach(row -> {
+            String layeredSectionId = row.getMgbsClayeredsectionid();
+            layeredSectionId = layeredSectionId.substring(2);
+            row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+        });
+        updateRows.forEach(row-> {
+            String layeredSectionId = row.getMgbsClayeredsectionid();
+            layeredSectionId = layeredSectionId.substring(2);
+            row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+        });
         if (CollUtil.isNotEmpty(saveRows)) {
             iMastGroupbasesectionService.saveBatch(saveRows);
         }
