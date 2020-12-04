@@ -518,12 +518,6 @@
 .ivu-poptip-title-inner {
   color: var(--grey);
 }
-.ivu-poptip-arrow {
-  border-right-color: var(--poptip-arrow);
-}
-.ivu-poptip-arrow::after{
-  background-color: var(--poptip-arrow);
-}
 .ver-center {
   position: absolute;
   top: 50%;
