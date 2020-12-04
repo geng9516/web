@@ -1,6 +1,9 @@
 package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.event.StampEvent;
+import jp.smartcompany.job.modules.core.pojo.bo.StampingAccountBO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
@@ -9,7 +12,9 @@ import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.SystemTimerVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -21,11 +26,13 @@ import java.util.Date;
  * @date 2020/06/25
  **/
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("sys/timePunch")
 public class TimepunchController {
 
     @Autowired
     private TmgTimePunchBean tmgTimePunchBean;
+    private final ApplicationContext ctx;
 
     /**
      * http://localhost:6879/sys/timePunch/execTimePunch
@@ -130,12 +137,26 @@ public class TimepunchController {
             clockResultVO.setResultMsg("今日はもう出勤打刻しました");
             return clockResultVO;
         }
+        StampingAccountBO stampingAccount = new StampingAccountBO();
+        stampingAccount.setHdCemployeeidCk(psDBBean.getUserCode());
+        stampingAccount.setHdCcustomeridCk(psDBBean.getCustID());
+        stampingAccount.setHdCcompanyidCk(psDBBean.getCompCode());
+
+        StampEvent stampEvent = new StampEvent(stampingAccount,pAction);
+        clockResultVO.setEmployeeId(psDBBean.getUserCode());
+        clockResultVO.setCustomerId("01");
+        clockResultVO.setCompanyId("01");
+        clockResultVO.setResultCode("0");
+        clockResultVO.setClockTime(DateUtil.format(new Date(), "HH:mm"));
+
         //打刻
-        clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
-        if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+        //性能改善で改修
+        ctx.publishEvent(stampEvent);
+        //clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
+        if ("ACT_EXEC_OPEN".equals(pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {
             clockResultVO.setResultMsg("今日も一日頑張りましょう");
         }
-        if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+        if ("ACT_EXEC_CLOSE".equals(pAction) && StrUtil.isBlank(clockResultVO.getResultMsg())) {
             clockResultVO.setResultMsg("今日も一日お疲れ様でした");
         }
         return clockResultVO;

@@ -31,11 +31,11 @@ public class AsyncTaskConfiguration implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("web-work-async-task-pool");
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(8);
-        executor.setKeepAliveSeconds(5);
-        executor.setQueueCapacity(100);
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        executor.setCorePoolSize(20);
+        executor.setMaxPoolSize(80);
+        executor.setKeepAliveSeconds(3);
+        executor.setQueueCapacity(1000);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         // 线程池关闭的时候是否会等待所有的任务都完成
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(60);
