@@ -88,11 +88,11 @@
               </div>
             </Upload>
             <ul class="ivu-upload-list tl mb10">
-              <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+              <li class="ivu-upload-list-file">
                   <span @click="">
-                      <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
+                      <Icon :type="uploadFiles.type.indexOf('image') > -1 ? 'ios-image' : uploadFiles.type.indexOf('sheet') > -1 || uploadFiles.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ uploadFiles.name }}
                   </span>
-                  <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
+                  <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="uploadFiles.isDefault">既存</p>
                   <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click=""></i>
                   <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
               </li>
@@ -134,7 +134,7 @@
           uploadCsvLoading: false,
           btnLoading: false,
           searchEmpt: '',
-          uploadFiles:[],
+          uploadFiles: {type:''},
           updateValue: [],
           columns: [
           ],
@@ -196,7 +196,7 @@
           try {
             this.uploadCsvLoading = true
             await this.http.uploadFiles('sys/mailmanager/upload', {
-              file: this.uploadFiles[0],
+              file: this.uploadFiles,
             })
             this.$Message.success('yes!')
           } catch (error) {
@@ -207,12 +207,6 @@
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
           let checkPassed = true
-          if (this.uploadFiles.length >= 5) {
-            this.$Notice.warning({
-              desc: '添付可能なファイル数が上限（5個）を超えました。'
-            })
-            checkPassed = false
-          }
           if (files.size / 1024 > 500) {
             this.$Notice.warning({
               desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
@@ -220,7 +214,7 @@
             checkPassed = false
           }
           if (checkPassed) {
-            this.uploadFiles.push(files)
+            this.uploadFiles = files
           }
           return false;
         },
