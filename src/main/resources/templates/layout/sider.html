@@ -14,9 +14,9 @@
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:398px">
         <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"　:class="curMenu === e.pageId ? 'actived-menu' : ''" >
-            <div style="overflow-x: hidden">
+            <div style="overflow-x: hidden;height:100%;padding-bottom: 110px;">
                 <div v-show="curMenu === e.pageId"
-                    style="position:relative;height:calc(100vh - 111px);overflow-y:scroll;left: 17px;margin-left: 2px;padding-bottom: 60px;">
+                    style="position:relative;height:100%;overflow-y:scroll;left: 17px;margin-left: 2px;padding-bottom: 30px;">
                     <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.siteId + t.menuIndex" @click.native="handleSubMenuClick(t, i)">
                         <div>
                             <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px;position: relative;top:-3px">
