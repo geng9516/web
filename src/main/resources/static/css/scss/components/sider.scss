@@ -123,6 +123,9 @@
     // TODO: 这里时强行变橘色， 需要提供橘色图标
     filter: var(--filter-svg-icon-hover) !important;
   }
+  ul:not(.navbar-nav) {
+    height: 100%;
+  }
 }
 .ivu-menu-item-selected {
   .i-svg {
@@ -173,6 +176,9 @@
     &.show-sider {
       transform: translateX(0);
       opacity: 1;
+    }
+    .actived-menu{
+      height: 100%;
     }
   }
 }
