@@ -237,8 +237,11 @@ public class TmgHomeWorkBean {
 
                     continue;
                 }else if(  "2".equals(homeWorkVO.get(i).getHwStatus()) || "4".equals(homeWorkVO.get(i).getHwStatus())){
-
-                    tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkVO.get(i).getHwApplicationcomment());
+                    if(!"".equals(homeWorkVO.get(i).getHwApplicationcomment()) && homeWorkVO.get(i).getHwApplicationcomment() !=null){
+                        tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkVO.get(i).getHwApplicationcomment());
+                    }else {
+                        continue;
+                    }
 
                     QueryWrapper<TmgHomeWorkDataDO> queryWrapper = new QueryWrapper<TmgHomeWorkDataDO>();
                     queryWrapper.eq("hw_ccustomerid", psDBBean.getCustID());

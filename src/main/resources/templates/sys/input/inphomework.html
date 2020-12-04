@@ -322,13 +322,6 @@
                     return
                 }
             },
-            async handleStartMonth(e) {
-                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
-                this.query.txtBaseDate=select.tda_firstDay
-                this.query.txtEndDate=select.tda_endDay
-
-                await this.getHomeWorkInfo()
-            },
             dayRed(e) {
                 const dayOfWeek = e.mgdCsparechar
                 if (!dayOfWeek) {
