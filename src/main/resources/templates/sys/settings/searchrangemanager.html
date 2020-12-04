@@ -137,7 +137,7 @@
       </i-option>
     </i-select>
 
-     <Checkbox v-model="updateValue.checked" class="width100 tl mt15" style="margin-left: 0;" @on-change="handleCheckBox">基点組織設定を使用する</Checkbox>
+     <Checkbox v-model="updateValue.checked" class="width100 tl mt15" style="margin-left: 0;" @on-change="handleCheckBox" :disabled="updateValue.checkboxDisable">基点組織設定を使用する</Checkbox>
      <div class="titlenorm mb5 mt10" style="font-size:15px">
       <Icon type="logo-buffer"></Icon>
       退職者検索対象範囲
@@ -391,6 +391,9 @@
             // 不可选选择器
             this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
+            // 不可勾checkbox
+            this.$set(this.updateValue, 'checkboxDisable', true)
+            this.updateValue.checked = false
           }
           // 「条件指定」の場合 定義リスト OR
           if(e === '2') {
@@ -404,6 +407,7 @@
             this.updateValue.hgpCpermmustname = "";
             this.handleSelect(this.updateValue.selected)
             this.$set(this.updateValue, 'selectedDisable', false)
+            this.$set(this.updateValue, 'checkboxDisable', false)
           }
 
           // 「条件指定」の場合 定義リスト AND]
@@ -419,6 +423,7 @@
             }
             this.handleSelect(this.updateValue.selected)
             this.$set(this.updateValue, 'selectedDisable', false)
+            this.$set(this.updateValue, 'checkboxDisable', false)
           }
         },
         handleSelect(e) {
@@ -518,10 +523,12 @@
             this.updateValue.type = '0'
             // 不可选选择器
             this.$set(this.updateValue, 'selectedDisable', true)
+            this.$set(this.updateValue, 'checkboxDisable', true)
           }
           if(this.updateValue.fullPermission === '0') {
             // 不可选选择器
             this.$set(this.updateValue, 'selectedDisable', true)
+            this.$set(this.updateValue, 'checkboxDisable', true)
             this.updateValue.type = '1'
           }
           if(this.updateValue.hgpCbasesectionFlagNeed === '1' || this.updateValue.hgpCpermnecessityname && this.updateValue.hgpCpermnecessity !== '0001') {
