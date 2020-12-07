@@ -103,4 +103,9 @@ import java.util.Map;
         public int updateNotificationItem(ParamNotificationListDto params){
                 return  baseMapper.updateNotificationItem(params);
         }
+
+        @Override
+        public List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode){
+                return  baseMapper.SelectNtfInfo( yyyymmdd,  empId,  custID, compCode);
+        }
         }

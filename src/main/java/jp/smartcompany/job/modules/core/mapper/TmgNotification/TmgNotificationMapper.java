@@ -64,4 +64,9 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
          * 承認後更新のSEQ
          */
         int updateNotificationItem(@Param("paramNotificationList") ParamNotificationListDto params);
+
+        List<String> SelectNtfInfo(@Param("yyyymmdd") String yyyymmdd,
+                                   @Param("empId") String empId,
+                                   @Param("custID") String custID,
+                                   @Param("compCode") String compCode);
 }

@@ -124,19 +124,20 @@
                     </Row>
                     <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" :disabled-hover="true">
                         <template slot-scope="{ row, index }" slot="workStart">
-                            <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"
+                            <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp && row.isResultTime" :disabled="workTimeDisable" class="tc"
                                      @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
+                            <span v-else>{{ row.workStart }}</span>
                             <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
                             <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
                             <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
                             <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                            <span v-else>{{ row.workStart }}</span>
+
                         </template>
                         <template slot-scope="{ row , index}" slot="workEnd">
                             <i-input v-model="workData[index].workEnd"
-                                     v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"
+                                     v-if="!bFixed && isEdiTableResult4Inp && row.isResultTime " :disabled="workTimeDisable" class="tc"
                                      @on-blur="handleInputChange(index,  workData[index],'workEnd', $event.target)"></i-input>
                             <span v-else>{{ row.workEnd }}</span>
                         </template>
@@ -996,6 +997,7 @@
                     },
                     {
                         workTime: '就業時間',
+                        isResultTime: true,
                         workStart: this.dailyEdit.tdaNopenR,
                         workEnd: this.dailyEdit.tdaNcloseR,
                         cellClassName: {

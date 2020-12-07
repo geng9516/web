@@ -68,4 +68,6 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          * buildSQLForUpdateNotificationItem
          * */
         int updateNotificationItem(ParamNotificationListDto params);
-        }
+
+    List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode);
+}
