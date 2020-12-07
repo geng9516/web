@@ -17,11 +17,6 @@
             {{ `メール設定` }}
           </h1>
         </div>
-        <div class="btnbox">
-          <span style="flex:1"></span>
-          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading">登録
-          </i-button>
-        </div>
       </div>
     </div>
     <div class="content_body">
@@ -75,6 +70,15 @@
               </i-col>
             </Row>
           </div>
+
+          <Divider></Divider>
+          <Row>
+              <i-col span="9" style="margin-left: 29.933333%">
+                  <i-button type="primary" ghost icon="md-create" @click="update" long>登録
+                  </i-button>
+              </i-col>
+          </Row>
+          <Spin size="large" fix v-if="loading"></Spin>
         </i-col>
 
         <i-col span="8" offset="1">
@@ -97,15 +101,15 @@
                   <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
               </li>
           </ul>
-          <Alert class="primary-info mb20">各上限 500kBytes</Alert>
-            <i-button class="mb10" type="primary" ghost @click="uploadCsv" :loading="uploadCsvLoading" long>upload</i-button>
+          <Alert class="primary-info mb10">上限 500kBytes</Alert>
+            <i-button class="mb20" type="primary" ghost @click="uploadCsv" :loading="uploadCsvLoading" long>upload</i-button>
             <Row class="tl mb5" :gutter="8">
               <i-col span="14">
                 <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
                   @keyup.enter.native="handleSearchEmpt">
                 </i-input>
               </i-col>
-              <i-col span="6" class="no-border-radius">
+              <i-col span="10" class="no-border-radius">
                 <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">
                   社員検索
                 </i-button>
@@ -130,7 +134,6 @@
           isShow: false,
           loading: true,
           cardLoading: false,
-          editLoading: false,
           uploadCsvLoading: false,
           btnLoading: false,
           searchEmpt: '',
@@ -145,8 +148,8 @@
           contentScrollTop: 0
         }
       },
-      async created() {
-        // this.getTableData()
+      created() {
+        this.getTableData()
         window.addEventListener('scroll', this.handleScroll, { passive: true })
       },
       beforeDestroy() {
@@ -162,8 +165,8 @@
         async getTableData() {
           this.loading = true
           try {
-            const { data } = await this.http.get('sys/appmanager/applist', this.opts)
-            this.tableData = data
+            const { data } = await this.http.get('sys/mailmanager/server', this.opts)
+            this.updateValue = data
           } catch (error) {
           } finally {
             this.loading = false
@@ -179,13 +182,11 @@
               this.loading = true
               const update = []
               try {
-                const { data } = await this.http.post('sys/appmanager/update', update)
+                const { data } = await this.http.post('sys/mailmanager/config', this.updateValue)
                 this.$Message.success('更新完了')
                 this.getTableData()
-                this.updateValue = {}
               } catch (error) {
               } finally {
-                history.go(0)
                 this.loading = false
               }
             }
@@ -210,6 +211,13 @@
           if (files.size / 1024 > 500) {
             this.$Notice.warning({
               desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+            })
+            checkPassed = false
+          }
+
+          if (-1 >= files.type.indexOf('excel') && -1 >= files.type.indexOf('spreadsheetml')) {
+            this.$Notice.warning({
+              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません。'
             })
             checkPassed = false
           }
