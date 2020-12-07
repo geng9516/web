@@ -38,6 +38,12 @@
           <use xlink:href="#ScheduleConfirmation09"></use>
         </svg>
       </li>
+      <li :class="curMenu === 'TmgHomeWork' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/tmg_inp/TmgHomeWork?moduleIndex=5&psSite=TMG_INP&psApp=TmgHomeWork`">
+        在宅勤務登録
+        <svg class="menu-li-logo">
+          <use xlink:href="#ScheduleConfirmation09"></use>
+        </svg>
+      </li>
       <li class="menu-li" style="margin-top: 80px;">
         <i-button class="tr" type="primary" size="large" @click.native="alterPasswordModal = true" ghost long>パスワード変更</i-button>
       </li>

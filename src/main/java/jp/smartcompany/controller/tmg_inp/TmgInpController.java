@@ -86,9 +86,9 @@ public class TmgInpController {
     public String toHomeWork(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                              @RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
                              @RequestAttribute("isAndroid") Boolean isAndroid) {
-//        if (isIPhoneOrIPod || isAndroid) {
-//            return "mobile/restapply";
-//        }
+        if (isIPhoneOrIPod || isAndroid) {
+            return "mobile/mobhomework";
+        }
         return "sys/input/inphomework";
     }
 }

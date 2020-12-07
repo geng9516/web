@@ -51,4 +51,12 @@ public interface ITmgHomeWorkService extends IService<TmgHomeWorkDataDO> {
      */
     List<HomeWorkMonthVO> selectAdminHomeWorkMonthList(String employeeId, String baseDate);
 
+    /**
+     * mob在宅勤務编辑情報を取得します
+     *
+     * @param employeeId
+     * @param baseDate
+     * @return
+     */
+    HomeWorkAdminVO selectAdminHomeWorkmob(String employeeId, String baseDate);
 }
