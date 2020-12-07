@@ -126,7 +126,7 @@
         </i-table>
     </div>
     <!-- 在宅勤務申请个人 -->
-    <Drawer class="tc" title="在宅勤務編集画面-个人" placement="right" width="70%" v-model="hwApplyShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-个人" placement="right" width="75%" v-model="hwApplyShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -213,7 +213,7 @@
         </i-table>
     </Drawer>
     <!-- 在宅勤務申请list -->
-    <Drawer class="tc" title="在宅勤務編集画面-日" placement="right" width="70%" v-model="hwApplyListShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-日" placement="right" width="75%" v-model="hwApplyListShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -333,19 +333,19 @@
                 homeworkList: [
                     {
                         value: '1',
-                        label: '在宅勤務（終日）'
+                        label: '在宅勤務(終日)'
                     },
                     {
                         value: '2',
-                        label: '在宅勤務（午前）'
+                        label: '在宅勤務(午前)'
                     },
                     {
                         value: '3',
-                        label: '在宅勤務（午後）'
+                        label: '在宅勤務(午後)'
                     },
                     {
                         value: '4',
-                        label: '在宅勤務（時間）'
+                        label: '在宅勤務(時間)'
                     }
                 ],
                 tableHead:[],
@@ -487,13 +487,13 @@
                     },
                     {
                         title: '状態',
-                        minWidth: 80,
+                        width: 100,
                         slot: 'hwStatus',
                         align: 'center'
                     },
                     {
                         title: '在宅勤務',
-                        minWidth: 130,
+                        width: 150,
                         slot: 'hwHomework',
                         align: 'center'
                     },
@@ -543,13 +543,13 @@
                     },
                     {
                         title: '状態',
-                        minWidth: 80,
+                        width: 100,
                         slot: 'hwstatus',
                         align: 'center'
                     },
                     {
                         title: '在宅勤務',
-                        minWidth: 130,
+                        width: 150,
                         slot: 'hwhomework',
                         align: 'center'
                     },
