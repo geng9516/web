@@ -41,33 +41,33 @@
             </span>
 
             <span style="display:flex;width: calc(15% + 150px);">
-                <span class="label">種別</span>
-                <!--        <i-select v-model="workTypeName" class="mr30" @on-change="handlSelectWorkType($event)"-->
-                <!--                  placeholder="選択ください">-->
-                <!--            <option-group v-for="(item, i) of dispWorkTypeList" :key="i" :label="item.workTypeName" :value="item.workTypeGroupId">-->
-                <!--                <i-option v-for="(e, i) of item.list" :value="e.worktypeid" :key="i" :label="e.worktypeName">-->
-                <!--                </i-option>-->
-                <!--            </option-group>-->
-                <!--        </i-select>-->
-                <i-button v-on:click.native="workTypeDrawShow = true" class="input-like-span dept-select">
-                    <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{workTypeName}}
-                        <div slot="content">{{workTypeName}}</div>
-                    </Tooltip>
-                </i-button>
-                <Drawer class="tc" placement="right" width="500" :closable="false" v-model="workTypeDrawShow">
-                    <div class="titlenorm mb5">
-                        <Icon type="logo-buffer"></Icon>
-                        種別
-                    </div>
-                    <div style="position: relative;">
-                        <Tree class="tree mt2" :data="dispWorkTypeList" v-on:on-select-change="handleClickLeaf"
-                            empty-text="種別データなし"></Tree>
-                        <Spin size="large" fix v-if="workTypeLoading"></Spin>
-                    </div>
-                </Drawer>
+                <span class="label" style="width: 100px;">種別</span>
+                        <i-select v-model="workTypeName" class="mr30" style="width: 300px;"
+                                  placeholder="選択ください" @on-change="handleClickLeaf">
+                                <i-option v-for="(e, i) of dispWorkTypeList" :value="e.worktypeid" :key="i" :label="e.worktypename">
+                                    <div v-if="e.level === 3">&nbsp;&nbsp;&nbsp;&nbsp;{{e.worktypename}}</div>
+                                    <div v-else  style="color:var(--primary-info);">{{e.worktypename}}</div>
+                                </i-option>
+                        </i-select>
+
+<!--                <i-button v-on:click.native="workTypeDrawShow = true" class="input-like-span dept-select">-->
+<!--                    <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{workTypeName}}-->
+<!--                        <div slot="content">{{workTypeName}}</div>-->
+<!--                    </Tooltip>-->
 
 
-
+<!--                </i-button>-->
+<!--                <Drawer class="tc" placement="right" width="500" :closable="false" v-model="workTypeDrawShow">-->
+<!--                    <div class="titlenorm mb5">-->
+<!--                        <Icon type="logo-buffer"></Icon>-->
+<!--                        種別-->
+<!--                    </div>-->
+<!--                    <div style="position: relative;">-->
+<!--                        <Tree class="tree mt2" :data="dispWorkTypeList" v-on:on-select-change="handleClickLeaf"-->
+<!--                            empty-text="種別データなし"></Tree>-->
+<!--                        <Spin size="large" fix v-if="workTypeLoading"></Spin>-->
+<!--                    </div>-->
+<!--                </Drawer>-->
             </span>
         </div>
         <div class="content_body">
@@ -149,6 +149,20 @@
                         </i-col>
                     </Row>
                 </div>
+                <Row :gutter="10">
+                    <i-col span="8">
+                        <div class="label tc" style="padding:1px 0">所属</div>
+                        <div class="person-info">{{ empInfo.deptName }}</div>
+                    </i-col>
+                    <i-col span="7">
+                        <div class="label tc" style="padding:1px 0">氏名</div>
+                        <div class="person-info">{{ empInfo.empName }}</div>
+                    </i-col>
+                    <i-col span="9">
+                        <div class="label tc" style="padding:1px 0">種別</div>
+                        <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
+                    </i-col>
+                </Row>
                 <Alert type="error" class="error-info tl" v-if="errList.length > 1 ">エラーメッセージ
                     <template slot="desc" v-for="(item) of errList">
                         <p>{{item}}</p>
@@ -158,7 +172,7 @@
                     <Icon type="logo-buffer"></Icon>
                     精算期間一覧
                 </div>
-                <i-table class="mt10" max-height="730" border :columns="columns4Year" :data="tableData4Year"
+                <i-table class="mt10"  border :columns="columns4Year" :data="tableData4Year"
                     :loading="loading" :span-method="handleSpan" ref="tableDisp">
                     <template slot-scope="{ row }" slot="yyyymm">
                         <span style="text-decoration: underline" @click="showMonth(row.month)">{{ row.month }}</span>
@@ -167,7 +181,7 @@
                         <span v-if="row[j] && row._index % 2 === 0 ">
                             <div class="sum-row">{{ row[j].ntftype || '&nbsp;' }}</div>
                             <div class="divi-hour-line sum-row">{{ row[j].kubun || '&nbsp;' }}</div>
-                            <div class="divi-hour-line sum-row"><span :class="row[j].workhours && row[j].workhours.split(':')[0] > 7 && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
+                            <div class="divi-hour-line sum-row"><span class="row[j].workhours && row[j].workhours.split(':')[0] > 7 && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
                             <div class="divi-hour-line sum-row">{{ row[j].resttime || '&nbsp;' }}</div>
                         </span>
 
@@ -189,15 +203,15 @@
             <Modal title="新規精算期間" width="40" :mask-closable="false" footer-hide v-model="newFlg">
                 <Row :gutter="10">
                     <i-col span="8">
-                        <div class="label" style="padding:1px 0">所属</div>
+                        <div class="label tc" style="padding:1px 0">所属</div>
                         <div class="person-info">{{ empInfo.deptName }}</div>
                     </i-col>
                     <i-col span="7">
-                        <div class="label" style="padding:1px 0">氏名</div>
+                        <div class="label tc" style="padding:1px 0">氏名</div>
                         <div class="person-info">{{ empInfo.empName }}</div>
                     </i-col>
                     <i-col span="9">
-                        <div class="label" style="padding:1px 0">種別</div>
+                        <div class="label tc" style="padding:1px 0">種別</div>
                         <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
                     </i-col>
                 </Row>
@@ -330,13 +344,30 @@
 
 
             <Modal title="月編集画面" 　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
-                <div class="tr">
+                <div class="tr mb20">
                     <i-button @click="updateMonthInfo" 　icon="md-filing">登録</i-button>
                 </div>
-
+                <Row :gutter="10">
+                    <i-col span="6">
+                        <div class="label tc" style="padding:1px 0">年月</div>
+                        <div class="person-info">{{ empInfo.yyyymm }}</div>
+                    </i-col>
+                    <i-col span="6">
+                        <div class="label tc" style="padding:1px 0">氏名</div>
+                        <div class="person-info">{{ empInfo.empName }}</div>
+                    </i-col>
+                    <i-col span="6">
+                        <div class="label tc" style="padding:1px 0">所属</div>
+                        <div class="person-info">{{ empInfo.deptName }}</div>
+                    </i-col>
+                    <i-col span="6">
+                        <div class="label tc" style="padding:1px 0">種別</div>
+                        <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
+                    </i-col>
+                </Row>
                 <div class="titlenorm mb10 ">
                     <Icon type="logo-buffer"></Icon>
-                    パターン一覧
+                    予定作成
                 </div>
                 <Row class="mb10">
                     <i-col span="4">
@@ -360,8 +391,11 @@
                     :row-class-name="monthColDisabled" @on-row-click="patternSet">
 
                     <template slot-scope="{ row, index }" slot="kubun">
-                        <span v-if="row.kubunid.indexOf('TMG_WORK') >-1 ">{{row.kubun}}(既定)</span>
-                        <span v-else>{{row.kubun}}</span>
+                        <span>{{row.kubun}}</span>
+                    </template>
+                    <template slot-scope="{ row, index }" slot="patternname">
+                        <i-button type="primary" style="margin-right: 5px" ghost v-if="row.patternname">{{row.patternname}}</i-button>
+                        <i-button type="primary" style="margin-right: 5px" ghost v-else>-</i-button>
                     </template>
 
                     <template slot-scope="{ row, index }" slot="workhours">
@@ -442,13 +476,13 @@
                             title: '所属',
                             key: 'deptname',
                             minWidth: 100,
-                            align: 'center'
+                            align: 'left'
                         },
                         {
                             title: '種別',
                             minWidth: 100,
                             key: 'worktypename',
-                            align: 'center'
+                            align: 'left'
                         },
                         {
                             title: '適用開始日',
@@ -479,7 +513,7 @@
                             title: '更新者',
                             minWidth: 60,
                             key: 'modifieduser',
-                            align: 'center'
+                            align: 'left'
                         },
                         {
                             title: '更新日付',
@@ -491,7 +525,7 @@
                             title: '登録内容',
                             Width: 40,
                             slot: 'detail',
-                            align: 'center'
+                            align: 'left'
                         },
                     ],
                     tableData: [],
@@ -512,7 +546,8 @@
                         empWorkTypeName: '',
                         empWorkTypeId: '',
                         deptName: '',
-                        sectionId: ''
+                        sectionId: '',
+                        yyyymm:''
                     },
                     editColumns: [
                         {
@@ -603,13 +638,13 @@
                             title: '区分',
                             slot: 'kubun',
                             minWidth: 100,
-                            align: 'left'
+                            align: 'center'
                         },
                         {
                             title: 'パターン',
-                            key: 'patternname',
+                            slot: 'patternname',
                             minWidth: 100,
-                            align: 'left'
+                            align: 'center',
                         },
                         {
                             title: '労働時間',
@@ -698,7 +733,7 @@
                     }
                 })).concat([
                     {
-                        title: '労働時間',
+                        title: '月時間',
                         key: 'workTime',
                         width: 70,
                         align: 'center',
@@ -725,7 +760,8 @@
                         this.loading = true
                         const { data } = await this.http.get('sys/tmgliquidationperiod/WorkTypeList', this.referListObject)
                         const convertedTreeData = this.convertTreeData(data)
-                        this.dispWorkTypeList = [{ worktypeid: 'all', title: '全て', expand: true, children: convertedTreeData }]
+                        this.dispWorkTypeList = this.convertTreeData(data)
+                        console.log(this.dispWorkTypeList)
                         this.handleClickLeaf()
                     } catch (error) {
                         return
@@ -743,33 +779,42 @@
                         });
                         return []
                     }
-                    return treeData.map((e) => {
-                        const children = e.child
-                        if (children) {
-                            return {
-                                ...e,
-                                title: e.worktypename,
-                                expand: true,
-                                children: this.convertTreeData(children)
-                            }
-                        } else {
-                            return {
-                                ...e,
-                                expand: true,
-                                title: e.worktypename
-                            }
+                    let result = [
+                        {
+                            worktypeid: 'all',
+                            level:1,
+                            worktypename: '全て'
                         }
+                    ]
+                    treeData.forEach((e) => {
+                        result=result .concat (
+                            {
+                                worktypename:e.worktypename,
+                                level:2,
+                                worktypeid:e.worktypeid
+                            }
+                        )
+                        e.child.forEach(e=>{
+                            result=result.concat({
+                                worktypename:e.worktypename,
+                                level:3,
+                                worktypeid:e.worktypeid
+                            })
+                        })
                     })
+                    return result
                 },
 
                 async handleClickLeaf(e) {
+                    console.log(e)
+                    console.log(this.workTypeName)
                     let selectid
                     if (!e) {
                         selectid = 'all'
-                        this.workTypeName = '全て'
+                        this.workTypeName = 'all'
                     } else {
-                        selectid = e[0].worktypeid
-                        this.workTypeName = e[0].worktypename
+                        selectid = e
+                        this.workTypeName = e
                     }
                     try {
                         this.loading = true
@@ -821,6 +866,7 @@
                     }
                     if (e.newflag || !e) {
                         try {
+                            this.editFlag = true
                             const { data } = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
                             let list = []
                             data.monthDtoList.forEach(t => {
@@ -841,7 +887,7 @@
                             this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                             this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
                             this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
-                            this.editFlag = true;
+
                         } catch (error) {
                             return
                         } finally {
@@ -906,7 +952,7 @@
                     //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分
                     if (column.title != '1日' && rowIndex % 2 === 0 && columnIndex < 2) {
                         return [2, 1];
-                    } else if (column.title != '1日' && rowIndex % 2 === 1 && columnIndex < 2) {
+                    } else if (column.title != '1日' && rowIndex % 2 === 1) {
                         return [0, 0];
                     }
                 },
@@ -985,6 +1031,7 @@
                         yyyymm: e
                     }
                     try {
+                        this.monthlyEditFlg = true
                         const { data } = await this.http.get('sys/tmgliquidationperiod/EditMonthDisp', OPTS)
                         let monthInfo = data.liquidationDailyInfoVoList.map(e => {
                             if (e.reststarttime2) {
@@ -1021,7 +1068,7 @@
                         //获取patternList
                         this.workPatternList = data.workPatternList
                         console.log(this.workPatternList)
-                        this.monthlyEditFlg = true
+                        this.empInfo.yyyymm=e.substring(0,4)+'年'+e.substring(6,7)+'月'
                     } catch (error) {
                         return
                     } finally {
@@ -1074,8 +1121,8 @@
                         console.log(this.workPattern)
                         this.monthData[index].kubunid = this.workPattern
                         this.monthData[index].kubun = this.workPattern === 'TMG_HOLFLG|3' ? '所定休' : '法定休'
-                        this.monthData[index].patternid = ''
-                        this.monthData[index].patternname = ''
+                        this.monthData[index].patternid = this.workPattern
+                        this.monthData[index].patternname = this.workPattern === 'TMG_HOLFLG|3' ? '所定休' : '法定休'
                         this.monthData[index].starttime = ''
                         this.monthData[index].endtime = ''
                         this.monthData[index].restTime = []
@@ -1120,7 +1167,8 @@
                     if (index) {
                         this.monthData[index].workhours = Utils.timeToMinute(endTime) - Utils.timeToMinute(startTime) - computeTime
                     }
-                    return Utils.timeToMinute(endTime) - Utils.timeToMinute(startTime) - computeTime
+                    const handleTime = Vue.filter('handleTime');
+                    return handleTime(Utils.timeToMinute(endTime) - Utils.timeToMinute(startTime) - computeTime)
                 },
                 //更新月数据
                 async updateMonthInfo() {
