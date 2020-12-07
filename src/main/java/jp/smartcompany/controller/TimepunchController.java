@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.event.StampEvent;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.StampingAccountBO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
@@ -137,12 +138,12 @@ public class TimepunchController {
             clockResultVO.setResultMsg("今日はもう出勤打刻しました");
             return clockResultVO;
         }
-        StampingAccountBO stampingAccount = new StampingAccountBO();
-        stampingAccount.setHdCemployeeidCk(psDBBean.getUserCode());
-        stampingAccount.setHdCcustomeridCk(psDBBean.getCustID());
-        stampingAccount.setHdCcompanyidCk(psDBBean.getCompCode());
+        LoginAccountBO loginAccountBO = new LoginAccountBO();
+        loginAccountBO.setHdCemployeeidCk(psDBBean.getUserCode());
+        loginAccountBO.setHdCcustomeridCk(psDBBean.getCustID());
+        loginAccountBO.setHdCcompanyidCk(psDBBean.getCompCode());
 
-        StampEvent stampEvent = new StampEvent(stampingAccount,pAction);
+        StampEvent stampEvent = new StampEvent(loginAccountBO,pAction);
         clockResultVO.setEmployeeId(psDBBean.getUserCode());
         clockResultVO.setCustomerId("01");
         clockResultVO.setCompanyId("01");
