@@ -42,6 +42,7 @@ public class TmgLiquidationPeriodBean {
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
 
+    private final  ITmgNotificationService iTmgNotificationService;
     // 职种获取
     public List<WorkTypeGroupDto> getWorkTypeList(PsDBBean psDBBean) throws Exception {
 
@@ -95,6 +96,10 @@ public class TmgLiquidationPeriodBean {
         for (String yyyymm : monthlist) {
             //清算月数据获取
             List<LiquidationDailyDto> monthDtos = iTmgliquidationDailyService.getMonthInfo(empId, yyyymm);
+            for (LiquidationDailyDto dailyInfo:monthDtos){
+                List<String> ntfInfo= iTmgNotificationService.getSelectNtfInfo(dailyInfo.getYyyymmdd(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
+
+            }
             editVo.getMonthDtoList().add(monthDtos);
         }
         //月工作时间合计
