@@ -97,6 +97,7 @@
                 <template slot-scope="{ row, index }" slot="hwStatus"  v-if=" hwApplyShow">
                 <span v-if="HomeWorkVOListEditBack[index].hwStatus=='1'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="" transfer>
+                        <i-option value="0"><div>&nbsp;</div></i-option>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
@@ -121,6 +122,7 @@
                 </span>
                     <span v-else>
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
+                        <i-option value="0"><div>&nbsp;</div></i-option>
                         <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                     </i-select>
                 </span>
