@@ -70,4 +70,5 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
         int updateNotificationItem(ParamNotificationListDto params);
 
     List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode);
+
 }

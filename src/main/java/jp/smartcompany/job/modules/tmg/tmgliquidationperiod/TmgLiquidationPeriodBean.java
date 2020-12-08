@@ -96,7 +96,7 @@ public class TmgLiquidationPeriodBean {
         List<String> monthlist = iTmgliquidationDailyService.getMonthList(empId, startDate, endDate);
         for (String yyyymm : monthlist) {
             //清算月数据获取
-            List<LiquidationDailyDto> monthDtos = iTmgliquidationDailyService.getMonthInfo(empId, yyyymm);
+            List<LiquidationDailyDto> monthDtos = iTmgliquidationDailyService.getMonthInfo(empId, yyyymm,startDate,endDate);
             //清算日休憩数据获取
             for (int i=0 ;i<monthDtos.size();i++){
                 List<String> ntfInfo= iTmgNotificationService.getSelectNtfInfo(monthDtos.get(i).getYyyymmdd(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
@@ -162,7 +162,7 @@ public class TmgLiquidationPeriodBean {
         //最長働く一日労働時間上限
         tlpDo.setTlpCmaxdayhours(!StrUtil.hasEmpty(updateDto.getDailyMaxWorkTime())?Long.parseLong(updateDto.getDailyMaxWorkTime()):(long)600);
         //最長働く週間労働時間上限
-        tlpDo.setTlpCmaxweekhours(!StrUtil.hasEmpty(updateDto.getWeeklyMaxWorkTime())?Long.parseLong(updateDto.getWeeklyMaxWorkTime()):(long)52);
+        tlpDo.setTlpCmaxweekhours(!StrUtil.hasEmpty(updateDto.getWeeklyMaxWorkTime())?Long.parseLong(updateDto.getWeeklyMaxWorkTime()):(long)3120);
         //一年間総労働日数
         tlpDo.setTlpCtotalworkdays(!StrUtil.hasEmpty(updateDto.getTotalWorkDays())?Long.parseLong(updateDto.getTotalWorkDays()):(long)280);
         //最長連続働く日数上限

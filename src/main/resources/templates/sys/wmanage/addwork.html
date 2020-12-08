@@ -695,7 +695,6 @@
                 if (this.contentScrollTop > 310) return true
                 else return false
             },
-
         },
         methods: {
             //初期化処理
@@ -710,7 +709,6 @@
                 }
                 await this.getOrgTree()
                 await this.getSearchCondition()
-
                 //検索の初期化対応
                 this.query.hidSelectTab = [[${ session.hidSelectTab }]]
                 this.query.hidSearchItems = [[${ session.hidSearchItems }]]

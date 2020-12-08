@@ -26,9 +26,13 @@
         NVL( TO_CHAR(tlp.TLP_DENDDATE,'yyyy/mm/dd'), '' ) AS enddate,
         NVL( tlp.TLP_CMODIFIERUSERID, '' ) AS modifieduser,
         NVL( to_char(tlp.TLP_DMODIFIEDDATE,'yyyy/mm/dd'), '' ) AS modifieddate,
+
         NVL( tlp.TLP_CMAXDAYHOURS, '' ) as dailymaxworktime,
         NVL( tlp.TLP_CMAXWEEKHOURS, '' ) as weeklymaxworktime,
         NVL( tlp.TLP_CTOTALWORKDAYS, '' ) as totalworkdays,
+
+        NVL( tlp.TLP_CAVGWORKTIME, '' ) as AVGWORKTIME,
+
         DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG,
         tlp.tlp_csparechar1 as STATUS,
         TMG_F_GET_MGD(

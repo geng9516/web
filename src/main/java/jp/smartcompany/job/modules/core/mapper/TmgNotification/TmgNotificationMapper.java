@@ -69,4 +69,5 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
                                    @Param("empId") String empId,
                                    @Param("custID") String custID,
                                    @Param("compCode") String compCode);
+
 }
