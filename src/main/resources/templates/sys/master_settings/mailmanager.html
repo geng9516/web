@@ -83,6 +83,15 @@
 
         <i-col span="8" offset="1">
           <Card style="background: var(--content-bg);">
+            <div class="tr mb10" style="margin-top: -10px; margin-right: -10px;">
+              <Poptip trigger="click" placement="right-start" transfer>
+                <i-button type="primary" size="small" ghost @click="uploadCsv">テンプレートダウンロード</i-button>
+                <div class="operateBtn tc" slot="content">
+                  <a @click="downloadTemplate('csv')" style="color: var(--ghost-primary-color);">CSV</a>
+                  <a @click="downloadTemplate('xls')" style="color: var(--ghost-primary-color);">XLS</a>
+                </div>
+              </Poptip>
+            </div>
             <Upload ref="upload" :show-upload-list="false" type="drag" class="tl mb10" action="/"
               :before-upload="handleBeforeUpload">
               <div style="padding: 20px 0">
@@ -194,6 +203,7 @@
         },
         handleSearchEmpt() { },
         async uploadCsv() {
+          if(this.uploadFiles.length === 0) return
           try {
             this.uploadCsvLoading = true
             await this.http.uploadFiles('sys/mailmanager/upload', {
@@ -226,6 +236,9 @@
           }
           return false;
         },
+        downloadTemplate: Debounce(function (type) {
+          window.open(`${BASE_URL}/sys/mailmanager/template?type=${type}`, '_blank')
+        }),
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
         }, 50)
