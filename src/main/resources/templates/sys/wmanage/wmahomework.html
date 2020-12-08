@@ -95,7 +95,7 @@
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="hwApplyShowFlg(hwApplyShow,HomeWorkVOList[index].empid,HomeWorkVOList[index].empname)">{{ HomeWorkVOList[index].empname }}</span>
             </template>
             <template v-for="item of slotList" slot-scope="{ row, index }" :slot="item">
-                <span :class="dayRedStatus(row,item)"> {{row[item]}} </span>
+                <span v-if="hwStatusFlg(row,item)" :class="dayRedStatus(row,item)"> {{row[item]}} </span>
             </template>
 
         </i-table>
@@ -720,6 +720,13 @@
                 }
                 return ''
             },
+            hwStatusFlg(e1,e2) {
+                let aaaaa = e1[`${"hwstatusflg" + e2.slice(13)}`];
+                if(aaaaa === '4'){
+                    return false
+                }
+                return true
+            },
             editTime(index){
                 if(this.HomeWorkVOListEditBack[index].hwHomework != '4'){
                     this.HomeWorkVOListEditBack[index].hwStart = null
@@ -1053,6 +1060,7 @@
                 this.query.hidSelectTab = '0'
             },
             async getOrgTree(refreshDept) {
+                this.updateloading  = true
                 try {
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据
