@@ -1,16 +1,22 @@
 package jp.smartcompany.controller.tmg_setting;
 
+import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -53,14 +59,30 @@ public class MailManagerController {
       return "導入成功";
    }
 
-   @RequestMapping("template")
+   @GetMapping("template")
    public void exportUploadTemplate(HttpServletResponse response,@RequestParam(defaultValue = "xls") String type){
       mailManagerLogic.exportXlsTemplate(response,type);
    }
 
-   @RequestMapping("invalid")
+   @GetMapping("invalid")
    public PageUtil invalidEmailEmpList(@RequestParam Map<String,Object> params) {
       return mailManagerLogic.getInvalidEmailEmpList(params);
+   }
+
+   @PostMapping("update")
+   public String updateMailList(@Valid @NotEmpty List<UpdateMailDTO> list) {
+      mailManagerLogic.updateMailList(list);
+      return "メール変更成功";
+   }
+
+   // http://localhost:6879/sys/mailmanager/search?keyword=4640
+   @GetMapping("search")
+   public PageUtil searchForUpdateEmail(@RequestParam Map<String,Object> params) {
+       String keyword = (String)params.get("keyword");
+       if (StrUtil.isBlank(keyword)){
+          throw new GlobalException("キーワードを入力してください");
+       }
+       return mailManagerLogic.searchForUpdateEmail(params,keyword);
    }
 
 }

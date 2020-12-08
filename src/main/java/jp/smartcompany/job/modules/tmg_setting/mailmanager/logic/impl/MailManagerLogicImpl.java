@@ -20,6 +20,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellType;
@@ -231,9 +232,28 @@ public class MailManagerLogicImpl implements MailManagerLogic {
         return new PageUtil(result);
     }
 
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void updateMailList(List<UpdateMailDTO> list) {
+        String userId = SecurityUtil.getUserId();
+        Date now = new Date();
+        List<MastEmployeesDO> empList = CollUtil.newArrayList();
+        list.forEach(emp -> {
+            MastEmployeesDO mastEmployeesDO = new MastEmployeesDO();
+            mastEmployeesDO.setMeId(emp.getId());
+            mastEmployeesDO.setMeCmail(emp.getEmail());
+            mastEmployeesDO.setMeCmodifieruserid(userId);
+            mastEmployeesDO.setMeDmodifieddate(now);
+            empList.add(mastEmployeesDO);
+        });
+        mastEmployeesService.updateBatchById(empList);
+    }
 
-
-
+    @Override
+    public PageUtil searchForUpdateEmail(Map<String,Object> params, String keyword) {
+        IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(params);
+        return new PageUtil(mastEmployeesService.searchEmpForUpdateMail(pageQuery,keyword));
+    }
 
     private static File multipartFileToFile(MultipartFile file) throws IOException {
         File toFile = null;

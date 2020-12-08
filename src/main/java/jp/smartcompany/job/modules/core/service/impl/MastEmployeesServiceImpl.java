@@ -308,4 +308,9 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     public IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page) {
         return baseMapper.selectInvalidEmailEmpList(page);
     }
+
+    @Override
+    public IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword) {
+        return baseMapper.searchEmpForUpdateMail(page,keyword);
+    }
 }
