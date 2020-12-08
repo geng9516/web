@@ -210,6 +210,7 @@
                 loading: false,　       //ローディングアクション
                 hasPassedTimeCheck: false,
                 contentScrollTop: 0,
+                today:'',
                 kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
                 loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
                 sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
@@ -312,10 +313,11 @@
                         psApp:this.query.psApp,
                         baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
                     }
-                    const {data}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+                    const {data,sysDate}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList=data
                     this.defaultDate=this.dispMonthlyList[1].tda_dyyyymm
                     this.query.txtBaseDate=this.dispMonthlyList[1].tda_firstDay
+                    this.today=sysDate
                     await this.getHomeWorkInfo()
                     this.getHatuRei()
                 } catch (error) {
@@ -326,6 +328,9 @@
                 const dayOfWeek = e.mgdCsparechar
                 if (!dayOfWeek) {
                     return
+                }
+                if (e.hwApplicationdate === this.today) {
+                    return 'brown'
                 }
                 if (dayOfWeek != '0') {
                     return 'blue'
