@@ -88,7 +88,7 @@
         </div>
     </div>
     <div class="content_body">
-        <Alert class="primary-info">※承認済の場合、文字色が「水色」を表示します。</Alert>
+        <Alert class="primary-info">※承認済の場合、文字色が「水色」で表示されます。</Alert>
         <i-table  no-data-text="所属から職員を選んでください。" border :columns="columns"
                   　:row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOList" :loading="updateloading" >
             <template slot-scope="{ row , index}" slot="empname" >
@@ -126,7 +126,7 @@
         </i-table>
     </div>
     <!-- 在宅勤務申请個人 -->
-    <Drawer class="tc" title="在宅勤務編集画面-個人" placement="right" width="75%" v-model="hwApplyShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-職員単位" placement="right" width="75%" v-model="hwApplyShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -213,7 +213,7 @@
         </i-table>
     </Drawer>
     <!-- 在宅勤務申请list -->
-    <Drawer class="tc" title="在宅勤務編集画面-日" placement="right" width="75%" v-model="hwApplyListShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-日別単位" placement="right" width="75%" v-model="hwApplyListShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
