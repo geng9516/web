@@ -389,7 +389,9 @@
                 <Alert class="primary-info tl">123</Alert>
                 <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData"
                     :row-class-name="monthColDisabled" @on-row-click="patternSet">
-
+                    <template slot-scope="{ row, index }" slot="yyyymmdd">
+                        <span style="white-space:pre">{{row.yyyymmdd}}</span>
+                    </template>
                     <template slot-scope="{ row, index }" slot="kubun">
                         <span>{{row.kubun}}</span>
                     </template>
@@ -399,7 +401,7 @@
                     </template>
 
                     <template slot-scope="{ row, index }" slot="workhours">
-                        <span v-if="row.kubunid.indexOf('TMG_WORK') >-1 ">{{row.workhours}}</span>
+                        <span v-if="row.kubunid.indexOf('TMG_WORK') >-1 ">{{row.workhours | handleTime}}</span>
                         <span
                             v-else>{{computeWorkTime( monthData[index].starttime,monthData[index].endtime,monthData[index].restTime,index ) }}</span>
                     </template>
@@ -434,7 +436,7 @@
                             </Row>
                             <i-button class="mt5" size="small" ghost type="success" long
                                 @click="handleAddRest(monthData[index].restTime)"
-                                v-show="monthData[index].restTime.length < 2 && monthData[index].patternid === 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE' ">
+                                v-show="monthData[index].restTime.length < 4 && monthData[index].patternid === 'TMG_LIQUIDATION_PATTERN|CUSTOMIZE' ">
                                 +</i-button>
                         </div>
                         <div v-else>
@@ -630,9 +632,9 @@
                     columnsMonth: [
                         {
                             title: '日付',
-                            key: 'yyyymmdd',
+                            slot: 'yyyymmdd',
                             minWidth: 100,
-                            align: 'left'
+                            align: 'right'
                         },
                         {
                             title: '区分',
