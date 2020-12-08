@@ -1,12 +1,17 @@
 package jp.smartcompany.controller.tmg_setting;
 
+import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
-import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,7 +20,7 @@ public class MailManagerController {
 
    private final ScCacheUtil cacheUtil;
    private final IConfSyscontrolService confSyscontrolService;
-   private final IMastEmployeesService employeesService;
+   private final MailManagerLogic mailManagerLogic;
 
    private static final String MAIL_USERNAME = "MAIL_USERNAME";
    private static final String MAIL_PASSWORD = "MAIL_PASSWORD";
@@ -44,8 +49,18 @@ public class MailManagerController {
 
    @PostMapping("upload")
    public String uploadMailList(MultipartFile file) {
-      employeesService.uploadMailList(file);
+      mailManagerLogic.uploadMailList(file);
       return "導入成功";
+   }
+
+   @RequestMapping("template")
+   public void exportUploadTemplate(HttpServletResponse response,@RequestParam(defaultValue = "xls") String type){
+      mailManagerLogic.exportXlsTemplate(response,type);
+   }
+
+   @RequestMapping("invalid")
+   public PageUtil invalidEmailEmpList(@RequestParam Map<String,Object> params) {
+      return mailManagerLogic.getInvalidEmailEmpList(params);
    }
 
 }

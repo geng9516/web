@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -145,5 +146,5 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * ===================用户管理 搜索用户结束===============
      */
 
-    void uploadMailList(MultipartFile file);
+    IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
 }

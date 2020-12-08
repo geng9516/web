@@ -5,6 +5,7 @@
             resultType="jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo">
         SELECT
             TO_CHAR(TLDD_DYYYYMMDD, 'dd')||'   '|| to_char(TLDD_DYYYYMMDD,'dy') AS YYYYMMDD,
+            TO_CHAR(TLDD_DYYYYMMDD, 'yyyy/mm/dd') as DAYS,
             TMG_F_GET_MGD(TLDD_CKUBUN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBUN,
             TLDD_CKUBUN AS KUBUNID,
             TLDD_CWORKHOURS AS WORKHOURS,
@@ -22,7 +23,7 @@
             TLDD_CSPARECHAR1         AS STATUS,
             TLDD_CSPARECHAR2         AS NTFSTATUS,
             TLDD_CSPARECHAR3         AS HOLFLG,
-            TLDD_CNOTIFICATIONTYPE   AS NTFTYPE,
+            TLDD_CNOTIFICATIONTYPE   AS NTFTYPE, --仅第一个
             TLDD_CPATTERN            AS PATTERNID
         FROM
             TMG_LIQUIDATION_DAILY

@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 public class LiquidationDailyInfoVo {
     private String yyyymmdd;
+    private String days;
     private String kubun;
     private String kubunid;
     private String workhours;
@@ -29,5 +30,6 @@ public class LiquidationDailyInfoVo {
     private String ntftype;
     private String patternid;
     private String patternname;
+    private String comment;
     private boolean disabled;
 }
