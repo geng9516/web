@@ -79,6 +79,7 @@ new Vue({
       loading: false,　       //ローディングアクション
       hasPassedTimeCheck: false,
       contentScrollTop: 0,
+      today:'',
       query: {
         employeeId: LOGIN_EMPOLYEE,　 //組織ツリーで選択した職員番号
         psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -229,7 +230,8 @@ new Vue({
           psApp:this.query.psApp,
           baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
         }
-        const {data}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+        const {data,sysDate}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+        this.today=sysDate
         this.dispMonthlyList= data.map(e => {
           return {
             ...e,
@@ -249,6 +251,9 @@ new Vue({
       const dayOfWeek = e.mgdCsparechar
       if (!dayOfWeek) {
         return
+      }
+      if (e.hwApplicationdate === this.today) {
+        return 'brown'
       }
       if (dayOfWeek != '0') {
         return 'blue'
