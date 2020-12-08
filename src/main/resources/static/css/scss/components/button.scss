@@ -34,7 +34,7 @@
     font-size: 14px;
     font-weight: bold;
     &:nth-child(2n) {
-      color: var(--form-label);
+      color: var(--row-label-primary);
       margin-left: 28px;
       &::before {
         content: '';
