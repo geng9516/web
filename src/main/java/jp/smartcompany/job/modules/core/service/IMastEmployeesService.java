@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -146,4 +147,6 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      */
 
     void uploadMailList(MultipartFile file);
+
+    void exportXlsTemplate(HttpServletResponse response,String type);
 }

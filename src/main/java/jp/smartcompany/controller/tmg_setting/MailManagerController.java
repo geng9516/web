@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("sys/mailmanager")
@@ -46,6 +48,11 @@ public class MailManagerController {
    public String uploadMailList(MultipartFile file) {
       employeesService.uploadMailList(file);
       return "導入成功";
+   }
+
+   @RequestMapping("template")
+   public void exportUploadTemplate(HttpServletResponse response,@RequestParam(defaultValue = "xls") String type){
+      employeesService.exportXlsTemplate(response,type);
    }
 
 }
