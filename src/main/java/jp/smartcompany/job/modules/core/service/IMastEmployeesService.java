@@ -146,7 +146,5 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * ===================用户管理 搜索用户结束===============
      */
 
-    void uploadMailList(MultipartFile file);
-
-    void exportXlsTemplate(HttpServletResponse response,String type);
+    IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
 }
