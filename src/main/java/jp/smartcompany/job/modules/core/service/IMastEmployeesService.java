@@ -15,6 +15,7 @@ import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -147,4 +148,7 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
     IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
 
     IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword);
+
+
+    Optional<MastEmployeesDO> getEmployInfo(String empId);
 }

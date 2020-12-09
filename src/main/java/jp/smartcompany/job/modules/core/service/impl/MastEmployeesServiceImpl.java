@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -312,5 +314,18 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     @Override
     public IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword) {
         return baseMapper.searchEmpForUpdateMail(page,keyword);
+    }
+
+    @Override
+    public Optional<MastEmployeesDO> getEmployInfo(String empId) {
+        QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
+        List<MastEmployeesDO> employList =  list(qw.eq("ME_CUSERID",empId)
+                .eq("ME_CCUSTOMERID_CK","01")
+                .eq("ME_CCUSTOMERID_CK","01")
+                 .select("ME_CKANJINAME","ME_CMAIL"));
+        if (CollUtil.isEmpty(employList)) {
+            return Optional.empty();
+        }
+        return Optional.of(employList.get(0));
     }
 }

@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.map.multi.ListValueMap;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -17,17 +18,18 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.CoreError;
+import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
-import jp.smartcompany.job.modules.core.service.IMastAccountService;
-import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
-import jp.smartcompany.job.modules.core.service.IMastPasswordService;
-import jp.smartcompany.job.modules.core.service.LoginAuditService;
+import jp.smartcompany.job.modules.core.service.*;
+import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,8 +63,8 @@ public class AuthBusiness {
     private final ScCacheUtil scCacheUtil;
     private final LRUCache<Object,Object> lruCache;
     private final TimedCache<String,Object> timedCache;
-
-    public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
+    private final IMastMailInfoService mailService;
+    private final IMastEmployeesService employeesService;
 
     /**
      * 登录密码
@@ -103,6 +103,24 @@ public class AuthBusiness {
             // パスワードマスタ 新規登録
             iMastPasswordService.save(setData(dto.getUsername(), DigestUtil.md5Hex(dto.getNewPassword())));
         }
+
+        // 发送邮件
+        Map<String,Object> extraContent = MapUtil.newHashMap();
+        extraContent.put(MastMailInfoServiceImpl.KEY_ACCOUNT,dto.getUsername());
+        extraContent.put(MastMailInfoServiceImpl.KEY_PASSWORD,dto.getNewPassword());
+
+        SendMailBO sendMailBO = new SendMailBO();
+        sendMailBO.setExtraContent(extraContent);
+        sendMailBO.setEmpId(dto.getUsername());
+        Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(dto.getUsername());
+        optEmploy.ifPresent(employ -> {
+            if (StrUtil.isNotBlank(employ.getMeCmail())) {
+                sendMailBO.setToAddress(employ.getMeCmail());
+                sendMailBO.setEmpName(employ.getMeCkanjiname());
+                mailService.sendMail(MailType.PASSWORD_CHANGED, sendMailBO);
+            }
+        });
+
         timedCache.remove(SecurityUtil.getUsername()+"passwordExpired");
     }
 
