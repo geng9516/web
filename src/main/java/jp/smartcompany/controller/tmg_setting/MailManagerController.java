@@ -32,6 +32,7 @@ public class MailManagerController {
    private static final String MAIL_PASSWORD = "MAIL_PASSWORD";
    private static final String MAIL_PORT = "MAIL_PORT";
    private static final String MAIL_HOST = "MAIL_HOST";
+   private static final String MAIL_ENABLE = "MAIL_ENABLE";
 
    @GetMapping("server")
    public MailConfigDTO mailConfig() {
@@ -39,11 +40,14 @@ public class MailManagerController {
       String password = cacheUtil.getSystemProperty(MAIL_PASSWORD);
       String port = cacheUtil.getSystemProperty(MAIL_PORT);
       String host = cacheUtil.getSystemProperty(MAIL_HOST);
+      Boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
+
       MailConfigDTO mailConfigDTO = new MailConfigDTO();
       mailConfigDTO.setUsername(username);
       mailConfigDTO.setPassword(password);
       mailConfigDTO.setPort(port);
       mailConfigDTO.setHost(host);
+      mailConfigDTO.setStatus(status);
       return mailConfigDTO;
    }
 
