@@ -116,7 +116,6 @@
                     <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='4'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
-                        <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[3].value">{{ StatusList[3].label }}</i-option>
                     </i-select>
                 </span>
