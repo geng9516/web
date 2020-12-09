@@ -70,7 +70,7 @@ public class MailManagerController {
    }
 
    @PostMapping("update")
-   public String updateMailList(@Valid @NotEmpty List<UpdateMailDTO> list) {
+   public String updateMailList(@Valid @NotEmpty @RequestBody List<UpdateMailDTO> list) {
       mailManagerLogic.updateMailList(list);
       return "メール変更成功";
    }
