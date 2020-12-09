@@ -99,8 +99,10 @@ public class TmgLiquidationPeriodBean {
             List<LiquidationDailyDto> monthDtos = iTmgliquidationDailyService.getMonthInfo(empId, yyyymm,startDate,endDate);
             //清算日休憩数据获取
             for (int i=0 ;i<monthDtos.size();i++){
-                List<String> ntfInfo= iTmgNotificationService.getSelectNtfInfo(monthDtos.get(i).getYyyymmdd(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
-                monthDtos.get(i).setNtftype(ntfInfo);
+                if(!StrUtil.hasEmpty(monthDtos.get(i).getNtfstatus()) && monthDtos.get(i).getNtfstatus().equals("TMG_NTFSTATUS|5")){
+                    List<String> ntfInfo= iTmgNotificationService.getSelectNtfInfo(monthDtos.get(i).getYyyymmdd(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
+                    monthDtos.get(i).setNtftype(ntfInfo);
+                }
             }
             editVo.getMonthDtoList().add(monthDtos);
         }
@@ -269,7 +271,7 @@ public class TmgLiquidationPeriodBean {
         //月data
         List<LiquidationDailyInfoVo> liquidationDailyInfoVoList = iTmgliquidationDailyService.selectDailyInfo(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
         for (int i=0;i<liquidationDailyInfoVoList.size();i++) {
-            if(liquidationDailyInfoVoList.get(i).getStatus().equals("TMG_NTFSTAUTS|5")){
+            if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getNtfStatus()) && liquidationDailyInfoVoList.get(i).getNtfStatus().equals("TMG_NTFSTAUTS|5")){
                 List<String> ntfList=iTmgNotificationService.getSelectNtfInfo(liquidationDailyInfoVoList.get(i).getDays(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
                 liquidationDailyInfoVoList.get(i).setComment(ntfList.stream().filter(string ->!ntfList.isEmpty()).collect(Collectors.joining("\\")));
             }
