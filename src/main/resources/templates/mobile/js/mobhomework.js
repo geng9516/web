@@ -6,15 +6,19 @@ new Vue({
       hwhomeworkShow: false,
       StatusList0: [
         {
+          value:'0',
+          text: ' ',
+        },
+        {
+          value: '0',
+          text: 'なし',
+        },
+        {
           value: '1',
           text: '承認待',
         }
       ],
       StatusList: [
-        {
-          value: '0',
-          text: 'なし',
-        },
         {
           value: '1',
           text: '承認待',
@@ -44,10 +48,6 @@ new Vue({
         {
           value: '1',
           text: '承認待',
-        },
-        {
-          value: '3',
-          text: '取下'
         },
         {
           value: '4',
