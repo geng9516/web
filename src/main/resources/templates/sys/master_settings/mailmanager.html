@@ -111,11 +111,11 @@
           </ul>
           <Alert class="primary-info mb10">上限 500kBytes</Alert>
             <i-button class="mb20" type="primary" icon="ios-cloud-upload" ghost @click="uploadCsv" :loading="uploadCsvLoading" long>upload</i-button>
-            <Alert class="error-info mb10" v-if="unsetPeople > 0">{{`まだ${unsetPeople} 人のメールが設定されていないです。`}}<p class="cursor" style="position: absolute;top: 9px;right: 11px;color: var(--primary-info);" @click="getUnsetPeople(true)">照会</p></Alert>
+            <Alert class="error-info mb10" v-if="unsetPeople > 0">{{`まだ${unsetPeople} 人のメールが設定されていないです。`}}<p class="cursor" style="position: absolute;top: 9px;right: 11px;color: var(--primary-info);" @click="getUnsetPeople(true, true)">照会</p></Alert>
             <Row class="tl mb5" :gutter="8">
               <i-col span="14">
                 <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
-                  @keyup.enter.native="handleSearchEmpt">
+                  @keyup.enter.native="handleSearchEmpt()">
                 </i-input>
               </i-col>
               <i-col span="10" class="no-border-radius">
@@ -199,16 +199,16 @@
             this.loading = false
           }
         },
-        async getUnsetPeople(flag) {
+        async getUnsetPeople(flag,flag2) {
           this.tableLoading = true
+          this.searchEmpt = ''
           try {
+            if(flag2) this.pageValue.curPage = 1
             const { data } = await this.http.get('sys/mailmanager/invalid',{page:this.pageValue.curPage, limit:50})
             this.unsetPeople = data.totalCount
             if(flag) {
               this.tableData = data.list
               this.pageValue.amount = data.totalCount
-            } else {
-              this.pageValue.curPage = 1
             }
           } catch (error) {
           } finally {
@@ -217,7 +217,8 @@
         },
         pageChange(e) {
           this.pageValue.curPage = e
-          this.getUnsetPeople(true)
+          if(this.searchEmpt) this.handleSearchEmpt(true)
+          else this.getUnsetPeople(true)
         },
         async update() {
           this.$Modal.confirm({
@@ -239,9 +240,53 @@
             }
           })
         },
-        handleSearchEmpt() { },
-        updateMail() {
-          
+        async handleSearchEmpt(flag) {
+          if(!this.searchEmpt) return
+          this.tableLoading = true
+          try {
+            if(!flag) {
+             this.pageValue.curPage = 1
+            }
+            const { data } = await this.http.get('sys/mailmanager/search', {keyword:this.searchEmpt,page:this.pageValue.curPage, limit:50})
+            this.tableData = data.list
+            this.pageValue.amount = data.totalCount
+          } catch (error) {
+          } finally {
+            this.tableLoading = false
+          }
+        },
+        async updateMail() {
+          let updateList = []
+          this.$refs.table.rebuildData.some(e=> {
+            if(e.meCmail) {
+              if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(e.meCmail)) {
+                this.$Notice.warning({ title: '注意', desc: 'メールフォーマットが正しくありません', duration: 6.5 })
+                return true
+              }
+              updateList = updateList.concat({
+              id: e.meCemployeeidCk,
+              email: e.meCmail
+             })
+            }
+          })
+          if(updateList.length === 0) return
+          this.$Modal.confirm({
+            title: '注意',
+            content: 'メールを更新します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              this.tableLoading = true
+              const update = []
+              try {
+                const { data } = await this.http.post('sys/mailmanager/update', updateList)
+                this.$Message.success('更新完了')
+              } catch (error) {
+              } finally {
+                this.tableLoading = false
+              }
+            }
+          })
         },
         async uploadCsv() {
           if(this.uploadFiles.length === 0) return
