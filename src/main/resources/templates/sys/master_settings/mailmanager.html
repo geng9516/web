@@ -105,7 +105,7 @@
                   <span @click="">
                       <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
                   </span>
-                  <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click=""></i>
+                  <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="()=> uploadFiles = []"></i>
                   <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
               </li>
           </ul>
@@ -296,7 +296,7 @@
             await this.http.uploadFiles('sys/mailmanager/upload', {
               file: this.uploadFiles[0],
             })
-            this.$Message.success('yes!')
+            this.$Message.success('アップロード完了')
           } catch (error) {
           } finally {
             this.uploadCsvLoading = false
