@@ -177,7 +177,7 @@ public class TmgEmpList {
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.debug("empList结果:{}",entityList);
+//            log.debug("empList结果:{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -186,7 +186,7 @@ public class TmgEmpList {
             }
         }
         dataArray = JSONArrayGenerator.entityListTowardList(entityList);
-        log.debug("【empList的dataArray：{}】",dataArray);
+//        log.debug("【empList的dataArray：{}】",dataArray);
      }
 
     /**
