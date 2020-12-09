@@ -87,23 +87,23 @@
             <i-table  no-data-text="" border :columns="columns1" :data="HomeWorkVOUpdateList" >
                 <template slot-scope="{ row, index }" slot="hwstatus">
                     <span v-if="HomeWorkVOUpdateList[index].hwstatus=='1'">
-                        <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList" placeholder=" " @change="editBack(index)" class="mr30">
+                        <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList" placeholder=" " @change="editBack(index)" class="mr30 width100">
                         </cube-select>
                     </span>
                     <span v-else-if="HomeWorkVOUpdateList[index].hwstatus=='2'">
-                       <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList1" placeholder=" " @change="editBack(index)" class="mr30">
+                       <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList1" placeholder=" " @change="editBack(index)" class="mr30 width100">
                         </cube-select>
                     </span>
                     <span v-else-if="HomeWorkVOUpdateList[index].hwstatus=='3'">
-                        <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList2" placeholder=" " @change="editBack(index)" class="mr30">
+                        <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList2" placeholder=" " @change="editBack(index)" class="mr30 width100">
                         </cube-select>
                     </span>
                     <span v-else-if="HomeWorkVOUpdateList[index].hwstatus=='4'">
-                         <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList3" placeholder=" " @change="editBack(index)" class="mr30">
+                         <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList3" placeholder=" " @change="editBack(index)" class="mr30 width100">
                         </cube-select>
                     </span>
                      <span v-else>
-                         <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList0" placeholder=" " @change="editBack(index)" class="mr30">
+                         <cube-select v-model="HomeWorkVOUpdateList[index].hwstatus" title="区分" :options="StatusList0" placeholder=" " @change="editBack(index)" class="mr30 width100">
                         </cube-select>
                     </span>
                 </template>

@@ -6,10 +6,6 @@ new Vue({
       hwhomeworkShow: false,
       StatusList0: [
         {
-          value: '0',
-          text: 'なし',
-        },
-        {
           value: '1',
           text: '承認待',
         }
