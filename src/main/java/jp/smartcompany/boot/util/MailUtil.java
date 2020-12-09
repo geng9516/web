@@ -25,6 +25,7 @@ import java.util.Properties;
 
 /**
  * 发送邮件工具类
+ * @author Xiao Wenpeng
  */
 @Component
 @RequiredArgsConstructor
@@ -66,12 +67,12 @@ public class MailUtil {
      */
     private void sendText(String from,String to,String title,String content) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setFrom(from);
-        message.setSubject(title);
-        message.setText(content);
-        log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
-        javaMailSender.send(message);
+            message.setTo(to);
+            message.setFrom(from);
+            message.setSubject(title);
+            message.setText(content);
+            log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
+            javaMailSender.send(message);
     }
 
     /**
@@ -106,12 +107,12 @@ public class MailUtil {
      * @param cid メール定義ID
      * @param empId　メールを受け取る職員番号
      * @param standardDate　基準日
-     * @param toAddress　送信先アドレス
+     * @param to　送信先アドレス
      * @param title　送信メール件名
      * @param content　送信メールメッセージ
      * @param status　送信ステータス ０：未送信　１：送信済　２：送信エラー
      */
-    public void saveSendMailHistory(String from,String cid,String empId,Date standardDate,String toAddress,String title,String content,int status) {
+    public void saveSendMailHistory(String from,String cid,String empId,Date standardDate,String to,String title,String content,int status) {
         Date now =DateUtil.date();
         TmgHistMaildataDO tmgHistMaildataDO = new TmgHistMaildataDO();
         tmgHistMaildataDO.setThmdCcompanyid("01");
@@ -123,7 +124,7 @@ public class MailUtil {
         tmgHistMaildataDO.setThmdDyyyymmdd(standardDate);
         tmgHistMaildataDO.setThmdDcreate(now);
         tmgHistMaildataDO.setThmdCfromaddress(from);
-        tmgHistMaildataDO.setThmdCtoaddress(toAddress);
+        tmgHistMaildataDO.setThmdCtoaddress(to);
         tmgHistMaildataDO.setThmdCtitle(title);
         tmgHistMaildataDO.setThmdCcontent(content);
         tmgHistMaildataDO.setThmdDsend(now);
