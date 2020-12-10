@@ -71,12 +71,12 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final SectionPostLogic sectionPostLogic;
 
     /** 法人選択フラグ(全社区分) */
-    private static final String COMPANY_FLG_ALL = "all";
-    /** 法人選択フラグ(個別法人) */
-    private static final String COMPANY_FLG_ONE = "one";
-
-    /** 処理区分(法人) */
-    public static final String FG_COMP             = "01";
+//    private static final String COMPANY_FLG_ALL = "all";
+//    /** 法人選択フラグ(個別法人) */
+//    private static final String COMPANY_FLG_ONE = "one";
+//
+//    /** 処理区分(法人) */
+//    public static final String FG_COMP             = "01";
     /** 処理区分(法人＆組織指定リスト) */
     public static final String FG_COMP_SEC         = "02";
     /** 処理区分(組織ごとの定義情報取得(法人＆組織＆役職リスト)) */
