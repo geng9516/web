@@ -26,8 +26,6 @@ public class EmployMailDO {
    private String tmaEmpId;
    private String tmaEmpName;
    private String tmaEmail;
-   private Date tmaStartDate;
-   private Date tmaEndDate;
    private String tmaCreatedBy;
    private String tmaUpdatedBy;
    private Date tmaCreateTime;
