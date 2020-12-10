@@ -71,6 +71,21 @@
             </Row>
           </div>
 
+          <div class="ml20 pt20">
+            <Divider></Divider>
+            <Row>
+              <i-col span="6" offse="1">
+                <h2>ON / OFF</h2>
+              </i-col>
+              <i-col span="9" offset="1">
+                <i-switch v-model="updateValue.status" size="large">
+                  <span slot="open">ON</span>
+                  <span slot="close">OFF</span>
+                </i-switch>
+              </i-col>
+            </Row>
+          </div>
+
           <Divider></Divider>
           <Row>
               <i-col span="9" style="margin-left: 29.933333%">
