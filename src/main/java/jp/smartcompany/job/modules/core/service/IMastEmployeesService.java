@@ -145,10 +145,5 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * ===================用户管理 搜索用户结束===============
      */
 
-    IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
-
-    IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword);
-
-
     Optional<MastEmployeesDO> getEmployInfo(String empId);
 }

@@ -18,9 +18,11 @@ import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
-import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.bo.UpdateEmployMailBO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellType;
@@ -47,7 +49,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MailManagerLogicImpl implements MailManagerLogic {
 
-    private final IMastEmployeesService mastEmployeesService;
+    private final IEmployMailService employMailService;
 
     private static final String XLSX = "xlsx";
     private static final String XLS = "xls";
@@ -58,7 +60,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     public void uploadMailList(MultipartFile file) {
         XSSFWorkbook workbook = null;
         InputStream is;
-        Map<String,String> updateMailList = MapUtil.newHashMap(true);
+        Map<String, UpdateEmployMailBO> updateMailList = MapUtil.newHashMap(true);
         try {
             File uploadFile = multipartFileToFile(file);
             String suffix = FileUtil.getSuffix(uploadFile);
@@ -77,6 +79,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
                 for (int i = 1; i < totalRows; i++) {
                     XSSFRow row = sheet.getRow(i);
                     String empId = null;
+                    String empName = null;
                     String email = null;
                     for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                         XSSFCell cell = row.getCell(j);
@@ -85,11 +88,18 @@ public class MailManagerLogicImpl implements MailManagerLogic {
                         if (j == 0) {
                             empId = StrUtil.trim(value);
                             // email
-                        } else if (j == 1) {
+                        } else if (j==1) {
+                            empName = StrUtil.trim(value);
+                        } else if (j == 2) {
                             email = StrUtil.trim(value);
                         }
                     }
-                    updateMailList.put(empId, email);
+                    if (StrUtil.isAllNotBlank(empId,empName,email)&& Validator.isEmail(email)) {
+                        UpdateEmployMailBO mailBO = new UpdateEmployMailBO();
+                        mailBO.setEmpName(empName);
+                        mailBO.setEmail(email);
+                        updateMailList.put(empId, mailBO);
+                    }
                 }
             } else if (StrUtil.equalsIgnoreCase(suffix,CSV)){
                 CsvReader reader = CsvUtil.getReader();
@@ -99,8 +109,14 @@ public class MailManagerLogicImpl implements MailManagerLogic {
                     CsvRow csvRow = rows.get(i);
                     List<String> rawList = csvRow.getRawList();
                     String empId = StrUtil.trim(rawList.get(0));
-                    String email = StrUtil.trim(rawList.get(1));
-                    updateMailList.put(empId,email);
+                    String empName = StrUtil.trim(rawList.get(1));
+                    String email = StrUtil.trim(rawList.get(2));
+                    if (StrUtil.isAllNotBlank(empId,empName,email) && Validator.isEmail(email)) {
+                        UpdateEmployMailBO mailBO = new UpdateEmployMailBO();
+                        mailBO.setEmpName(empName);
+                        mailBO.setEmail(email);
+                        updateMailList.put(empId, mailBO);
+                    }
                 }
             } else {
                 throw new GlobalException("サポートされていないファイルタイプ["+suffix+"]");
@@ -121,35 +137,38 @@ public class MailManagerLogicImpl implements MailManagerLogic {
         if (CollUtil.isEmpty(updateMailList)) {
             throw new GlobalException("メールデータは入力されていません");
         }
-        List<MastEmployeesDO> employList = CollUtil.newArrayList();
+        List<EmployMailDO> insertEmployMailList = CollUtil.newArrayList();
         String operator = SecurityUtil.getUserId();
         Date now = new Date();
-        updateMailList.forEach((empId,email) -> {
-            if (StrUtil.isNotBlank(empId) && Validator.isEmail(email)) {
-                QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
-                qw.eq("ME_CCUSTOMERID_CK","01")
-                        .eq("ME_CCOMPANYID","01")
-                        .eq("ME_CEMPLOYEEID_CK",empId)
-                        .le("ME_DSTARTDATE",now)
-                        .ge("ME_DENDDATE",now);
-                List<MastEmployeesDO> emps = mastEmployeesService.list(qw);
-                employList.addAll(emps);
+        updateMailList.forEach((empId,mailBO) -> {
+             String email = mailBO.getEmail();
+             String empName = mailBO.getEmpName();
+             QueryWrapper<EmployMailDO> qw = SysUtil.query();
+             // 如果其他社员没有使用过此邮箱，则可以更新
+             if(employMailService.count(qw.eq("tma_email",email).ne("tma_emp_id",empId))==0){
+                 EmployMailDO saveEmployMailDO = new EmployMailDO();
+                 saveEmployMailDO.setTmaEmail(email);
+                 saveEmployMailDO.setTmaEmpId(empId);
+                 saveEmployMailDO.setTmaEmpName(empName);
+                 saveEmployMailDO.setTmaCreatedBy(operator);
+                 saveEmployMailDO.setTmaUpdatedBy(operator);
+                 saveEmployMailDO.setVersion(1L);
+                 saveEmployMailDO.setTmaUpdateTime(now);
+                 saveEmployMailDO.setTmaCreateTime(now);
+                 insertEmployMailList.add(saveEmployMailDO);
             }
         });
-        if (CollUtil.isEmpty(employList)){
-            throw new GlobalException("アカウントIDまたは社員番号は存在しません");
+        if (CollUtil.isEmpty(insertEmployMailList)) {
+           throw new GlobalException("メールリストは空くにできません");
         }
-        employList.forEach(employ -> {
-            employ.setMeDmodifieddate(now);
-            employ.setMeCmodifieruserid(operator);
-            employ.setMeCmail(updateMailList.get(employ.getMeCemployeeidCk()));
-        });
-        mastEmployeesService.updateBatchById(employList);
+        if (CollUtil.isNotEmpty(insertEmployMailList)){
+           employMailService.saveBatch(insertEmployMailList);
+        }
     }
 
     @Override
     public void exportXlsTemplate(HttpServletResponse response, String type){
-        List<String> titles = CollUtil.newArrayList("アカウントIDまたは社員番号", "メールアドレス");
+        List<String> titles = CollUtil.newArrayList("社員番号","社員名", "メールアドレス");
         Date now = new Date();
         String filenamePrefix = "メール登録-"+now.getTime();
 
@@ -228,7 +247,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     @Override
     public PageUtil getInvalidEmailEmpList(Map<String,Object> params) {
         IPage<MastEmployeesDO> pageQuery = new PageQuery<MastEmployeesDO>().getPage(params);
-        IPage<MastEmployeesDO> result = mastEmployeesService.selectInvalidEmailEmpList(pageQuery);
+        IPage<MastEmployeesDO> result = employMailService.selectInvalidEmailEmpList(pageQuery);
         return new PageUtil(result);
     }
 
@@ -237,22 +256,24 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     public void updateMailList(List<UpdateMailDTO> list) {
         String userId = SecurityUtil.getUserId();
         Date now = new Date();
-        List<MastEmployeesDO> empList = CollUtil.newArrayList();
+        List<EmployMailDO> empList = CollUtil.newArrayList();
         list.forEach(emp -> {
-            MastEmployeesDO mastEmployeesDO = new MastEmployeesDO();
-            mastEmployeesDO.setMeId(emp.getId());
-            mastEmployeesDO.setMeCmail(emp.getEmail());
-            mastEmployeesDO.setMeCmodifieruserid(userId);
-            mastEmployeesDO.setMeDmodifieddate(now);
-            empList.add(mastEmployeesDO);
+            EmployMailDO employMailDO = new EmployMailDO();
+            employMailDO.setTmaEmpName(emp.getEmpName());
+            employMailDO.setTmaEmpId(emp.getEmpId());
+            employMailDO.setTmaEmail(emp.getEmail());
+            employMailDO.setTmaCreateTime(now);
+            employMailDO.setTmaUpdateTime(now);
+            employMailDO.setTmaUpdatedBy(userId);
+            empList.add(employMailDO);
         });
-        mastEmployeesService.updateBatchById(empList);
+        employMailService.saveBatch(empList);
     }
 
     @Override
     public PageUtil searchForUpdateEmail(Map<String,Object> params, String keyword) {
         IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(params);
-        return new PageUtil(mastEmployeesService.searchEmpForUpdateMail(pageQuery,keyword));
+        return new PageUtil(employMailService.searchEmpForUpdateMail(pageQuery,keyword));
     }
 
     private static File multipartFileToFile(MultipartFile file) throws IOException {

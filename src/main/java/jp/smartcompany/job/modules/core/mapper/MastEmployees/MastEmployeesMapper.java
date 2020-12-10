@@ -172,10 +172,4 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
 
     PersonalInfoDTO selectPersonalInfo(@Param("custId") String custId,@Param("userId") String userId,@Param("language") String language,@Param("baseDate") String baseDate);
 
-
-
-    IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
-
-
-    IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,@Param("keyword") String keyword);
 }

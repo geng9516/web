@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.tmg_setting.mailmanager.mapper.EmployMailMapper">
+
+    <select id="selectInvalidEmailEmpList" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO">
+        select
+            ME_CEMPLOYEEID_CK,main.ME_CUSERID,main.ME_DSTARTDATE,ME_CKANANAME,
+            CASE
+              WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                PSMASTER.FUNC_GET_EMP_NAME('01',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','ja')
+              ELSE
+                PSMASTER.FUNC_GET_EMP_NAME('01',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'ja')
+            END ME_CNAME
+        from
+            MAST_EMPLOYEES main
+            left join T_EMPLOY_MAIL mail on main.ME_CEMPLOYEEID_CK = mail.TMA_EMP_ID
+        <where>
+            and mail.TMA_EMAIL is null
+            and  ME_CCOMPANYID = '01'
+            and ME_CIFSTILLEMPLOYEDID = '0'
+            and TRUNC(SYSDATE) >= ME_DSTARTDATE
+            and TRUNC(SYSDATE) <![CDATA[<=]]> ME_DENDDATE
+        </where>
+            ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+</mapper>

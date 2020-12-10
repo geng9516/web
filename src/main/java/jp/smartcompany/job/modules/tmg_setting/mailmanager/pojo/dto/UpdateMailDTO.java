@@ -5,14 +5,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @ToString
 public class UpdateMailDTO {
 
-    private Long id;
+    @NotBlank
+    private String empId;
+    private String empName;
     @Email
+    @NotBlank
     private String email;
 
 }

@@ -307,16 +307,6 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     /*========================= 用户管理相关sql结束 ==================================*/
 
     @Override
-    public IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page) {
-        return baseMapper.selectInvalidEmailEmpList(page);
-    }
-
-    @Override
-    public IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword) {
-        return baseMapper.searchEmpForUpdateMail(page,keyword);
-    }
-
-    @Override
     public Optional<MastEmployeesDO> getEmployInfo(String empId) {
         QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
         List<MastEmployeesDO> employList =  list(qw.eq("ME_CUSERID",empId)
