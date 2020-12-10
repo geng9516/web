@@ -173,6 +173,8 @@ public class TmgLiquidationPeriodBean {
         tlpDo.setTlpCmaxcontiweek(!StrUtil.hasEmpty(updateDto.getMaxContiWeeks())?Long.parseLong(updateDto.getMaxContiWeeks()):(long)3);
         //週間労働時間上限超過可能回数
         tlpDo.setTlpCoverweekcount(!StrUtil.hasEmpty(updateDto.getOverContiWeeks())?Long.parseLong(updateDto.getOverContiWeeks()):(long)3);
+        //週間労働時間上限超過可能回数
+        tlpDo.setTlpNsparenum1(!StrUtil.hasEmpty(updateDto.getBeginOfWeek()) ?Long.parseLong(updateDto.getBeginOfWeek()):null);
 
         tlpDo.setTlpCtlpid(seq);
         return iTmgliquidationPeriodService.getBaseMapper().insert(tlpDo);

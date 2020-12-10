@@ -200,6 +200,10 @@
                             <input-number class="width100" v-model="newLiquidationInfo.overContiWeeks"
                                 placeholder="週" />
                         </form-item>
+                        <form-item label="週の開始日">
+                            <input-number class="width100" v-model="newLiquidationInfo.beginOfWeek"
+                                          placeholder="曜日" />
+                        </form-item>
                     </i-form>
                 </div>
                 <div class="tr">
@@ -563,7 +567,8 @@
                         totalWorkDays: '',
                         maxContiDays: '',
                         maxContiWeeks: '',
-                        overContiWeeks: ''
+                        overContiWeeks: '',
+                        beginOfWeek:''
                     },
 
                     //編集画面
@@ -873,6 +878,7 @@
                     }
                     try {
                         const { data } = await this.http.postForm('sys/tmgliquidationperiod/deleteLiquidation', OPTS)
+                        this.handleClickLeaf()
                     } catch (error) {
                         return
                     } finally {
