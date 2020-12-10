@@ -28,9 +28,18 @@ public class GreenNutsTimePunchBean {
     private final ITmgGreennutsTplogService iTmgGreennutsTplogService;
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgGreennutsEmployeesService iTmgGreennutsEmployeesService;
-    private final String MODPROGRAMID = "TmgGreenNutsTimepunchAction#timepunch";
+    //打刻区分_出勤
+    private final String Cs_TPTYPE_OPEN  = "01";
+    //打刻区分_退勤
+    private final String Cs_TPTYPE_CLOSE = "02";
+    //打刻区分_出勤
+    private final String Cs_TPTYPE_OPEN_ACTION  = "GreenNuts_TimePunch_ACT_EXEC_OPEN";
+    //打刻区分_退勤
+    private final String Cs_TPTYPE_CLOSE_ACTION = "GreenNuts_TimePunch_ACT_EXEC_CLOSE";
 
     public String timePunch(String data, int count, String no, int length) {
+
+        String tmgGreenNutsTimepunchCode = "";
         //失败返回 エラーコード 1 異常 2 固定 01   サーバで検出したエラー詳細コード
         String errCode = "1201";
         //打刻数据大小=条数x每条大小
@@ -53,14 +62,23 @@ public class GreenNutsTimePunchBean {
                 tplog.setTgtlCemployeeid(tpdata.substring(16, 26));
                 // 27～28バイト目（2バイト）：打刻区分（01:出勤,02:退勤,03:外出,04:戻り）
                 tplog.setTgtlCtptypeid(tpdata.substring(26, 28));
+
+                if (tplog.getTgtlCtptypeid().equals(Cs_TPTYPE_OPEN)){
+                    tmgGreenNutsTimepunchCode = Cs_TPTYPE_OPEN_ACTION;
+                } else if (tplog.getTgtlCtptypeid().equals(Cs_TPTYPE_CLOSE)){
+                    tmgGreenNutsTimepunchCode = Cs_TPTYPE_CLOSE_ACTION;
+                }
+                // スキャン日時
                 tplog.setTgtlCtptime(punchTime);
-                //端末に登録されている端末製造番号
+                //最終更新者に端末製造番号を設定する
                 tplog.setTgtlCmodifieruserid(no);
+                //最終更新日時
+                tplog.setTgtlDmodifieddate(Timestamp.valueOf(yyyyMMddHHmmss));
                 //通过ICカード番号查询職員
                 List<TmgGreennutsEmployeesDO> emplist = iTmgGreennutsEmployeesService.
                         getBaseMapper().
                         selectList(SysUtil.<TmgGreennutsEmployeesDO>query().
-                                eq("TGE_CICCARDID", tplog.getTgtlCiccardid())
+                                eq("TGE_CICCARDID", tplog.getTgtlCiccardid().trim())
                                 .le("TGE_DSTARTDATE", yyyyMMddHHmmss)
                                 .ge("TGE_DENDDATE", yyyyMMddHHmmss));
 
@@ -79,7 +97,7 @@ public class GreenNutsTimePunchBean {
                     //端末に登録されている端末製造番号
                     tp.setTtpCmodifieruserid(no);
                     //设置更新プログラムid
-                    tp.setTtpCmodifierprogramid(MODPROGRAMID);
+                    tp.setTtpCmodifierprogramid(tmgGreenNutsTimepunchCode);
                     //打刻日付を設定する
                     tp.setTtpDtpdate(Timestamp.valueOf(yyyyMMddHHmmss));
                     //打刻時刻を設定する
@@ -108,7 +126,7 @@ public class GreenNutsTimePunchBean {
             // 成功返回 エラーコード 0 正常 2 固定 00 固定
             errCode = "0200";
             // 打刻データをTMG_DAILYへ反映する
-             callCtlTimepunch(no);
+             callCtlTimepunch(no,tmgGreenNutsTimepunchCode);
         }
         return errCode;
     }
@@ -117,10 +135,10 @@ public class GreenNutsTimePunchBean {
      * TMG_TIMEPUNCに格納した打刻データを、TMG_DAILYへ反映する
      *
      */
-    private void callCtlTimepunch(String serialNo){
+    private void callCtlTimepunch(String serialNo,String tmgGreenNutsTimepunchCode){
         try{
             //プロシージャ：TMG_P_CTL_TIMEPUNCH_ALLを呼び出す
-            iTmgTimepunchService.execTDAInsert(serialNo, MODPROGRAMID, "01", "01");
+            iTmgTimepunchService.execTDAInsert(serialNo, tmgGreenNutsTimepunchCode, "01", "01");
         }catch(Exception e){
             e.printStackTrace();
         }
