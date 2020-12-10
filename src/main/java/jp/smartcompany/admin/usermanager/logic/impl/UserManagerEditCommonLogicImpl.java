@@ -15,25 +15,31 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.enums.MailType;
+import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
+import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
+import jp.smartcompany.job.modules.core.service.IMastMailInfoService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
+import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.ldap.Rdn;
 import java.util.*;
 
 @Service("userManagerEditCommonLogic")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogic {
 
   private final ScCacheUtil cacheUtil;
   private final PsSearchCompanyUtil searchCompanyUtil;
   private final IMastAccountService mastAccountService;
   private final IMastPasswordService passwordService;
+  private final IMastEmployeesService employeesService;
+  private final IMastMailInfoService mailService;
 
   /**
    * パスワード更新.
@@ -149,6 +155,27 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
     if (CollUtil.isNotEmpty(insertPasswords)){
       passwordService.saveBatch(insertPasswords);
     }
+
+    passwordMap.forEach((account,password) -> {
+      // 发送邮件
+      Map<String,Object> extraContent = MapUtil.newHashMap();
+      extraContent.put(MastMailInfoServiceImpl.KEY_ACCOUNT,account);
+      extraContent.put(MastMailInfoServiceImpl.KEY_PASSWORD,password);
+
+      SendMailBO sendMailBO = new SendMailBO();
+      sendMailBO.setExtraContent(extraContent);
+      sendMailBO.setEmpId(account);
+      Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(account);
+      optEmploy.ifPresent(employ -> {
+        if (StrUtil.isNotBlank(employ.getMeCmail())) {
+          sendMailBO.setToAddress(employ.getMeCmail());
+          sendMailBO.setEmpName(employ.getMeCkanjiname());
+          mailService.sendMail(MailType.PASSWORD_CHANGED, sendMailBO);
+        }
+      });
+
+    });
+
     return passwordMap;
   }
 

@@ -8,7 +8,6 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.component.dto.*;
 import jp.smartcompany.admin.component.logic.BaseSectionLogic;
 import jp.smartcompany.admin.component.logic.QueryConditionLogic;
@@ -18,6 +17,7 @@ import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.SectionPostLogic;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import jp.smartcompany.boot.util.*;
 import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
@@ -25,8 +25,11 @@ import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.component.logic.QueryConditionValidatorLogic;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.enums.MailType;
+import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
+import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
@@ -42,9 +45,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogic {
 
     private final PsSearchCompanyUtil psSearchCompanyUtil;
@@ -55,6 +59,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final IHistGroupdefinitionsService iHistGroupdefinitionsService;
     private final IMastDatadictionaryService mastDatadictionaryService;
     private final IHistDesignationService histDesignationService;
+    private final IMastEmployeesService employeesService;
+    private final IMastMailInfoService mailService;
 
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
@@ -420,6 +426,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void update(GroupManagerEditDTO dto) {
+        SmartUserDetails userInfo = SecurityUtil.getLoginUser();
+
         String customerId = "01";
         String companyId = "01";
         String systemId = "01";
@@ -521,6 +529,17 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         session.removeAttribute(Constant.IS_APPROVER);
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
         session.removeAttribute(Constant.PS_SESSION);
+
+        SendMailBO sendMailBO = new SendMailBO();
+        sendMailBO.setEmpId(userInfo.getHdCemployeeidCk());
+        Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(userInfo.getHdCuserid());
+        optEmploy.ifPresent(employ -> {
+            if (StrUtil.isNotBlank(employ.getMeCmail())) {
+                sendMailBO.setToAddress(employ.getMeCmail());
+                sendMailBO.setEmpName(employ.getMeCkanjiname());
+                mailService.sendMail(MailType.GROUP_CHECK, sendMailBO);
+            }
+        });
     }
 
 
