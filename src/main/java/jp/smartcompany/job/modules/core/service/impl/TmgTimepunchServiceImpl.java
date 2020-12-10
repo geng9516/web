@@ -171,4 +171,9 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         return baseMapper.selectPatternChangeTime(params);
     }
 
+    @Override
+    public void execTDAInsert(String modUserId, String modProgramId, String customerId, String companyId){
+        baseMapper.execTDAInsert(modUserId,  modProgramId,  customerId, companyId);
+    }
+
 }

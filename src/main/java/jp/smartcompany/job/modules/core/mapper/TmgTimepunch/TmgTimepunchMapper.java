@@ -6,7 +6,9 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -104,4 +106,18 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
      */
     int selectPatternChangeTime(HashMap<String, Object> params);
 
+    /**
+     * プロシージャ：TMG_P_CTL_TIMEPUNCH_ALLを呼び出す
+     *
+     * @param modUserId
+     * @param modProgramId
+     * @param customerId
+     * @param companyId
+     * @return
+     */
+    @Insert(" CALL TMG_P_CTL_TIMEPUNCH_ALL (#{modUserId},#{modProgramId},#{customerId},#{companyId})")
+    void execTDAInsert(@Param("modUserId")String modUserId,
+                       @Param("modProgramId")String modProgramId,
+                       @Param("customerId")String customerId,
+                       @Param("companyId")String companyId);
 }

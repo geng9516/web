@@ -169,4 +169,15 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      * @return
      */
     int selectPatternChangeTime(String custId, String compCode, String sectionId, String patternId);
+
+    /**
+     * プロシージャ：TMG_P_CTL_TIMEPUNCH_ALLを呼び出す
+     *
+     * @param modUserId
+     * @param modProgramId
+     * @param customerId
+     * @param companyId
+     * @return
+     */
+    void execTDAInsert(String modUserId, String modProgramId, String customerId, String companyId);
 }
