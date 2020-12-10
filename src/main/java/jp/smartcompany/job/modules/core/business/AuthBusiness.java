@@ -252,30 +252,26 @@ public class AuthBusiness {
 
             List<List<GroupAppManagerPermissionDTO>> secondGroupAppList = CollUtil.groupByField(secondAppList,"mgpCobjectid");
             for (List<GroupAppManagerPermissionDTO> groupPerms : secondGroupAppList) {
-                for (GroupAppManagerPermissionDTO groupPerm : groupPerms) {
-                    String permission = groupPerm.getPermission();
-                    if (StrUtil.equals(permission,"2")) {
-                        break;
-                    }
-                    if (StrUtil.equals(permission,"0")) {
-                        continue;
-                    }
-                    if (StrUtil.equals(permission,"1")) {
-                        MenuBO secondMenuDO = new MenuBO();
-                        secondMenuDO.setPageId(groupPerm.getMgpCapp());
-                        secondMenuDO.setPerms(groupPerm.getMgpCobjectid());
-                        secondMenuDO.setOrderNum(groupPerm.getMtrNseq());
-                        secondMenuDO.setUrl(groupPerm.getMtrCurl());
-                        secondMenuDO.setJaName(groupPerm.getObjectName());
-                        secondMenuDO.setIcon(groupPerm.getMtrCimageurl());
-                        secondMenuDO.setType(groupPerm.getType());
-                        secondMenuDO.setCompanyId("01");
-                        secondMenuDO.setCustomerId("01");
+                List<String> permissions = groupPerms.stream().map(GroupAppManagerPermissionDTO::getPermission).collect(Collectors.toList());
+                if (CollUtil.contains(permissions,"2")) {
+                    continue;
+                }
+                if (CollUtil.contains(permissions,"1")) {
+                    GroupAppManagerPermissionDTO groupPerm = groupPerms.get(0);
+                    MenuBO secondMenuDO = new MenuBO();
+                    secondMenuDO.setPageId(groupPerm.getMgpCapp());
+                    secondMenuDO.setPerms(groupPerm.getMgpCobjectid());
+                    secondMenuDO.setOrderNum(groupPerm.getMtrNseq());
+                    secondMenuDO.setUrl(groupPerm.getMtrCurl());
+                    secondMenuDO.setJaName(groupPerm.getObjectName());
+                    secondMenuDO.setIcon(groupPerm.getMtrCimageurl());
+                    secondMenuDO.setType(groupPerm.getType());
+                    secondMenuDO.setCompanyId("01");
+                    secondMenuDO.setCustomerId("01");
 
-                        secondMenuDO.setSiteId(groupPerm.getMgpCsite());
+                    secondMenuDO.setSiteId(groupPerm.getMgpCsite());
 
-                        CollUtil.addAllIfNotContains(secondMenuList,CollUtil.newArrayList(secondMenuDO));
-                    }
+                    CollUtil.addAllIfNotContains(secondMenuList,CollUtil.newArrayList(secondMenuDO));
                 }
             }
 
