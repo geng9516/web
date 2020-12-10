@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmghomework.TmgHomeWorkBean;
 import jp.smartcompany.job.modules.tmg.tmghomework.dto.UpdateDto;
 import jp.smartcompany.job.modules.tmg.tmghomework.dto.UpdateListDto;
+import jp.smartcompany.job.modules.tmg.tmghomework.dto.UpdateMobDto;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkMonthVO;
@@ -92,6 +93,22 @@ public class TmgHomeWorkController {
     }
 
     /**
+     * mob up表示処理
+     * http://localhost:6879/sys/homeWork/selectAdminHomeWorkmob
+     *
+     * @param psDBBean
+     * @param baseDate
+     * @return
+     */
+    @GetMapping("selectAdminHomeWorkmob")
+    @ResponseBody
+    public HomeWorkAdminVO selectAdminHomeWorkmob(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                                               @RequestParam("baseDate") String baseDate ) throws Exception {
+
+        return tmgHomeWorkBean.selectAdminHomeWorkmob(psDBBean, baseDate);
+    }
+
+    /**
      * Month表示処理
      * http://localhost:6879/sys/homeWork/selectAdminHomeWorkMonthList
      *
@@ -120,6 +137,21 @@ public class TmgHomeWorkController {
                                          @RequestBody UpdateDto homeWorkVO ){
          tmgHomeWorkBean.updateHmoeWorkData( psDBBean, homeWorkVO.getHomeWorkVO());
     }
+
+    /**
+     * 登録処理
+     * http://localhost:6879/sys/homeWork/updateHmoeWorkMob
+     *
+     * @param psDBBean
+     * @param homeWorkAdminVO
+     */
+    @PostMapping("updateHmoeWorkMob")
+    @ResponseBody
+    public void updateHmoeWorkMob(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                               @RequestBody UpdateMobDto homeWorkAdminVO){
+        tmgHomeWorkBean.updateHmoeWorkMobData( psDBBean, homeWorkAdminVO.getHomeWorkAdminVO());
+    }
+
     /**
      * 登録処理
      * http://localhost:6879/sys/homeWork/updateHmoeWorkAdminData

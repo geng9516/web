@@ -14,14 +14,7 @@
             NVL(MGP_CBUTTON, MTR_CBUTTONID) MGP_CBUTTON,
             NVL(MGP_CSCREEN, MTR_CSCREENID) MGP_CSCREEN,
             DECODE(MGP_CPERMISSION, '1', DECODE(MGP_CREJECT, '1', '2', '1'), '0') PERMISSION,
-            PSMASTER.FUNC_GET_OBJ_NAME (
-                MTR_CSITEID,
-                MTR_CAPPID,
-                MTR_CSUBAPPID,
-                MTR_CSCREENID,
-                MTR_CBUTTONID,
-                '${language}'
-            ) OBJECTNAME,
+            MTR_COBJNAME AS OBJECTNAME,
             MTR_CTYPE TYPE,
             MG_NWEIGHTAGE,
             MTR_NSEQ,

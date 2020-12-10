@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ public class SendMailBO {
     /**
      * 接收人邮箱地址
       */
-    private String receiver;
+    private String toAddress;
     /**
      * 接收人姓名
      */
@@ -29,6 +30,6 @@ public class SendMailBO {
     /**
      * 额外的邮件内容
      */
-    private String extraContent;
+    private Map<String,Object> extraContent;
 
 }

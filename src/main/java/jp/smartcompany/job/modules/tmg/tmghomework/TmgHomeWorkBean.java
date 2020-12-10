@@ -180,7 +180,17 @@ public class TmgHomeWorkBean {
 
         return iTmgHomeWorkService.selectAdminHomeWorkUpdateList(referList.buildSQLForSelectEmployees(),baseDate);
 
+    }
+
+    public HomeWorkAdminVO  selectAdminHomeWorkmob(PsDBBean psDBBean, String baseDate){
+        if (null == baseDate || "".equals(baseDate)) {
+            //初期化
+            baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
         }
+
+        return iTmgHomeWorkService.selectAdminHomeWorkmob(psDBBean.getTargetUser(),baseDate);
+
+    }
 
     public List<HomeWorkMonthVO>  selectAdminHomeWorkMonthList(PsDBBean psDBBean, String baseDate)  throws Exception {
         if (null == baseDate || "".equals(baseDate)) {
@@ -233,6 +243,9 @@ public class TmgHomeWorkBean {
                     tmgHomeWorkDataDO.setHw_end(homeWorkVO.get(i).getHwEnd());
                     tmgHomeWorkDataDO.setHw_commute(homeWorkVO.get(i).getHwCommute());
                     tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkVO.get(i).getHwApplicationcomment());
+                    if(!"".equals(homeWorkVO.get(i).getHwApprovalcomment()) && homeWorkVO.get(i).getHwApprovalcomment() !=null){
+                        tmgHomeWorkDataDO.setHw_approvalcomment(homeWorkVO.get(i).getHwApprovalcomment());
+                    }
                     iTmgHomeWorkDataService.getBaseMapper().insert(tmgHomeWorkDataDO);
 
                     continue;
@@ -254,6 +267,70 @@ public class TmgHomeWorkBean {
                 }
         }
     }
+
+    public void updateHmoeWorkMobData(PsDBBean psDBBean, List<HomeWorkAdminVO> homeWorkAdminVO) {
+        for (int i = 0; i < homeWorkAdminVO.size(); i++) {
+            TmgHomeWorkDataDO tmgHomeWorkDataDO = new TmgHomeWorkDataDO();
+            if( "3".equals(homeWorkAdminVO.get(i).getHwstatus())){
+
+                tmgHomeWorkDataDO.setHw_status("0");
+                tmgHomeWorkDataDO.setHw_homework("");
+                tmgHomeWorkDataDO.setHw_start("");
+                tmgHomeWorkDataDO.setHw_end("");
+                tmgHomeWorkDataDO.setHw_commute("");
+                tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkAdminVO.get(i).getHwApplicationcomment());
+
+                QueryWrapper<TmgHomeWorkDataDO> queryWrapper = new QueryWrapper<TmgHomeWorkDataDO>();
+                queryWrapper.eq("hw_ccustomerid", psDBBean.getCustID());
+                queryWrapper.eq("hw_ccompanyid", psDBBean.getCompCode());
+                queryWrapper.eq("hw_cemployeeid", homeWorkAdminVO.get(i).getEMPID());
+                queryWrapper.eq("hw_applicationdate", homeWorkAdminVO.get(i).getTdaday());
+
+                iTmgHomeWorkDataService.getBaseMapper().update(tmgHomeWorkDataDO,queryWrapper);
+
+                continue;
+            }else if( "1".equals(homeWorkAdminVO.get(i).getHwstatus()) || "0".equals(homeWorkAdminVO.get(i).getHwstatus())){
+                iTmgHomeWorkDataService.getBaseMapper().delete(SysUtil.<TmgHomeWorkDataDO>query()
+                        .eq("hw_ccustomerid", psDBBean.getCustID())
+                        .eq("hw_ccompanyid", psDBBean.getCompCode())
+                        .eq("hw_cemployeeid", homeWorkAdminVO.get(i).getEMPID())
+                        .eq("hw_applicationdate", homeWorkAdminVO.get(i).getTdaday()));
+
+                tmgHomeWorkDataDO.setHw_ccustomerid("01");
+                tmgHomeWorkDataDO.setHw_ccompanyid("01");
+                tmgHomeWorkDataDO.setHw_cemployeeid(homeWorkAdminVO.get(i).getEMPID());
+                tmgHomeWorkDataDO.setHw_applicationdate(homeWorkAdminVO.get(i).getTdaday());
+                tmgHomeWorkDataDO.setHw_status(homeWorkAdminVO.get(i).getHwstatus());
+                tmgHomeWorkDataDO.setHw_homework(homeWorkAdminVO.get(i).getHwhomework());
+                tmgHomeWorkDataDO.setHw_start(homeWorkAdminVO.get(i).getHwStart());
+                tmgHomeWorkDataDO.setHw_end(homeWorkAdminVO.get(i).getHwEnd());
+                tmgHomeWorkDataDO.setHw_commute(homeWorkAdminVO.get(i).getHwCommute());
+                tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkAdminVO.get(i).getHwApplicationcomment());
+                if(!"".equals(homeWorkAdminVO.get(i).getHwApprovalcomment()) && homeWorkAdminVO.get(i).getHwApprovalcomment() !=null){
+                    tmgHomeWorkDataDO.setHw_approvalcomment(homeWorkAdminVO.get(i).getHwApprovalcomment());
+                }
+                iTmgHomeWorkDataService.getBaseMapper().insert(tmgHomeWorkDataDO);
+
+                continue;
+            }else if(  "2".equals(homeWorkAdminVO.get(i).getHwstatus()) || "4".equals(homeWorkAdminVO.get(i).getHwstatus())){
+                if(!"".equals(homeWorkAdminVO.get(i).getHwApplicationcomment()) && homeWorkAdminVO.get(i).getHwApplicationcomment() !=null){
+                    tmgHomeWorkDataDO.setHw_applicationcomment(homeWorkAdminVO.get(i).getHwApplicationcomment());
+                }else {
+                    continue;
+                }
+
+                QueryWrapper<TmgHomeWorkDataDO> queryWrapper = new QueryWrapper<TmgHomeWorkDataDO>();
+                queryWrapper.eq("hw_ccustomerid", psDBBean.getCustID());
+                queryWrapper.eq("hw_ccompanyid", psDBBean.getCompCode());
+                queryWrapper.eq("hw_cemployeeid", homeWorkAdminVO.get(i).getEMPID());
+                queryWrapper.eq("hw_applicationdate", homeWorkAdminVO.get(i).getTdaday());
+
+                iTmgHomeWorkDataService.getBaseMapper().update(tmgHomeWorkDataDO,queryWrapper);
+                continue;
+            }
+        }
+    }
+
     public void updateHmoeWorkAdminDataList(PsDBBean psDBBean, List<HomeWorkAdminVO> homeWorkAdminVO) {
         for (int i = 0; i < homeWorkAdminVO.size(); i++) {
             TmgHomeWorkDataDO tmgHomeWorkDataDO = new TmgHomeWorkDataDO();

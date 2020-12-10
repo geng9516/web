@@ -88,14 +88,14 @@
         </div>
     </div>
     <div class="content_body">
-        <Alert class="primary-info">※承認済の場合、文字色が「水色」を表示します。</Alert>
+        <Alert class="primary-info">※承認済の場合、文字色が「水色」で表示されます。</Alert>
         <i-table  no-data-text="所属から職員を選んでください。" border :columns="columns"
                   　:row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOList" :loading="updateloading" >
             <template slot-scope="{ row , index}" slot="empname" >
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="hwApplyShowFlg(hwApplyShow,HomeWorkVOList[index].empid,HomeWorkVOList[index].empname)">{{ HomeWorkVOList[index].empname }}</span>
             </template>
             <template v-for="item of slotList" slot-scope="{ row, index }" :slot="item">
-                <span :class="dayRedStatus(row,item)"> {{row[item]}} </span>
+                <span v-if="hwStatusFlg(row,item)" :class="dayRedStatus(row,item)"> {{row[item]}} </span>
             </template>
 
         </i-table>
@@ -125,8 +125,8 @@
             </template>
         </i-table>
     </div>
-    <!-- 在宅勤務申请个人 -->
-    <Drawer class="tc" title="在宅勤務編集画面-个人" placement="right" width="70%" v-model="hwApplyShow" @on-close="handleClose()" >
+    <!-- 在宅勤務申请個人 -->
+    <Drawer class="tc" title="在宅勤務編集画面-職員単位" placement="right" width="75%" v-model="hwApplyShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
@@ -153,21 +153,20 @@
             </template>
 
             <template slot-scope="{ row, index }" slot="hwStatus" >
-                <span v-if="HomeWorkVOListEditBack[index].hwStatus=='1'">
+                <span v-if="HomeWorkVOListupdate[index].hwStatus=='1'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[1].value">{{ StatusList[1].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
                     </i-select>
                 </span>
-                <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='2'">
+                <span v-else-if="HomeWorkVOListupdate[index].hwStatus=='2'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" transfer>
-                        <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
                     </i-select>
                 </span>
-                <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='4'">
+                <span v-else-if="HomeWorkVOListupdate[index].hwStatus=='4'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" transfer>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
@@ -175,7 +174,7 @@
                 </span>
                 <span v-else>
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)"placeholder="" transfer>
-                        <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
+                        <i-option value="0"><div>&nbsp;</div></i-option>
                         <i-option  :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
@@ -213,11 +212,11 @@
         </i-table>
     </Drawer>
     <!-- 在宅勤務申请list -->
-    <Drawer class="tc" title="在宅勤務編集画面-日" placement="right" width="70%" v-model="hwApplyListShow" @on-close="handleClose()" >
+    <Drawer class="tc" title="在宅勤務編集画面-日単位" placement="right" width="75%" v-model="hwApplyListShow" @on-close="handleClose()" >
         <div class="tr">
             <Row >
                 <i-col span="2">
-                    <div class="label tc">日期</div>
+                    <div class="label tc">日付</div>
                 </i-col>
                 <i-col span="3">
                     <div class="person-info tc">{{updateDay}}</div>
@@ -240,21 +239,20 @@
             </template>
 
             <template slot-scope="{ row, index }" slot="hwstatus" >
-                <span v-if="row.hwstatus=='1'">
+                <span v-if="HomeWorkVOAdminListBack[index].hwstatus=='1'">
                     <i-select v-model="HomeWorkVOAdminList[index].hwstatus" class="mr30" @on-change="editlistBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[1].value">{{ StatusList[1].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
                     </i-select>
                 </span>
-                <span v-else-if="row.hwstatus=='2'">
+                <span v-else-if="HomeWorkVOAdminListBack[index].hwstatus=='2'">
                     <i-select v-model="HomeWorkVOAdminList[index].hwstatus" class="mr30"  @on-change="editlistBack(index)" placeholder="" transfer>
-                        <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
                     </i-select>
                 </span>
-                <span v-else-if="row.hwstatus=='4'">
+                <span v-else-if="HomeWorkVOAdminListBack[index].hwstatus=='4'">
                     <i-select v-model="HomeWorkVOAdminList[index].hwstatus" class="mr30"  @on-change="editlistBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[4].value">{{ StatusList[4].label }}</i-option>
@@ -262,7 +260,7 @@
                 </span>
                 <span v-else>
                     <i-select v-model="HomeWorkVOAdminList[index].hwstatus" class="mr30"  @on-change="editlistBack(index)" placeholder="" transfer>
-                        <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
+                        <i-option value="0"><div>&nbsp;</div></i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
@@ -333,19 +331,19 @@
                 homeworkList: [
                     {
                         value: '1',
-                        label: '在宅勤務（終日）'
+                        label: '在宅勤務(終日)'
                     },
                     {
                         value: '2',
-                        label: '在宅勤務（午前）'
+                        label: '在宅勤務(午前)'
                     },
                     {
                         value: '3',
-                        label: '在宅勤務（午後）'
+                        label: '在宅勤務(午後)'
                     },
                     {
                         value: '4',
-                        label: '在宅勤務（時間）'
+                        label: '在宅勤務(時間)'
                     }
                 ],
                 tableHead:[],
@@ -487,13 +485,13 @@
                     },
                     {
                         title: '状態',
-                        minWidth: 80,
+                        width: 100,
                         slot: 'hwStatus',
                         align: 'center'
                     },
                     {
                         title: '在宅勤務',
-                        minWidth: 130,
+                        width: 150,
                         slot: 'hwHomework',
                         align: 'center'
                     },
@@ -543,13 +541,13 @@
                     },
                     {
                         title: '状態',
-                        minWidth: 80,
+                        width: 100,
                         slot: 'hwstatus',
                         align: 'center'
                     },
                     {
                         title: '在宅勤務',
-                        minWidth: 130,
+                        width: 150,
                         slot: 'hwhomework',
                         align: 'center'
                     },
@@ -719,6 +717,13 @@
                     return 'blue'
                 }
                 return ''
+            },
+            hwStatusFlg(e1,e2) {
+                let aaaaa = e1[`${"hwstatusflg" + e2.slice(13)}`];
+                if(aaaaa === '4'){
+                    return false
+                }
+                return true
             },
             editTime(index){
                 if(this.HomeWorkVOListEditBack[index].hwHomework != '4'){
@@ -1053,6 +1058,7 @@
                 this.query.hidSelectTab = '0'
             },
             async getOrgTree(refreshDept) {
+                this.updateloading  = true
                 try {
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据

@@ -54,4 +54,12 @@ public class TmgHomeWorkServiceImpl extends ServiceImpl<TmgHomeWorkMapper, TmgHo
         params.put("baseDate", baseDate);
         return baseMapper.selectAdminHomeWorkMonthList(params);
     }
+
+    @Override
+    public HomeWorkAdminVO selectAdminHomeWorkmob(String empSql, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", empSql);
+        params.put("baseDate", baseDate);
+        return baseMapper.selectAdminHomeWorkmob(params);
+    }
 }

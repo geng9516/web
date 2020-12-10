@@ -26,29 +26,33 @@
                 </i-col>
             </Row>
         </i-col>
-        <i-col span="13" class="pl20 pt20">
-            <Row>
-                <i-col span="11" class="card mb20">
-                    <div class="title">月間出勤日数</div>
-                    <span class="num">{{dutyAndRelaxData.dutyDates}}</span><span class="mr5 lp">日</span>
-                </i-col>
-                <i-col span="11" offset="1" class="card mb20">
-                    <div class="title">有休残日数</div>
-                    <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[0]}}</span><span class="mr5 lp">日</span>
-                    <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[1]}}</span><span class="mr5 lp">時</span>
-                    <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[2]}}</span><span class="mr5 lp">分</span>
-                </i-col>
-                <i-col span="11" class="card">
-                    <div class="title">月間実労働時間</div>
-                    <span class="num">{{dutyAndRelaxData.dutyHours[0]}}</span><span class="mr5 lp">時</span>
-                    <span class="num">{{dutyAndRelaxData.dutyHours[1]}}</span><span class="mr5 lp">分</span>
-                </i-col>
-                <i-col span="11" offset="1" class="card">
-                    <div class="title">超過勤務時間</div>
-                    <span class="num">{{dutyAndRelaxData.overTime[0]}}</span><span class="mr5 lp">時</span>
-                    <span class="num">{{dutyAndRelaxData.overTime[1]}}</span><span class="mr5 lp">分</span>
-                </i-col>
-            </Row>
+        <i-col span="13" class="pl20 pt5">
+            <Carousel loop>
+                <carousel-item>
+                    <Row>
+                        <i-col span="11" class="card" style="margin: 15px 10px 10px 15px;">
+                            <div class="title">月間出勤日数</div>
+                            <span class="num">{{dutyAndRelaxData.dutyDates}}</span><span class="mr5 lp">日</span>
+                        </i-col>
+                        <i-col span="11" class="card" style="margin: 15px 10px 10px 10px;">
+                            <div class="title">有休残日数</div>
+                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[0]}}</span><span class="mr5 lp">日</span>
+                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[1]}}</span><span class="mr5 lp">時</span>
+                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[2]}}</span><span class="mr5 lp">分</span>
+                        </i-col>
+                        <i-col span="11" class="card" style="margin: 10px 10px 15px 15px;">
+                            <div class="title">月間実労働時間</div>
+                            <span class="num">{{dutyAndRelaxData.dutyHours[0]}}</span><span class="mr5 lp">時</span>
+                            <span class="num">{{dutyAndRelaxData.dutyHours[1]}}</span><span class="mr5 lp">分</span>
+                        </i-col>
+                        <i-col span="11" class="card" style="margin: 10px 10px 15px 10px;">
+                            <div class="title">超過勤務時間</div>
+                            <span class="num">{{dutyAndRelaxData.overTime[0]}}</span><span class="mr5 lp">時</span>
+                            <span class="num">{{dutyAndRelaxData.overTime[1]}}</span><span class="mr5 lp">分</span>
+                        </i-col>
+                    </Row>
+                </carousel-item>
+            </Carousel>
         </i-col>
         <i-col span="21" class="mt30" style="margin-left: 5.5%;width: 83.7%;">
             <div class="schedule">

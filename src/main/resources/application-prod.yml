@@ -25,3 +25,4 @@ security:
   ssl: on
 info:
   basePath: /spwm/
+  siteUrl: http://localhost:6879/spwm

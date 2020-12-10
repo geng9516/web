@@ -211,4 +211,61 @@
         WHERE d.CEMPLOYEEID = e.EMPID
         ORDER BY d.CEMPLOYEEID
     </select>
+
+    <select id="selectAdminHomeWorkmob" resultType="jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO">
+        SELECT
+          hw.TDA_CEMPLOYEEID  AS empname                                                  <!-- 0 empid  -->
+        , hw.TDA_DAY                                                            <!-- 1 日 -->
+        , hw.HW_STATUS                                                          <!-- 2 申請状態 -->
+        , hw.HW_HOMEWORK                                                        <!-- 3 在宅勤務状態  -->
+        , hw.HW_START                                                           <!-- 4 開始時間 -->
+        , hw.HW_END                                                             <!-- 5 終了時間 -->
+        , hw.HW_COMMUTE                                                         <!-- 6 通勤FLG -->
+        , hw.HW_APPLICATIONCOMMENT                                              <!-- 7 申請コメント -->
+        , hw.HW_APPROVALCOMMENT                                                 <!-- 8 承認コメント -->
+        , hw.HW_TIME                                                            <!-- 9 時間 -->
+        , hw.TDA_CEMPLOYEEID       AS EMPID                                             <!-- 10 empid -->
+        ,TMG_F_TRANS_WORKNAME(
+        TDA_CEMPLOYEEID
+        ,TDA_DAY
+        ,'1'
+        ,'01'
+        ,'01'
+        ,'ja' ) hwCworkingid                                                    <!-- 11 就業区分名称 -->
+        from (
+        SELECT
+        TDA_CEMPLOYEEID
+        , TO_CHAR(d.TDA_DYYYYMMDD, 'YYYY/MM/DD')  AS TDA_DAY
+        ,hh.HW_STATUS AS HW_STATUS
+        ,hh.HW_HOMEWORK AS HW_HOMEWORK
+        ,TMG_F_CONV_MIN2HHMI(hh.HW_START) AS HW_START
+        ,TMG_F_CONV_MIN2HHMI(hh.HW_END) AS HW_END
+        ,hh.HW_COMMUTE AS HW_COMMUTE
+        ,hh.HW_APPLICATIONCOMMENT AS HW_APPLICATIONCOMMENT
+        ,hh.HW_APPROVALCOMMENT AS HW_APPROVALCOMMENT
+        ,TMG_F_CONV_MIN2HHMI(hh.HW_END-hh.HW_START) AS HW_TIME
+        FROM TMG_DAILY d
+        left join
+        (SELECT
+        h.HW_STATUS
+        ,h.HW_HOMEWORK
+        ,h.HW_START
+        ,h.HW_END
+        ,h.HW_COMMUTE
+        ,h.HW_APPLICATIONCOMMENT
+        ,h.HW_APPROVALCOMMENT
+        ,h.HW_CEMPLOYEEID AS HW_CEMPLOYEEID
+        ,h.HW_APPLICATIONDATE AS HW_APPLICATIONDATE
+        FROM TMG_HOMEWORKDATA h
+        WHERE   TO_CHAR(HW_APPLICATIONDATE,'YYYY/MM') = TO_CHAR(TO_DATE(#{baseDate},'YYYY/MM/DD'),'YYYY/MM')
+        ) hh
+        ON  d.TDA_CEMPLOYEEID = hh.HW_CEMPLOYEEID
+        AND d.TDA_DYYYYMMDD = to_char(hh.HW_APPLICATIONDATE,'yyyy/mm/dd')
+        WHERE   TDA_CCOMPANYID   = '01'
+        AND     TDA_CCUSTOMERID  = '01'
+        AND TDA_DYYYYMMDD    = TO_DATE(#{baseDate},'YYYY/MM/DD')
+        )hw
+        WHERE hw.TDA_CEMPLOYEEID = #{employeeId}
+        ORDER BY hw.TDA_CEMPLOYEEID ,hw.TDA_DAY
+    </select>
 </mapper>

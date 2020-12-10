@@ -19,8 +19,8 @@ public class TmgLiquidationDailyServiceImpl extends ServiceImpl<TmgLiquidationDa
     }
 
     @Override
-    public List<LiquidationDailyDto> getMonthInfo(String empId, String yyyymm){
-        return baseMapper.getMonthInfo( empId,yyyymm);
+    public List<LiquidationDailyDto> getMonthInfo(String empId, String yyyymm,String startDate,String endDate){
+        return baseMapper.getMonthInfo( empId,yyyymm,startDate,endDate);
     }
 
     @Override

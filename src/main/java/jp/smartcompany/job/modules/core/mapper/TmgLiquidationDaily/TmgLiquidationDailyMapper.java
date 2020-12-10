@@ -20,7 +20,9 @@ public interface TmgLiquidationDailyMapper extends BaseMapper<TmgLiquidationDail
                               @Param("endDate")String endDate);
 
     List<LiquidationDailyDto> getMonthInfo(@Param("empId")String empId,
-                                           @Param("yyyymm")String yyyymm);
+                                           @Param("yyyymm")String yyyymm,
+                                           @Param("startDate")String startDate,
+                                           @Param("endDate")String endDate);
 
     @Insert("CALL TMG_P_LIQUIDATION_DAILY_INSERT (#{empId},#{startDate},#{endDate},#{userCode},#{custID},#{compCode})")
     void execTLDDInsert(@Param("empId")String empId,

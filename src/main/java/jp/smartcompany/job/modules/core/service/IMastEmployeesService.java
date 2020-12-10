@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
@@ -9,13 +10,12 @@ import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
-import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -145,5 +145,10 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * ===================用户管理 搜索用户结束===============
      */
 
-    void uploadMailList(MultipartFile file);
+    IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
+
+    IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword);
+
+
+    Optional<MastEmployeesDO> getEmployInfo(String empId);
 }

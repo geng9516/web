@@ -15,5 +15,6 @@ public class MailConfigDTO implements Serializable {
     private String username;
     private String password;
     private String port;
+    private Boolean status;
 
 }

@@ -95,32 +95,32 @@
             <i-table  no-data-text="" border :columns="columns" v-if=" hwApplyShow"
                       :row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOListEditBack" >
                 <template slot-scope="{ row, index }" slot="hwStatus"  v-if=" hwApplyShow">
-                <span v-if="HomeWorkVOListEditBack[index].hwStatus=='1'">
+                <span v-if="HomeWorkVOList[index].hwStatus=='1'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30" @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
-                    <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='2'">
+                    <span v-else-if="HomeWorkVOList[index].hwStatus=='2'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer :disabled="row.hwStatus == 2">
                         <i-option :value="StatusList[1].value">{{ StatusList[1].label }}</i-option>
                     </i-select>
                 </span>
-                    <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='3'">
+                    <span v-else-if="HomeWorkVOList[index].hwStatus=='3'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer :disabled="row.hwStatus == 2">
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                         <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                     </i-select>
                 </span>
-                    <span v-else-if="HomeWorkVOListEditBack[index].hwStatus=='4'">
+                    <span v-else-if="HomeWorkVOList[index].hwStatus=='4'">
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
                         <i-option :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
-                        <i-option :value="StatusList[2].value">{{ StatusList[2].label }}</i-option>
                         <i-option :value="StatusList[3].value">{{ StatusList[3].label }}</i-option>
                     </i-select>
                 </span>
                     <span v-else>
                     <i-select v-model="HomeWorkVOListEditBack[index].hwStatus" class="mr30"  @on-change="editBack(index)" placeholder="" transfer>
+                        <i-option value="0"><div>&nbsp;</div></i-option>
                         <i-option  :value="StatusList[0].value">{{ StatusList[0].label }}</i-option>
                     </i-select>
                 </span>
@@ -210,6 +210,7 @@
                 loading: false,　       //ローディングアクション
                 hasPassedTimeCheck: false,
                 contentScrollTop: 0,
+                today:'',
                 kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
                 loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
                 sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
@@ -312,10 +313,11 @@
                         psApp:this.query.psApp,
                         baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
                     }
-                    const {data}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+                    const {data,sysDate}= await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList=data
                     this.defaultDate=this.dispMonthlyList[1].tda_dyyyymm
                     this.query.txtBaseDate=this.dispMonthlyList[1].tda_firstDay
+                    this.today=sysDate
                     await this.getHomeWorkInfo()
                     this.getHatuRei()
                 } catch (error) {
@@ -326,6 +328,9 @@
                 const dayOfWeek = e.mgdCsparechar
                 if (!dayOfWeek) {
                     return
+                }
+                if (e.hwApplicationdate === this.today) {
+                    return 'brown'
                 }
                 if (dayOfWeek != '0') {
                     return 'blue'

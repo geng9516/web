@@ -35,6 +35,7 @@ public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper,
         private static final String MAIL_PASSWORD = "MAIL_PASSWORD";
         private static final String MAIL_PORT = "MAIL_PORT";
         private static final String MAIL_HOST = "MAIL_HOST";
+        private static final String MAIL_ENABLE = "MAIL_ENABLE";
 
         private final LRUCache<Object,Object> lruCache;
 
@@ -108,12 +109,17 @@ public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper,
            hostQw.eq("CS_CPROPERTYNAME",MAIL_HOST);
            ConfSyscontrolDO mailHost = getOne(hostQw);
 
+           QueryWrapper<ConfSyscontrolDO> mailEnableQw = SysUtil.query();
+           mailEnableQw.eq("CS_CPROPERTYNAME",MAIL_ENABLE);
+           ConfSyscontrolDO mailEnable = getOne(hostQw);
+
            mailUsername.setCsCpropertyvalue(dto.getUsername());
            mailPassword.setCsCpropertyvalue(dto.getPassword());
            mailPort.setCsCpropertyvalue(dto.getPort());
            mailHost.setCsCpropertyvalue(dto.getHost());
+           mailEnable.setCsCpropertyvalue(dto.getStatus()+"");
 
-           updateBatchById(CollUtil.newArrayList(mailUsername,mailPassword,mailPort,mailHost));
+           updateBatchById(CollUtil.newArrayList(mailUsername,mailPassword,mailPort,mailHost,mailEnable));
 
            lruCache.remove(ScCacheUtil.SYSTEM_PROPERTY_MAP);
         }

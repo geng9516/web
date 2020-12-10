@@ -1,34 +1,30 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.admin.usermanager.dto.PersonalInfoDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
-import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
-import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployees.MastEmployeesMapper;
+import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
-import jp.smartcompany.boot.util.SysUtil;
-import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -311,36 +307,25 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     /*========================= 用户管理相关sql结束 ==================================*/
 
     @Override
-    @Transactional(rollbackFor = GlobalException.class)
-    public void uploadMailList(MultipartFile file) {
-        Workbook workbook = null;
-        InputStream is;
-        try {
-            is = file.getInputStream();
-            workbook = WorkbookFactory.create(is);
-            is.close();
-            //工作表对象
-            Sheet sheet = workbook.getSheetAt(0);
-            //总行数
-            int totalRows = sheet.getLastRowNum() -1;
-            for (int i = 0;i<totalRows;i++) {
-               Row row = sheet.getRow(i);
-               for (int j = 0; j < row.getLastCellNum();j++) {
-                   Cell cell = row.getCell(j);
-                   System.out.println(cell.getStringCellValue());
-               }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (workbook!=null) {
-                    workbook.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page) {
+        return baseMapper.selectInvalidEmailEmpList(page);
     }
 
+    @Override
+    public IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page,String keyword) {
+        return baseMapper.searchEmpForUpdateMail(page,keyword);
+    }
+
+    @Override
+    public Optional<MastEmployeesDO> getEmployInfo(String empId) {
+        QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
+        List<MastEmployeesDO> employList =  list(qw.eq("ME_CUSERID",empId)
+                .eq("ME_CCUSTOMERID_CK","01")
+                .eq("ME_CCUSTOMERID_CK","01")
+                 .select("ME_CKANJINAME","ME_CMAIL"));
+        if (CollUtil.isEmpty(employList)) {
+            return Optional.empty();
+        }
+        return Optional.of(employList.get(0));
+    }
 }

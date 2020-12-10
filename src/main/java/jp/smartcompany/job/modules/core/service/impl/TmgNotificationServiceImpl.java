@@ -108,4 +108,5 @@ import java.util.Map;
         public List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode){
                 return  baseMapper.SelectNtfInfo( yyyymmdd,  empId,  custID, compCode);
         }
+
         }

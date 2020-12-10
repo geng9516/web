@@ -27,4 +27,6 @@ public interface TmgHomeWorkMapper extends BaseMapper<TmgHomeWorkDataDO> {
     List<HomeWorkAdminVO> selectAdminHomeWorkUpdateList(HashMap<String, Object> params);
 
     List<HomeWorkMonthVO> selectAdminHomeWorkMonthList(HashMap<String, Object> params);
+
+    HomeWorkAdminVO selectAdminHomeWorkmob(HashMap<String, Object> params);
 }

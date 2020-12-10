@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -21,6 +24,7 @@ public class LiquidationDailyDto {
     private String reststarttime2;
     private String restendtime2;
     private String weekworktime;
-    private String ntftype;
+    private List<String> ntftype = new ArrayList<>();
+    private String ntfstatus;
     private String resttime;
 }

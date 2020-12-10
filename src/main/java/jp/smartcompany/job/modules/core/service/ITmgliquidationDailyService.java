@@ -11,7 +11,7 @@ import java.util.List;
 public interface ITmgliquidationDailyService extends IService<TmgLiquidationDailyDO> {
     List<String> getMonthList(String empId, String startDate, String endDate);
 
-    List<LiquidationDailyDto> getMonthInfo(String empId,String yyyymm);
+    List<LiquidationDailyDto> getMonthInfo(String empId,String yyyymm,String startDate,String endDate);
 
     void execTLDDInsert(String empId, String startDate, String endDate, String userCode, String custID, String compCode);
 
