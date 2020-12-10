@@ -28,6 +28,7 @@ public class GreenNutsTimePunchBean {
     private final ITmgGreennutsTplogService iTmgGreennutsTplogService;
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgGreennutsEmployeesService iTmgGreennutsEmployeesService;
+    private final String MODPROGRAMID = "TmgGreenNutsTimepunchAction#timepunch";
 
     public String timePunch(String data, int count, String no, int length) {
         //失败返回 エラーコード 1 異常 2 固定 01   サーバで検出したエラー詳細コード
@@ -35,21 +36,22 @@ public class GreenNutsTimePunchBean {
         //打刻数据大小=条数x每条大小
         if (data.length() == count * length) {
             for (int i = 0; i < count; i++) {
-                //tplog打刻记录日志
+                //GreenNuts用：打刻データログ
                 TmgGreennutsTplogDO tplog = new TmgGreennutsTplogDO();
                 //每条打刻数据
                 String tpdata = data.substring(i * length, (i + 1) * length);
-                //スキャン日時
+
+                //29～42バイト目（14バイト）：打刻時刻（YYYYMMDDHHMISS形式）
                 String punchTime = tpdata.substring(28, 42);
                 //当前时间yyyyMMddHHmmss格式
                 LocalDateTime yyyyMMddHHmmss = LocalDateTime.parse(punchTime, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 //设置原始打刻数据
                 tplog.setTgtlCtimepunchdata(tpdata);
-                // IC カード ID 16 バイト
+                // 1～16バイト目（16バイト）：ICカード番号
                 tplog.setTgtlCiccardid(tpdata.substring(0, 16));
-                //職員コード 10 バイト
+                //17～26バイト目（10バイト）：社員番号（※全て空白）
                 tplog.setTgtlCemployeeid(tpdata.substring(16, 26));
-                // 出退勤区分 2 バイト
+                // 27～28バイト目（2バイト）：打刻区分（01:出勤,02:退勤,03:外出,04:戻り）
                 tplog.setTgtlCtptypeid(tpdata.substring(26, 28));
                 tplog.setTgtlCtptime(punchTime);
                 //端末に登録されている端末製造番号
@@ -77,12 +79,19 @@ public class GreenNutsTimePunchBean {
                     //端末に登録されている端末製造番号
                     tp.setTtpCmodifieruserid(no);
                     //设置更新プログラムid
-                    tp.setTtpCmodifierprogramid("TmgGreenNutsTimepunchAction#timepunch");
-                    //设置打刻時刻
+                    tp.setTtpCmodifierprogramid(MODPROGRAMID);
+                    //打刻日付を設定する
+                    tp.setTtpDtpdate(Timestamp.valueOf(yyyyMMddHHmmss));
+                    //打刻時刻を設定する
                     tp.setTtpDtptime(Timestamp.valueOf(yyyyMMddHHmmss));
-                    //设置打刻区分
+                    //有効開始日を設定する
+                    tp.setTtpDstartdate(Timestamp.valueOf(LocalDateTime.parse("19000101000001", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))));
+                    //有効終了日を設定する
+                    tp.setTtpDenddate(Timestamp.valueOf(LocalDateTime.parse("22221231235959", DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))));
+                    //打刻区分を設定する（出勤：TMG_TPTYPE|01、退勤：TMG_TPTYPE|02）
                     tp.setTtpCtptypeid("TMG_TPTYPE|" + tplog.getTgtlCtptypeid());
-                    //保存数据
+
+                    //打刻データを打刻データ(未反映)：TMG_TIMEPUNCHテーブルへinsertする
                     iTmgTimepunchService.save(tp);
                     //0件の場合
                 } else if (emplist.size() == 0) {
@@ -93,12 +102,27 @@ public class GreenNutsTimePunchBean {
                     //设置备注
                     tplog.setTgtlCmemo("TOO_MANY_ROWS : ICカード番号に該当する職員マスタが2件以上存在します。");
                 }
-                //保存打刻日志记录
+                //打刻データログをTMG_GREENNUTS_TPLOGへinsertする
                 iTmgGreennutsTplogService.save(tplog);
             }
-            //成功返回 エラーコード 0 正常 2 固定 00 固定
+            // 成功返回 エラーコード 0 正常 2 固定 00 固定
             errCode = "0200";
+            // 打刻データをTMG_DAILYへ反映する
+             callCtlTimepunch(no);
         }
         return errCode;
+    }
+
+    /**
+     * TMG_TIMEPUNCに格納した打刻データを、TMG_DAILYへ反映する
+     *
+     */
+    private void callCtlTimepunch(String serialNo){
+        try{
+            //プロシージャ：TMG_P_CTL_TIMEPUNCH_ALLを呼び出す
+            iTmgTimepunchService.execTDAInsert(serialNo, MODPROGRAMID, "01", "01");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
