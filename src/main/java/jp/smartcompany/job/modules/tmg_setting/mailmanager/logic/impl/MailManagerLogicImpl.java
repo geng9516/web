@@ -256,18 +256,38 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     public void updateMailList(List<UpdateMailDTO> list) {
         String userId = SecurityUtil.getUserId();
         Date now = new Date();
-        List<EmployMailDO> empList = CollUtil.newArrayList();
+        List<EmployMailDO> insertEmpList = CollUtil.newArrayList();
+        List<EmployMailDO> updateEmpList = CollUtil.newArrayList();
         list.forEach(emp -> {
-            EmployMailDO employMailDO = new EmployMailDO();
-            employMailDO.setTmaEmpName(emp.getEmpName());
-            employMailDO.setTmaEmpId(emp.getEmpId());
-            employMailDO.setTmaEmail(emp.getEmail());
-            employMailDO.setTmaCreateTime(now);
-            employMailDO.setTmaUpdateTime(now);
-            employMailDO.setTmaUpdatedBy(userId);
-            empList.add(employMailDO);
+            String email=emp.getEmail();
+            String empId = emp.getEmpId();
+            QueryWrapper<EmployMailDO> qw = SysUtil.query();
+            if (employMailService.count(qw.eq("tma_email",email).ne("tma_emp_id",empId))==0){
+                QueryWrapper<EmployMailDO> existQw =SysUtil.query();
+                EmployMailDO employMailDO = employMailService.getOne(existQw.eq("tma_emp_id",empId));
+                if (employMailDO == null) {
+                    EmployMailDO saveEmployMailDO = new EmployMailDO();
+                    saveEmployMailDO.setTmaEmpName(emp.getEmpName());
+                    saveEmployMailDO.setTmaEmpId(empId);
+                    saveEmployMailDO.setTmaEmail(email);
+                    saveEmployMailDO.setTmaCreateTime(now);
+                    saveEmployMailDO.setTmaUpdateTime(now);
+                    saveEmployMailDO.setTmaUpdatedBy(userId);
+                    insertEmpList.add(saveEmployMailDO);
+                } else {
+                    employMailDO.setTmaEmail(email);
+                    employMailDO.setTmaUpdateTime(now);
+                    employMailDO.setTmaUpdatedBy(userId);
+                    updateEmpList.add(employMailDO);
+                }
+            }
         });
-        employMailService.saveBatch(empList);
+        if (CollUtil.isNotEmpty(insertEmpList)){
+            employMailService.saveBatch(insertEmpList);
+        }
+        if (CollUtil.isNotEmpty(updateEmpList)){
+            employMailService.updateBatchById(updateEmpList);
+        }
     }
 
     @Override

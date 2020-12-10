@@ -6,10 +6,14 @@ import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
 
+import java.util.Optional;
+
 public interface IEmployMailService extends IService<EmployMailDO> {
 
     IPage<MastEmployeesDO> selectInvalidEmailEmpList(IPage<MastEmployeesDO> page);
 
     IPage<UserManagerListDTO> searchEmpForUpdateMail(IPage<UserManagerListDTO> page, String keyword);
+
+    Optional<EmployMailDO> getEmpMailInfo(String empId);
 
 }

@@ -18,13 +18,13 @@ import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
-import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastMailInfoService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
   private final PsSearchCompanyUtil searchCompanyUtil;
   private final IMastAccountService mastAccountService;
   private final IMastPasswordService passwordService;
-  private final IMastEmployeesService employeesService;
+  private final IEmployMailService employMailService;
   private final IMastMailInfoService mailService;
 
   /**
@@ -165,15 +165,15 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
       SendMailBO sendMailBO = new SendMailBO();
       sendMailBO.setExtraContent(extraContent);
       sendMailBO.setEmpId(account);
-      Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(account);
+      Optional<EmployMailDO> optEmploy = employMailService.getEmpMailInfo(account);
       optEmploy.ifPresent(employ -> {
-        if (StrUtil.isNotBlank(employ.getMeCmail())) {
-          sendMailBO.setToAddress(employ.getMeCmail());
-          sendMailBO.setEmpName(employ.getMeCkanjiname());
+        String email = employ.getTmaEmail();
+        if (StrUtil.isNotBlank(email)) {
+          sendMailBO.setToAddress(email);
+          sendMailBO.setEmpName(employ.getTmaEmpName());
           mailService.sendMail(MailType.PASSWORD_CHANGED, sendMailBO);
         }
       });
-
     });
 
     return passwordMap;

@@ -15,7 +15,6 @@ import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * <p>
@@ -145,5 +144,4 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * ===================用户管理 搜索用户结束===============
      */
 
-    Optional<MastEmployeesDO> getEmployInfo(String empId);
 }

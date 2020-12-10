@@ -1,7 +1,6 @@
 package jp.smartcompany.controller.tmg_setting;
 
 import cn.hutool.core.util.StrUtil;
-import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;

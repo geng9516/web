@@ -26,11 +26,12 @@ import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class AuthBusiness {
     private final LRUCache<Object,Object> lruCache;
     private final TimedCache<String,Object> timedCache;
     private final IMastMailInfoService mailService;
-    private final IMastEmployeesService employeesService;
+    private final IEmployMailService employMailService;
 
     /**
      * 登录密码
@@ -112,11 +113,12 @@ public class AuthBusiness {
         SendMailBO sendMailBO = new SendMailBO();
         sendMailBO.setExtraContent(extraContent);
         sendMailBO.setEmpId(dto.getUsername());
-        Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(dto.getUsername());
+        Optional<EmployMailDO> optEmploy = employMailService.getEmpMailInfo(dto.getUsername());
         optEmploy.ifPresent(employ -> {
-            if (StrUtil.isNotBlank(employ.getMeCmail())) {
-                sendMailBO.setToAddress(employ.getMeCmail());
-                sendMailBO.setEmpName(employ.getMeCkanjiname());
+            String email = employ.getTmaEmail();
+            if (StrUtil.isNotBlank(email)) {
+                sendMailBO.setToAddress(email);
+                sendMailBO.setEmpName(employ.getTmaEmpName());
                 mailService.sendMail(MailType.PASSWORD_CHANGED, sendMailBO);
             }
         });

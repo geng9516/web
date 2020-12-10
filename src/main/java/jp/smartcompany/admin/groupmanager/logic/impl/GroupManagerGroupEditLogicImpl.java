@@ -32,6 +32,8 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +59,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final IHistGroupdefinitionsService iHistGroupdefinitionsService;
     private final IMastDatadictionaryService mastDatadictionaryService;
     private final IHistDesignationService histDesignationService;
-    private final IMastEmployeesService employeesService;
+    private final IEmployMailService employMailService;
     private final IMastMailInfoService mailService;
 
     private final ScCacheUtil scCacheUtil;
@@ -530,11 +532,12 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 
         SendMailBO sendMailBO = new SendMailBO();
         sendMailBO.setEmpId(userInfo.getHdCemployeeidCk());
-        Optional<MastEmployeesDO> optEmploy = employeesService.getEmployInfo(userInfo.getHdCuserid());
+        Optional<EmployMailDO> optEmploy = employMailService.getEmpMailInfo(userInfo.getHdCuserid());
         optEmploy.ifPresent(employ -> {
-            if (StrUtil.isNotBlank(employ.getMeCmail())) {
-                sendMailBO.setToAddress(employ.getMeCmail());
-                sendMailBO.setEmpName(employ.getMeCkanjiname());
+            String email = employ.getTmaEmail();
+            if (StrUtil.isNotBlank(email)) {
+                sendMailBO.setToAddress(email);
+                sendMailBO.setEmpName(employ.getTmaEmpName());
                 mailService.sendMail(MailType.GROUP_CHECK, sendMailBO);
             }
         });
