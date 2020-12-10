@@ -7,6 +7,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastMailInfoDO;
 
 public interface IMastMailInfoService extends IService<MastMailInfoDO> {
 
-    String sendMail(MailType mailType, SendMailBO sendMailBO);
+    void sendMail(MailType mailType, SendMailBO sendMailBO);
 
 }

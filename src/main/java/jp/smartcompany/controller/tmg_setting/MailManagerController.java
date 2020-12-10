@@ -40,7 +40,7 @@ public class MailManagerController {
       String password = cacheUtil.getSystemProperty(MAIL_PASSWORD);
       String port = cacheUtil.getSystemProperty(MAIL_PORT);
       String host = cacheUtil.getSystemProperty(MAIL_HOST);
-      Boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
+      boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
 
       MailConfigDTO mailConfigDTO = new MailConfigDTO();
       mailConfigDTO.setUsername(username);
