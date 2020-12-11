@@ -157,21 +157,12 @@ public class EvaluatorSettingBean {
         params.setLanguage(bean.getLanguage());
         params.setEmployee(empId);
         Map<String,Object> map = MapUtil.newHashMap();
-        Connection conn = null;
-        try {
-            conn = dataSource.getConnection();
+        try (Connection conn = dataSource.getConnection()) {
             Vector<Vector<Object>> rs = dbControllerLogic.executeQuery(buildSQLForSelectDefaultApproval(params), conn);
             map.put("level",rs.get(1).get(0));
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (conn!=null) {
-                    conn.close();
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
+            throw new GlobalException(e.getMessage());
         }
         return map;
     }

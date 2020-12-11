@@ -5,6 +5,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
@@ -170,22 +171,14 @@ public class TmgEmpList {
 
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, null, null, null);
-
-        Connection connection = null;
-        List entityList = null;
         log.info("【createTreeEmpList_SQL1：{}】",sSQL);
-        try {
-            connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+        try (Connection connection = dataSource.getConnection()) {
+            List entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            dataArray = JSONArrayGenerator.entityListTowardList(entityList);
 //            log.debug("empList结果:{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
-        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
 //        log.debug("【empList的dataArray：{}】",dataArray);
      }
 
@@ -206,26 +199,16 @@ public class TmgEmpList {
                                      String targetEndDate, String language, boolean ifKyeOrAdditionalRole, boolean isJoinTmgEmployees,
                                      boolean useManageFLG, String psSearchItems, String psSearchCondition, String psSearchData
     ) throws Exception{
-
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, psSearchItems,psSearchCondition, psSearchData);
-
-        Connection connection = null;
-        List entityList = null;
         log.info("createSearchEmpList_SQL2：{}",sSQL);
-        try {
-            connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+        try (Connection connection = dataSource.getConnection()){
+            List entityList  = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            setSearchDataArray(JSONArrayGenerator.entityListTowardList(entityList));
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            throw new GlobalException(e.getMessage());
         }
-
-      setSearchDataArray(JSONArrayGenerator.entityListTowardList(entityList));
-
     }
 
     /**
@@ -245,25 +228,14 @@ public class TmgEmpList {
             String language,
             boolean ifKeyOrAdditionalRole
     ) throws Exception{
-
         String sSQL = buildSQLForSelectWardEmpList(cust, comp, ward, targetDate, language, ifKeyOrAdditionalRole);
-
-        Connection connection = null;
-        List entityList = null;
         log.info("createWardEmpList_SQL3：{}",sSQL);
-
-        try {
-            connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+        try ( Connection connection = dataSource.getConnection()){
+            List entityList  = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            dataArray = JSONArrayGenerator.entityListTowardList(entityList);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
-
-        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     /**
@@ -437,7 +409,7 @@ public class TmgEmpList {
      */
     private String buildSQLForSelectEmpListWhere(String psSearchItems, String psSearchCondition, String psSearchData){
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder();
 
         sbSQL.append(" WHERE ");
 
@@ -468,7 +440,7 @@ public class TmgEmpList {
 
         if (psSearchData == null){return "";}
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder();
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
         if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
@@ -491,7 +463,7 @@ public class TmgEmpList {
      */
     private String buildSQLForSelectEmpListOrder(String psColumnName){
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder("");
 
         sbSQL.append(" ORDER BY ");
         sbSQL.append(psColumnName);
@@ -509,7 +481,7 @@ public class TmgEmpList {
                                                          String psDate, String psLanguage
     ){
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder("");
 
         sbSQL.append(" WHERE ");
         sbSQL.append(     " ROWNUM <= NVL(( ").append(buildSQLForSelectTmgDispLimit4Tree(psCustId, psCompId, psDate, psLanguage));
@@ -530,21 +502,14 @@ public class TmgEmpList {
 
         String sSQL =buildSQLForSelectTmgDispLimit4Tree( SysUtil.escDBString(bean.getCustID()),
                         SysUtil.escDBString(bean.getCompCode()),psBaseDate,  SysUtil.escDBString(bean.getLanguage()));
-
-        Connection connection = null;
-        Entity entity = null;
+        Entity entity;
         log.info("getMsgDispLimit4Tree_SQL4："+ sSQL);
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()){
             entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            throw new GlobalException(e.getMessage());
         }
-
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
         return entity == null ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entity.getStr("MGD_NLIMIT");
 
@@ -566,7 +531,7 @@ public class TmgEmpList {
                                                       String psDate, String psLanguage
     ){
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder("");
 
         sbSQL.append(" SELECT ");
         sbSQL.append(     " MGD_NLIMIT ");
@@ -600,7 +565,7 @@ public class TmgEmpList {
             String language,
             boolean ifKyeOrAdditionalRole
     ){
-        StringBuffer sSQL = new StringBuffer();
+        StringBuilder sSQL = new StringBuilder();
 
         sSQL.append(" SELECT  ");
         sSQL.append(    " 0 as MO_NLEVEL");

@@ -1,8 +1,8 @@
 package jp.smartcompany.job.modules.tmg.util;
 
-import cn.hutool.db.DbUtil;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -85,17 +85,14 @@ public class TmgOrgTree {
 
 
     public void createOrgTree(String custId, String compCode, String language, String baseDate) throws Exception{
-        String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
-        List entityList = null;
-        try {
-            connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+        String sql = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
+        try (Connection connection = dataSource.getConnection()) {
+            List entityList = SqlExecutor.query(connection,sql,new EntityListHandler());
+            dataArray = JSONArrayGenerator.entityListTowardList(entityList);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            DbUtil.close(connection);
+            throw new GlobalException(e.getMessage());
         }
-        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     /**

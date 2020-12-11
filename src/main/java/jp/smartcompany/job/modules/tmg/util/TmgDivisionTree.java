@@ -13,8 +13,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
@@ -67,52 +65,31 @@ public class TmgDivisionTree {
     }
 
     public void createDivisionTree(String custId, String compCode, String language, String baseDate) throws Exception{
-
         String sExists = "";
-        String sSQL =  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
-
-        Connection connection = null;
-        List entityList = null;
-        log.info("createDivisionTree_SQL1：{}",sSQL);
-        try {
-            connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        dataArray = JSONArrayGenerator.entityListTowardList(entityList);;
-
+        String sql1=  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
         //最上位組織コードを取得する
-        String sSQL1 =  buildSQLForSelectRootSection(custId, compCode, language, baseDate);
+        String sql2 =  buildSQLForSelectRootSection(custId, compCode, language, baseDate);
+        List entityList;
         Entity rootSection = null;
-        log.info("createDivisionTree_SQL2：{}",sSQL1);
-        try {
-            connection = dataSource.getConnection();
-            rootSection = SqlExecutor.query(connection,sSQL1 ,new EntityHandler());
+        log.info("createDivisionTree_SQL1：{}",sql1);
+        log.info("createDivisionTree_SQL2：{}",sql2);
+        try (Connection connection = dataSource.getConnection()) {
+            entityList = SqlExecutor.query(connection,sql1 ,new OrganisationEntityListHandler());
+            dataArray = JSONArrayGenerator.entityListTowardList(entityList);
+            rootSection= SqlExecutor.query(connection,sql2 ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
         }
-
         //rootSectionがnullの場合、上位組織コード：""で返却する
         gsRootSection = rootSection == null ? "":rootSection.getStr("MO_CSECTIONID_CK");
-        gbAllDivision = (sExists == null || "".equals(sExists));
+        gbAllDivision = true;
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate, String sExists){
-        StringBuffer sSQL = new StringBuffer();
-
+        StringBuilder sSQL = new StringBuilder();
         sSQL.append(" SELECT ");
         sSQL.append(    " org.MO_NLEVEL");
         sSQL.append(    ",org.MO_CSECTIONNICK");
-
         sSQL.append("	|| '(' ||");
         sSQL.append("	(");
         sSQL.append("		select");
@@ -122,7 +99,7 @@ public class TmgDivisionTree {
         sSQL.append("		where");
         sSQL.append("				d.HD_CCUSTOMERID_CK		= org.MO_CCUSTOMERID_CK_FK");
         sSQL.append("			and d.HD_CCOMPANYID_CK		= org.MO_CCOMPANYID_CK_FK");
-        sSQL.append("			and d.HD_DSTARTDATE_CK		<= " + baseDate);
+        sSQL.append("			and d.HD_DSTARTDATE_CK		<= ").append(baseDate);
         sSQL.append("			and d.HD_DENDDATE			>= " + baseDate);
         sSQL.append("			and d.HD_CIFKEYORADDITIONALROLE = 0");
         sSQL.append("			and d.HD_CSECTIONID_FK = org.MO_CSECTIONID_CK ");
@@ -142,8 +119,8 @@ public class TmgDivisionTree {
         sSQL.append("		where");
         sSQL.append("				d.HD_CCUSTOMERID_CK		= org.MO_CCUSTOMERID_CK_FK");
         sSQL.append("			and d.HD_CCOMPANYID_CK		= org.MO_CCOMPANYID_CK_FK");
-        sSQL.append("			and d.HD_DSTARTDATE_CK		<= " + baseDate);
-        sSQL.append("			and d.HD_DENDDATE			>= " + baseDate);
+        sSQL.append("			and d.HD_DSTARTDATE_CK		<= ").append(baseDate);
+        sSQL.append("			and d.HD_DENDDATE			>= ").append(baseDate);
         sSQL.append("			and d.HD_CIFKEYORADDITIONALROLE = 0");
         sSQL.append("			and d.HD_CSECTIONID_FK = org.MO_CSECTIONID_CK ");
 
@@ -184,10 +161,10 @@ public class TmgDivisionTree {
         sSQL.append(" FROM ");
         sSQL.append(" 	MAST_ORGANISATION o ");
         sSQL.append(" WHERE ");
-        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = " + cust);
-        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = " + comp);
-        sSQL.append(" AND o.MO_DSTART           <= " + baseDate);
-        sSQL.append(" AND o.MO_DEND             >= " + baseDate);
+        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = ").append(cust);
+        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = ").append(comp);
+        sSQL.append(" AND o.MO_DSTART           <= ").append(baseDate);
+        sSQL.append(" AND o.MO_DEND             >= ").append(baseDate);
         sSQL.append(" AND o.MO_CLANGUAGE         = " + language);
         sSQL.append(" ) m ");
 
@@ -197,19 +174,19 @@ public class TmgDivisionTree {
         sSQL.append("		o.MO_CSECTIONID_CK　");
         sSQL.append(" FROM	MAST_ORGANISATION o ");
         sSQL.append(" WHERE ");
-        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = " + cust);
-        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = " + comp);
-        sSQL.append(" AND o.MO_DSTART           <= " + baseDate);
-        sSQL.append(" AND o.MO_DEND             >= " + baseDate);
-        sSQL.append(" AND o.MO_CLANGUAGE         = " + language);
+        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = ").append(cust);
+        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = ").append(comp);
+        sSQL.append(" AND o.MO_DSTART           <= ").append(baseDate);
+        sSQL.append(" AND o.MO_DEND             >= ").append(baseDate);
+        sSQL.append(" AND o.MO_CLANGUAGE         = ").append(language);
         sSQL.append(" AND EXISTS(");
         sSQL.append(    " SELECT 1 FROM MAST_GROUPBASESECTION g");
         sSQL.append(    " WHERE");
         sSQL.append(        " g.MGBS_CCUSTOMERID  = o.MO_CCUSTOMERID_CK_FK");
         sSQL.append(    " AND g.MGBS_CCOMPANYID   = o.MO_CCOMPANYID_CK_FK");
         sSQL.append(    " AND g.MGBS_CSECTIONID   = o.MO_CSECTIONID_CK");
-        sSQL.append(    " AND g.MGBS_DSTARTDATE  <= " + baseDate);
-        sSQL.append(    " AND g.MGBS_DENDDATE    >= " + baseDate);
+        sSQL.append(" AND g.MGBS_DSTARTDATE  <= ").append(baseDate);
+        sSQL.append(" AND g.MGBS_DENDDATE    >= ").append(baseDate);
         sSQL.append(" )");
         sSQL.append(sExists);
         sSQL.append(" ) ");
@@ -226,24 +203,23 @@ public class TmgDivisionTree {
         sSQL.append("     org.MO_NSEQ, ");
         sSQL.append("     org.MO_CSECTIONID_CK ");
 
-        String sRet = sSQL.toString();
-        return sRet;
+        return sSQL.toString();
     }
 
 
     private String buildSQLForSelectRootSection(String cust, String comp, String language, String baseDate){
-        StringBuffer sSQL = new StringBuffer();
+        StringBuilder sSQL = new StringBuilder();
 
         sSQL.append(" SELECT ");
         sSQL.append("	o.MO_CSECTIONID_CK　");
         sSQL.append(" FROM ");
         sSQL.append(" 	MAST_ORGANISATION o ");
         sSQL.append(" WHERE ");
-        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = " + cust);
-        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = " + comp);
-        sSQL.append(" AND o.MO_DSTART           <= " + baseDate);
-        sSQL.append(" AND o.MO_DEND             >= " + baseDate);
-        sSQL.append(" AND o.MO_CLANGUAGE         = " + language);
+        sSQL.append("     o.MO_CCUSTOMERID_CK_FK = ").append(cust);
+        sSQL.append(" AND o.MO_CCOMPANYID_CK_FK  = ").append(comp);
+        sSQL.append(" AND o.MO_DSTART           <= ").append(baseDate);
+        sSQL.append(" AND o.MO_DEND             >= ").append(baseDate);
+        sSQL.append(" AND o.MO_CLANGUAGE         = ").append(language);
         sSQL.append(" AND o.MO_CPARENTID IS NULL ");
 
         return sSQL.toString();
@@ -269,10 +245,10 @@ public class TmgDivisionTree {
      */
     public String getTargetSectionData(String targetSectionId,int keyIndex){
         try{
-            for(Iterator i = dataArray.iterator(); i.hasNext();){
-                ArrayList data = (ArrayList)i.next();
-                if(data.get(DEFAULT_KEY_SECID).equals(targetSectionId)){
-                    return (String)data.get(keyIndex);
+            for (Object o : dataArray) {
+                ArrayList data = (ArrayList) o;
+                if (data.get(DEFAULT_KEY_SECID).equals(targetSectionId)) {
+                    return (String) data.get(keyIndex);
                 }
             }
             return null;

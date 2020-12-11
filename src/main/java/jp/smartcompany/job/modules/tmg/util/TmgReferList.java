@@ -5,19 +5,18 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
+import jp.smartcompany.boot.util.SysDateUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMgdMsgSearchTreeView;
 import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
 import jp.smartcompany.job.modules.core.service.ITmgMgdMsgSearchTreeViewService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.boot.util.SysDateUtil;
-import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -30,7 +29,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -609,9 +611,7 @@ public class TmgReferList {
                 sSQL.append(    " TO_CHAR(TMG_F_GET_THE_YEARZONE( TMG_F_GET_THE_YEAR(ADD_MONTHS(SYSDATE,-12)), 0, ADD_MONTHS(SYSDATE,-12)),'"+DEFAULT_DATE_FORMAT+"') preYearDate ");
                 sSQL.append(" FROM DUAL ");
             }
-            Connection conn = null;
-            try {
-                conn = dataSource.getConnection();
+            try (Connection conn = dataSource.getConnection()) {
                 log.info("日期SQL语句：{}",sSQL);
                 /* 执行查询语句，返回实体列表，一个Entity对象表示一行的数据，Entity对象是一个继承自HashMap的对象，存储的key为字段名，value为字段值 */
                 List<Entity> entityList = SqlExecutor.query(conn, sSQL.toString(), new EntityListHandler());
@@ -647,8 +647,6 @@ public class TmgReferList {
                 cgcPreYearDate.set(Calendar.MONTH, 0);                 // 月を1月にする(※Javaの場合、1月は'0'になる)
                 cgcPreYearDate.add(Calendar.YEAR, -1);                 // 前年にする
                 gcPreYearDate = DateUtil.date(cgcPreYearDate);
-            } finally {
-                DbUtil.close(conn);
             }
             httpSession.setAttribute(SESSION_KEY_SYSDATE, DateUtil.format(gcSysdate,DEFAULT_DATE_FORMAT));
             httpSession.setAttribute(SESSION_KEY_PRE_MONTH_DATE, DateUtil.format(gcPreMonthDate,DEFAULT_DATE_FORMAT));

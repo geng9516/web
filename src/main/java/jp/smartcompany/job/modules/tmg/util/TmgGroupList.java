@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -100,21 +101,15 @@ public class TmgGroupList {
                 SysUtil.escDBString(psDBBean.getLanguage()),
                 SysUtil.escDBString(DEFAULT_DATE_FORMAT)
                 );
-
-        Connection connection = null;
-        List entityList = null;
         log.info("createGroupList_SQL1：{}",sSQL);
-        try {
-            connection = dataSource.getConnection();
+        List entityList;
+        try (Connection connection = dataSource.getConnection()){
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            dataArray = JSONArrayGenerator.entityListTowardList(entityList);
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
+            throw new GlobalException(e.getMessage());
         }
-        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     public String buildSQLForSelectGroupList(

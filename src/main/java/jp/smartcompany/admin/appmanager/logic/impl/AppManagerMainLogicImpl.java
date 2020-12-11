@@ -4,7 +4,6 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.appmanager.dto.AppSortDTO;
 import jp.smartcompany.admin.appmanager.dto.MastAppDTO;
@@ -41,7 +40,6 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
 
     private final IMastApptreeService appTreeService;
     private final DataSource dataSource;
-    private Connection connection;
     private final TimedCache<String,Object> timedCache;
 
     @Override
@@ -51,14 +49,11 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
 
     @Override
     public List<MastTemplateDTO> getTemplateList() {
-        try {
-            connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
             return SqlExecutor.query(connection, "select MAT_ID, MAT_CTEMPLATEID, MAT_CNAME from mast_apptemplate",new MastTemplateHandler());
         } catch (SQLException e) {
             log.error(e.getMessage());
             throw new GlobalException(e.getMessage());
-        } finally {
-            DbUtil.close(connection);
         }
     }
 

@@ -1263,14 +1263,10 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public int isCheckValidQuery(String psQuery) {
         // 汎用DBアクセス処理にてSQL実行
         int nQueryCount;
-        Connection conn = null;
-        try {
-            conn = dataSource.getConnection();
+        try (Connection conn=dataSource.getConnection()) {
             nQueryCount = dbControllerLogic.executeQuery(psQuery,conn).size();
         } catch (SQLException e) {
             nQueryCount = -1;
-        } finally {
-            DbUtil.close(conn);
         }
         return nQueryCount;
     }

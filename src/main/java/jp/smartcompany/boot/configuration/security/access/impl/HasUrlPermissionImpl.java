@@ -5,10 +5,10 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.DbUtil;
 import cn.hutool.db.handler.NumberHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.configuration.security.SecurityProperties;
 import jp.smartcompany.boot.configuration.security.access.HasUrlPermission;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
@@ -55,7 +55,6 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     private final AntPathMatcher matcher = new AntPathMatcher();
 
     private String[] urlList;
-    private Connection connection;
 
     @PostConstruct
     public void init() {
@@ -180,16 +179,14 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         Boolean isApprover = (Boolean)httpSession.getAttribute(Constant.IS_APPROVER);
         if (isApprover==null) {
             int countValue;
-            try {
-                connection = dataSource.getConnection();
+            try (Connection connection = dataSource.getConnection()) {
                 String countEvaluator = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '" + empId + "' AND TEV_DSTARTDATE <= '" + now + "' AND TEV_DENDDATE >= '" + now + "'";
                 Number count = SqlExecutor.query(connection, countEvaluator, new NumberHandler());
                 countValue = count.intValue();
                 httpSession.setAttribute(Constant.IS_APPROVER, countValue > 0);
             } catch(SQLException e) {
                 e.printStackTrace();
-            } finally {
-                DbUtil.close(connection);
+                throw new GlobalException(e.getMessage());
             }
         }
         groupBusiness.getGroupList("ja",systemList,httpSession);
