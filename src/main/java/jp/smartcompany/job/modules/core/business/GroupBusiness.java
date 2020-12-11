@@ -3,14 +3,14 @@ package jp.smartcompany.job.modules.core.business;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.handler.NumberHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
-import jp.smartcompany.job.modules.core.pojo.bo.PQueryUserGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
-import jp.smartcompany.job.modules.core.pojo.handler.UserGroupEntityListHandler;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.boot.util.SecurityUtil;
@@ -67,12 +67,7 @@ public class GroupBusiness {
                 List<LoginGroupBO> listLoginGroup =CollUtil.newArrayList();
 
                 for (DBMastGroupBO DBMastGroupBO : mastGroupList) {
-                    int nQueryCount = 0;
-                    try {
-                        nQueryCount = getAssembleSql(DBMastGroupBO, userId);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
+                    int nQueryCount =getAssembleSql(DBMastGroupBO, userId);
                     if (nQueryCount>0) {
                         LoginGroupBO loginGroup = setLoginGroupBO(DBMastGroupBO);
                         listLoginGroup.add(loginGroup);
@@ -104,15 +99,10 @@ public class GroupBusiness {
             if (CollUtil.isNotEmpty(mastGroupList)) {
                 List<LoginGroupBO> listLoginGroup =CollUtil.newArrayList();
 
-                for (DBMastGroupBO DBMastGroupBO : mastGroupList) {
-                    int nQueryCount = 0;
-                    try {
-                        nQueryCount = getAssembleSql(DBMastGroupBO, userId);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
+                for (DBMastGroupBO dBMastGroupBO : mastGroupList) {
+                    int nQueryCount = getAssembleSql(dBMastGroupBO, userId);
                     if (nQueryCount>0) {
-                        LoginGroupBO loginGroup = setLoginGroupBO(DBMastGroupBO);
+                        LoginGroupBO loginGroup = setLoginGroupBO(dBMastGroupBO);
                         listLoginGroup.add(loginGroup);
                         if (StrUtil.equalsIgnoreCase(checkMode, GROUP_CHECK_MODE_SINGLE)) {
                             break;
@@ -164,18 +154,15 @@ public class GroupBusiness {
         return loginGroup;
     }
 
-    public int getAssembleSql(DBMastGroupBO groupBO, String userId) throws SQLException {
-        String strQuery = groupBO.getPQuery() + " AND HD_CUSERID = "
-                + " '" + userId + "'";
-        int nQueryCount = 0;
+    public int getAssembleSql(DBMastGroupBO groupBO, String userId) {
+        String strQuery = "SELECT COUNT(EMPS.HD_CEMPLOYEEID_CK) FROM (" + groupBO.getPQuery() + ") EMPS WHERE HD_CUSERID = '" + userId + "'";
         log.info("运行的sql语句：{}",strQuery);
         try (Connection connection = dataSource.getConnection()) {
-            List<PQueryUserGroupBO> entityList = SqlExecutor.query(connection, strQuery, new UserGroupEntityListHandler());
-            return entityList.size();
+            Number count = SqlExecutor.query(connection, strQuery, new NumberHandler());
+            return count.intValue();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
         }
-        return nQueryCount;
     }
 
 }
