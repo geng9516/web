@@ -23,6 +23,7 @@ public class LiquidationPeriodListDto {
     private String weeklymaxworktime;
     private String totalworkdays;
     private String avgworktime;
+    private String beginofweek;
     private String newflag;
     private String status;
     private String statusname;
