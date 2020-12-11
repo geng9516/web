@@ -29,15 +29,6 @@ public class DbAccessLogicImpl implements DbAccessLogic {
     }
 
     @Override
-    public Object executeQuery(Connection connection,String sSql, Vector vecParam) throws SQLException {
-        Object[] objs = new Object[vecParam.size()];
-        for (int i = 0; i < vecParam.size(); i++) {
-            objs[i]=vecParam.get(i);
-        }
-        return SqlExecutor.query(connection,sSql ,new EntityListHandler(),objs);
-    }
-
-    @Override
     public int executeUpdate(Statement statement,String sSql) throws SQLException {
         log.debug(sSql);
         int count = statement.executeUpdate(sSql);

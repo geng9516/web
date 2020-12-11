@@ -11,11 +11,9 @@ public interface DbControllerLogic {
 
     Vector<Vector<Object>> executeQuery(String sSql, Connection connection) throws SQLException;
 
-    Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam,Connection connection) throws SQLException;
+    Vector<Integer> executeUpdate(Vector vecQuery) ;
 
-    Vector<Integer> executeUpdate(Vector vecQuery) throws SQLException;
+    Vector<Integer> executeUpdate(Vector vecQuery, Vector vecParam) ;
 
-    Vector<Integer> executeUpdate(Vector vecQuery, Vector vecParam) throws SQLException;
-
-    boolean executeProcedure(Vector vecQuery, Vector vecParam) throws SQLException;
+    boolean executeProcedure(Vector vecQuery, Vector vecParam) ;
 }
