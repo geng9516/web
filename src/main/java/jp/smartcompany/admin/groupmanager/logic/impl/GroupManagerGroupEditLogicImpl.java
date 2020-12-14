@@ -1216,13 +1216,21 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         String prefixSectionId = ",01,,|,";
         saveRows.forEach(row -> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
-            layeredSectionId = layeredSectionId.substring(2);
-            row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            if (layeredSectionId.length()>2) {
+                layeredSectionId = layeredSectionId.substring(2);
+                row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            } else {
+                row.setMgbsClayeredsectionid(",,");
+            }
         });
         updateRows.forEach(row-> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
-            layeredSectionId = layeredSectionId.substring(2);
-            row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            if (layeredSectionId.length()>2) {
+                layeredSectionId = layeredSectionId.substring(2);
+                row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            } else {
+                row.setMgbsClayeredsectionid(",,");
+            }
         });
         if (CollUtil.isNotEmpty(saveRows)) {
             iMastGroupbasesectionService.saveBatch(saveRows);
