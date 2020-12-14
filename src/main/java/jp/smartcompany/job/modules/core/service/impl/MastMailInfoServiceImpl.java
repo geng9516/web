@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -65,14 +67,25 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
 
     private String assembleMailContent(MailType type, String mailTemplate, Map<String,Object> extraData) {
         String result;
-        String account = (String)extraData.get(KEY_ACCOUNT);
-        String password = (String)extraData.get(KEY_PASSWORD);
-        String employName = (String)extraData.get(KEY_EMPLOY_NAME);
-        String message = (String)extraData.get(KEY_MESSAGE);
-        String month = (String)extraData.get(KEY_MONTH);
-        String hours = (String)extraData.get(KEY_HOURS);
-        String manager = (String)extraData.get(KEY_MANAGER);
-        String workDay = (String)extraData.get(KEY_WORK_DAY);
+
+        String account = null;
+        String password = null;
+        String employName = null;
+        String message = null;
+        String month = null;
+        String hours = null;
+        String manager = null;
+        String workDay = null;
+        if (Objects.nonNull(extraData)) {
+            account = (String) extraData.get(KEY_ACCOUNT);
+            password = (String) extraData.get(KEY_PASSWORD);
+            employName = (String) extraData.get(KEY_EMPLOY_NAME);
+            message = (String) extraData.get(KEY_MESSAGE);
+            month = (String) Objects.requireNonNull(extraData.get(KEY_MONTH));
+            hours = (String) Objects.requireNonNull(extraData.get(KEY_HOURS));
+            manager = (String) Objects.requireNonNull(extraData.get(KEY_MANAGER));
+            workDay = (String) Objects.requireNonNull(extraData.get(KEY_WORK_DAY));
+        }
 
         switch (type) {
             case CREATE_ACCOUNT_FOR_USER:
