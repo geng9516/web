@@ -11,6 +11,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +133,7 @@ public class TmgLiquidationPeriodController {
     @ResponseBody
     public int UpdateLiquidationDaily(
             @RequestBody MonthDto monthList,
-            @RequestAttribute("BeanName") PsDBBean psDBBean){
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws ParseException {
         return tmgLiquidationPeriodBean.UpdateLiquidationDaily(monthList,monthList.getEmpId(),monthList.getStartDate(),monthList.getEndDate(),psDBBean);
     }
 

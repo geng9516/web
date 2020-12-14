@@ -22,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -332,7 +335,7 @@ public class TmgLiquidationPeriodBean {
     }
 
     //月数据更新
-    public int UpdateLiquidationDaily(MonthDto monthDto,String empid,String startDate,String endDate,PsDBBean psDBBean) {
+    public int UpdateLiquidationDaily(MonthDto monthDto,String empid,String startDate,String endDate,PsDBBean psDBBean) throws ParseException {
         List<LiquidationDailyDto> monthList=monthDto.getMonthList();
         int updateNum=0;
         int errNum=0;
@@ -368,6 +371,8 @@ public class TmgLiquidationPeriodBean {
             tlddDo.setTlddCmodifieruserid(psDBBean.getUserCode());
             tlddDo.setTlddDmodifieddate(DateTime.now());
             //数据插入
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");//注意月份是MM
+            Date date = simpleDateFormat.parse(dailyDto.getDays());
             updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
                     SysUtil.<TmgLiquidationDailyDO>query()
                             .eq("TLDD_CCUSTOMERID", psDBBean.getCustID())
@@ -375,7 +380,7 @@ public class TmgLiquidationPeriodBean {
                             .eq("TLDD_DSTARTDATE", startDate)
                             .eq("TLDD_DENDDATE", endDate)
                             .eq("TLDD_CEMPLOYEEID", empid)
-                            .eq("TLDD_DYYYYMMDD", dailyDto.getYyyymmdd()) );
+                            .eq("TLDD_DYYYYMMDD", date) );
         }
         if (updateNum>0){
             //check LiquidationDaily 执行
