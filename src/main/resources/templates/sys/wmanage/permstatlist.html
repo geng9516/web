@@ -804,6 +804,8 @@
 
                     //年月リスト.lengthがゼロ場合、非活性化にする
                     if (data.length == 0 && this.queryList.hidSelectTab == '0' ){
+                        // 年月リストがnull場合、getTableDataを呼び出さないためで、loading解除する
+                        this.listLoading  = false
                         this.model1 = ''
                         this.selectDisabled = false
                         this.preMonthShow = false
@@ -1017,9 +1019,9 @@
                     this.queryList.hidSelectTab='0'
                     await this.getTableHead()
                     await this.getDispTmgMonthlyList()
-                    // if(this.dispMonthlyList.length>0){
+                    if(this.dispMonthlyList.length>0){
                         await this.getTableData()
-                    // }
+                    }
                 },
                 async getEmpList() {
                     try {
