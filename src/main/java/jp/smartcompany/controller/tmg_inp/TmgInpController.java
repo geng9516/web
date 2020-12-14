@@ -91,4 +91,14 @@ public class TmgInpController {
         }
         return "sys/input/inphomework";
     }
+
+    /**
+     * 跳转到出勤簿
+     */
+    @GetMapping("NoticeBoard")
+    public String toNoticeBoard(
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/input/noticeboard";
+    }
 }
