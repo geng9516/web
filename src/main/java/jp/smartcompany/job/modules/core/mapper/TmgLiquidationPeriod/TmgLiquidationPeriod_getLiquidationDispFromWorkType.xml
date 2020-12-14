@@ -30,6 +30,7 @@
         NVL( tlp.TLP_CMAXDAYHOURS, '' ) as dailymaxworktime,
         NVL( tlp.TLP_CMAXWEEKHOURS, '' ) as weeklymaxworktime,
         NVL( tlp.TLP_CTOTALWORKDAYS, '' ) as totalworkdays,
+        NVL( tlp.TLP_NSPARENUM1 , TMG_F_GET_MGD_N('TMG_BEGINNINGOFWEEK|0',	sysdate,1) ) as beginofweek,
         DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG,
         tlp.tlp_csparechar1 as STATUS,
         TMG_F_GET_MGD(

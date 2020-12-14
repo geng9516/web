@@ -32,7 +32,7 @@
         NVL( tlp.TLP_CTOTALWORKDAYS, '' ) as totalworkdays,
 
         NVL( tlp.TLP_CAVGWORKTIME, '' ) as AVGWORKTIME,
-        NVL( tlp_TLP_NSPARENUM1 , TMG_F_GET_MGD_N('TMG_BEGINNINGOFWEEK|0',	sysdate,1) ) as beginofweek,
+        NVL( tlp.TLP_NSPARENUM1 , TMG_F_GET_MGD_N('TMG_BEGINNINGOFWEEK|0',	sysdate,1) ) as beginofweek,
         DECODE( tlp.tlp_CTLPID,'','',tlp.tlp_CTLPID ) AS NEWFLAG,
         tlp.tlp_csparechar1 as STATUS,
         TMG_F_GET_MGD(
@@ -49,14 +49,14 @@
         AND sysdate BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
         AND tlp.TLP_CCOMPANYID = te.TEM_CCOMPANYID
         AND tlp.TLP_CCUSTOMERID = te.TEM_CCUSTOMERID
-        AND hd.HD_CEMPLOYEEID_CK=te.TEM_CEMPLOYEEID
-        AND hd.HD_CCUSTOMERID_CK = te.TEM_CCUSTOMERID
-        AND hd.HD_CCOMPANYID_CK = te.TEM_CCOMPANYID
-        AND SYSDATE BETWEEN hd.HD_DSTARTDATE_CK AND hd.HD_DENDDATE
         WHERE
         te.TEM_CCOMPANYID = #{custId}
         AND te.TEM_CCUSTOMERID = #{compId}
         AND SYSDATE BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
+        AND hd.HD_CEMPLOYEEID_CK = te.TEM_CEMPLOYEEID
+        AND hd.HD_CCUSTOMERID_CK = te.TEM_CCUSTOMERID
+        AND hd.HD_CCOMPANYID_CK = te.TEM_CCOMPANYID
+        AND SYSDATE BETWEEN  hd.HD_DSTARTDATE_CK AND hd.HD_DENDDATE
         <choose>
             <when test='type == "0"'>
                 AND TMG_F_GET_ME_NAME (

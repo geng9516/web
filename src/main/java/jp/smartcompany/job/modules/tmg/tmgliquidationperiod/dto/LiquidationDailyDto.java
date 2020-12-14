@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @ToString
 public class LiquidationDailyDto {
+    private String days;
     private String yyyymmdd;
     private String week;
     private String patternid;

@@ -201,8 +201,15 @@
                                 placeholder="週" />
                         </form-item>
                         <form-item label="週の開始日">
-                            <input-number class="width100" v-model="newLiquidationInfo.beginOfWeek"
-                                          placeholder="曜日" />
+                            <i-select v-model="newLiquidationInfo.beginOfWeek" placeholder="曜日を選択ください">
+                                <i-option value="1">月曜日</i-option>
+                                <i-option value="2">火曜日</i-option>
+                                <i-option value="3">水曜日</i-option>
+                                <i-option value="4">木曜日</i-option>
+                                <i-option value="5">金曜日</i-option>
+                                <i-option value="6">土曜日</i-option>
+                                <i-option value="0">日曜日</i-option>
+                            </i-select>
                         </form-item>
                     </i-form>
                 </div>
@@ -503,7 +510,8 @@
                           dailymaxworktime:'',
                           weeklymaxworktime:'',
                           totalworkdays:'',
-                          avgworktime:''
+                          avgworktime:'',
+                          beginOfWeek:0
                     },
                     editColumns: [
                         {
@@ -764,11 +772,16 @@
                         this.workTypeName = e
                     }
                     try {
+                        let OPTS = {
+                            type:'0',
+                            searchText :'',
+                            workType:selectid
+                        }
                         this.loading = true
+                        const { data } = await this.http.get('sys/tmgliquidationperiod/Disp', OPTS)
                         this.optsSearch.workType = selectid
                         this.optsSearch.searchText = ''
                         this.optsSearch.type = '0'
-                        const { data } = await this.http.get('sys/tmgliquidationperiod/Disp', this.optsSearch)
                         this.tableData = data.liquidationPeriodList
                         this.workTypeDrawShow = false
                     } catch (error) {
@@ -778,20 +791,28 @@
                     }
                 },
                 async getSearchTableData() {
-                    if (!this.optsSearch.searchText) {
+                    console.log(this.optsSearch)
+                    if (this.optsSearch.searchText && this.optsSearch.searchText != '') {
+                        try {
+                            let OPTS = {
+                                type:this.optsSearch.type,
+                                searchText :this.optsSearch.searchText,
+                                workType:''
+                            }
+                            this.loading = true
+                            this.workTypeName = '検索中'
+                            const { data } = await this.http.get('sys/tmgliquidationperiod/Disp', OPTS)
+                            this.tableData = data.liquidationPeriodList
+                            this.optsSearch.workType = ''
+                            this.workTypeDrawShow = false
+                        } catch (error) {
+                            return
+                        } finally {
+                            this.loading = false
+                        }
+
+                    }else{
                         this.handleClickLeaf()
-                    }
-                    try {
-                        this.loading = true
-                        this.workTypeName = '検索中'
-                        this.optsSearch.workType = ''
-                        const { data } = await this.http.get('sys/tmgliquidationperiod/Disp', this.optsSearch)
-                        this.tableData = data.liquidationPeriodList
-                        this.workTypeDrawShow = false
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.loading = false
                     }
                 },
                 patternManager() {
@@ -841,6 +862,7 @@
                             this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
                             this.limitInfo.dailymaxworktime=e.dailymaxworktime
                             this.limitInfo.weeklymaxworktime=e.weeklymaxworktime
+                            this.limitInfo.beginOfWeek=e.beginofweek ? +(e.beginofweek):0;
                             console.log(this.limitInfo)
                         } catch (error) {
                             return
@@ -854,21 +876,6 @@
                     }
                 },
 
-                async insertLiquidation() {
-                    const OPTS = {
-                        empId: this.empInfo.empId,
-                        worktypeId: this.empInfo.empWorkTypeId,
-                        startDate: Utils.formatDate(this.curDateFrom, 'yyyy/mm/dd'),
-                        endDate: Utils.formatDate(this.curDateTo, 'yyyy/mm/dd'),
-                        tldDtos: this.$refs.table.rebuildData
-                    }
-                    try {
-                        const { data } = await this.http.post('sys/tmgliquidationperiod/InsertLiquidation', OPTS)
-                    } catch (error) {
-                        return
-                    } finally {
-                    }
-                },
                 //删除清算
                 async deleteLiquidation(e) {
                     const OPTS = {
@@ -876,19 +883,35 @@
                         startDate: e.startdate,
                         endDate: e.enddate,
                     }
-                    try {
-                        const { data } = await this.http.postForm('sys/tmgliquidationperiod/deleteLiquidation', OPTS)
-                        this.handleClickLeaf()
-                    } catch (error) {
-                        return
-                    } finally {
-                    }
+
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        width: 480,
+                        title: '注意',
+                        content: 'この精算期間を取消します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try {
+                                const { data } = await this.http.postForm('sys/tmgliquidationperiod/deleteLiquidation', OPTS)
+                                this.handleClickLeaf()
+                            } catch (error) {
+                                return
+                            } finally {
+                            }
+                        }
+                    })
+
                 },
                 //清算详细表格合并
                 handleSpan({ row, column, rowIndex, columnIndex }) {
+                    //默认周开始日
+                    if(!this.limitInfo.beginOfWeek){
+                        this.limitInfo.beginOfWeek = 0
+                    }
                     //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
                     if (rowIndex % 2 === 1 && columnIndex === 1) {
-                        return [1, (7 - new Date(row.month+'/01').getDay())];
+                        return [1, (7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
                         // 9为周日开始 8为周一开始 类推
                     } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date(row.month+'/01').getDay())) {
                         return [0, 0];
@@ -896,7 +919,7 @@
 
                     //每月第二行时 非第一列 合并（周一为周开始日的情况下）
                     // 8为周日开始 7为周一开始 类推
-                    if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > (8 - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 === 1 && columnIndex < 33) {
+                    if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > ( - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 === 1 && columnIndex < 33) {
                         //最后一个只合并剩余
                         if ((32- columnIndex) < 7) {
                             return [1, 32 - columnIndex + 1];
@@ -936,6 +959,7 @@
                             try {
                                 const { msg } = await this.http.post('sys/tmgliquidationperiod/insertLiquidation', this.newLiquidationInfo)
                                 this.newFlg = false;
+                                this.handleClickLeaf()
                             } catch (error) {
                                 return
                             } finally {
