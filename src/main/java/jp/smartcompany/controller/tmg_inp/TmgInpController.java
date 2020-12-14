@@ -93,7 +93,7 @@ public class TmgInpController {
     }
 
     /**
-     * 跳转到出勤簿
+     * 跳转到揭示板
      */
     @GetMapping("NoticeBoard")
     public String toNoticeBoard(
