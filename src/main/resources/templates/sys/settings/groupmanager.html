@@ -1616,6 +1616,13 @@
             if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください', duration: 6.5 })
             if (!updateValue.groupName) return this.$Notice.warning({ title: '注意', desc: '名称を入力してください', duration: 6.5 })
           }
+
+          // 2020/12/15 投稿的话必须选一个基点组织来推送
+          if(updateValue.mgPublishing && updateValue.baseSectionList[0].sectionList.length === 0) {
+            return this.$Notice.warning({ title: '注意', desc: '基点組織少はなくとも一つを選んでください', duration: 6.5 })
+          }
+          console.log(updateValue.baseSectionList[0].sectionList)
+
           if (this.sectionPostList_bak.companyId) {
             // 組織・役職選択による定義
             // 組織的处理

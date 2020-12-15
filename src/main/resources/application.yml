@@ -43,7 +43,8 @@ spring:
       connection-test-query: SELECT 1 FROM DUAL
       validation-timeout: 3000
 mybatis-plus:
-  mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/genericmanager/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/mailmanager/mapper/**/*.xml
+  mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/genericmanager/mapper/**/*.xml,
+                    classpath:jp/smartcompany/job/modules/tmg_setting/mailmanager/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_inp/noticeboard/mapper/**/*.xml
   global-config:
     db-config:
       id-type: INPUT

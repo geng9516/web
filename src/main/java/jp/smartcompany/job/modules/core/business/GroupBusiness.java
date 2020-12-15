@@ -131,7 +131,7 @@ public class GroupBusiness {
     private void setPretreatGroup(String language,HttpSession httpSession) {
         String userId = SecurityUtil.getUserId();
         List<LoginGroupBO> lGroup = CollUtil.newArrayList();
-        String systemCode = "";
+        String systemCode;
         Map<String, List<LoginGroupBO>> hGroupMap = MapUtil.newHashMap(true);
         List<DBMastGroupBO> mastGroupList = iMastGroupService.getPretreatGroupByLanguageUserId(language, userId);
         for (DBMastGroupBO group : mastGroupList) {

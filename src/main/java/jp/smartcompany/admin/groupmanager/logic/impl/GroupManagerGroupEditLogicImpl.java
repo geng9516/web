@@ -7,7 +7,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.DbUtil;
 import jp.smartcompany.admin.component.dto.*;
 import jp.smartcompany.admin.component.logic.BaseSectionLogic;
 import jp.smartcompany.admin.component.logic.QueryConditionLogic;
@@ -519,6 +518,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 対象テーブル(MAST_GROUPBASESECTION)
         deleteBaseSection(baseSectionDTO.getDeleteBaseSection());
         // 新規追加対象データをデータベースへ反映
+        if (dto.getMgPublishing() && CollUtil.isEmpty(baseSectionDTO.getRowList())) {
+            throw new GlobalException("掲示板投稿権限にはせめて一つ基点組織を選択してください");
+        }
         insertBaseSection(baseSectionDTO.getRowList());
         // グループ定義条件情報を更新
         // 対象テーブル(MAST_GROUPDEFINITIONS)
@@ -1217,9 +1219,11 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         String prefixSectionId = ",01,,|,";
         saveRows.forEach(row -> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
-            if (layeredSectionId.length()>2) {
+            if (layeredSectionId.length()>2 && !layeredSectionId.startsWith(prefixSectionId)) {
                 layeredSectionId = layeredSectionId.substring(2);
                 row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            } else if (layeredSectionId.startsWith(prefixSectionId)) {
+                row.setMgbsClayeredsectionid(layeredSectionId);
             } else {
                 row.setMgbsClayeredsectionid(",,");
             }

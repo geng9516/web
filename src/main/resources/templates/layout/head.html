@@ -41,6 +41,12 @@
         </dropdown-item>
       </dropdown-menu>
     </dropdown>
+    <!-- 动画滚动公告 -->
+    <div class="mr20" style="width: 35%;overflow: hidden" @mouseenter="stopMove" @mouseleave="move">
+      <div ref="box" style="white-space: nowrap;">{{ announce }}</div>
+    </div>
+    <!-- 记录真实文字长度 -->
+    <div ref="announce" style="position: absolute;z-index: -999;top: -999999px;">{{ announce }}</div>
   </i-menu>
   <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
     <i-form ref="password" :label-width="200" :model="password" class="tl" style="margin: 10px 10px 0;">
@@ -72,6 +78,10 @@
         return {
           baseUrl: BASE_URL,
           session: [[${ session }]],
+          announce: '',
+          announceWidth: '',
+          animateMachine: {},
+          distance: 16,
           themeList: [
             { name: 'デフォルト', value: 'default'},
             { name: 'クラシック', value: 'classical'},
@@ -90,6 +100,8 @@
       },
       mounted() {
         this.password.username = this.session.psSession.loginUser
+        this.announceWidth = this.$refs.announce.getBoundingClientRect().width
+        this.move()
       },
       methods: {
         logout: Debounce(async function () {
@@ -139,6 +151,17 @@
         // 点击顶部边栏时也关闭sider
         handleClickMenuOutSide() {
           SIDER._data.showSider = false
+        },
+        move () {
+          this.distance -= 1
+          if (- this.distance >= this.announceWidth) {
+              this.distance = 16
+          }
+          this.$refs.box.style.transform = `translateX(${this.distance}px)`
+          this.animateMachine = requestAnimationFrame(this.move)
+        },
+        stopMove() {
+          cancelAnimationFrame(this.animateMachine)
         }
       }
     })
