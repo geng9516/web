@@ -63,7 +63,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     }
 
     @Override
-    public boolean hasPermission(HttpServletRequest request, Authentication authentication) throws SQLException {
+    public boolean hasPermission(HttpServletRequest request, Authentication authentication) {
         String siteId = request.getParameter("psSite");
 //        String appId = request.getParameter("psAppId");
         HttpSession httpSession = request.getSession(false);
@@ -99,7 +99,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         return hasPermission;
     }
 
-    private void loadUserBasicInfo(HttpServletRequest request, HttpSession httpSession) throws SQLException {
+    private void loadUserBasicInfo(HttpServletRequest request, HttpSession httpSession) {
         List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
 
         // 初始化PsSession对象
