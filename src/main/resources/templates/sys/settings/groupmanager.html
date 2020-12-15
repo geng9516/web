@@ -125,6 +125,7 @@
               <div class="person-info">{{ groupInfoData[0] && groupInfoData[0].mgCtext }}</div>
             </i-col>
           </Row>
+
           <i-table class="mt10" border :row-class-name="()=>'select-col'" :columns="groupInfoColumns"
             :disabled-hover="true" :data="groupInfoData" :loading="loading" no-data-text="">
             <template slot-scope="{ row }" slot="date">
@@ -147,6 +148,14 @@
               <i-input class="tr" v-model="groupInfoData[0].mgNpartinentnumber" :maxlength="6" number><span slot="append">人</span></i-input>
             </template>
           </i-table>
+
+          <div class="no-border-radius mt10" style="display: flex; align-items: stretch;">
+            <span class="label tr"
+              style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 6px 10px 0 0;">掲示板投稿権限</span>
+            <span class="input-like-span tl" style="margin-bottom: 1px;">
+              <Checkbox v-model="updateValue.mgPublishing"></Checkbox>
+            </span>
+          </div>
           <!-- <div class="tl mt10">
           <radio-group class="tl" v-model="updateValue.baseFlag">
             <Radio label="0">社員選択による定義</Radio>
@@ -953,6 +962,7 @@
             this.updateValue.belowSingle = data.belowSingle
             this.updateValue.baseFlag = data.groupInfo.gsBaseFlg
             this.updateValue.weightAge = data.groupInfo.mgNweightage
+            this.updateValue.mgPublishing = data.groupInfo.mgPublishing
             this.sectionPostList_bak = Utils.deepClone(data)
             // 条件式による定義
             this.queryData = data.queryConditions.rowList.length >= 1 ? data.queryConditions.rowList.map(e=> {return {...e, delete:false}}) : [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }]
