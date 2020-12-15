@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.attendanceBook;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -52,9 +53,6 @@ public class AttendanceBookBean {
 
     private final String DYYYYMMDD = "yyyy/MM/dd";
     private final String DYYYYMM = "yyyy/MM";
-    private final String DYYYYMMDD2 = "yyyy-MM-dd";
-    private final String DYYYYMMDD3 = "yyyyMMdd";
-    private final String DYYYYMMDDHHMMSS = "yyyy-MM-dd hh:mm:ss";
 
     private BeanMap map;
 //    private int MONTH_DAY = 1;
@@ -396,58 +394,10 @@ public class AttendanceBookBean {
         List<String> results = this.selectTotalDataQueryList();
         //出勤簿リスト
         List<AttendanceBookDTO> attendanceBookDTOList = iTmgAttendanceBookService.selectAttendanceBookList(employeeId, queryMonthDay, nextYearDay, compCode, custId, results);
-        logger.info("出勤簿リスト[before]：" + attendanceBookDTOList.size());
-        //データ処理
-        attendanceBookDTOList = this.attendanceBookListMerge(attendanceBookDTOList);
-        logger.info("出勤簿リスト[after]件数：" + attendanceBookDTOList.size());
+
         return attendanceBookDTOList;
     }
 
-    /**
-     * 出勤簿データ不具合の場合、データを補完する
-     *
-     * @param attendanceBookDTOList
-     * @return
-     */
-    private List<AttendanceBookDTO> attendanceBookListMerge(List<AttendanceBookDTO> attendanceBookDTOList) {
-        if (null != attendanceBookDTOList) {
-            if (attendanceBookDTOList.size() > 0 && attendanceBookDTOList.size() != 12) {
-                List<AttendanceBookDTO> results = new ArrayList<AttendanceBookDTO>();
-                //the first date
-                String tma_dyyyymm = attendanceBookDTOList.get(0).getTmaDyyyymm();
-                results.add(attendanceBookDTOList.get(0));
-                String tma_dyyyy = "";
-                String tma_dmm = "";
-                for (int i = 1, j = 1; i < 12; i++) {
-                    tma_dyyyymm = DateUtil.format(DateUtil.parse(tma_dyyyymm, DYYYYMMDDHHMMSS).offset(DateField.MONTH, 1), DYYYYMMDD2) + " 00:00:00";
-                    String dateSample = DateUtil.format(DateUtil.parse(tma_dyyyymm, DYYYYMMDDHHMMSS), DYYYYMMDD3);
-                    String dateTarget = DateUtil.format(DateUtil.parse(attendanceBookDTOList.get(j).getTmaDyyyymm(), DYYYYMMDDHHMMSS), DYYYYMMDD3);
-                    tma_dyyyy = DateUtil.parse(tma_dyyyymm).toString("yyyy");
-                    tma_dmm = DateUtil.parse(tma_dyyyymm).toString("MM") + "月";
-                    // logger.info("current date--->" + tma_dyyyymm + "," + tma_dyyyy + "," + tma_dmm);
-                    // logger.info("dateSample:" + dateSample + ",dateTarget:" + dateTarget);
-                    if (!dateSample.equals(dateTarget)) {
-                        //データが無くなりました、補完します
-                        AttendanceBookDTO attendanceBookDTO = new AttendanceBookDTO();
-                        attendanceBookDTO.setTmaCcustomerid(attendanceBookDTOList.get(j).getTmaCcustomerid());
-                        attendanceBookDTO.setTmaCcompanyid(attendanceBookDTOList.get(j).getTmaCcompanyid());
-                        attendanceBookDTO.setTmaCemployeeid(attendanceBookDTOList.get(j).getTmaCemployeeid());
-                        attendanceBookDTO.setDyyyy(tma_dyyyy);
-                        attendanceBookDTO.setDmm(tma_dmm);
-                        attendanceBookDTO.setTmaDyyyymm(tma_dyyyymm);
-                        results.add(attendanceBookDTO);
-                    } else {
-                        results.add(attendanceBookDTOList.get(j));
-                        j++;
-                    }
-                }
-                return results;
-            } else {
-                return attendanceBookDTOList;
-            }
-        }
-        return null;
-    }
 
     /**
      * 出勤簿リストDTO2VO
@@ -648,7 +598,7 @@ public class AttendanceBookBean {
         // AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO = this.selectEndueTimeInfo(dyyyymmdd, employeeId, preYearDay, nextYearDay, compCode, custId);
         AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO = new AttendanceEndueTimeInfoDTO();
 
-        //コメント
+                //コメント
         AttendanceBookCommentDTO attendanceBookCommentDTO = this.selectComment(employeeId, year, yearLastDay, compCode, custId);
         //変える
         AttendanceBookHolidayInfoVO attendanceBookHolidayInfoVO = new AttendanceBookHolidayInfoVO(attendanceEndueTimeInfoDTO, attendanceBookCommentDTO);
@@ -831,7 +781,7 @@ public class AttendanceBookBean {
         //月間実働時間
         List<String> results = this.selectWorkTime(sqlStr, psDBBean.getUserCode(), monthStartDate, monthEndDate, psDBBean.getCompCode(), psDBBean.getCustID());
         StringBuffer sb = new StringBuffer();
-        if (null != results) {
+        if (CollUtil.isNotEmpty(results)) {
             String workTime = results.get(0);
             //フォマードを変更する
             // 42.30  --> 42時30分
@@ -845,11 +795,4 @@ public class AttendanceBookBean {
         }
     }
 
-
-    public static void main(String[] args) {
-        String tma_dyyyymm = "2020-04-01 12:06:00";
-        String tma_dyyyymmdd = DateUtil.format(DateUtil.parse(tma_dyyyymm, "yyyy-MM-dd hh:mm:ss").offset(DateField.MONTH, 1), "yyyy-MM-dd hh:mm:ss");
-        System.out.println(tma_dyyyymmdd);
-
-    }
 }

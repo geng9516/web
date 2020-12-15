@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
 
 /**
  * @author 陳毅力
@@ -360,57 +361,57 @@ public class AttendanceBookDTO {
     /**
      * 合計時間数
      */
-    private String col1 = "0.00";
+    private String col1;
 
     /**
      * 年休取得日数
      */
-    private String col2 = "0.0";
+    private String col2;
 
     /**
      * 年休取得時間
      */
-    private String col3 = "0.00";
+    private String col3;
 
     /**
      * 年休残日数
      */
-    private String col4 = "0.0";
+    private String col4;
 
     /**
      * 年休残時間
      */
-    private String col5 = "0.00";
+    private String col5;
 
     /**
      * 病休取得日数
      */
-    private String col6 = "0.0";
+    private String col6;
 
     /**
      * 病休取得時間数
      */
-    private String col7 = "0.00";
+    private String col7;
 
     /**
      * 特休取得日数
      */
-    private String col8 = "0.0";
+    private String col8;
 
     /**
      * 特休取得時間数
      */
-    private String col9 = "0.00";
+    private String col9;
 
     /**
      * 欠勤日数
      */
-    private String col10 = "0.0";
+    private String col10;
 
     /**
      * 欠勤時間数
      */
-    private String col11 = "0.00";
+    private String col11;
 
 
 }
