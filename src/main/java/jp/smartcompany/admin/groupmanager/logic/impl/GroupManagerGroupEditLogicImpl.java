@@ -518,6 +518,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 対象テーブル(MAST_GROUPBASESECTION)
         deleteBaseSection(baseSectionDTO.getDeleteBaseSection());
         // 新規追加対象データをデータベースへ反映
+        if (dto.getMgPublishing() && CollUtil.isEmpty(baseSectionDTO.getRowList())) {
+            throw new GlobalException("掲示板投稿権限にはせめて一つ基点組織を選択してください");
+        }
         insertBaseSection(baseSectionDTO.getRowList());
         // グループ定義条件情報を更新
         // 対象テーブル(MAST_GROUPDEFINITIONS)
