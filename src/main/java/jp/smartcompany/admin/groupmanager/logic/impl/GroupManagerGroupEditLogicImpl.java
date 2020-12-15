@@ -225,7 +225,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         GroupManagerGroupListDTO groupListDTO = new GroupManagerGroupListDTO();
         if (StrUtil.isBlank(groupId)) {
             // 優先順位(初期値は固定で"999")
-           Long bWeightage = 999L;
+           long bWeightage = 999L;
             // 優先順位(現在の最大優先順位)が指定されていた場合
             if (weightage != null) {
                 bWeightage = Long.parseLong(weightage);
@@ -1159,6 +1159,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         oInsert.setMgClanguage("ja");
         oInsert.setMgCgroupdescription(poDto.getGroupName());
         oInsert.setMgCgroupdescriptionja(poDto.getGroupName());
+        oInsert.setMgPublishing(poDto.getMgPublishing());
 //        oInsert.setMgCgroupdescriptionen(poDto.getMgCgroupdescriptionen());
 //        oInsert.setMgCgroupdescriptionch(poDto.getMgCgroupdescriptionch());
 //        oInsert.setMgCgroupdescription01(poDto.getMgCgroupdescription01());

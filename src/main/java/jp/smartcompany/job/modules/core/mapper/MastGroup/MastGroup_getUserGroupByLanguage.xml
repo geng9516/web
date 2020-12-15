@@ -18,7 +18,8 @@
             MG_CGROUPID_PK,
             current_date,
             #{language}
-            ) AS groupName
+            ) AS groupName,
+            MG_PUBLISHING
         FROM
             (
                 SELECT

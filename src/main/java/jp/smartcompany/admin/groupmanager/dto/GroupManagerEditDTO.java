@@ -24,6 +24,7 @@ public class GroupManagerEditDTO {
     private Long mgId;
     @NotBlank
     private String groupId;
+    private Boolean mgPublishing;
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date startDate;
     @JsonFormat(pattern = "yyyy/MM/dd")

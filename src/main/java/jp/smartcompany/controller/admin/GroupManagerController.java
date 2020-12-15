@@ -78,6 +78,7 @@ public class GroupManagerController {
      *  {
      *    "mgpId":     mast_groupdefinitions表的数据库自增id，从上面的detail接口里获取，更新group时才需要
      *    "mgId":       更新和新增都需要，mast_group表的数据库自增id，从上面的detail接口里获取，更新group时才需要
+     *    "mgPublishing" 是否拥有发布揭示板权限
      *    "groupId":          group表的自定义id，更新和新增都需要，会进行groupId重复check
      *    "startDate":   有效期开始时间
      *    "endDate": 有效期结束时间

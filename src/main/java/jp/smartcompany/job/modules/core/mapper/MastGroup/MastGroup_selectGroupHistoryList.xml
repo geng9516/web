@@ -5,6 +5,7 @@
     <select id="selectGroupHistoryList" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO">
         SELECT
         MG_ID,
+        MG_PUBLISHING,
         MG_CCUSTOMERID,
         MG_CSYSTEMID_CK_FK,
         MG_CGROUPID_PK,
@@ -39,13 +40,13 @@
         AND MG_CSYSTEMID_CK_FK  = #{systemId}
         AND MG_CLANGUAGE = 'ja'
         AND MG_CGROUPID_PK = #{groupId}
-        <if test="companyList!=null and companyList.size>0">
+        <if test="companyList neq null and companyList.size gt 0">
             AND MG_CCOMPANYID IN
             <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
                 #{companyId}
             </foreach>
         </if>
-        <if test="searchDate!=null">
+        <if test="searchDate neq null">
             AND MG_DSTARTDATE	<![CDATA[<=]]> #{searchDate}
             AND MG_DENDDATE >= #{searchDate}
         </if>

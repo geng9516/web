@@ -18,5 +18,6 @@ public class DBMastGroupBO {
     private String systemName;
     private String groupName;
     private String pQuery;
+    private Boolean mgPublishing;
 
 }

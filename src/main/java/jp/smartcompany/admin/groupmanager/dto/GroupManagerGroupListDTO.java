@@ -130,6 +130,8 @@ public class GroupManagerGroupListDTO implements Serializable {
     /** グループ定義種別フラグ(0:組織・役職設定で定義/1:条件式で定義) */
     private String gsBaseFlg;
 
+    /**1:発表あり　0:発表無し*/
+    private Boolean mgPublishing;
 
     /** 全社区分フラグ */
     private boolean allCompaniesFlg;

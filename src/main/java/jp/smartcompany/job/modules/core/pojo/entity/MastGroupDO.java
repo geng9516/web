@@ -32,6 +32,11 @@ private static final long serialVersionUID=1L;
                 @TableId(value = "mg_id")
                 private Long mgId;
 
+    /**
+     * 1:発表あり　0:発表無し
+     */
+    @TableField(value="mg_publishing")
+    private Boolean mgPublishing;
         /**
          * 顧客コード
          */
