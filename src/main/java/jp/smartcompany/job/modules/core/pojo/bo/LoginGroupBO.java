@@ -20,5 +20,6 @@ public class LoginGroupBO {
     private String systemName;
     private String groupCode;
     private String groupName;
+    private Boolean publishing;
 
 }

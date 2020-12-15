@@ -59,6 +59,10 @@ public class PsSession implements Serializable {
     private String locale;
     /**新增 员工职种类**/
     private String workTypeName;
+    /**
+     * 是否有发布揭示板公告权限
+     */
+    private Boolean hasPublishPermission;
 
     private PsDesignationCache designationCache;
     private PsEmpRelationCache loginEmpRelationCache;

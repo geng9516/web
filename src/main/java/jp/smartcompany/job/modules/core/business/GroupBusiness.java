@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户组Logic层
@@ -85,6 +86,8 @@ public class GroupBusiness {
 
                 log.info("【groupBusiness：{}】",listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
+                    long publishGroups = listLoginGroup.stream().filter(LoginGroupBO::getPublishing).count();
+                    session.setHasPublishPermission(publishGroups>0);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
                 }
             }
@@ -150,7 +153,8 @@ public class GroupBusiness {
         loginGroup.setSystemCode(dBMastGroupBO.getSystemId())
                 .setSystemName(dBMastGroupBO.getSystemName())
                 .setGroupCode(dBMastGroupBO.getGroupId())
-                .setGroupName(dBMastGroupBO.getGroupName());
+                .setGroupName(dBMastGroupBO.getGroupName())
+                .setPublishing(dBMastGroupBO.getMgPublishing());
         return loginGroup;
     }
 
