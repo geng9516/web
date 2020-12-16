@@ -21,4 +21,10 @@ public class NoticeBoardServiceImpl implements INoticeBoardService {
         return psSession.getLoginGroups().get("01").stream().filter(LoginGroupBO::getPublishing).collect(Collectors.toList());
     }
 
+    public void getSendNoticeRangeList() {
+        List<LoginGroupBO> noticeGroups = getPublishGroupList();
+        List<String> noticeGroupIds = noticeGroups.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+
+    }
+
 }
