@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupbasesection.MastGroupbasesectionMapper">
+
+    <select id="selectSelfSectionEmpIds"  resultType="java.lang.String">
+        SELECT
+          HD_CEMPLOYEEID_CK
+        FROM
+             HIST_DESIGNATION d,TMG_EMPLOYEES e,MAST_ORGANISATION o
+        WHERE
+              d.HD_CCUSTOMERID_CK = '01'
+              AND d.HD_CCOMPANYID_CK = '01'
+              AND d.HD_CSECTIONID_FK = #{value}
+              AND d.HD_DSTARTDATE_CK <![CDATA[<=]]> TRUNC(SYSDATE)
+              AND d.HD_DENDDATE >= TRUNC(SYSDATE)
+              AND d.HD_CIFKEYORADDITIONALROLE = '0'
+              AND d.HD_NOFFCIALORNOT = 0
+              AND d.HD_NOFFICIALORNOT = 0
+              AND e.TEM_CEMPLOYEEID(+) = d.HD_CEMPLOYEEID_CK
+              AND e.TEM_DSTARTDATE(+) <![CDATA[<=]]> TRUNC(SYSDATE)
+              AND e.TEM_CCOMPANYID(+) = d.HD_CCOMPANYID_CK
+              AND e.TEM_CCUSTOMERID(+) = d.HD_CCUSTOMERID_CK
+              AND e.TEM_DENDDATE(+) >= TRUNC(SYSDATE)
+              AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(
+                e.TEM_CEMPLOYEEID,
+                TRUNC(SYSDATE),
+                LAST_DAY(TRUNC(SYSDATE)), e.TEM_CCUSTOMERID,e.TEM_CCOMPANYID)
+              AND o.MO_CCUSTOMERID_CK_FK = D.HD_CCUSTOMERID_CK
+              AND o.MO_CCOMPANYID_CK_FK = D.HD_CCOMPANYID_CK
+              AND o.MO_CSECTIONID_CK = D.HD_CSECTIONID_FK
+              AND o.MO_CLANGUAGE = 'ja'
+              AND o.MO_DSTART <![CDATA[<=]]> TRUNC(SYSDATE)
+              AND o.MO_DEND >= TRUNC(SYSDATE)
+              AND e.TEM_CWORKTYPEID NOT IN ('TMG_WORKERTYPE|00')
+    </select>
+
+</mapper>

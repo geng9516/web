@@ -60,4 +60,8 @@ public interface IMastGroupbasesectionService extends IService<MastGroupbasesect
                                                                String psCompanyId, String psSystemId, String psLanguage,
                                                                String psGroupId, Date pdSearchDate);
 
+
+        /** ==================揭示板相关===================*/
+        List<String> selectSelfSectionEmpIds(String sectionId);
+
 }

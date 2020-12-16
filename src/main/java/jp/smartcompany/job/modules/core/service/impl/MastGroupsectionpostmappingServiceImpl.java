@@ -158,5 +158,38 @@ public class MastGroupsectionpostmappingServiceImpl extends ServiceImpl<MastGrou
         baseMapper.deleteSectionPostType(customerId,systemId,groupId, typeId, sStartDate);
     }
 
+    @Override
+    public List<String> selectGroupRange(List<String> groupIds) {
+        return baseMapper.selectGroupRange(groupIds);
+    }
 
+    @Override
+    public List<String> selectCompanySectionIdList(List<String> noticeGroupIds,String typeId) {
+        return baseMapper.selectCompanySectionIdList(noticeGroupIds,typeId);
+    }
+
+    @Override
+    public List<String> selectEmpIdByCompanySectionIdList(List<String> sectionIds,String groupId,String typeId) {
+        return baseMapper.selectEmpIdByCompanySectionIdList(sectionIds,groupId,typeId);
+    }
+
+    @Override
+    public List<String> selectEmpIdByCompanySectionPostIdList(String groupId) {
+        return baseMapper.selectEmpIdByCompanySectionPostIdList(groupId);
+    }
+
+    @Override
+    public List<String> selectEmpIdByCompanySectionBossList(String groupId) {
+        return baseMapper.selectEmpIdByCompanySectionBossList(groupId);
+    }
+
+    @Override
+    public List<String> selectEmpIdByCompanyPostList(String groupId) {
+        return baseMapper.selectEmpIdByCompanyPostList(groupId);
+    }
+
+    @Override
+    public List<String> selectEmpIdByCompanyEmpList(String groupId) {
+        return baseMapper.selectEmpIdByCompanyEmpList(groupId);
+    }
 }

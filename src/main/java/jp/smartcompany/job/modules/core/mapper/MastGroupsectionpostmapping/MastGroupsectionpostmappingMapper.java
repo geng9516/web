@@ -135,4 +135,18 @@ public interface MastGroupsectionpostmappingMapper extends BaseMapper<MastGroups
                @Param("startDate") String startDate);
 
 
+       /*================================揭示板相关查询 ======================================*/
+       List<String> selectGroupRange(List<String> groupIds);
+
+       List<String> selectCompanySectionIdList(@Param("groupIds") List<String> noticeGroupIds,@Param("typeId")String typeId);
+
+       List<String> selectEmpIdByCompanySectionIdList(@Param("sectionIds") List<String> sectionIds,@Param("groupId") String groupId,@Param("typeId") String typeId);
+
+       List<String> selectEmpIdByCompanySectionPostIdList(String groupId);
+
+       List<String> selectEmpIdByCompanySectionBossList(String groupId);
+
+       List<String> selectEmpIdByCompanyPostList(String groupId);
+
+       List<String> selectEmpIdByCompanyEmpList(String groupId);
 }

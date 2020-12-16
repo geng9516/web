@@ -89,4 +89,9 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
               psCompanyId,psGroupId, psLanguage, strSearchDate);
   }
 
+  @Override
+  public List<String> selectSelfSectionEmpIds(String sectionId) {
+     return baseMapper.selectSelfSectionEmpIds(sectionId);
+  }
+
 }

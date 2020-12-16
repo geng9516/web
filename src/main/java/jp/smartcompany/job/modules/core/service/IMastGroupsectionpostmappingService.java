@@ -128,4 +128,18 @@ public interface IMastGroupsectionpostmappingService extends IService<MastGroups
                 String customerId,String systemId,String groupId, String typeId, Date startDate);
 
 
+        // ========================= 揭示板模块使用 ========================
+        List<String> selectGroupRange(List<String> groupIds);
+
+        List<String> selectCompanySectionIdList(List<String> noticeGroupIds,String typeId);
+
+        List<String> selectEmpIdByCompanySectionIdList(List<String> sectionIds,String groupId,String typeId);
+
+        List<String> selectEmpIdByCompanySectionPostIdList(String groupId);
+
+        List<String> selectEmpIdByCompanySectionBossList(String groupId);
+
+        List<String> selectEmpIdByCompanyPostList(String groupId);
+
+        List<String> selectEmpIdByCompanyEmpList(String groupId);
 }

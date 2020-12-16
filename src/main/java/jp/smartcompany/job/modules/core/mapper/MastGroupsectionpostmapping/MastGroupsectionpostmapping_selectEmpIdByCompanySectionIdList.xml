@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupsectionpostmapping.MastGroupsectionpostmappingMapper">
+
+    <select id="selectEmpIdByCompanySectionIdList" parameterType="map" resultType="java.lang.String">
+        SELECT DISTINCT (HD_CEMPLOYEEID_CK)
+        FROM
+             HIST_DESIGNATION,MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+          MAG_CCOMPANYID = HD_CCOMPANYID_CK
+          AND MAG_CSECTIONID = HD_CSECTIONID_FK
+          AND MAG_CSECTIONID in
+            <foreach collection="sectionIds" index="index" item="sectionId" separator="," open="(" close=")">
+                #{sectionId}
+            </foreach>
+          AND MAG_CTYPEID = '02'
+          AND MAG_CCUSTOMERID_CK_FK = '01'
+          AND MAG_CSYSTEMID_CK = '01'
+          AND MAG_CGROUPID_FK = #{groupId}
+          AND HD_DSTARTDATE_CK <![CDATA[<=]]> TRUNC(SYSDATE)
+          AND HD_DENDDATE >= TRUNC(SYSDATE)
+          AND MAG_DSTARTDATE_CK <![CDATA[<=]]> TRUNC(SYSDATE)
+          AND MAG_DENDDATE >= TRUNC(SYSDATE)
+    </select>
+
+
+</mapper>

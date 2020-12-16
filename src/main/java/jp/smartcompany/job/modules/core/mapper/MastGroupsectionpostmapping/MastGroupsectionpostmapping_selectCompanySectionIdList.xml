@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupsectionpostmapping.MastGroupsectionpostmappingMapper">
+
+    <select id="selectCompanySectionIdList" parameterType="map" resultType="java.lang.String">
+        select MAG_CSECTIONID
+        from mast_groupsectionpostmapping
+        where
+            MAG_CGROUPID_FK in
+            <foreach collection="groupIds" index="index" item="groupId" separator="," open="(" close=")">
+                #{groupId}
+            </foreach>
+            and MAG_CTYPEID = #{typeId}
+            and MAG_DSTARTDATE_CK <![CDATA[<=]]> TRUNC(SYSDATE)
+            and MAG_DENDDATE >= TRUNC(SYSDATE)
+            and MAG_CSYSTEMID_CK = '01'
+            and MAG_CCUSTOMERID_CK_FK = '01'
+            and MAG_CCOMPANYID = '01'
+    </select>
+
+
+</mapper>
