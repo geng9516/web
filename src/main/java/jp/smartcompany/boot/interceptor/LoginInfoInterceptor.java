@@ -72,7 +72,9 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
         HttpSession httpSession = request.getSession(false);
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
-        String language = Constant.DEFAULT_LANGUAGE;
+        if (httpSession == null) {
+            return true;
+        }
         String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
         // customerId固定为01
         String customerId = "01";

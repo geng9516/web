@@ -437,7 +437,6 @@ public class TmgNotificationBean {
         }
 
         typeGroupVoList = CollUtil.distinct(typeGroupVoList);
-        List<TypeChildrenVo> typeChildrenVos = new ArrayList<TypeChildrenVo>();
         for(MgdTmgNtfTypeVo voChild: MgdTmgNtfTypeVos){
             for(TypeGroupVo voGroup:typeGroupVoList){
                 if(voChild.getGMgdCmastercode().equals(voGroup.getGroupId())){
