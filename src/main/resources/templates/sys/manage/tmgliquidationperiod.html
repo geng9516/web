@@ -709,11 +709,13 @@
         },
         async mounted() {
             this.getWorkTypeList()
+            this.getOrgTree()
         },
 
         computed: {
         },
         methods: {
+
             async getWorkTypeList() {
                 try {
                     this.DispLoading = true

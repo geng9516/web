@@ -221,32 +221,4 @@ public class TmgNotificationController {
         return tmgNotificationBean.hasAuthority(psDBBean);
     }
 
-
-    @GetMapping("download")
-    public void downloadFileAction(String url,HttpServletResponse response) {
-
-        HttpServletRequest request=ContextUtil.getHttpRequest();
-        response.setCharacterEncoding(request.getCharacterEncoding());
-        response.setContentType("application/octet-stream");
-        FileInputStream fis = null;
-        try {
-            File file = new File(url);
-            fis = new FileInputStream(file);
-            response.setHeader("Content-Disposition", "attachment; filename="+file.getName());
-            IOUtils.copy(fis,response.getOutputStream());
-            response.flushBuffer();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

@@ -355,7 +355,7 @@ public class TmgAdminController {
 
 
     /**
-     * 跳转到休暇・休業登録界面
+     * 跳转到精算期間界面
      */
     @GetMapping("TmgLiquidationPeriod")
     public String toTmgLiquidationPeriod( @RequestAttribute("BeanName") PsDBBean psDBBean,

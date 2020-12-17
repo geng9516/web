@@ -6,8 +6,11 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
@@ -16,6 +19,8 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDailyInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgSearchRangeUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +47,7 @@ public class TmgLiquidationPeriodBean {
     private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     private final  ITmgNotificationService iTmgNotificationService;
     // 职种获取
@@ -72,17 +75,47 @@ public class TmgLiquidationPeriodBean {
     }
 
     // 数据获取 搜索
-    public LiquidationDispVo getLiquidationDisp(String type, String searchText, PsDBBean psDBBean) {
+    public LiquidationDispVo getLiquidationDisp(String type, String searchText, PsDBBean psDBBean,TmgReferList referList) {
+
+
         LiquidationDispVo vo = new LiquidationDispVo();
         List<LiquidationPeriodListDto> liquidationPeriodListDtos = iTmgliquidationPeriodService.getLiquidationDispFromType(psDBBean.getCustID(), psDBBean.getCompCode(), type, searchText);
+
+        //承认site 特别处理
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+            List<JsonDto> emplist = JSONUtil.toList(referList.getJSONArrayForMemberList(),JsonDto.class);
+            liquidationPeriodListDtos = liquidationPeriodListDtos.stream().filter(e -> {
+                for (JsonDto jsonDto : emplist) {
+                    if (jsonDto.getData().getEmpid().equals(e.getEmployeeid()) ) {
+                        return true;
+                    }
+                }
+                return true;
+            }).collect(Collectors.toList());
+        }
+
         vo.setLiquidationPeriodList(liquidationPeriodListDtos);
         return vo;
     }
 
     // 数据获取 职种
-    public LiquidationDispVo getLiquidationDisp(String workType, PsDBBean psDBBean) {
+    public LiquidationDispVo getLiquidationDisp(String workType, PsDBBean psDBBean,TmgReferList referList) throws Exception {
+
         LiquidationDispVo vo = new LiquidationDispVo();
         List<LiquidationPeriodListDto> liquidationPeriodListDtos = iTmgliquidationPeriodService.getLiquidationDispFromWorkType(psDBBean.getCustID(), psDBBean.getCompCode(), workType);
+
+        //承认site 特别处理
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+            List<JsonDto> emplist = JSONUtil.toList(referList.getJSONArrayForMemberList(),JsonDto.class);
+            liquidationPeriodListDtos = liquidationPeriodListDtos.stream().filter(e -> {
+                for (JsonDto jsonDto : emplist) {
+                    if (jsonDto.getData().getEmpid().equals(e.getEmployeeid()) ) {
+                        return true;
+                    }
+                }
+                return true;
+            }).collect(Collectors.toList());
+        }
         vo.setLiquidationPeriodList(liquidationPeriodListDtos);
 //        vo.setPageSize(50);
 //        vo.setTotalCount(iTmgNotificationService.selectNotificationListCount(param));
