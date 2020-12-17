@@ -43,7 +43,36 @@
         'ja') as STATUSNAME
         FROM
         HIST_DESIGNATION hd,
-        TMG_EMPLOYEES te
+        (SELECT
+            tem.*
+        FROM
+            TMG_EMPLOYEES tem
+        WHERE
+
+                (exists
+
+                (SELECT
+                    1
+                FROM
+                    TMG_MAST_WORKER4VARIATIONAL var
+                WHERE
+                    var.TMWV_CWORKTYPEID=tem.TEM_CWORKTYPEID
+                AND var.TMWV_CCOMPANYID=tem.TEM_CCOMPANYID
+                AND var.TMWV_CCUSTOMERID=tem.TEM_CCUSTOMERID
+                AND sysdate BETWEEN  var.TMWV_DSTARTDATE AND var.TMWV_DENDDATE)
+            OR
+                exists
+                ( SELECT
+                    1
+                FROM
+                    TMG_MAST_WORKER4FLEX flex
+                WHERE
+                    flex.TMWF_CWORKTYPEID=tem.TEM_CWORKTYPEID
+                AND flex.TMWF_CCOMPANYID=tem.TEM_CCOMPANYID
+                AND flex.TMWF_CCUSTOMERID=tem.TEM_CCUSTOMERID
+                AND sysdate BETWEEN  flex.TMWF_DSTARTDATE AND flex.TMWF_DENDDATE)
+            )
+        ) te
         LEFT JOIN TMG_LIQUIDATION_PERIOD tlp
         ON tlp.TLP_CEMPLOYEEID = te.TEM_CEMPLOYEEID
         AND sysdate BETWEEN te.TEM_DSTARTDATE AND te.TEM_DENDDATE
