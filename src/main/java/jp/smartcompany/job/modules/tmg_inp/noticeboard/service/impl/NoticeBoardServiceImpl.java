@@ -2,15 +2,18 @@ package jp.smartcompany.job.modules.tmg_inp.noticeboard.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.handler.StringHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
+import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import jp.smartcompany.job.modules.core.service.IMastGroupsectionpostmappingService;
 import jp.smartcompany.job.modules.core.util.Designation;
@@ -27,6 +30,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,15 +101,32 @@ public class NoticeBoardServiceImpl implements INoticeBoardService {
     }
 
     @Override
-    public List<String> getValidReadEmpList(List<String> typeIds,HttpSession session) {
+    public List<Map<String,String>> getValidReadEmpList(List<String> typeIds, HttpSession session) {
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (!psSession.getHasPublishPermission()) {
             throw new GlobalException("発表権限なし");
         }
+        List<Map<String,String>> employs = CollUtil.newArrayList();
         Date date = DateUtil.date();
         List<String> groupIds = psSession.getLoginGroups().get("01").stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<String> sectionIds = groupsectionpostmappingService.selectCompanySectionIdList(groupIds,FG_COMP_SEC);
         List<String> empIdResult = CollUtil.newArrayList();
+        try(Connection conn = dataSource.getConnection()) {
+            conn.setReadOnly(true);
+            getEmpIdRanges(typeIds, psSession, date, groupIds, sectionIds, empIdResult, conn);
+            for (String empId : empIdResult) {
+                String empName = SqlExecutor.query(conn,"select me_ckanjiname from mast_employees  where me_cemployeeid_ck = ? and me_dstartdate <= trunc(sysdate) and me_denddate >= trunc(sysdate)",new StringHandler(),empId);
+                Map<String,String> empMap = MapUtil.<String,String>builder().put(empId,empName).build();
+                employs.add(empMap);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
+        }
+        return employs;
+    }
+
+    private void getEmpIdRanges(List<String> typeIds, PsSession psSession, Date date, List<String> groupIds, List<String> sectionIds, List<String> empIdResult, Connection conn) throws SQLException {
         for (String groupId : groupIds) {
              for (String typeId : typeIds) {
                 List<String> partEmpIds = CollUtil.newArrayList();
@@ -126,7 +147,7 @@ public class NoticeBoardServiceImpl implements INoticeBoardService {
                     String sectionId = designation.getSection();
                     partEmpIds = baseSectionService.selectSelfSectionEmpIds(sectionId);
                 } else if (StrUtil.equals(BASE_UNDER,typeId)) {
-                    List<GroupBaseSectionBO> baseSectionList = baseSectionService.getBaseSectionByGroupCode("01", "01", groupId,date);
+                    List<GroupBaseSectionBO> baseSectionList = baseSectionService.getBaseSectionByGroupCode("01", "01", groupId, date);
                     List<String> layerSectionIds = baseSectionList.stream().map(GroupBaseSectionBO::getMgbsClayeredsectionid).collect(Collectors.toList());
                     if (CollUtil.isNotEmpty(layerSectionIds)) {
                         List<String> layerSqlList = CollUtil.newArrayList();
@@ -143,47 +164,39 @@ public class NoticeBoardServiceImpl implements INoticeBoardService {
                                 sql.append(layerSql).append(" OR");
                             }
                         }
-                        String executeSql = " SELECT" +
-                                "          HD_CEMPLOYEEID_CK" +
-                                "        FROM" +
-                                "             HIST_DESIGNATION d,TMG_EMPLOYEES e,MAST_ORGANISATION o" +
-                                "        WHERE" +
-                                "              d.HD_CCUSTOMERID_CK = '01'" +
-                                "              AND d.HD_CCOMPANYID_CK = '01'" +
-                                "              AND d.HD_DSTARTDATE_CK <= TRUNC(SYSDATE)" +
-                                "              AND d.HD_DENDDATE >= TRUNC(SYSDATE)" +
-                                "              AND d.HD_CIFKEYORADDITIONALROLE = '0'" +
-                                "              AND d.HD_NOFFCIALORNOT = 0" +
-                                "              AND d.HD_NOFFICIALORNOT = 0" +
-                                "              AND e.TEM_CEMPLOYEEID(+) = d.HD_CEMPLOYEEID_CK" +
-                                "              AND e.TEM_DSTARTDATE(+) <= TRUNC(SYSDATE)" +
-                                "              AND e.TEM_CCOMPANYID(+) = d.HD_CCOMPANYID_CK" +
-                                "              AND e.TEM_CCUSTOMERID(+) = d.HD_CCUSTOMERID_CK" +
-                                "              AND e.TEM_DENDDATE(+) >= TRUNC(SYSDATE)" +
-                                "              AND 'TMG_MANAGEFLG|0' <> TMG_F_IS_MANAGEFLG(" +
-                                "                e.TEM_CEMPLOYEEID," +
-                                "                TRUNC(SYSDATE)," +
-                                "                LAST_DAY(TRUNC(SYSDATE)), e.TEM_CCUSTOMERID,e.TEM_CCOMPANYID)" +
-                                "              AND o.MO_CCUSTOMERID_CK_FK = D.HD_CCUSTOMERID_CK" +
-                                "              AND o.MO_CCOMPANYID_CK_FK = D.HD_CCOMPANYID_CK" +
-                                "              AND o.MO_CSECTIONID_CK = D.HD_CSECTIONID_FK" +
-                                "              AND o.MO_CLANGUAGE = 'ja'" +
-                                "              AND o.MO_DSTART <= TRUNC(SYSDATE)" +
-                                "              AND o.MO_DEND >= TRUNC(SYSDATE)" +
-                                "              AND e.TEM_CWORKTYPEID NOT IN ('TMG_WORKERTYPE|00')" +
-                                "              AND (" +
-                                sql.toString()+
+                        String executeSql = "SELECT" +
+                                " HD_CEMPLOYEEID_CK" +
+                                " FROM" +
+                                " HIST_DESIGNATION d,TMG_EMPLOYEES e,MAST_ORGANISATION o" +
+                                " WHERE" +
+                                " d.HD_CCUSTOMERID_CK = '01'" +
+                                " AND d.HD_CCOMPANYID_CK = '01'" +
+                                " AND d.HD_DSTARTDATE_CK <= TRUNC(SYSDATE)" +
+                                " AND d.HD_DENDDATE >= TRUNC(SYSDATE)" +
+                                " AND d.HD_CIFKEYORADDITIONALROLE = '0'" +
+                                " AND d.HD_NOFFCIALORNOT = 0" +
+                                " AND d.HD_NOFFICIALORNOT = 0" +
+                                " AND e.TEM_CEMPLOYEEID(+) = d.HD_CEMPLOYEEID_CK" +
+                                " AND e.TEM_DSTARTDATE(+) <= TRUNC(SYSDATE)" +
+                                " AND e.TEM_CCOMPANYID(+) = d.HD_CCOMPANYID_CK" +
+                                " AND e.TEM_CCUSTOMERID(+) = d.HD_CCUSTOMERID_CK" +
+                                " AND e.TEM_DENDDATE(+) >= TRUNC(SYSDATE)" +
+                                " AND 'TMG_MANAGEFLG|0' <> TMG_F_IS_MANAGEFLG(e.TEM_CEMPLOYEEID,TRUNC(SYSDATE),LAST_DAY(TRUNC(SYSDATE)), e.TEM_CCUSTOMERID,e.TEM_CCOMPANYID)" +
+                                " AND o.MO_CCUSTOMERID_CK_FK = D.HD_CCUSTOMERID_CK" +
+                                " AND o.MO_CCOMPANYID_CK_FK = D.HD_CCOMPANYID_CK" +
+                                " AND o.MO_CSECTIONID_CK = D.HD_CSECTIONID_FK" +
+                                " AND o.MO_CLANGUAGE = 'ja'" +
+                                " AND o.MO_DSTART <= TRUNC(SYSDATE)" +
+                                " AND o.MO_DEND >= TRUNC(SYSDATE)" +
+                                " AND e.TEM_CWORKTYPEID NOT IN ('TMG_WORKERTYPE|00')" +
+                                " AND (" +
+                                   sql.toString()+
                                 ")";
-                          try(Connection conn = dataSource.getConnection()) {
                               List<Entity> entityList = SqlExecutor.query(conn,executeSql,new EntityListHandler());
                               List<String> tmpEmpIds = CollUtil.newArrayList();
                               entityList.forEach(entity -> tmpEmpIds.add((String)entity.get("HD_CEMPLOYEEID_CK")));
                               partEmpIds = tmpEmpIds;
                               log.info("处理结果：{}",partEmpIds);
-                          } catch (SQLException e) {
-                              e.printStackTrace();
-                              throw new GlobalException(e.getMessage());
-                          }
                     }
                 }
                 if (CollUtil.isNotEmpty(partEmpIds)){
@@ -191,7 +204,6 @@ public class NoticeBoardServiceImpl implements INoticeBoardService {
                 }
             }
         }
-        return empIdResult;
     }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("sys/noticeboard")
@@ -25,7 +26,7 @@ public class NoticeBoardController {
 
     // http://localhost:6879/sys/noticeboard/validemps?typeIds=02&typeIds=03&typeIds=05&typeIds=06&typeIds=07&typeIds=09&typeIds=10
     @GetMapping("validemps")
-    public List<String> getValidReadEmpList(@RequestParam List<String> typeIds,HttpSession session) {
+    public List<Map<String,String>> getValidReadEmpList(@RequestParam List<String> typeIds, HttpSession session) {
        return noticeBoardService.getValidReadEmpList(typeIds,session);
     }
 
