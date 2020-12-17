@@ -4,135 +4,297 @@
 <head th:replace="layout/header::common_header(title='掲示板',cssPaths='/pages/content.min.css')">
 </head>
 
-<body>
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
+    <link th:href="${baseUrl + '/static/libs/quill.snow.css?t='+ new java.util.Date().getTime()}" rel="stylesheet">
     <main class="content protosettings-warp" ref="layout">
         <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `掲示板` }}
-              </h1>
+            <div class="header">
+                <div class="title1">
+                    <h1>
+                        <Icon type="i-emeer colored"></Icon>
+                        {{ `掲示板` }}
+                    </h1>
+                </div>
+                <div class="btnbox">
+                    <span style="flex:1"></span>
+                    <i-button type="success" icon="md-done-all" @click="getQuill" :loading="editLoading">登録</i-button>
+                </div>
             </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading" :disabled="!hasChange">登録</i-button>
-            </div>
-          </div>
         </div>
         <div class="content_body">
-          <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
-          <div class="table-top">
+            <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
+            <!-- <div class="table-top">
             <Row :gutter="16">
               <i-col span="24" class="tr">
               </i-col>
             </Row>
-          </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+          </div> -->
+            <!-- <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table">
-          </i-table>
+          </i-table> -->
+            <Row :gutter="16">
+                <i-col span="12">
+                    <div ref="editor">
+                        <p>Some initial <strong>bold</strong> text</p>
+                        <p><br></p>
+                    </div>
+                </i-col>
+                <i-col span="12">
+                    <div class="width100" style="    white-space: pre;">{{debugquill}}</div>
+                </i-col>
+            </Row>
+            <Upload :show-upload-list="false" multiple action="/" :before-upload="handleBeforeUpload" style="display: none;">
+                <i-button icon="ios-cloud-upload-outline" ref="uploadBtn"></i-button>
+              </Upload>
         </div>
         <back-top></back-top>
-      </main>
+    </main>
     <div th:replace="layout/head::header"></div>
+    <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}">
+    </script>
+    <script>
+        var UPLOAD_ICON = '<i class="ivu-icon ivu-icon-md-cloud-upload" style="font-size: 18px;" aria-hidden="true"></i>'
+        var UNDO_ICON = '<i class="ivu-icon ivu-icon-ios-undo" style="font-size: 18px;" aria-hidden="true"></i>'
+        var REDO_ICON = '<i class="ivu-icon ivu-icon-ios-redo" style="font-size: 18px;" aria-hidden="true"></i>'
+
+    </script>
     <script type="text/babel" th:inline="javascript">
         new Vue({
-          el: '.protosettings-warp',
-          data() {
-            return {
-              isShow: false,
-              loading: true,
-              editLoading: false,
-              btnLoading: false,
-              hasChange: false,
-              defaultOption: false,
-              psSite: Utils.getUrlParam(location.href, 'psSite'),
-              psApp: Utils.getUrlParam(location.href, 'psApp'),
-              updateValue: {},
-              columns: [
-              ],
-              opts: {
-                systemId: '01',
-                appId: '0',
-                siteId: '0',
-                companyId: '0',
-                date: '',
-                groupId: '0',
-                isAll: false,
-              },
-              tableData: [],
-              conditionsList: [],
-              contentScrollTop: 0
-            }
-          },
-          async created() {
-            this.getTableData()
-            window.addEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, { passive: true })
-          },
-          computed: {
-            tableHeadFixed() {
-              if (this.contentScrollTop > 110) return true
-              else return false
-            }
-          },
-          methods: {
-            async getTableData() {
-              const OPTS = { ...this.opts }
-              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-              Object.keys(OPTS).forEach(key => {
-                if (OPTS[key] === '0') {
-                  delete OPTS[key]
+            el: '.protosettings-warp',
+            data() {
+                return {
+                    isShow: false,
+                    loading: true,
+                    editLoading: false,
+                    btnLoading: false,
+                    hasChange: false,
+                    defaultOption: false,
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    updateValue: {},
+                    columns: [
+                    ],
+                    opts: {
+                        systemId: '01',
+                        appId: '0',
+                        siteId: '0',
+                        companyId: '0',
+                        date: '',
+                        groupId: '0',
+                        isAll: false,
+                    },
+                    debugquill: '',
+                    tableData: [],
+                    conditionsList: [],
+                    contentScrollTop: 0
                 }
-              })
-              this.loading = true
-              try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-                this.tableData = data
-              } catch (error) {
-              } finally {
-                this.loading = false
-              }
             },
-            async update() {
-              this.$Modal.confirm({
-                title: '注意',
-                content: '入力内容を保存します。よろしいですか？',
-                okText: 'OK',
-                cancelText: 'キャンセル',
-                onOk: async () => {
-                  this.loading = true
-                  const update = this.tableData.map((e, i)=> {
-                    return {
-                      ...e,
-                      templateId: e.templateId === 'null' ? null : e.templateId,
-                      permissionType: e.permissionType === 'null' ? null : e.permissionType
+            async created() {
+                this.getTableData()
+                window.addEventListener('scroll', this.handleScroll, { passive: true })
+            },
+            beforeDestroy() {
+                window.removeEventListener('scroll', this.handleScroll, { passive: true })
+            },
+            mounted() {
+                const Link = Quill.import("formats/link")
+                var icons = Quill.import('ui/icons')
+                icons['upload'] = UPLOAD_ICON
+                icons["undo"] = UNDO_ICON
+                icons["redo"] = REDO_ICON
+
+                // class MyLink extends Link {  // 继承父类
+                //   static create(value) {
+                //     let node = super.create(value); //调用父类的方法生成node节点
+                //     value = this.sanitize(value); // 使用sanitize取出value
+                //     //判断是否拥有协议前缀 无则添加默认前缀
+                //     if (!(value.indexOf("http://") === 0 || value.indexOf("https://") === 0)) { 
+                //       value = "http://" + value;
+                //     }
+                //     // 设置href属性
+                //     node.setAttribute("href", value);
+                //     return node;
+                //   }
+                // }
+
+                // Quill.register(MyLink, true);
+
+                class FileBlot extends Link {  // 继承Link Blot
+                    static create(value) {
+                        let node = undefined
+                        if (value && !value.href) {  // 适应原本的Link Blot
+                            node = super.create(value);
+                        }
+                        else {  // 自定义Link Blot
+                            node = super.create(value.href);
+                            // node.setAttribute('download', value.innerText);  // 左键点击即下载
+                            node.innerText = value.innerText;
+                            node.download = value.innerText;
+                        }
+                        return node;
                     }
-                  })
-                  try {
-                    const { data } = await this.http.post('sys/appmanager/update', update)
-                    this.$Message.success('更新完了')
-                    this.getTableData()
-                    this.updateValue = {}
-                  } catch (error) {
-                  } finally {
-                    history.go(0)
-                    this.loading = false
-                  }
                 }
-              })
+                FileBlot.blotName = 'link';
+                FileBlot.tagName = 'A';
+                Quill.register(FileBlot);
+
+
+                const that = this
+                this.quill = new Quill(this.$refs.editor, {
+                    modules: {
+                        toolbar: {
+                            container: [
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                [{ 'script': 'sub' }, { 'script': 'super' }],
+                                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                                ['clean', 'undo', 'redo'],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['link', 'image', 'upload'],
+                                [{ 'size': ['14px', '16px', '18px', '22px', '26px', '30px', '36px', '42px'] }],
+                            ],  // 工具栏
+                            handlers: {
+                                'image': function (value) {
+                                    if (value) {
+                                        that.$refs.uploadBtn.$el.click()
+                                    } else {
+                                        this.quill.format('image', false);
+                                    }
+                                },
+                                'upload': ((value) => {
+                                    if (value) {
+                                        alert('自定义文件上传')
+                                    }
+                                }),
+                                redo() {
+                                    this.quill.history.redo()
+                                },
+                                undo() {
+                                    this.quill.history.undo()
+
+                                }
+                            }
+                        },
+                        history: {
+                            'delay': 2000,
+                            maxStack: 500,
+                            'userOnly': true
+                        },
+                    },
+                    theme: 'snow'
+                });
+                // this.quill.enable(false)
+                this.quill.on('text-change', (delta, oldDelta, source) => {
+                    this.debugquill = this.quill.getContents()
+                    // this.debugquill = this.$refs.editor.children[0].innerHTML
+                })
+                this.quill.on('selection-change', range => {
+                    if (!range) {
+                        let e = document.querySelector('.ql-tooltip,.ql-editing')
+                        if (e) {
+                            let left = e.style.left
+                            if (left.indexOf('-') === 0) {
+                                e.style.left = 0
+                            }
+                        }
+                    } else {
+
+                    }
+                })
+                console.log(this.quill)
             },
-            handleScroll: Throttle(function (e) {
-              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50)
-          }
+            computed: {
+                tableHeadFixed() {
+                    if (this.contentScrollTop > 110) return true
+                    else return false
+                }
+            },
+            methods: {
+                async getTableData() {
+                    const OPTS = { ...this.opts }
+                    OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+                    OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+                    Object.keys(OPTS).forEach(key => {
+                        if (OPTS[key] === '0') {
+                            delete OPTS[key]
+                        }
+                    })
+                    this.loading = true
+                    try {
+                        const { data } = await this.http.get('sys/appmanager/applist', OPTS)
+                        this.tableData = data
+                    } catch (error) {
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async update() {
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: '入力内容を保存します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            this.loading = true
+                            const update = this.tableData.map((e, i) => {
+                                return {
+                                    ...e,
+                                    templateId: e.templateId === 'null' ? null : e.templateId,
+                                    permissionType: e.permissionType === 'null' ? null : e.permissionType
+                                }
+                            })
+                            try {
+                                const { data } = await this.http.post('sys/appmanager/update', update)
+                                this.$Message.success('更新完了')
+                                this.getTableData()
+                                this.updateValue = {}
+                            } catch (error) {
+                            } finally {
+                                history.go(0)
+                                this.loading = false
+                            }
+                        }
+                    })
+                },
+                getQuill() {
+                    this.debugquill = this.quill.getContents()
+                },
+                handleBeforeUpload(files) {
+                    // 返回false, 取消自带上传
+                    // let checkPassed = true
+                    // if (this.uploadFiles.length >= 5) {
+                    //     this.$Notice.warning({
+                    //         desc: '添付可能なファイル数が上限（5個）を超えました。'
+                    //     })
+                    //     checkPassed = false
+                    // }
+                    // if (files.size / 1024 > 500) {
+                    //     this.$Notice.warning({
+                    //         desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+                    //     })
+                    //     checkPassed = false
+                    // }
+                    // if (checkPassed) {
+                    //     this.uploadFiles.push(files)
+                    // }
+                    console.dir(this.quill.getSelection().index)
+                    // 插入图片，res为服务器返回的图片链接地址
+                    // quill.insertEmbed(length, 'image', res)
+                    // // 调整光标到最后
+                    quill.setSelection(length + 1)
+                    return false;
+                },
+                resolveUploaded() {
+
+                },
+                handleScroll: Throttle(function (e) {
+                    this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+                }, 50)
+            }
         })
-      </script>
+    </script>
 </body>
