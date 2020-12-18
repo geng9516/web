@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.MailUtil;
-import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.mapper.MastMailinfo.MastMailInfoMapper;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -29,18 +27,11 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
 
     private final MailUtil mailUtil;
     private final IMastCompanyService companyService;
-    private final ScCacheUtil cacheUtil;
     @Value("${info.siteUrl}")
     private String siteUrl;
-    private static final String MAIL_ENABLE = "MAIL_ENABLE";
 
     @Override
     public void sendMail(MailType mailType, SendMailBO sendData) {
-        boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
-        // 不启用发送邮件功能直接返回
-        if (!status) {
-            return;
-        }
         if (StrUtil.isBlank(sendData.getToAddress())){
             throw new GlobalException("メールアドレスは空にできません");
         }

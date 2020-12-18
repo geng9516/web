@@ -7,6 +7,7 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +55,13 @@ public class MailManagerController {
    public String updateMailConfig(@RequestBody MailConfigDTO dto) {
       confSyscontrolService.updateMailConfig(dto);
       return "メール設定変更成功";
+   }
+
+   // http://localhost:6879/sys/mailmanager/test
+   @PostMapping("test")
+   public String testSendMail(@RequestBody @Valid TestSendMail testSendMail) {
+      mailManagerLogic.testSendMail(testSendMail);
+      return "メールが発送しました";
    }
 
    @PostMapping("upload")

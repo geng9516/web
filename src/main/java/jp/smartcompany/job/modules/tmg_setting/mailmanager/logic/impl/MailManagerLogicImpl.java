@@ -13,13 +13,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.PageQuery;
-import jp.smartcompany.boot.util.PageUtil;
-import jp.smartcompany.boot.util.SecurityUtil;
-import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.bo.UpdateEmployMailBO;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.entity.EmployMailDO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
@@ -50,6 +48,7 @@ import java.util.Objects;
 public class MailManagerLogicImpl implements MailManagerLogic {
 
     private final IEmployMailService employMailService;
+    private final MailUtil mailUtil;
 
     private static final String XLSX = "xlsx";
     private static final String XLS = "xls";
@@ -294,6 +293,11 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     public PageUtil searchForUpdateEmail(Map<String,Object> params, String keyword) {
         IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(params);
         return new PageUtil(employMailService.searchEmpForUpdateMail(pageQuery,keyword));
+    }
+
+    @Override
+    public void testSendMail(TestSendMail sendMail) {
+        mailUtil.sendText(sendMail.getEmail(),"Test mail",sendMail.getContent());
     }
 
     private static File multipartFileToFile(MultipartFile file) throws IOException {

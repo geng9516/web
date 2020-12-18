@@ -1230,9 +1230,11 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         });
         updateRows.forEach(row-> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
-            if (layeredSectionId.length()>2) {
+            if (layeredSectionId.length()>2 && !layeredSectionId.startsWith(prefixSectionId)) {
                 layeredSectionId = layeredSectionId.substring(2);
                 row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+            } else if (layeredSectionId.startsWith(prefixSectionId)) {
+                row.setMgbsClayeredsectionid(layeredSectionId);
             } else {
                 row.setMgbsClayeredsectionid(",,");
             }

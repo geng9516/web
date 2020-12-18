@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg_setting.mailmanager.logic;
 
 import jp.smartcompany.boot.util.PageUtil;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,5 +20,7 @@ public interface MailManagerLogic {
     void updateMailList(List<UpdateMailDTO> list);
 
     PageUtil searchForUpdateEmail(Map<String,Object> params,String keyword);
+
+    void testSendMail(TestSendMail sendMail);
 
 }

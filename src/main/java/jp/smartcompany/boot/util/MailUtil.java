@@ -35,6 +35,8 @@ public class MailUtil {
     private JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;
     private final ITmgHistMaildataService tmgHistMaildataService;
+    private final ScCacheUtil cacheUtil;
+    private static final String MAIL_ENABLE = "MAIL_ENABLE";
 
     public void init() {
         JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
@@ -54,6 +56,11 @@ public class MailUtil {
 
     @Async
     public void sendMail(MailType mailType, String sender,String empId, Date standardDate, String toAddress, String title, String content) {
+        boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
+        // 不启用发送邮件功能直接返回
+        if (!status) {
+            return;
+        }
         init();
         sendText(sender,toAddress,title,content);
         saveSendMailHistory(sender,mailType.getDesc(),empId,standardDate,toAddress,title,content,1);
@@ -73,6 +80,18 @@ public class MailUtil {
             message.setText(content);
             log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
             javaMailSender.send(message);
+    }
+
+    @Async
+    public void sendText(String to,String title,String content) {
+        String from = "spwm test mail";
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setFrom(from);
+        message.setSubject(title);
+        message.setText(content);
+        log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
+        javaMailSender.send(message);
     }
 
     /**
