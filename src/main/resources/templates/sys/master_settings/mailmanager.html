@@ -103,7 +103,7 @@
               <i-input class="mt10" v-model="email"></i-input>
               <p class="mt10">送信内容: </p>
               <i-input v-model="content" type="textarea" :autosize="{minRows: 10,maxRows: 15}" class="mt10"></i-input>
-              <i-button type="primary" ghost icon="ios-mail" @click="textEmail" long class="mt30" :loading="btnLoading">送信テスト
+              <i-button type="primary" ghost icon="ios-mail" @click="textEmail" long class="mt30" :loading="btnLoading" :disabled="!email.trim() || !content.trim()">送信テスト
               </i-button>
             </div>
           </Card>
