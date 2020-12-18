@@ -86,6 +86,7 @@ public class TmgOrgTree {
 
     public void createOrgTree(String custId, String compCode, String language, String baseDate) throws Exception{
         String sql = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
+        log.info("生成部门sql:{}",sql);
         try (Connection connection = dataSource.getConnection()) {
             List entityList = SqlExecutor.query(connection,sql,new EntityListHandler());
             dataArray = JSONArrayGenerator.entityListTowardList(entityList);

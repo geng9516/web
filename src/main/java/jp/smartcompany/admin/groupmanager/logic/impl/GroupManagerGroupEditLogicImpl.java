@@ -1219,10 +1219,18 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         String prefixSectionId = ",01,,|,";
         saveRows.forEach(row -> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
+            String suffix = row.getMgbsCsectionid()+",";
             if (layeredSectionId.length()>2 && !layeredSectionId.startsWith(prefixSectionId)) {
                 layeredSectionId = layeredSectionId.substring(2);
-                row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+                String layeredSectionIdSeq = prefixSectionId+layeredSectionId;
+                if (!layeredSectionIdSeq.endsWith(suffix)){
+                    layeredSectionIdSeq = layeredSectionIdSeq+","+suffix;
+                }
+                row.setMgbsClayeredsectionid(layeredSectionIdSeq);
             } else if (layeredSectionId.startsWith(prefixSectionId)) {
+                if (!layeredSectionId.endsWith(suffix)){
+                    layeredSectionId = layeredSectionId+","+suffix;
+                }
                 row.setMgbsClayeredsectionid(layeredSectionId);
             } else {
                 row.setMgbsClayeredsectionid(",,");
@@ -1230,10 +1238,18 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         });
         updateRows.forEach(row-> {
             String layeredSectionId = row.getMgbsClayeredsectionid();
+            String suffix = row.getMgbsCsectionid()+",";
             if (layeredSectionId.length()>2 && !layeredSectionId.startsWith(prefixSectionId)) {
                 layeredSectionId = layeredSectionId.substring(2);
-                row.setMgbsClayeredsectionid(prefixSectionId+layeredSectionId);
+                String layeredSectionIdSeq = prefixSectionId+layeredSectionId;
+                if (!layeredSectionIdSeq.endsWith(suffix)){
+                    layeredSectionIdSeq = layeredSectionIdSeq+","+suffix;
+                }
+                row.setMgbsClayeredsectionid(layeredSectionIdSeq);
             } else if (layeredSectionId.startsWith(prefixSectionId)) {
+                if (!layeredSectionId.endsWith(suffix)){
+                    layeredSectionId = layeredSectionId+","+suffix;
+                }
                 row.setMgbsClayeredsectionid(layeredSectionId);
             } else {
                 row.setMgbsClayeredsectionid(",,");

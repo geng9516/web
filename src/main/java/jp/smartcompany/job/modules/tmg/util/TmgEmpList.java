@@ -336,7 +336,7 @@ public class TmgEmpList {
         // 検索タブで一覧を作成する場合は組織にまたがる
         if (psSearchData == null){
             // 2020-12-04 加入为null的限制，为null则不加入此查询条件
-            if (!StrUtil.equals(section,"'null'") || StrUtil.isBlank(section)) {
+            if (!StrUtil.equals(section,"'null'") || StrUtil.isNotBlank(section)) {
                 sSQL.append(" AND d.HD_CSECTIONID_FK IN (" + section + ") ");
             }
         }
