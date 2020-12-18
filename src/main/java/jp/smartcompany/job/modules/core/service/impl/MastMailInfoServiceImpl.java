@@ -14,7 +14,6 @@ import jp.smartcompany.job.modules.core.service.IMastCompanyService;
 import jp.smartcompany.job.modules.core.service.IMastMailInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -27,8 +26,7 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
 
     private final MailUtil mailUtil;
     private final IMastCompanyService companyService;
-    @Value("${info.siteUrl}")
-    private String siteUrl;
+    private String siteUrl="http://localhost:6879/spwm";
 
     @Override
     public void sendMail(MailType mailType, SendMailBO sendData) {

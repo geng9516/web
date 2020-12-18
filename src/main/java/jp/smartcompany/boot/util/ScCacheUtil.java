@@ -6,7 +6,6 @@ import jp.smartcompany.framework.sysboot.*;
 import jp.smartcompany.framework.sysboot.dto.*;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,8 +14,8 @@ import java.util.Map;
 /**
  * @author Xiao Wenpeng
  */
-@Component("scCacheUtil")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Component
+@RequiredArgsConstructor
 public class ScCacheUtil {
 
     private final LRUCache<Object,Object> lruCache;
