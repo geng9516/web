@@ -9,6 +9,25 @@
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
     <link th:href="${baseUrl + '/static/libs/quill.snow.css?t='+ new java.util.Date().getTime()}" rel="stylesheet">
+    <style>
+        .emoji-poptip .ivu-poptip-body {
+            height: 500px;
+            width: 300px;
+            overflow-y: scroll;
+        }
+        .emoji {
+            display:inline-block;
+            width: 30px;
+            height: 30px;
+            font-size: 20px;
+        }
+        .emoji:hover {
+            cursor: pointer;
+            background: var(--light-input-border-grey);
+            border-radius:50%;
+            transform: scale(1.2);
+        }
+    </style>
     <main class="content protosettings-warp" ref="layout">
         <div class="content_head">
             <div class="header">
@@ -38,6 +57,137 @@
           </i-table> -->
             <Row :gutter="16">
                 <i-col span="12">
+                    <div id="toolbar">
+                        <span class="ql-formats">
+                            <button class="ql-bold"></button>
+                            <button class="ql-italic"></button>
+                            <button class="ql-underline"></button>
+                            <button class="ql-strike"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-list" value="ordered"></button>
+                            <button class="ql-list" value="bullet"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-script" value="sub"></button>
+                            <button class="ql-script" value="super"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-indent" value="-1"></button>
+                            <button class="ql-indent" value="+1"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-clean"></button>
+                            <button class="ql-undo"></button>
+                            <button class="ql-redo"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <select class="ql-color">
+                                <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)"/>
+                                <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)"/>
+                                <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)"/>
+                                <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)"/>
+                                <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)"/>
+                                <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)"/>
+                                <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)"/>
+                                <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)"/>
+                                <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)"/>
+                                <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)"/>
+                                <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)"/>
+                                <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)"/>
+                                <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)"/>
+                                <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)"/>
+                                <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)"/>
+                                <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)"/>
+                                <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)"/>
+                                <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)"/>
+                                <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)"/>
+                                <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)"/>
+                                <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)"/>
+                                <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)"/>
+                                <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)"/>
+                                <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)"/>
+                                <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)"/>
+                                <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)"/>
+                                <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)"/>
+                                <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)"/>
+                                <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)"/>
+                                <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)"/>
+                                <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)"/>
+                                <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)"/>
+                                <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)"/>
+                                <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)"/>
+                            </select>
+                            <select class="ql-background">
+                              <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)"/>
+                              <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)"/>
+                              <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)"/>
+                              <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)"/>
+                              <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)"/>
+                              <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)"/>
+                              <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)"/>
+                              <option value="rgb(255, 255, 255)" label="rgb(255, 255, 255)"/>
+                              <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)"/>
+                              <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)"/>
+                              <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)"/>
+                              <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)"/>
+                              <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)"/>
+                              <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)"/>
+                              <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)"/>
+                              <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)"/>
+                              <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)"/>
+                              <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)"/>
+                              <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)"/>
+                              <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)"/>
+                              <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)"/>
+                              <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)"/>
+                              <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)"/>
+                              <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)"/>
+                              <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)"/>
+                              <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)"/>
+                              <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)"/>
+                              <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)"/>
+                              <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)"/>
+                              <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)"/>
+                              <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)"/>
+                              <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)"/>
+                              <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)"/>
+                              <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)"/>
+                              <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)"/>
+                            </select>
+                        </span>
+                        <span class="ql-formats">
+                            <button class="ql-link"></button>
+                            <button class="ql-image"></button>
+                            <button class="ql-upload"></button>
+                        </span>
+                        <span class="ql-formats">
+                            <select class="ql-size">
+                                <option value="14px"></option>
+                                <option value="16px"></option>
+                                <option value="18px"></option>
+                                <option value="22px"></option>
+                                <option value="26px"></option>
+                                <option value="30px"></option>
+                                <option value="36px"></option>
+                                <option value="42px"></option>
+                              </select>
+                        </span>
+                        <span class="ql-formats">
+                        <Poptip v-model="emojiPop" placement="right-start" class="emoji-poptip">
+                          <i-button size="small" icon="md-happy" style="font-size: 18px;" class="ql-emoji"></i-button>
+                            <div class="tr" slot="content">
+                                <div v-for="(item,category,index) in SM_EMOJI" class="tl">
+                                    <div :class="index > 0 ? 'mt5 mb2': 'mb2'" style="font-size: 16px;">{{category}}</div>
+                                    <div style="display: flex;flex-wrap: wrap;">
+                                        <!-- display: flex; flex-wrap: wrap; justify-content: space-between; -->
+                                        <span v-for="(emoji, emojiName) in item" class="emoji" @click="handleClickEmoji(emoji)">{{ emoji }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Poptip>
+                        </span>
+                      </div>
                     <div ref="editor">
                         <p>Some initial <strong>bold</strong> text</p>
                         <p><br></p>
@@ -54,8 +204,8 @@
         <back-top></back-top>
     </main>
     <div th:replace="layout/head::header"></div>
-    <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}">
-    </script>
+    <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}"></script>
+    <script th:src="${baseUrl + '/static/js/emoji.js?t='+ new java.util.Date().getTime()}"></script>
     <script>
         var UPLOAD_ICON = '<i class="ivu-icon ivu-icon-md-cloud-upload" style="font-size: 18px;" aria-hidden="true"></i>'
         var UNDO_ICON = '<i class="ivu-icon ivu-icon-ios-undo" style="font-size: 18px;" aria-hidden="true"></i>'
@@ -69,6 +219,7 @@
                 return {
                     isShow: false,
                     loading: true,
+                    emojiPop: false,
                     editLoading: false,
                     btnLoading: false,
                     hasChange: false,
@@ -102,6 +253,7 @@
             },
             mounted() {
                 const Link = Quill.import("formats/link")
+                var Embed = Quill.import('blots/embed');
                 var icons = Quill.import('ui/icons')
                 icons['upload'] = UPLOAD_ICON
                 icons["undo"] = UNDO_ICON
@@ -138,25 +290,31 @@
                         return node;
                     }
                 }
+
+                class SPAN extends Embed {
+                    static create(paramValue) {
+                        let node = super.create();
+                        node.innerHTML = paramValue;
+                        return node;
+                    }
+
+                    static value(node) {
+                        return node.innerHTML;
+                    }
+                }
+                SPAN.blotName = 'span';
+                SPAN.tagName = 'span';
+
                 FileBlot.blotName = 'link';
                 FileBlot.tagName = 'A';
                 Quill.register(FileBlot);
-
+                Quill.register(SPAN);
 
                 const that = this
                 this.quill = new Quill(this.$refs.editor, {
                     modules: {
                         toolbar: {
-                            container: [
-                                ['bold', 'italic', 'underline', 'strike'],
-                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                [{ 'script': 'sub' }, { 'script': 'super' }],
-                                [{ 'indent': '-1' }, { 'indent': '+1' }],
-                                ['clean', 'undo', 'redo'],
-                                [{ 'color': [] }, { 'background': [] }],
-                                ['link', 'image', 'upload'],
-                                [{ 'size': ['14px', '16px', '18px', '22px', '26px', '30px', '36px', '42px'] }],
-                            ],  // 工具栏
+                            container: '#toolbar',  // 工具栏
                             handlers: {
                                 'image': function (value) {
                                     if (value) {
@@ -205,7 +363,6 @@
 
                     }
                 })
-                console.log(this.quill)
             },
             computed: {
                 tableHeadFixed() {
@@ -285,11 +442,17 @@
                     // 插入图片，res为服务器返回的图片链接地址
                     // quill.insertEmbed(length, 'image', res)
                     // // 调整光标到最后
-                    quill.setSelection(length + 1)
+                    this.quill.setSelection(length + 1)
                     return false;
                 },
                 resolveUploaded() {
 
+                },
+                handleClickEmoji(emoji) {
+                    let length = this.quill.selection.savedRange.index
+                    this.quill.insertEmbed(length, 'span', emoji)
+                    this.quill.setSelection(length + 1)
+                    // this.emojiPop = false
                 },
                 handleScroll: Throttle(function (e) {
                     this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
