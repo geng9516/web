@@ -717,7 +717,7 @@
             async getWorkTypeList() {
                 try {
                     this.DispLoading = true
-                    const { data } = await this.http.get('sys/tmgliquidationperiod/WorkTypeList', this.referListObject)
+                    const { data } = await this.http.get('sys/tmgliquidationperiod/WorkTypeList')
                     const convertedTreeData = this.convertTreeData(data)
                     this.dispWorkTypeList = this.convertTreeData(data)
                     this.handleClickLeaf()
@@ -774,6 +774,8 @@
                 }
                 try {
                     let OPTS = {
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type:'0',
                         searchText :'',
                         workType:selectid
@@ -796,6 +798,8 @@
                 if (this.optsSearch.searchText && this.optsSearch.searchText != '') {
                     try {
                         let OPTS = {
+                            psSite: Utils.getUrlParam(location.href, 'psSite'),
+                            psApp: Utils.getUrlParam(location.href, 'psApp'),
                             type:this.optsSearch.type,
                             searchText :this.optsSearch.searchText,
                             workType:''

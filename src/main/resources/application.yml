@@ -83,6 +83,7 @@ security:
     - /McSrvs08
   # 不需要拦截的url
   whiteList:
+    - /error
     - /403
     - /404
     - /500
@@ -114,6 +115,7 @@ security:
   resourceList:
     - /favicon.ico
     - /static/**
+    - /upload/**
   # 退出成功后的转向url
   logoutSuccessUrl: /login
   # 登录成功后的转向url

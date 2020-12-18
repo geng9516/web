@@ -8,6 +8,8 @@ import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.tmgliquidationperiod.vo.LiquidationDispVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,10 +51,13 @@ public class TmgLiquidationPeriodController {
             @RequestParam(value = "type",required = false) String type,
             @RequestParam(value = "searchText",required = false) String searchText,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        TmgReferList referList= new TmgReferList(psDBBean, "TmgLiquidationPeriodBean",  TmgUtil.getSysdate(), TmgReferList.TREEVIEW_TYPE_EMP, true,
+                true, true, false, true);
         if(!StrUtil.hasEmpty(workType)){
-            return tmgLiquidationPeriodBean.getLiquidationDisp(workType,psDBBean);
+            return tmgLiquidationPeriodBean.getLiquidationDisp(workType,psDBBean,referList);
         }else{
-            return tmgLiquidationPeriodBean.getLiquidationDisp(type,searchText,psDBBean);
+            return tmgLiquidationPeriodBean.getLiquidationDisp(type,searchText,psDBBean,referList);
         }
 
     }
