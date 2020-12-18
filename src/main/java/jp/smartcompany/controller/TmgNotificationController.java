@@ -221,4 +221,19 @@ public class TmgNotificationController {
         return tmgNotificationBean.hasAuthority(psDBBean);
     }
 
+    /**
+     * 新規申請/再申請/代理申請/取消/承认
+     *
+     * @return　エラー null 为正常申请
+     */
+    @PostMapping("checkExistOverhours")
+    @ResponseBody
+    public List<NotificationCheckOvertimeVo> checkExistOverhours(
+            @RequestParam("params") String params,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
+
+        return tmgNotificationBean.actionCheckExistOverhours(psDBBean,paramNotificationListDto);
+    }
+
 }

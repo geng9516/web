@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper">
+    <select id="selectNotificationCheck" parameterType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto"
+            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationCheckOvertimeVo">
+        SELECT APPLYDAYS ,
+        TO_CHAR(AA.APPLYDAYS, 'D') AS DAYSOFWEEKCODE ,
+        '・' || to_char(APPLYDAYS, 'YYYY"年"MM"月"DD"日"') || '(' || substr(TO_CHAR(AA.APPLYDAYS, 'DAY'), 1, 1) || ')' AS DAYSOFWEEK,
+        TMG_F_CHECK_OVERHOURS('${paramNotificationCheckOverhoursList.userCode}',AA.APPLYDAYS,'${paramNotificationCheckOverhoursList.custId}','${paramNotificationCheckOverhoursList.compId}')  AS FLG
+        FROM (SELECT TO_DATE('${paramNotificationCheckOverhoursList.begin}', 'YYYY-MM-DD') + ROWNUM - 1 AS APPLYDAYS
+        FROM DUAL CONNECT BY ROWNUM <![CDATA[<=]]> TO_DATE('${paramNotificationCheckOverhoursList.end}', 'YYYY-MM-DD') - TO_DATE('${paramNotificationCheckOverhoursList.begin}', 'YYYY-MM-DD') + 1) AA
+        WHERE TMG_F_CHECK_OVERHOURS('${paramNotificationCheckOverhoursList.userCode}',AA.APPLYDAYS,'${paramNotificationCheckOverhoursList.custId}','${paramNotificationCheckOverhoursList.compId}') = '1'
+        <if test='paramNotificationCheckOverhoursList.noreserved == "0"'>
+           AND (TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.mon}' + 1) * '${paramNotificationCheckOverhoursList.mon}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.tue}' + 2) * '${paramNotificationCheckOverhoursList.tue}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.wed}' + 3) * '${paramNotificationCheckOverhoursList.wed}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.thu}' + 4) * '${paramNotificationCheckOverhoursList.thu}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.fri}' + 5) * '${paramNotificationCheckOverhoursList.fri}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = ('${paramNotificationCheckOverhoursList.sat}' + 6) * '${paramNotificationCheckOverhoursList.sat}'
+           OR TO_CHAR(AA.APPLYDAYS,'D') = '${paramNotificationCheckOverhoursList.sun}')
+        ORDER BY APPLYDAYS
+        </if>
+     </select>
+</mapper>

@@ -2,7 +2,9 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationCheckOvertimeVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationListVo;
 
@@ -70,5 +72,13 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
         int updateNotificationItem(ParamNotificationListDto params);
 
     List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode);
+
+        /**
+         * 休暇・休業申請を一覧を取得するSQLを返す
+         *
+         * @param params 　params
+         * @return String パターン
+         */
+        List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto paramCheck);
 
 }

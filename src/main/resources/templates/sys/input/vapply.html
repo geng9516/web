@@ -744,9 +744,28 @@
                     }
                     if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
                         this.errorInfo = true
-                        this.errorMsg = '添付ファイルを入力してください'
+                        this.errorMsg = '添付ファイルを追加してください'
                         return
                     }
+
+                    if(this.restApply.noreserved == 0 && this.restApply.weekSelected.length == 0) {
+                        this.errorInfo = true
+                        this.errorMsg = '曜日を選択してください'
+                        return
+                    }
+
+                    const { data, headers } = await this.http.uploadFiles('sys/vapply/checkExistOverhours',{
+                        params:JSON.stringify(this.restApply),
+                        psSite: this.opts.psSite
+                    })
+                    if (data.length > 0){
+                        let msg = ''
+                        data.forEach(e => {
+                            msg = e.daysOfWeek + '\n' + msg
+                        })
+                        this.contentMsg =  '下記の日付に超過勤務命令があります。\n' + this.contentMsg  + '\n' + msg
+                    }
+
                     this.$Modal.confirm({
                         inDrawer: true,
                         title: '注意',

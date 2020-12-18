@@ -5,7 +5,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationCheckOvertimeVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationListVo;
 import org.springframework.stereotype.Repository;
@@ -107,6 +109,18 @@ import java.util.Map;
         @Override
         public List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode){
                 return  baseMapper.SelectNtfInfo( yyyymmdd,  empId,  custID, compCode);
+        }
+
+        /**
+         * 休暇・休業申請を一覧を取得するSQLを返す
+         *
+         * @param params 　params
+         * @return String パターン
+         */
+        @Override
+        public List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto params){
+                List<NotificationCheckOvertimeVo> notificationListVoList = baseMapper.selectNotificationCheck(params);
+                return notificationListVoList;
         }
 
         }

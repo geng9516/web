@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -2109,6 +2110,46 @@ public class TmgNotificationBean {
         }
     }
 
+    /**
+     * 新規申請・再申請・代理申請
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public List<NotificationCheckOvertimeVo> actionCheckExistOverhours(PsDBBean psDBBean, ParamNotificationListDto param) throws Exception {
+
+        ParamNotificationCheckOverhoursListDto paramCheck = new ParamNotificationCheckOverhoursListDto();
+
+        //基本信息
+        paramCheck.setCompId(psDBBean.getCustID());
+        paramCheck.setCustId(psDBBean.getCompCode());
+        //paramCheck.setTargetUser(psDBBean.getTargetUser());
+        paramCheck.setUserCode(psDBBean.getUserCode());
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        paramCheck.setBegin(formatter.format(param.getBegin()));
+        paramCheck.setEnd(formatter.format(param.getEnd()));
+
+        paramCheck.setNoreserved(param.getNoreserved());
+
+        paramCheck.setMon(param.getMon());
+        paramCheck.setTue(param.getTue());
+        paramCheck.setWed(param.getWed());
+        paramCheck.setThu(param.getThu());
+        paramCheck.setFri(param.getFri());
+        paramCheck.setSat(param.getSat());
+        paramCheck.setSun(param.getSun());
+
+        //ntfAction
+        // 代理申請 新規申請 再申請
+        List<NotificationCheckOvertimeVo> notificationListVoList= null;
+        if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY) || param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
+
+            notificationListVoList = iTmgNotificationService.selectNotificationCheckList(paramCheck);
+        }
+
+        return notificationListVoList;
+    }
 
 //
 //    /**
