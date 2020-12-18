@@ -117,10 +117,10 @@ security:
     - /static/**
     - /upload/**
   # 退出成功后的转向url
-  logoutSuccessUrl: /login
+  logoutSuccessUrl: ${info.basePath}login
   # 登录成功后的转向url
-  loginSuccessUrl: /
+  loginSuccessUrl: ${info.basePath}
   # 登陆失败后的转向url
-  loginFailureUrl: /login
+  loginFailureUrl: ${info.basePath}login
   # 授权失败的转向url
-  accessDeniedUrl: /403
+  accessDeniedUrl: ${info.basePath}403

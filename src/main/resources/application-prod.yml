@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:oracle:thin:@192.168.21.217:1521/TMG
-    username: SPWMDEV
+    username: SPWM
     password: SPWMPASS
     driver-class-name: oracle.jdbc.OracleDriver
 #  datasource:
@@ -10,6 +10,14 @@ spring:
 #    password: SPWMPASS
 #    driver-class-name: oracle.jdbc.OracleDriver
 security:
+  # 退出成功后的转向url
+  logoutSuccessUrl: ${info.basePath}login
+  # 登录成功后的转向url
+  loginSuccessUrl: ${info.basePath}
+  # 登陆失败后的转向url
+  loginFailureUrl: ${info.basePath}login
+  # 授权失败的转向url
+  accessDeniedUrl: ${info.basePath}403
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
     - ${info.basePath}

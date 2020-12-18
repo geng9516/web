@@ -28,7 +28,6 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
                                       Authentication auth) throws IOException {
     authBusiness.saveLoginInfo(true,auth.getName());
 
-    resp.sendRedirect(securityProperties.getLoginSuccessUrl());
     if (SysUtil.isAjaxRequest(req)) {
       resp.setCharacterEncoding("UTF-8");
       resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
