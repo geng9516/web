@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='ルグビューア',cssPaths='/pages/content.min.css')">
+<head th:replace="layout/header::common_header(title='ログビューア',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
@@ -14,12 +14,12 @@
         <div class="title1">
           <h1>
             <Icon type="i-emeer colored"></Icon>
-            {{ `ルグビューア` }}
+            {{ `ログビューア` }}
           </h1>
         </div>
       </div>
       <div class="searchwrap">
-        <div class="label">ルグ区分</div>
+        <div class="label">ログ区分</div>
         <i-select v-model="requestUrl" @on-change="changeRequestUrl">
           <i-option value="sys/log/error" label="エラー"></i-option>
           <i-option value="sys/log/access" label="アクセス"></i-option>
