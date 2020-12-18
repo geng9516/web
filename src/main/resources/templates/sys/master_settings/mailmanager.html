@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='メール設定',cssPaths='/pages/content.min.css')">
+<head th:replace="layout/header::common_header(title='メールサーバ設定',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
@@ -14,14 +14,14 @@
         <div class="title1">
           <h1>
             <Icon type="i-emeer colored"></Icon>
-            {{ `メール設定` }}
+            {{ `メールサーバ設定` }}
           </h1>
         </div>
       </div>
     </div>
     <div class="content_body">
       <Row>
-        <i-col span="12">
+        <i-col span="10">
           <div class="ml20">
             <!-- 帳票種別 -->
             <Divider style="margin-top: 0;"></Divider>
@@ -88,69 +88,24 @@
 
           <Divider></Divider>
           <Row>
-              <i-col span="9" style="margin-left: 29.933333%">
-                  <i-button type="primary" ghost icon="md-create" @click="update" long>登録
-                  </i-button>
-              </i-col>
+            <i-col span="9" style="margin-left: 29.933333%">
+              <i-button type="primary" ghost icon="md-create" @click="update" long>登録
+              </i-button>
+            </i-col>
           </Row>
           <Spin size="large" fix v-if="loading"></Spin>
         </i-col>
 
-        <i-col span="8" offset="1">
-          <Card style="background: var(--content-bg);">
-            <div class="tr mb10" style="margin-top: -10px; margin-right: -10px;">
-              <Poptip trigger="click" placement="right-start" transfer>
-                <i-button type="primary" size="small" ghost @click="uploadCsv">テンプレートダウンロード</i-button>
-                <div class="operateBtn tc" slot="content">
-                  <a @click="downloadTemplate('csv')" style="color: var(--ghost-primary-color);">CSV</a>
-                  <a @click="downloadTemplate('xls')" style="color: var(--ghost-primary-color);">XLS</a>
-                </div>
-              </Poptip>
+        <i-col span="10" offset="1">
+          <Card style="background: var(--content-bg);" title="メール設定テスト">
+            <div class="tl mb10" style="margin-top: -10px; margin-right: -10px;">
+              <p class="mt10">送信メールアドレス: </p>
+              <i-input class="mt10" v-model="email"></i-input>
+              <p class="mt10">送信内容: </p>
+              <i-input v-model="content" type="textarea" :autosize="{minRows: 10,maxRows: 15}" class="mt10"></i-input>
+              <i-button type="primary" ghost icon="ios-mail" @click="textEmail" long class="mt30" :loading="btnLoading">送信テスト
+              </i-button>
             </div>
-            <Upload ref="upload" :show-upload-list="false" type="drag" class="tl mb10" action="/"
-              :before-upload="handleBeforeUpload">
-              <div style="padding: 20px 0">
-                <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
-                <p style="color:var(--grey)">クリックしてファイルを選択するか、</p>
-                <p style="color:var(--grey)">ここにファイルをドラッグ＆ドロップして下さい。</p>
-              </div>
-            </Upload>
-            <ul class="ivu-upload-list tl mb10">
-              <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                  <span @click="">
-                      <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
-                  </span>
-                  <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="()=> uploadFiles = []"></i>
-                  <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
-              </li>
-          </ul>
-          <Alert class="primary-info mb10">上限 500kBytes</Alert>
-            <i-button class="mb20" type="primary" icon="ios-cloud-upload" ghost @click="uploadCsv" :loading="uploadCsvLoading" long>upload</i-button>
-            <Alert class="error-info mb10" v-if="unsetPeople > 0">{{`まだ${unsetPeople} 人のメールが設定されていないです。`}}<p class="cursor" style="position: absolute;top: 9px;right: 11px;color: var(--primary-info);" @click="getUnsetPeople(true, true)">照会</p></Alert>
-            <Row class="tl mb5" :gutter="8">
-              <i-col span="14">
-                <i-input class="mar like-select" placeholder="社員の絞込み検索" v-model="searchEmpt"
-                  @keyup.enter.native="handleSearchEmpt()">
-                </i-input>
-              </i-col>
-              <i-col span="10" class="no-border-radius">
-                <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="handleSearchEmpt()">
-                  社員検索
-                </i-button>
-              </i-col>
-            </Row>
-            <div class="tr mb5">
-              <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
-              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple></Page>
-              <i-button class="mt5 width25" icon="md-create" type="primary" ghost @click="updateMail" size="small">更新</i-button>
-            </div>
-            <i-table border
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="tableLoading" ref="table" no-data-text="">
-            <template slot-scope="{ row }" slot="meCmail">
-              <i-input v-model="row.meCmail" placeholder="メール"></i-input>
-          </template>
-          </i-table>
           </Card>
         </i-col>
       </Row>
@@ -167,41 +122,18 @@
           loading: true,
           cardLoading: false,
           tableLoading: false,
-          uploadCsvLoading: false,
           btnLoading: false,
-          unsetPeople: 0,
-          searchEmpt: '',
-          uploadFiles: [],
+          email: '',
+          content: '',
           updateValue: [],
-          pageValue: {
-            amount: 0,
-            curPage: 1,
-            curSize: 50
-          },
-          columns: [
-            {title:'氏名',key:'meCname'},
-            {title:'メール',slot:'meCmail'}
-          ],
           opts: {
           },
           tableData: [],
           conditionsList: [],
-          contentScrollTop: 0
         }
       },
       created() {
         this.getTableData()
-        this.getUnsetPeople()
-        window.addEventListener('scroll', this.handleScroll, { passive: true })
-      },
-      beforeDestroy() {
-        window.removeEventListener('scroll', this.handleScroll, { passive: true })
-      },
-      computed: {
-        tableHeadFixed() {
-          if (this.contentScrollTop > 110) return true
-          else return false
-        }
       },
       methods: {
         async getTableData() {
@@ -213,27 +145,6 @@
           } finally {
             this.loading = false
           }
-        },
-        async getUnsetPeople(flag,flag2) {
-          this.tableLoading = true
-          this.searchEmpt = ''
-          try {
-            if(flag2) this.pageValue.curPage = 1
-            const { data } = await this.http.get('sys/mailmanager/invalid',{page:this.pageValue.curPage, limit:50})
-            this.unsetPeople = data.totalCount
-            if(flag) {
-              this.tableData = data.list
-              this.pageValue.amount = data.totalCount
-            }
-          } catch (error) {
-          } finally {
-            this.tableLoading = false
-          }
-        },
-        pageChange(e) {
-          this.pageValue.curPage = e
-          if(this.searchEmpt) this.handleSearchEmpt(true)
-          else this.getUnsetPeople(true)
         },
         async update() {
           this.$Modal.confirm({
@@ -255,97 +166,23 @@
             }
           })
         },
-        async handleSearchEmpt(flag) {
-          if(!this.searchEmpt) return
-          this.tableLoading = true
+        async textEmail() {
           try {
-            if(!flag) {
-             this.pageValue.curPage = 1
-            }
-            const { data } = await this.http.get('sys/mailmanager/search', {keyword:this.searchEmpt,page:this.pageValue.curPage, limit:50})
-            if(!data.list[0]) this.tableData = []
-            else this.tableData = data.list
-            this.pageValue.amount = data.totalCount
-          } catch (error) {
-          } finally {
-            this.tableLoading = false
-          }
-        },
-        async updateMail() {
-          let updateList = []
-          this.$refs.table.rebuildData.some(e=> {
-            if(e.meCmail) {
-              if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(e.meCmail)) {
+            if(!this.email.trim() || !this.content.trim()) return
+            if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(this.email)) {
                 this.$Notice.warning({ title: '注意', desc: 'メールフォーマットが正しくありません', duration: 6.5 })
-                return true
-              }
-              updateList = updateList.concat({
-                empId: e.meCemployeeidCk,
-                empName: e.meCname,
-                email: e.meCmail
-             })
+                return
             }
-          })
-          if(updateList.length === 0) return
-          this.$Modal.confirm({
-            title: '注意',
-            content: 'メールを更新します。よろしいですか？',
-            okText: 'OK',
-            cancelText: 'キャンセル',
-            onOk: async () => {
-              this.tableLoading = true
-              const update = []
-              try {
-                const { data } = await this.http.post('sys/mailmanager/update', updateList)
-                this.$Message.success('更新完了')
-                this.getUnsetPeople()
-              } catch (error) {
-              } finally {
-                this.tableLoading = false
-              }
-            }
-          })
-        },
-        async uploadCsv() {
-          if(this.uploadFiles.length === 0) return
-          try {
-            this.uploadCsvLoading = true
-            await this.http.uploadFiles('sys/mailmanager/upload', {
-              file: this.uploadFiles[0],
-            })
-            this.$Message.success('アップロード完了')
+            this.btnLoading = true
+            const { data } = await this.http.post('sys/mailmanager/test', {email: this.email, content: this.content})
+            this.$Message.success('送信完了')
+            this.email = ''
+            this.content = ''
           } catch (error) {
           } finally {
-            this.uploadCsvLoading = false
+            this.btnLoading = false
           }
-        },
-        handleBeforeUpload(files) {
-          // 返回false, 取消自带上传
-          let checkPassed = true
-          if (files.size / 1024 > 500) {
-            this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
-            })
-            checkPassed = false
-          }
-
-          if (-1 >= files.type.indexOf('excel') && -1 >= files.type.indexOf('spreadsheetml')) {
-            this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません。'
-            })
-            checkPassed = false
-          }
-          if (checkPassed) {
-            this.$set(this.uploadFiles, 0, files)
-          }
-          return false;
-        },
-        downloadTemplate: Debounce(function (type) {
-          window.open(`${BASE_URL}/sys/mailmanager/template?type=${type}`, '_blank')
-        }),
-        handleScroll: Throttle(function (e) {
-          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-        }, 50)
+        }
       }
     })
   </script>
