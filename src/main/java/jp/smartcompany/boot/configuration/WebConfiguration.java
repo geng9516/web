@@ -1,10 +1,8 @@
 package jp.smartcompany.boot.configuration;
 
-import cn.hutool.core.collection.CollUtil;
 import jp.smartcompany.boot.interceptor.AuditInterceptor;
 import jp.smartcompany.boot.interceptor.LoginInfoInterceptor;
 import jp.smartcompany.boot.interceptor.SmartParameterInterceptor;
-import jp.smartcompany.boot.util.ScCacheUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
@@ -12,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import java.util.List;
 
 /**
  * @author Xiao Wenpeng
@@ -24,7 +21,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     private final AuditInterceptor auditInterceptor;
     private final LoginInfoInterceptor loginInfoInterceptor;
     private final SmartParameterInterceptor smartParameterInterceptor;
-    private final ScCacheUtil cacheUtil;
+//    private final ScCacheUtil cacheUtil;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -55,13 +52,13 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
         registry.addResourceHandler("/favicon.ico")
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
-        List<String> uploadFilePaths = CollUtil.newArrayList(
-                "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")
-        );
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations(
-                        uploadFilePaths.toArray(new String[0])
-                );
+//        List<String> uploadFilePaths = CollUtil.newArrayList(
+//                "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")
+//        );
+//        registry.addResourceHandler("/upload/**")
+//                .addResourceLocations(
+//                        uploadFilePaths.toArray(new String[0])
+//                );
         super.addResourceHandlers(registry);
     }
 
