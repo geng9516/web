@@ -18,10 +18,7 @@ import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * 发送邮件工具类
@@ -39,19 +36,21 @@ public class MailUtil {
     private static final String MAIL_ENABLE = "MAIL_ENABLE";
 
     public void init() {
-        JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
-        ScCacheUtil cacheUtil = SpringUtil.getBean(ScCacheUtil.class);
-        javaMailSenderImpl.setUsername(cacheUtil.getSystemProperty("MAIL_USERNAME"));
-        javaMailSenderImpl.setPassword(cacheUtil.getSystemProperty("MAIL_PASSWORD"));
-        javaMailSenderImpl.setPort(Integer.parseInt(cacheUtil.getSystemProperty("MAIL_PORT")));
-        javaMailSenderImpl.setHost(cacheUtil.getSystemProperty("MAIL_HOST"));
-        Properties props = new Properties();
-        props.setProperty("mail.smtp.timeout", "0");
-        props.setProperty("mail.smtp.auth", "true");
-        props.setProperty("mail.smtp.starttls.enable", "true");
-        props.setProperty("mail.smtp.starttls.required", "true");
-        javaMailSenderImpl.setJavaMailProperties(props);
-        javaMailSender = javaMailSenderImpl;
+        if (Objects.isNull(javaMailSender)) {
+            JavaMailSenderImpl javaMailSenderImpl = new JavaMailSenderImpl();
+            ScCacheUtil cacheUtil = SpringUtil.getBean(ScCacheUtil.class);
+            javaMailSenderImpl.setUsername(cacheUtil.getSystemProperty("MAIL_USERNAME"));
+            javaMailSenderImpl.setPassword(cacheUtil.getSystemProperty("MAIL_PASSWORD"));
+            javaMailSenderImpl.setPort(Integer.parseInt(cacheUtil.getSystemProperty("MAIL_PORT")));
+            javaMailSenderImpl.setHost(cacheUtil.getSystemProperty("MAIL_HOST"));
+            Properties props = new Properties();
+            props.setProperty("mail.smtp.timeout", "0");
+            props.setProperty("mail.smtp.auth", "true");
+            props.setProperty("mail.smtp.starttls.enable", "true");
+            props.setProperty("mail.smtp.starttls.required", "true");
+            javaMailSenderImpl.setJavaMailProperties(props);
+            javaMailSender = javaMailSenderImpl;
+        }
     }
 
     @Async
@@ -84,7 +83,8 @@ public class MailUtil {
 
     @Async
     public void sendText(String to,String title,String content) {
-        String from = "spwm test mail";
+        init();
+        String from = "progresssite@scientia.co.jp";
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setFrom(from);
