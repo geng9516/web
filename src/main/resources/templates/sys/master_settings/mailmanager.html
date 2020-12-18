@@ -263,7 +263,8 @@
              this.pageValue.curPage = 1
             }
             const { data } = await this.http.get('sys/mailmanager/search', {keyword:this.searchEmpt,page:this.pageValue.curPage, limit:50})
-            this.tableData = data.list
+            if(!data.list[0]) this.tableData = []
+            else this.tableData = data.list
             this.pageValue.amount = data.totalCount
           } catch (error) {
           } finally {
