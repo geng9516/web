@@ -601,6 +601,7 @@
         el: '.restapplyconfirm-warp',
         data() {
             return {
+                contentMsg:'',
                 isDrop: false,
                 isPerm: false,
                 isCancel: false,
@@ -1478,20 +1479,20 @@
                 }
                 if (!this.restApply.typeNew) {
                     this.errorInfo = true
-                    this.errorMsg = '申請区分を選んでください'
+                    this.errorMsg = '申請区分を選んでください。'
                     return
                 }
 
                 if (!this.restApply.begin || !this.restApply.end) {
                     this.errorInfo = true
-                    this.errorMsg = '期間を選んでください'
+                    this.errorMsg = '期間を選んでください。'
                     return
                 }
 
                 if (this.restApply.begin || this.restApply.end) {
                     if (this.restApply.begin && !this.restApply.end) {
                         this.errorInfo = true
-                        this.errorMsg = '開始期間を入力してください'
+                        this.errorMsg = '開始期間を入力してください。'
                         return
                     }
                     if (!this.restApply.begin && this.restApply.end) {
@@ -1514,7 +1515,7 @@
                     }
                     if (!this.restApply.timezoneClose) {
                         this.errorInfo = true
-                        this.errorMsg = '終了時間を入力してください'
+                        this.errorMsg = '終了時間を入力してください。'
                         return
                     }
                     if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
@@ -1525,18 +1526,18 @@
                 }
                 if (!this.hasPassedTimeCheck) {
                     this.errorInfo = true
-                    this.errorMsg = '時刻をHH:MM形式で入力してください'
+                    this.errorMsg = '時刻をHH:MM形式で入力してください。'
                     return
                 }
                 if (this.selectedRestInfo.workTime) {
                     if (!this.restApply.timeOpen) {
                         this.errorInfo = true
-                        this.errorMsg = '始業後時刻を入力してください'
+                        this.errorMsg = '始業後時刻を入力してください。'
                         return
                     }
                     if (!this.restApply.timeClose) {
                         this.errorInfo = true
-                        this.errorMsg = '終業前時刻を入力してください'
+                        this.errorMsg = '終業前時刻を入力してください。'
                         return
                     }
                 }
@@ -1577,12 +1578,32 @@
                 }
                 if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length > 0) {
                     this.errorInfo = true
-                    this.errorMsg = '添付ファイルを入力してください。'
+                    this.errorMsg = '添付ファイルを追加してください。'
                     return
                 }
+
+                if(this.restApply.noreserved == 0 && this.restApply.weekSelected.length == 0) {
+                    this.errorInfo = true
+                    this.errorMsg = '曜日を指定してください。'
+                    return
+                }
+
+                this.contentMsg = 'この内容で申請します。よろしいですか？'
+                const { data, headers } = await this.http.uploadFiles('sys/vapply/checkExistOverhours',{
+                    params:JSON.stringify(this.restApply),
+                    psSite: this.opts.psSite
+                })
+                if (data.length > 0){
+                    let msg = ''
+                    data.forEach(e => {
+                        msg = e.daysOfWeek + '\n' + msg
+                    })
+                    this.contentMsg =  '下記の日付に超過勤務命令があります。\n' + this.contentMsg  + '\n' + msg
+                }
+
                 this.$Modal.confirm({
                     title: '注意',
-                    content: 'この内容で申請します。よろしいですか？',
+                    content: this.contentMsg,
                     okText: 'OK',
                     width: 480,
                     cancelText: 'キャンセル',
