@@ -31,4 +31,6 @@ public interface IMastApptreeService extends IService<MastApptreeDO> {
 
         MastApptreeDO getByParentId(String parentId);
 
+        String getHomeUrl();
+
 }

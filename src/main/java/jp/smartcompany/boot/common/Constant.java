@@ -82,4 +82,6 @@ public class Constant {
         return "sys:menu:"+TOP_NAVS+":"+sessionId;
     }
 
+    public final static String KEY_HOME_URL = "homeUrl";
+
 }

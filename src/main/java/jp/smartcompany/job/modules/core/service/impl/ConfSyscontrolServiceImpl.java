@@ -48,15 +48,11 @@ public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper,
          */
         @Override
         public String selectPropertyValue(String customerId, String propertyName) {
-
                 Map<String, Object> map = MapUtil.newHashMap(3);
                 map.put("customerId", customerId);
                 map.put("propertyName", propertyName);
-
                 // データ取得
-                String  propertyValue = baseMapper.selectPropertyValue(map);
-
-                return propertyValue;
+            return baseMapper.selectPropertyValue(map);
         }
 
         /**
@@ -74,9 +70,8 @@ public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper,
                 map.put("propertyName", propertyName);
 
                 // データ取得
-                String  propertyValue = baseMapper.selectPropertyValueNotFound(map);
 
-                return propertyValue;
+            return baseMapper.selectPropertyValueNotFound(map);
         }
 
         /**
