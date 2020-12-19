@@ -130,9 +130,11 @@ public class AuthBusiness {
         lruCache.clear();
         timedCache.clear();
         HttpSession session = req.getSession(false);
-        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
-        if (psSession!=null) {
-            saveLoginInfo(false, psSession.getLoginUser());
+        if (Objects.nonNull(session)) {
+            PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
+            if (Objects.nonNull(psSession)) {
+                saveLoginInfo(false, psSession.getLoginUser());
+            }
         }
     }
 
