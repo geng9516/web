@@ -1581,8 +1581,14 @@
                     this.errorMsg = '添付ファイルを追加してください。'
                     return
                 }
-
-                if(this.restApply.noreserved == 0 && this.restApply.weekSelected.length == 0) {
+                if(this.restApply.noreserved == 0
+                    && this.restApply.mon == '0'
+                    && this.restApply.tue == '0'
+                    && this.restApply.wed == '0'
+                    && this.restApply.thu == '0'
+                    && this.restApply.fri == '0'
+                    && this.restApply.sat == '0'
+                    && this.restApply.sun == '0') {
                     this.errorInfo = true
                     this.errorMsg = '曜日を指定してください。'
                     return
