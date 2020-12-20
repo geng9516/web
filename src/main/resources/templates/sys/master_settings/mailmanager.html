@@ -99,9 +99,9 @@
         <i-col span="10" offset="1">
           <Card style="background: var(--content-bg);" title="メール設定テスト">
             <div class="tl mb10" style="margin-top: -10px; margin-right: -10px;">
-              <p class="mt10">送信メールアドレス: </p>
+              <p class="mt10">送信先メールアドレス: </p>
               <i-input class="mt10" v-model="email"></i-input>
-              <p class="mt10">送信内容: </p>
+              <p class="mt10">メール本文: </p>
               <i-input v-model="content" type="textarea" :autosize="{minRows: 10,maxRows: 15}" class="mt10"></i-input>
               <i-button type="primary" ghost icon="ios-mail" @click="textEmail" long class="mt30" :loading="btnLoading" :disabled="!email.trim() || !content.trim()">送信テスト
               </i-button>
