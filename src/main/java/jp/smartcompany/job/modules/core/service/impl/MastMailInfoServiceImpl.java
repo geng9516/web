@@ -72,10 +72,10 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
             password = (String) extraData.get(KEY_PASSWORD);
             employName = (String) extraData.get(KEY_EMPLOY_NAME);
             message = (String) extraData.get(KEY_MESSAGE);
-            month = (String) Objects.requireNonNull(extraData.get(KEY_MONTH));
-            hours = (String) Objects.requireNonNull(extraData.get(KEY_HOURS));
-            manager = (String) Objects.requireNonNull(extraData.get(KEY_MANAGER));
-            workDay = (String) Objects.requireNonNull(extraData.get(KEY_WORK_DAY));
+            month = (String) extraData.get(KEY_MONTH);
+            hours = (String) extraData.get(KEY_HOURS);
+            manager = (String) extraData.get(KEY_MANAGER);
+            workDay = (String) extraData.get(KEY_WORK_DAY);
         }
 
         switch (type) {
