@@ -83,7 +83,7 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     @Override
     public List<MastDatapermissionDO> listConditions() {
         QueryWrapper<MastDatapermissionDO> qw = SysUtil.query();
-        qw.orderByAsc("MDP_CPERMISSIONID");
+        qw.ne("MDP_CPERMISSIONID","0001").orderByAsc("MDP_CPERMISSIONID");
         return mastDatapermissionService.list(qw);
     }
 

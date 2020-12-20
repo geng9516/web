@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgHistMaildataDO;
 import jp.smartcompany.job.modules.core.service.ITmgHistMaildataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -73,12 +74,17 @@ public class MailUtil {
      */
     private void sendText(String from,String to,String title,String content) {
         SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setFrom(from);
-            message.setSubject(title);
-            message.setText(content);
-            log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
+        message.setTo(to);
+        message.setFrom(from);
+        message.setSubject(title);
+        message.setText(content);
+        log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
+        try {
             javaMailSender.send(message);
+        } catch (MailException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
     }
 
     @Async
@@ -95,7 +101,12 @@ public class MailUtil {
         message.setSubject(title);
         message.setText(content);
         log.info("to:{},from:{},title:{},content:{}",to,from,title,content);
-        javaMailSender.send(message);
+        try {
+          javaMailSender.send(message);
+        } catch (MailException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+        }
     }
 
     /**
