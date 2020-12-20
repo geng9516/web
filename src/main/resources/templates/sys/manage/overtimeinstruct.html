@@ -1243,7 +1243,7 @@
                                     }
                                     if (t.sNOpen && t.sNClose) {
                                         if (Utils.timeToMinute(t.sNOpen) >= Utils.timeToMinute(t.sNClose)) {
-                                            that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                                            that.$Notice.warning({ title: '注意', desc: '対象時間(終了時間)は(開始時間)より後の時刻を入力してください。', duration: 6.5 })
                                             return true
                                         }
                                         // check 超勤时间是否与勤务时间重复
@@ -1285,7 +1285,7 @@
                             //         }
                             //         if (t.sNRestOpen && t.sNRestClose) {
                             //             if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
-                            //                 that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            //                 that.$Notice.warning({ title: '注意', desc: '対象時間(休憩終了時間)は(休憩開始時間)より後の時刻を入力してください。', duration: 6.5 })
                             //                 return true
                             //             }
                             //         }

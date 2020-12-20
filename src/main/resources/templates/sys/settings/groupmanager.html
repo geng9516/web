@@ -1612,7 +1612,7 @@
             if (!updateValue.endDate) updateValue.endDate = '2222/12/31'
             updateValue.startDate = Utils.formatDate(updateValue.startDate, 'yyyy/mm/dd')
             updateValue.endDate = Utils.formatDate(updateValue.endDate, 'yyyy/mm/dd')
-            if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください', duration: 6.5 })
+            if (updateValue.startDate > updateValue.endDate) return this.$Notice.warning({ title: '注意', desc: '終了日は開始日より後の日付を入力してください', duration: 6.5 })
             if (!updateValue.groupId) return this.$Notice.warning({ title: '注意', desc: 'IDを入力してください', duration: 6.5 })
             if (!updateValue.groupName) return this.$Notice.warning({ title: '注意', desc: '名称を入力してください', duration: 6.5 })
           }

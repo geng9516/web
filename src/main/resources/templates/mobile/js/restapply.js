@@ -323,7 +323,7 @@ new Vue({
                return this.$Notice.warning({ title: '注意', desc: '終了期間を入力してください', duration: 6.5 })
             }
             if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
-               return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください', duration: 6.5 })
+               return this.$Notice.warning({ title: '注意', desc: '対象期間(終了日)は(開始日)より後の日付を入力してください', duration: 6.5 })
             }
          }
          if(this.selectedRestInfo.timeZone) {
@@ -334,7 +334,7 @@ new Vue({
                return this.$Notice.warning({ title: '注意', desc: '終了期間を入力してください', duration: 6.5 })
             }
             if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
-               return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください', duration: 6.5 })
+               return this.$Notice.warning({ title: '注意', desc: '対象期間(終了日)は(開始日)より後の日付を入力してください', duration: 6.5 })
             }
          }
          if (!this.hasPassedTimeCheck) {

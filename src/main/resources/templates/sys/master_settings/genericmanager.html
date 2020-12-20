@@ -506,7 +506,7 @@
           }
 
           if(data.mgdDend && data.mgdDstartCk > data.mgdDend) {
-            msg = msg.concat(`開始日＜終了日となるようにしてください。\n`)
+            msg = msg.concat(`終了日は開始日より後の日付を入力してください。\n`)
           }
 
           const regx = /^\d{1,8}\.?\d{0,4}$/

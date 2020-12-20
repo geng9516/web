@@ -1154,7 +1154,7 @@
                             return true
                         }
                         if (e.start > e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
+                            this.$Notice.warning({ title: '注意', desc: '対象期間(終了日)は(開始日)より後の日付を入力してください。', duration: 6.5 })
                             return true
                         }
                     })
