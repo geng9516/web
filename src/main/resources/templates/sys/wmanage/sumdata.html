@@ -251,7 +251,7 @@
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        type: 41,
+                        type: 21,
                         checkValue:false,
                         sRetroFlg:'', //遡及フラグ
                         dlTypeId:'',  //DL種別コード
@@ -271,7 +271,7 @@
                         hidSelectTab: '0',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        type: 41
+                        type: 21
                     },
                     optsDisp:{
                         year:'',
@@ -281,7 +281,7 @@
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        type: 41,
+                        type: 21,
                     },
                     notAprEmpCol:[
                         {
@@ -427,9 +427,9 @@
                 async getOrgTree() {
                     this.empDeptLoading = true
                     try {
-                        const { divisionTree, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 转为可用数据
-                        this.treeData = Utils.convertTreeData(divisionTree)
+                        this.treeData = Utils.convertTreeData(orgList)
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
                         return
