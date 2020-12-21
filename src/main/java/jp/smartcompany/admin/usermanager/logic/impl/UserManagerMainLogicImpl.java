@@ -16,6 +16,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
+import jp.smartcompany.job.modules.tmg_setting.mailmanager.service.IEmployMailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
     private final IConfSyscontrolService confSyscontrolService;
     private final UserManagerEditCommonLogic userManagerEditCommonLogic;
     private final LRUCache<Object,Object> lruCache;
+    private final IEmployMailService employMailService;
+
     /**
      * 法人リスト取得
      * @param conditions 検索条件
@@ -107,7 +110,11 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
                  pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
          }
-         pageResult.getRecords().forEach(item -> item.setStatus(userManagerEditCommonLogic.getStatus(item)));
+         pageResult.getRecords().forEach(item -> {
+             item.setStatus(userManagerEditCommonLogic.getStatus(item));
+
+
+         });
          return new PageUtil(pageResult);
      }
 
