@@ -650,14 +650,14 @@
           let checkPassed = true
           if (files.size / 1024 > 500) {
             this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました'
             })
             checkPassed = false
           }
 
           if (-1 >= files.type.indexOf('excel') && -1 >= files.type.indexOf('spreadsheetml')) {
             this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません。'
+              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません'
             })
             checkPassed = false
           }
@@ -675,6 +675,7 @@
             empName: row.meCname,
             email: this.$refs[`input${row._index}`].currentValue
           }
+          if(!updateValue.email) return this.$Notice.warning({ title: '注意', desc: 'メールを入力してください', duration: 6.5 })
           if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(updateValue.email)) {
             this.$Notice.warning({ title: '注意', desc: 'メールフォーマットが正しくありません', duration: 6.5 })
             return
