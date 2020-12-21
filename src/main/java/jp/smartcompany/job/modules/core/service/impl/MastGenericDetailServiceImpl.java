@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper;
+import jp.smartcompany.job.modules.core.pojo.dto.GenericDetailItemDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
@@ -605,4 +606,10 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
           .ge("MGD_DEND",searchDate);
         return getOne(qw);
     }
+
+    @Override
+    public List<GenericDetailItemDTO> listItemsByDetailGroupId(String detailGroupId) {
+       return baseMapper.selectByDetailGroupId(detailGroupId);
+    }
+
 }

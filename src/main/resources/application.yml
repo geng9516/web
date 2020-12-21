@@ -69,36 +69,36 @@ info:
   basePath: /
 security:
   csrfWhiteList:
-    - /stamping
-    - /login
-    - /logout
-    - /McSrvs01
-    - /McSrvs01
-    - /McSrvs02
-    - /McSrvs03
-    - /McSrvs04
-    - /McSrvs05
-    - /McSrvs06
-    - /McSrvs07
-    - /McSrvs08
+    - ${info.basePath}stamping
+    - ${info.basePath}login
+    - ${info.basePath}logout
+    - ${info.basePath}McSrvs01
+    - ${info.basePath}McSrvs01
+    - ${info.basePath}McSrvs02
+    - ${info.basePath}McSrvs03
+    - ${info.basePath}McSrvs04
+    - ${info.basePath}McSrvs05
+    - ${info.basePath}McSrvs06
+    - ${info.basePath}McSrvs07
+    - ${info.basePath}McSrvs08
   # 不需要拦截的url
   whiteList:
-    - /error
-    - /403
-    - /404
-    - /500
-    - /actuator/**
-    - /login
-    - /logout
-    - /McSrvs01
-    - /McSrvs02
-    - /McSrvs03
-    - /McSrvs04
-    - /McSrvs05
-    - /McSrvs06
-    - /McSrvs07
-    - /McSrvs08
-    - /stamping
+    - ${info.basePath}error
+    - ${info.basePath}403
+    - ${info.basePath}404
+    - ${info.basePath}500
+    - ${info.basePath}actuator/**
+    - ${info.basePath}login
+    - ${info.basePath}logout
+    - ${info.basePath}McSrvs01
+    - ${info.basePath}McSrvs02
+    - ${info.basePath}McSrvs03
+    - ${info.basePath}McSrvs04
+    - ${info.basePath}McSrvs05
+    - ${info.basePath}McSrvs06
+    - ${info.basePath}McSrvs07
+    - ${info.basePath}McSrvs08
+    - ${info.basePath}stamping
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
     - ${info.basePath}
@@ -111,11 +111,7 @@ security:
     - ${info.basePath}expirePassword
     - ${info.basePath}changeExpirePassword
     - ${info.basePath}changePassword
-  # 需要忽略的静态资源url
-  resourceList:
-    - /favicon.ico
-    - /static/**
-    - /upload/**
+    - ${info.basePath}header/flags
   # 退出成功后的转向url
   logoutSuccessUrl: ${info.basePath}login
   # 登录成功后的转向url
@@ -124,3 +120,8 @@ security:
   loginFailureUrl: ${info.basePath}login
   # 授权失败的转向url
   accessDeniedUrl: ${info.basePath}403
+  # 需要忽略的静态资源url
+  resourceList:
+    - /favicon.ico
+    - /static/**
+    - /upload/**
