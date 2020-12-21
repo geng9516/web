@@ -669,7 +669,7 @@
         downloadTemplate: Debounce(function (type) {
           window.open(`${BASE_URL}/sys/mailmanager/template?type=${type}`, '_blank')
         }),
-        async updateMail(row) {
+        updateMail: Debounce(async function (row) {
           let updateValue = {
             empId: row.meCemployeeidCk,
             empName: row.meCname,
@@ -688,7 +688,7 @@
             } catch (error) {
             } finally {
           }
-        },
+        }),
         changeMailShow(row,flag) {
           if(!flag) {
             this.$refs[`input${row._index}`].currentValue = this.tableData[row._index].meCmail
