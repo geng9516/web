@@ -40,4 +40,9 @@ public class HistGroupdatapermissionServiceImpl extends ServiceImpl<HistGroupdat
       baseMapper.updateFinishHistory(hgpId,startDate);
    }
 
+   @Override
+   public String getSearchRangeBySiteIdAndAppIdAndGroupCodeListStr(String sSiteId,String sAppId,String userGroupCodeListString,String useBaseSection) {
+      return baseMapper.selectSearchRangeBySiteIdAndAppIdAndGroupCodeListStr(sSiteId, sAppId, userGroupCodeListString,useBaseSection);
+   }
+
 }

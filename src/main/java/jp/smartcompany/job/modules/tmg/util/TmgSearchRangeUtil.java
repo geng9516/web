@@ -1,30 +1,32 @@
 package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.BuildTargetSql;
 import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
+import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpSession;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.List;
 
 /**
  * @author Xiao Wenpeng
  */
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class TmgSearchRangeUtil  {
@@ -32,6 +34,7 @@ public class TmgSearchRangeUtil  {
     private final ScCacheUtil scCacheUtil;
     private final PsBuildTargetSql psBuildTargetSql;
     private final PsDBBeanUtil psDBBeanUtil;
+    private final IHistGroupdatapermissionService histGroupdatapermissionService;
 
     /**
      * LOG出力用ディスクリプタ
@@ -42,9 +45,24 @@ public class TmgSearchRangeUtil  {
      */
     public static final String SEARCH_RANGE_USER_SECTION_DEFS ="'0008'";
     /**
+     * 自所属のみ示すグループ
+     */
+    public static final String SEARCH_RANGE_SELF_USER_SECTION_DEFS ="'0004'";
+    /**
+     * 自社のみ示すグループ
+     */
+    public static final String SEARCH_RANGE_SELF_COMP_DEFS ="'0002'";
+    /**
+     * 自社以下示すグループ
+     */
+    public static final String SEARCH_RANGE_USER_COMP_DEFS ="'0003'";
+    /**ONLY_SELF_
      * 前所属を示すグループ
      */
     public static final String SEARCH_RANGE_ALL_SECTION_DEFS ="'0001'";
+
+    private String necessity;
+
 
     /**
      * 検索対象範囲EXISTS句取得処理
@@ -113,12 +131,16 @@ public class TmgSearchRangeUtil  {
             if ( nUserSectionCount > 0 ){
                 addUserSectionLayerList(psDBBean,sectionLayerList);
             }
+            log.info("自所属:{}",sectionLayerList);
 
             // 基点組織を取得
-            int nBaseSectionCount = getBaseSectionCount(psDBBean,sSiteId, sAppId, userGroupCodeListString);
-            if ( nBaseSectionCount > 0 ){
-                addBaseSectionLayerList(psDBBean,sSiteId, sAppId, userGroupCodeListString, sectionLayerList);
+            if (StrUtil.equalsAny("'"+necessity+"'",SEARCH_RANGE_USER_SECTION_DEFS,SEARCH_RANGE_SELF_COMP_DEFS,SEARCH_RANGE_USER_COMP_DEFS)) {
+                int nBaseSectionCount = getBaseSectionCount(psDBBean, sSiteId, sAppId, userGroupCodeListString);
+                if (nBaseSectionCount > 0) {
+                    addBaseSectionLayerList(psDBBean, sSiteId, sAppId, userGroupCodeListString, sectionLayerList);
+                }
             }
+            log.info("基点组织:{}",sectionLayerList);
 
             // SQL付加用文字列の作成
             // 自所属以下および起点組織の一覧をとりだす
@@ -362,21 +384,25 @@ public class TmgSearchRangeUtil  {
 
     private int getUserSectionCount(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString) throws Exception {
         Vector vecQuery = new Vector();
-        vecQuery.add(buildSQLForSelectUserSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString));
+        vecQuery.add(buildSQLForSelectUserSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString,"1"));
         log.info("【getUserSectionCount：{}】",vecQuery);
         PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
         String sConut = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
-        int nUserSectionCount = Integer.parseInt(sConut);
-        return nUserSectionCount;
+        return Integer.parseInt(sConut);
     }
 
     /**
      * ユーザーが所属するグループが「自所属以下」相当の条件式を持つかを検索するSQLを返します
-     * @param sSiteId
-     * @param sAppId
+     * @param sSiteId サイトID
+     * @param sAppId　アプリID
      * @return ユーザーが所属するグループが「自所属以下」相当の条件式を持つかを検索するSQL
      */
-    private String buildSQLForSelectUserSectionCheck(PsDBBean psDBBean,String sSiteId,String sAppId,String userGroupCodeListString) {
+    private String buildSQLForSelectUserSectionCheck(PsDBBean psDBBean,String sSiteId,String sAppId,String userGroupCodeListString,String useBaseSection) {
+        necessity = histGroupdatapermissionService.getSearchRangeBySiteIdAndAppIdAndGroupCodeListStr(sSiteId,sAppId,userGroupCodeListString,useBaseSection);
+//         fix: 未查询到数据默认使用自所属以下的规矩进行查询
+        if (StrUtil.isBlank(necessity)) {
+            necessity =SEARCH_RANGE_USER_SECTION_DEFS;
+        }
         return "select COUNT(1) " +
                 "from HIST_GROUPDATAPERMISSION a " +
                 "where " +
@@ -387,7 +413,7 @@ public class TmgSearchRangeUtil  {
                 "and a.HGP_CGROUPID in (" + userGroupCodeListString + ") " +
                 "and a.HGP_DSTARTDATE <= TRUNC(SYSDATE) " +
                 "and a.HGP_DENDDATE >= TRUNC(SYSDATE) " +
-                "and a.HGP_CPERMNECESSITY in (" + SEARCH_RANGE_USER_SECTION_DEFS + ") ";
+                "and a.HGP_CPERMNECESSITY in (" + necessity + ") ";
     }
 
     private int getAllSectionCount(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString) throws Exception {
@@ -507,11 +533,7 @@ public class TmgSearchRangeUtil  {
             }
         }
         // where句の作成
-        sbSql.append(
-                " WHERE "	+
-                        "SR_0.HD_DSTARTDATE_CK <= TO_DATE('"	+ psDBBean.getSysDate() + "', 'yyyy/MM/dd')" + " AND "	+
-                        "SR_0.HD_DENDDATE >= TO_DATE('"	+ psDBBean.getSysDate() + "', 'yyyy/MM/dd') "
-        );
+        sbSql.append(" WHERE " + "SR_0.HD_DSTARTDATE_CK <= TO_DATE('").append(psDBBean.getSysDate()).append("', 'yyyy/MM/dd')").append(" AND ").append("SR_0.HD_DENDDATE >= TO_DATE('").append(psDBBean.getSysDate()).append("', 'yyyy/MM/dd') ");
         for(int i = 0; i < pVecWheres.size(); i++) {
             String sFromVec = (String)pVecFroms.elementAt(i);
             // 異動歴以外なら追加
@@ -545,19 +567,12 @@ public class TmgSearchRangeUtil  {
     }
 
     private String buildSQLForSelectUserIdColumn(String psEmployee) {
-        String sbSql = "SELECT " +
-                "MD_CCOLUMNNAME " +
-                "FROM " +
-                "MAST_DATADICTIONARY " +
-                "WHERE " +
-                "MD_CTABLENAME = (" +
-                "SELECT " +
-                "MD_CTABLENAME " +
-                "FROM " +
-                "MAST_DATADICTIONARY " +
-                "WHERE " +
-                "MD_CCOLUMNNAME = '" + psEmployee + "') " +
-                "AND MD_CCOLUMNNAME LIKE '%_CUSERID'";
+        String sbSql = "SELECT MD_CCOLUMNNAME" +
+                " FROM MAST_DATADICTIONARY m1,(SELECT MD_ID,MD_CTABLENAME" +
+                " FROM MAST_DATADICTIONARY" +
+                " WHERE MD_CCOLUMNNAME = '"+psEmployee+"') m2" +
+                " WHERE m1.MD_CTABLENAME = m2.MD_CTABLENAME" +
+                " AND m1.MD_CCOLUMNNAME LIKE '%_CUSERID'";
         return sbSql;
     }
 
@@ -568,6 +583,7 @@ public class TmgSearchRangeUtil  {
         Vector vSql = new Vector();
         vSql.add(buildSQLForSelectUserIdColumn(sColumn[1]));
         PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vSql, "",psDBBean);
+        log.info("getUserIdColumn:{}",psResult);
         String sUserId = (String)psDBBeanUtil.valueAtColumnRow((Vector)(psResult.getResult()).elementAt(0), 0, 0);
         // 別名とユーザIDカラム名を結合
         return sColumn[0] + "." + sUserId;

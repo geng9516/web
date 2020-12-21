@@ -23,4 +23,6 @@ public interface IHistGroupdatapermissionService extends IService<HistGroupdatap
         SearchRangeManagerChangeDateDTO selectHistoryDate(String custId,String systemId,String groupId,Date searchDate);
 
         void updateFinishHistory(Long hgpId, Date startDate);
+
+        String getSearchRangeBySiteIdAndAppIdAndGroupCodeListStr(String sSiteId,String sAppId,String userGroupCodeListString,String useBaseSection);
 }
