@@ -108,9 +108,9 @@
         </template>
 
         <template slot-scope="{ row }" slot="meCmail">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.meCmail || '編集' }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.tmaEmail || '編集' }}</span>
           <Row :gutter="8" v-show="row._index === mailInputIndex">
-            <i-col span="15"><i-input :value="row.meCmail" :ref="`input${row._index}`"></i-input></i-col>
+            <i-col span="15"><i-input :value="row.tmaEmail" :ref="`input${row._index}`"></i-input></i-col>
             <i-col span="5"><i-button @click="updateMail(row)" type="primary" ghost long>更新</i-button></i-col>
             <i-col span="4"><i-button @click="changeMailShow(row, false)" type="primary" ghost icon="ios-undo"></i-button></i-col>
           </Row>
@@ -691,10 +691,10 @@
         }),
         changeMailShow(row,flag) {
           if(!flag) {
-            this.$refs[`input${row._index}`].currentValue = this.tableData[row._index].meCmail
+            this.$refs[`input${row._index}`].currentValue = this.tableData[row._index].tmaEmail
             this.mailInputIndex = -1
           } else {
-            if(this.mailInputIndex !== -1) this.$refs[`input${this.mailInputIndex}`].currentValue = this.tableData[row._index].meCmail
+            if(this.mailInputIndex !== -1) this.$refs[`input${this.mailInputIndex}`].currentValue = this.tableData[row._index].tmaEmail
             this.mailInputIndex = row._index
           }
         },
