@@ -112,8 +112,12 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
          }
          pageResult.getRecords().forEach(item -> {
              item.setStatus(userManagerEditCommonLogic.getStatus(item));
-
-
+             String strEmpId = item.getMeCemployeeidCk();
+             if (StrUtil.isNotBlank(strEmpId)) {
+                 employMailService.getEmpMailInfo(strEmpId).ifPresent(emailDO -> {
+                     item.setTmaEmail(emailDO.getTmaEmail());
+                 });
+             }
          });
          return new PageUtil(pageResult);
      }
