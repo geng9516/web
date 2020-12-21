@@ -133,6 +133,7 @@ public class TmgSearchRangeUtil  {
             }
             log.info("自所属:{}",sectionLayerList);
 
+            log.info("当前标识-necessity:{}","'"+necessity+"'");
             // 基点組織を取得
             if (StrUtil.equalsAny("'"+necessity+"'",SEARCH_RANGE_USER_SECTION_DEFS,SEARCH_RANGE_SELF_COMP_DEFS,SEARCH_RANGE_USER_COMP_DEFS)) {
                 int nBaseSectionCount = getBaseSectionCount(psDBBean, sSiteId, sAppId, userGroupCodeListString);
