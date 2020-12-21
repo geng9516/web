@@ -91,15 +91,21 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         treeDO.setMtrDmodifieddate(date);
         treeDO.setMtrNseq(dto.getSort());
         treeDO.setMtrCmodifieruserid(username);
-        MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());
-        treeDO.setAppLevel(MastApptreeServiceImpl.calculateLevel(parentTree.getAppLevel(), dto.getParentId()));
-        treeDO.setParentId(dto.getParentId());
-        if (dto.getId() == null) {
-            appTreeService.save(treeDO);
-        }else {
+        // 根节点无需变更层级
+        if (StrUtil.equals(dto.getObjectId(),"TopPage") && StrUtil.equals(dto.getParentId(),"0")){
             appTreeService.updateById(treeDO);
+        } else {
+            MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());
+            treeDO.setAppLevel(MastApptreeServiceImpl.calculateLevel(parentTree.getAppLevel(), dto.getParentId()));
+            treeDO.setParentId(dto.getParentId());
+            if (dto.getId() == null) {
+                appTreeService.save(treeDO);
+            }else {
+                appTreeService.updateById(treeDO);
+            }
         }
         timedCache.remove(Constant.getSessionMenuId(session.getId()));
+        timedCache.remove(Constant.KEY_HOME_URL);
         ContextUtil.getSession().removeAttribute(Constant.IS_APPROVER);
         return "変更しました";
     }

@@ -726,7 +726,7 @@
                 }
 
                 if (this.workDaySettingData[index].dstart > this.workDaySettingData[index].dend) {
-                    this.$Notice.error({desc: "適用開始日＜＝適用終了日となるように入力してください。"})
+                    this.$Notice.error({desc: "適用終了日は適用開始日より後の日付を入力してください。"})
                     return true
                 }
                 if (new Date(this.workDaySettingData[index].dstart) > maxDate || new Date(this.workDaySettingData[index].dstart) < minDate) {

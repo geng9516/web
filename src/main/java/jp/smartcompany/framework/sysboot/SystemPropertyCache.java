@@ -77,7 +77,7 @@ public class SystemPropertyCache {
      * システムプロパティ読み込み.
      */
     private void loadSystemProperty() {
-        IConfSyscontrolService sysControlService = SpringUtil.getBean("confSyscontrolServiceImpl");
+        IConfSyscontrolService sysControlService = SpringUtil.getBean(IConfSyscontrolService.class);
         // 必要な項目だけ転送
         List<ConfSyscontrolDO> controlList = sysControlService.getProperties();
         List<SystemPropertyDTO> propList = controlList.stream()

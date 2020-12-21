@@ -668,7 +668,7 @@
                       }
                       if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
                         this.errorInfo = true
-                        this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+                        this.errorMsg = '対象期間(終了日)は(開始日)より後の日付を入力してください。'
                        return
                       }
                     }
@@ -686,7 +686,7 @@
                         }
                         if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
                             this.errorInfo = true
-                            this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+                            this.errorMsg = '対象時間(終了時間)は(開始時間)より後の時刻を入力してください。'
                             return
                         }
                     }

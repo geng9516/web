@@ -69,6 +69,13 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
                 return getOne(qw);
         }
 
+        @Override
+        public String getHomeUrl() {
+           QueryWrapper<MastApptreeDO> qw = SysUtil.query();
+           qw.eq("MTR_COBJECTID","TopPage");
+           return getOne(qw).getMtrCurl();
+        }
+
         private List<MastAppTreeDTO> generateTreeList(List<MastAppTreeDTO> treeVoList, String level) {
                 if (CollUtil.isEmpty(treeVoList)) {
                         return CollUtil.newArrayList();

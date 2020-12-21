@@ -997,7 +997,7 @@
                         return result
                     }
                     if(0>=count ){
-                        this.$Notice.warning({ title: '注意', desc:' 開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                        this.$Notice.warning({ title: '注意', desc:' 対象時間(終了時間)は(開始時間)より後の時刻を入力してください。', duration: 6.5 })
                         result=true
                         return result
                     }
@@ -1021,7 +1021,7 @@
                             return result
                         }
                         if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            that.$Notice.warning({ title: '注意', desc:' 対象時間(休憩終了時間)は(休憩開始時間)より後の時刻を入力してください。', duration: 6.5 })
                             result=true
                             return result
                         }
@@ -1051,7 +1051,7 @@
                             return result
                         }
                         if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            that.$Notice.warning({ title: '注意', desc: ' 対象時間(休憩終了時間)は(休憩開始時間)より後の時刻を入力してください。', duration: 6.5 })
                             result=true
                             return result
                         }
@@ -1561,7 +1561,7 @@
                             return result
                         }
                         if(0>=count ){
-                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間＜終業時間となるようにしてください。', duration: 6.5 })
+                            that.$Notice.warning({ title: '注意', desc: day+' 対象時間(始業時間)は(終業時間)より後の時刻を入力してください。', duration: 6.5 })
                             result=true
                             return result
                         }
@@ -1583,7 +1583,7 @@
                                 return result
                             }
                             if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                that.$Notice.warning({ title: '注意', desc: day+' 対象時間(休憩終了時間)は(休憩開始時間)より後の時刻を入力してください。', duration: 6.5 })
                                 result=true
                                 return result
                             }
@@ -1611,7 +1611,7 @@
                                 return result
                             }
                             if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                that.$Notice.warning({ title: '注意', desc: day+' 対象時間(休憩終了時間)は(休憩開始時間)より後の時刻を入力してください。', duration: 6.5 })
                                 result=true
                                 return result
                             }

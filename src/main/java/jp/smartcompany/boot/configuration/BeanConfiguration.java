@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -22,6 +23,7 @@ import java.util.TimeZone;
  * @author Xiao Wenpeng
  */
 @Configuration
+@Order(1)
 public class BeanConfiguration {
 
     @Bean

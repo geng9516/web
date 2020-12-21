@@ -17,10 +17,6 @@
                     {{  '清算期間設定' }}
                 </h1>
             </div>
-            <div class="btnbox">
-                <span style="flex:1"></span>
-                <i-button type="primary" icon="ios-albums" ghost @click="patternManager">パターン管理</i-button>
-            </div>
         </div>
         <!--todo:button-->
     </div>
@@ -56,9 +52,8 @@
             <Icon type="logo-buffer"></Icon>
             精算一覧
         </div>
-        <Alert class="primary-info mt10">123</Alert>
         <i-table :disabled-hover="true" border :row-class-name="() => 'select-col'" :data="tableData"
-                 :loading="DispLoading" :columns="columns" no-data-text="123">
+                 :loading="DispLoading" :columns="columns">
             <template slot-scope="{ row }" slot="dailymaxworktime"
                       v-if="row.dailymaxworktime">{{row.dailymaxworktime | handleTime }}時
             </template>
@@ -822,9 +817,6 @@
                     this.handleClickLeaf()
                 }
             },
-            patternManager() {
-
-            },
             async showDetails(e) {
                 console.log(e)
                 if (e.status === 'TMG_LPSTATUS|5') return
@@ -1059,7 +1051,7 @@
                     this.monthData = monthInfo
                     //获取patternList
                     this.workPatternList = data.workPatternList
-                    this.empInfo.yyyymm=e.substring(0,4)+'年'+e.substring(6,7)+'月'
+                    this.empInfo.yyyymm=e.substring(0,3)+'年'+e.substring(5,7)+'月'
                 } catch (error) {
                     return
                 } finally {
