@@ -523,7 +523,20 @@
   top: 50%;
   transform: translateY(-50%);
 }
-
+.rest-label {
+  background: var(--success-info-bg);
+  color: var(--success-info);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hoilday-label {
+  background: var(--blue-or-dark-bg);
+  color: var(--blue-or-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .error-label {
   background: var(--error-info-bg);
   color: var(--red);

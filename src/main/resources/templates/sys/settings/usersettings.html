@@ -107,6 +107,15 @@
           <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editPersonal(row)" v-else>{{ row.meCname }}</span>
         </template>
 
+        <template slot-scope="{ row }" slot="meCmail">
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.meCmail || '編集' }}</span>
+          <Row :gutter="8" v-show="row._index === mailInputIndex">
+            <i-col span="15"><i-input :value="row.meCmail" :ref="`input${row._index}`"></i-input></i-col>
+            <i-col span="5"><i-button @click="updateMail(row)" type="primary" ghost long>更新</i-button></i-col>
+            <i-col span="4"><i-button @click="changeMailShow(row, false)" type="primary" ghost icon="ios-undo"></i-button></i-col>
+          </Row>
+        </template>
+
         <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
         </template>
 
@@ -300,6 +309,7 @@
           isShow: false,
           loading: true,
           showUpdateMail: false,
+          mailInputIndex: -1,
           uploadFiles:[],
           historySearchType: '',
           legalPersonList: [],
@@ -336,6 +346,12 @@
             {
               title: 'アカウント',
               key: 'maCaccount',
+              align: 'center'
+            },
+            {
+              title: 'メール',
+              slot: 'meCmail',
+              width: 300,
               align: 'center'
             },
             {
@@ -634,14 +650,14 @@
           let checkPassed = true
           if (files.size / 1024 > 500) {
             this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました'
             })
             checkPassed = false
           }
 
           if (-1 >= files.type.indexOf('excel') && -1 >= files.type.indexOf('spreadsheetml')) {
             this.$Notice.warning({
-              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません。'
+              desc: 'ファイル「' + files.name + '」のタイプがCSV、XLSX、XLSではありません'
             })
             checkPassed = false
           }
@@ -653,40 +669,34 @@
         downloadTemplate: Debounce(function (type) {
           window.open(`${BASE_URL}/sys/mailmanager/template?type=${type}`, '_blank')
         }),
-        async updateMail() {
-          let updateList = []
-          this.$refs.table.rebuildData.some(e=> {
-            if(e.meCmail) {
-              if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(e.meCmail)) {
-                this.$Notice.warning({ title: '注意', desc: 'メールフォーマットが正しくありません', duration: 6.5 })
-                return true
-              }
-              updateList = updateList.concat({
-                empId: e.meCemployeeidCk,
-                empName: e.meCname,
-                email: e.meCmail
-             })
-            }
-          })
-          if(updateList.length === 0) return
-          this.$Modal.confirm({
-            title: '注意',
-            content: 'メールを更新します。よろしいですか？',
-            okText: 'OK',
-            cancelText: 'キャンセル',
-            onOk: async () => {
-              this.tableLoading = true
-              const update = []
-              try {
-                const { data } = await this.http.post('sys/mailmanager/update', updateList)
-                this.$Message.success('更新完了')
-                this.getUnsetPeople()
-              } catch (error) {
-              } finally {
-                this.tableLoading = false
-              }
-            }
-          })
+        updateMail: Debounce(async function (row) {
+          let updateValue = {
+            empId: row.meCemployeeidCk,
+            empName: row.meCname,
+            email: this.$refs[`input${row._index}`].currentValue
+          }
+          if(!updateValue.email) return this.$Notice.warning({ title: '注意', desc: 'メールを入力してください', duration: 6.5 })
+          if(!/[\w\-\._]+@[\w\-\._]+\.[A-Za-z]+/.test(updateValue.email)) {
+            this.$Notice.warning({ title: '注意', desc: 'メールフォーマットが正しくありません', duration: 6.5 })
+            return
+          }
+          try {
+            const { data } = await this.http.post('sys/mailmanager/update', [updateValue])
+            this.$Message.success('更新完了')
+            this.getTableData()
+            this.mailInputIndex = -1
+            } catch (error) {
+            } finally {
+          }
+        }),
+        changeMailShow(row,flag) {
+          if(!flag) {
+            this.$refs[`input${row._index}`].currentValue = this.tableData[row._index].meCmail
+            this.mailInputIndex = -1
+          } else {
+            if(this.mailInputIndex !== -1) this.$refs[`input${this.mailInputIndex}`].currentValue = this.tableData[row._index].meCmail
+            this.mailInputIndex = row._index
+          }
         },
         handleEvent() {
           // 利用开始既改日期又改密码
