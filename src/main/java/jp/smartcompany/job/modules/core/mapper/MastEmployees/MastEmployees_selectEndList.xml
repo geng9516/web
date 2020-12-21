@@ -4,64 +4,67 @@
 
     <select id="selectEndList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerDTO">
         SELECT
-        ME_CCUSTOMERID_CK
-        ,ME_CCOMPANYID
-        ,ME_CEMPLOYEEID_CK
-        ,main.ME_CUSERID
-        ,main.ME_DSTARTDATE
-        ,ME_CKANANAME
-        ,CASE
-        WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
-        PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
-        ELSE
-        PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
-        END ME_CNAME
-        ,ME_CMAIL
-        ,ME_DDATEOFEMPLOYEMENT
-        ,ME_DDATEOFRETIREMENT
-        ,ME_ID
-        ,MA_ID
-        ,MA_CUSERID
-        ,MA_CACCOUNT
-        ,MA_DSTART
-        ,MA_DEND
-        ,MA_NRETRYCOUNTER
-        ,MA_NPASSWORDLOCK
-        ,MA_CADMINUSER
-        ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+            ME_CCUSTOMERID_CK
+            ,ME_CCOMPANYID
+            ,ME_CEMPLOYEEID_CK
+            ,main.ME_CUSERID
+            ,main.ME_DSTARTDATE
+            ,ME_CKANANAME
+            ,CASE
+            WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+            PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+            ELSE
+            PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+            END ME_CNAME
+            ,ME_CMAIL
+            ,ME_DDATEOFEMPLOYEMENT
+            ,ME_DDATEOFRETIREMENT
+            ,ME_ID
+            ,MA_ID
+            ,MA_CUSERID
+            ,MA_CACCOUNT
+            ,MA_DSTART
+            ,MA_DEND
+            ,MA_NRETRYCOUNTER
+            ,MA_NPASSWORDLOCK
+            ,MA_CADMINUSER
+            ,em.TMA_EMAIL
+            ,MAST_ACCOUNT.VERSIONNO VERSIONNO
         FROM
-        MAST_EMPLOYEES main LEFT JOIN MAST_ACCOUNT ON
-        ME_CCUSTOMERID_CK = MA_CCUSTOMERID
-        AND ME_CUSERID = MA_CUSERID,
-        (SELECT
-        MIN(ME_DSTARTDATE),ME_CUSERID
-        FROM
-        MAST_EMPLOYEES
+            MAST_EMPLOYEES main LEFT JOIN MAST_ACCOUNT ON
+            ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+            AND ME_CUSERID = MA_CUSERID,
+            (SELECT
+            MIN(ME_DSTARTDATE),ME_CUSERID
+            FROM
+            MAST_EMPLOYEES
+            WHERE
+            TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+            GROUP BY ME_CUSERID) mindate,
+            T_EMPLOY_MAIL em
         WHERE
-        TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
-        GROUP BY ME_CUSERID) mindate
-        WHERE
-        ME_CCUSTOMERID_CK = #{custId}
-        <if test="userIds!=null and userIds.size()>0">
-            AND main.ME_CUSERID IN
-            <foreach collection="userIds" index="index" item="userId" separator="," open="(" close=")">
-                #{userId}
-            </foreach>
-        </if>
-        AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
-        AND mindate.ME_CUSERID = main.ME_CUSERID
-        <if test="companyList!=null and companyList.size()>0">
-            AND ME_CCOMPANYID IN
-            <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
-                #{compId}
-            </foreach>
-        </if>
-        <if test="searchType==9">
-            ORDER BY ME_CKANANAME
-        </if>
-        <if test="searchType!=9">
-            ORDER BY ME_CEMPLOYEEID_CK
-        </if>
+            ME_CCUSTOMERID_CK = #{custId}
+            <if test="userIds neq null and userIds.size() gt 0">
+                AND main.ME_CUSERID IN
+                <foreach collection="userIds" index="index" item="userId" separator="," open="(" close=")">
+                    #{userId}
+                </foreach>
+            </if>
+            AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+            AND mindate.ME_CUSERID = main.ME_CUSERID
+            AND em.TMA_EMP_ID = main.ME_CEMPLOYEEID_CK
+            <if test="companyList neq null and companyList.size() gt 0">
+                AND ME_CCOMPANYID IN
+                <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                    #{compId}
+                </foreach>
+            </if>
+            <if test="searchType==9">
+                ORDER BY ME_CKANANAME
+            </if>
+            <if test="searchType!=9">
+                ORDER BY ME_CEMPLOYEEID_CK
+            </if>
     </select>
 
 </mapper>

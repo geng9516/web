@@ -102,13 +102,12 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
              // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=10&companyId=01
              case 10: // 管理ツールユーザ
                  pageResult = mastEmployeesService.selectMainAdminList(pageQuery,custId,language,companyId,companyList);
+                 break;
              default: // 默认查询ロックアウトされているユーザ
                  pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
          }
-         pageResult.getRecords().forEach(item -> {
-             item.setStatus(userManagerEditCommonLogic.getStatus(item));
-         });
+         pageResult.getRecords().forEach(item -> item.setStatus(userManagerEditCommonLogic.getStatus(item)));
          return new PageUtil(pageResult);
      }
 
