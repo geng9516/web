@@ -104,11 +104,11 @@
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="" ref="table">
         <template slot-scope="{ row }" slot="meCname">
           <span v-if="row.status === '入社後未登録'">{{ row.meCname }}</span>
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editPersonal(row)" v-else>{{ row.meCname }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary width100" @click="editPersonal(row)" v-else>{{ row.meCname }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="meCmail">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary tl width100" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.tmaEmail || '編集' }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary width100" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.tmaEmail || '編集' }}</span>
           <Row :gutter="8" v-show="row._index === mailInputIndex">
             <i-col span="15"><i-input :value="row.tmaEmail" :ref="`input${row._index}`"></i-input></i-col>
             <i-col span="5"><i-button @click="updateMail(row)" type="primary" ghost long>更新</i-button></i-col>
@@ -341,7 +341,7 @@
             {
               title: '氏名',
               slot: 'meCname',
-              align: 'center'
+              align: 'left'
             },
             {
               title: 'アカウント',
@@ -352,7 +352,7 @@
               title: 'メール',
               slot: 'meCmail',
               width: 300,
-              align: 'center'
+              align: 'left'
             },
             {
               title: '利用開始日',
