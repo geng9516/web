@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -95,8 +96,8 @@ public class TimepunchController {
      * @return
      */
     @PostMapping("selectDutyAndRelaxDate")
-    public DutyAndRelaxDateDTO getDutyAndRelaxDate(@RequestParam("targetDate") String targetDate,
-                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public List<DutyAndRelaxDateDTO> getDutyAndRelaxDate(@RequestParam("targetDate") String targetDate,
+                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         tmgTimePunchBean.setExecuteParameters(targetDate, psDBBean);
         return tmgTimePunchBean.getDutyAndRelaxDate(targetDate);
     }

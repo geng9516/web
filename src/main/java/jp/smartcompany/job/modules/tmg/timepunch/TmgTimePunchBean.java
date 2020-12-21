@@ -337,10 +337,9 @@ public class TmgTimePunchBean {
      * @param baseDate 2020/06/26
      * @return
      */
-    public DutyAndRelaxDateDTO getDutyAndRelaxDate(String baseDate) {
+    public List<DutyAndRelaxDateDTO> getDutyAndRelaxDate(String baseDate) {
 
-       /* DutyAndRelaxDateDTO dutyAndRelaxDateDTO = (DutyAndRelaxDateDTO) lruCache.get(CACHE_DUTYANDRELAXTIME);
-        if (null == dutyAndRelaxDateDTO) { */
+        List<DutyAndRelaxDateDTO> dutyAndRelaxDateDTOList = new ArrayList<DutyAndRelaxDateDTO>();
         DutyAndRelaxDateDTO dutyAndRelaxDateDTO = new DutyAndRelaxDateDTO();
         //01
         String custId = psDBBean.getCustID();
@@ -363,40 +362,55 @@ public class TmgTimePunchBean {
             endDate = DateUtil.format(DateUtil.endOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
         }
 
-        // 1.出勤日数   出勤時間
+        // 1.月間出勤日数   月間出勤時間
         HashMap<String, Object> result = this.selectDutyDaysAndHours(custId, compCode, employeeId, language, startDate);
         if (null != result) {
-            //出勤日数
+            //月間出勤日数
             if (null != result.get(DUTYDAYS_KEY)) {
                 String dutyDays = result.get(DUTYDAYS_KEY).toString() + "日";
-                //出勤日数
-                dutyAndRelaxDateDTO.setDutyDates(dutyDays);
+                //月間出勤日数
+                dutyAndRelaxDateDTO.setTitle("月間出勤日数");
+                dutyAndRelaxDateDTO.setContext(dutyDays);
             }
-            //出勤時間
-           /* if (null != result.get(DUTYHOURS_KEY)) {
+            dutyAndRelaxDateDTOList.add(0,dutyAndRelaxDateDTO);
+
+            //月間出勤時間
+            DutyAndRelaxDateDTO dutyAndRelaxDateDTO5 = new DutyAndRelaxDateDTO();
+            if (null != result.get(DUTYHOURS_KEY)) {
                 String dutyHours = result.get(DUTYHOURS_KEY).toString();
                 if (dutyHours.indexOf(":") > 0) {
-                    dutyAndRelaxDateDTO.setDutyHours(dutyHours.substring(0, dutyHours.indexOf(":")) + "時" + dutyHours.substring(dutyHours.indexOf(":") + 1, dutyHours.length()) + "分");
+                    dutyAndRelaxDateDTO5.setContext(dutyHours.substring(0, dutyHours.indexOf(":")) + "時" + dutyHours.substring(dutyHours.indexOf(":") + 1, dutyHours.length()) + "分");
                 }
-            }*/
+            }
+            dutyAndRelaxDateDTO5.setTitle("出勤時間");
+            dutyAndRelaxDateDTOList.add(1,dutyAndRelaxDateDTO5);
         }
-        //月間実働時間
+        //２.月間実働時間
+        DutyAndRelaxDateDTO dutyAndRelaxDateDTO1 = new DutyAndRelaxDateDTO();
         String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
-        //出勤時間
-        dutyAndRelaxDateDTO.setDutyHours(dutyHours);
+        //月間実働時間
+        dutyAndRelaxDateDTO1.setTitle("月間実働時間");
+        dutyAndRelaxDateDTO1.setContext(dutyHours);
+        dutyAndRelaxDateDTOList.add(2,dutyAndRelaxDateDTO1);
 
-        // 2.超過勤務時間
+        // ３.超過勤務時間
+        DutyAndRelaxDateDTO dutyAndRelaxDateDTO3 = new DutyAndRelaxDateDTO();
         String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);
         //超過勤務時間
-        dutyAndRelaxDateDTO.setOverTime(overTime);
+        dutyAndRelaxDateDTO3.setTitle("超過勤務時間");
+        dutyAndRelaxDateDTO3.setContext(overTime);
+        dutyAndRelaxDateDTOList.add(3,dutyAndRelaxDateDTO3);
 
-        // 3.年次休暇
+        // ４.年次休暇
+        DutyAndRelaxDateDTO dutyAndRelaxDateDTO4 = new DutyAndRelaxDateDTO();
         String npaidRestDaysHour = this.getNpaidRestDaysHour(employeeId, startDate, compCode, custId);
         //年次休暇
-        dutyAndRelaxDateDTO.setNpaidRestDaysHour(npaidRestDaysHour);
+        dutyAndRelaxDateDTO4.setTitle("有休残日数");
+        dutyAndRelaxDateDTO4.setContext(npaidRestDaysHour);
+        dutyAndRelaxDateDTOList.add(4,dutyAndRelaxDateDTO4);
         // lruCache.put(CACHE_DUTYANDRELAXTIME, dutyAndRelaxDateDTO);
         // logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache までロードする");
-        return dutyAndRelaxDateDTO;
+        return dutyAndRelaxDateDTOList;
         /*} else {
             logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache から取り出す");
             return dutyAndRelaxDateDTO;
