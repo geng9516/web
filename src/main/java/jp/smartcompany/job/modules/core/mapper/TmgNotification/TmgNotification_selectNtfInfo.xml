@@ -4,14 +4,21 @@
 
     <select id="SelectNtfInfo" resultType="java.lang.String">
         SELECT
-            TMG_F_GET_MGD_C (TMG_F_GET_MGD_C (
+            NVL(TMG_F_GET_MGD_C (TMG_F_GET_MGD_C (
             TNTF_CTYPE,
             #{yyyymmdd},
             2,
             TNTF_CCUSTOMERID,
             TNTF_CCOMPANYID,
             'ja'
-        ), #{yyyymmdd},3) || TMG_F_CONV_MIN2HHMI(TNTF_NTIMEZONE_CLOSE-TNTF_NTIMEZONE_OPEN)
+        ), #{yyyymmdd},3),TMG_F_GET_MGD_C (TMG_F_GET_MGD_C (
+            TNTF_CTYPE,
+            #{yyyymmdd},
+            2,
+            TNTF_CCUSTOMERID,
+            TNTF_CCOMPANYID,
+            'ja'
+        ), #{yyyymmdd},2)) || TMG_F_CONV_MIN2HHMI(TNTF_NTIMEZONE_CLOSE-TNTF_NTIMEZONE_OPEN)
         FROM
             TMG_NOTIFICATION
         WHERE

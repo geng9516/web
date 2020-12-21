@@ -114,19 +114,22 @@
                 </template>
                 <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j] && row._index % 2 === 0 ">
-                                <div class="sum-row" v-if="row[j].ntftype && row[j].ntftype.length > 1">
-                                <Tooltip trigger="click"　theme="light" placement="left" transfer>
-                                    <i-button type="primary" ghost icon="md-alarm" size="small" v-if="row[j].ntftype.length > 0"></i-button>
-                                        <div slot="content">
-                                            <div class="mt2" v-for="(item) of row[j].ntftype">{{item.item}}</div>
-                                        </div>
-                                </Tooltip >
+                                <div class="sum-row" v-if="row[j].ntftype[0] && row[j].ntftype[0].indexOf(':') > 0">
+                                    <Poptip trigger="hover"　theme="light" placement="left" transfer>
+                                        <span class="error-label" style="font-size: 31px;line-height: 0px">...</span>
+                                            <div slot="content">
+                                                <div class="mt2" v-for="item of row[j].ntftype">{{item}}</div>
+                                            </div>
+                                    </Poptip >
                                 </div>
                                 <div class="sum-row" v-else ><span :class="row[j].ntftype[0] && 'error-label'">{{ row[j].ntftype[0] || '&nbsp;'}}</span></div>
 
-                                <div class="divi-hour-line sum-row">{{ row[j].kubun || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500'"><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+                                <div class="divi-hour-line sum-row" v-else-if="row[j].kubunid === 'TMG_WORK|000'" >{{ row[j].kubun || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+
                                 <div class="divi-hour-line sum-row"><span :class="row[j].workhours && Utils.timeToMinute(row[j].workhours) > limitInfo.dailymaxworktime && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
-                                <div class="divi-hour-line sum-row">{{ row[j].resttime || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'?'&nbsp;' : row[j].resttime }}</div>
                         </span>
                     <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
                 </template>
@@ -578,6 +581,7 @@
                 },
 
                 //編集画面
+                visible:false,
                 EditLoading: false,
                 show3: true,
                 button4Pattern: ['1', '2'],
