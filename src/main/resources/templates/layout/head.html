@@ -42,11 +42,15 @@
       </dropdown-menu>
     </dropdown>
     <!-- 动画滚动公告 -->
-    <div class="mr20" style="width: 35%;overflow: hidden" @mouseenter="stopMove" @mouseleave="move">
+    <div v-show="btn.announce" class="mr20" style="width: 35%;overflow: hidden" @mouseenter="stopMove" @mouseleave="move">
       <div ref="box" style="white-space: nowrap;">{{ announce }}</div>
     </div>
     <!-- 记录真实文字长度 -->
     <div ref="announce" style="position: absolute;z-index: -999;top: -999999px;">{{ announce }}</div>
+    <div style="flex: 1;"></div>
+    <i-button v-if="btn.exit" type="primary" ghost class="ml10 mt10" style="height: 29px; width: 60px;" @click="clock('ACT_EXEC_CLOSE')" :loading="query_clockInfo.pAction === 'ACT_EXEC_CLOSE'" :disabled="clockDisable">{{ query_clockInfo.pAction === 'ACT_EXEC_CLOSE' ? '' : '退勤'}}</i-button>
+    <i-button v-if="btn.stamp" type="primary" ghost class="ml15 mt10" style="height: 29px; width: 60px;" @click="clock('ACT_EXEC_OPEN')" :loading="query_clockInfo.pAction === 'ACT_EXEC_OPEN'" :disabled="clockDisable">{{ query_clockInfo.pAction === 'ACT_EXEC_OPEN' ? '' : '出勤'}}</i-button>
+    <div v-if="btn.time" style="margin-left: 230px; color: var(--login-svg-fill); font-size: 17px; font-weight: bold; margin-right: 5px;letter-spacing: 1px;">{{ time }}</div>
   </i-menu>
   <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
     <i-form ref="password" :label-width="200" :model="password" class="tl" style="margin: 10px 10px 0;">
@@ -77,10 +81,20 @@
       data() {
         return {
           baseUrl: BASE_URL,
+          timemachine:{},
+          time: '',
           session: [[${ session }]],
           announce: '',
           announceWidth: '',
+          btn: {},
           animateMachine: {},
+          query_clockInfo: {
+            pAction: '',
+            custId: [[${ session.psSession.loginCustomer}]],
+            compCode: [[${ session.psSession.loginCompany}]],
+            language: [[${ session.psSession.language}]],
+            employeId: [[${ session.psSession.loginEmployee }]]
+          },
           distance: 16,
           themeList: [
             { name: 'デフォルト', value: 'default'},
@@ -90,7 +104,8 @@
           curTheme: localStorage.getItem('APP_THEME') || 'default',
           password:{},
           passwordLoading: false,
-          alterPasswordModal: false
+          alterPasswordModal: false,
+          clockDisable: false
         }
       },
       computed: {
@@ -99,6 +114,8 @@
         }
       },
       mounted() {
+        this.getTopInfo()
+        this.getServerTime()
         this.password.username = this.session.psSession.loginUser
         this.announceWidth = this.$refs.announce.getBoundingClientRect().width
         this.move()
@@ -152,6 +169,15 @@
         handleClickMenuOutSide() {
           SIDER._data.showSider = false
         },
+        async getTopInfo() {
+          const { data } = await this.http.get('header/flags')
+          this.btn = {
+            stamp: data[0].mgdCsparechar1 === '1',
+            exit:data[1].mgdCsparechar1 === '1',
+            announce:data[2].mgdCsparechar1 === '1',
+            time:data[3].mgdCsparechar1 === '1',
+          }
+        },
         move () {
           this.distance -= 1
           if (- this.distance >= this.announceWidth) {
@@ -162,7 +188,53 @@
         },
         stopMove() {
           cancelAnimationFrame(this.animateMachine)
-        }
+        },
+        async getServerTime() {
+          try {
+            const {data} = await this.http.get('sys/timePunch/serverTime', null)
+            var current = Date.parse(data.sysdate.replace(/-/g, "/"))
+            localStorage.setItem('Mobile_Sever_Time', current)
+            localStorage.setItem('Mobile_Local_Time', current)
+            this.showTime()
+          } catch (e) {
+          }
+        },
+        showTime() {
+          const Sever_Time = localStorage.getItem('Mobile_Sever_Time')
+          const Local_Time = localStorage.getItem('Mobile_Local_Time')
+          const time = Date.now() - Local_Time + +Sever_Time
+          const { hourMsg } = Utils.getTime(time)
+          this.time = hourMsg.slice(0,-3)
+          this.timemachine = setTimeout(this.showTime, 1000)
+        },
+        async clock(pAction) {
+          this.query_clockInfo.pAction = pAction
+          this.clockDisable = true
+          try {
+            const { data } = await this.http.postForm('sys/timePunch/stamping', this.query_clockInfo)
+            if (data) {
+              if (data.resultCode === "0") {
+                //打刻成功(0)
+                if (pAction === "ACT_EXEC_OPEN") {
+                  this.$Notice.info({ title: '打刻しました', desc: data.resultMsg })
+                } else {
+                  this.$Notice.info({ title: '打刻しました', desc: data.resultMsg })
+                }
+              } else {
+                //打刻失敗(10,20,30)
+                this.$Notice.error({ title: '打刻エラー', desc: data.resultMsg })
+              }
+            } else {
+              //チェック不合格
+              this.$Notice.warning({ title: '打刻エラー', desc: "内部エラーが発生しました" })
+            }
+          } finally{
+            this.clocking = false
+            this.exiting = false
+            this.clockDisable = false
+            this.query_clockInfo.pAction = ''
+          }
+        },
       }
     })
 
