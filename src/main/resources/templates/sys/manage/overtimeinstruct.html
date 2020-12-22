@@ -106,8 +106,9 @@
                 </i-select>
             </div>
             <Alert class="primary-info" >日付をクリックすると、命令画面を表示します。<span class="red" v-show="!isEditable">※確定済のため編集できません。</span></Alert>
-            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
-                :loading="loading" no-data-text="">
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                    　border　:columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
+                    　:loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span class="ml5">{{ row.empname }}</span>
                 </template>
@@ -369,6 +370,7 @@
                     showAverage: false,
                     showDayApply: false,
                     hasPassedTimeCheck: true,
+                    contentScrollTop: 0,
                     dailyTableLoading: false,
                     updateBtnLoading: false,
                     title: '日別編集画面',
@@ -606,8 +608,13 @@
             },
             async mounted() {
                 this.getInit()
+                window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             computed: {
+                tableHeadFixed() {
+                    if (this.contentScrollTop > 180) return true
+                    else return false
+                },
                 columns() {
                     let result = []
                     if (this.overWorkViewType === 1) {
@@ -1153,13 +1160,8 @@
                         return 'normal'
                     }
                 },
-                handleScroll: Throttle(function (e) {
-                    this.contentScrollTop = e.target.scrollTop
-                    if (e.target.scrollTop > 200) {
-                        this.isScroll = true
-                    } else {
-                        this.isScroll = false
-                    }
+                handleScroll: Throttle(function(e) {
+                    this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
                 }, 50),
                 changeSelectedDataByGroup(status) {
                     //一括適用
