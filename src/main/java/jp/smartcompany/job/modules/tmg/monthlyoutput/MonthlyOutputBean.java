@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyOutputLogSecDO;
@@ -17,11 +18,14 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.*;
 import jp.smartcompany.job.modules.tmg.util.CusomCsvUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgSearchRangeUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.jvm.hotspot.utilities.Hashtable;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +53,7 @@ public class MonthlyOutputBean {
     private final ITmgMonthlyOutputLogSecService iTmgMonthlyOutputLogSecService;
     private final ITmgAlertmsgService iTmgAlertmsgService;
     private final CusomCsvUtil csvUtil;
-
+    private final TmgSearchRangeUtil tmgSearchRangeUtil;
     /** 表示中のページ */
     private int _currentPage = 1;
     /** 1ページ内の最大表示件数 */
@@ -747,13 +751,10 @@ public class MonthlyOutputBean {
      * @return 権限有無(有:true、無:false)
      */
     public boolean hasAuthOfSect(String section,PsDBBean psDBBean,TmgReferList referList) {
-
-        //todo
-        String sExists = "";//getDivTreeSearchRange(requestHash, session);
-        if(sExists == null || sExists.length() == 0){
+        String sExists = getDivTreeSearchRange(psDBBean, ContextUtil.getSession());
+        if(StrUtil.isBlank(sExists)){
             return true;
         }
-
         // 検索
         int organisationCount=iMastOrganisationService.selectHasAuth(psDBBean.getCustID(),psDBBean.getCompCode()
         ,section,referList.getRecordDate(),psDBBean.getLanguage(),sExists);
@@ -764,6 +765,20 @@ public class MonthlyOutputBean {
         return false;
     }
 
+    /**
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * @param psDBBean
+     * @param session
+     * @return
+     */
+    public String getDivTreeSearchRange(PsDBBean psDBBean,HttpSession session) {
+        try {
+            return  tmgSearchRangeUtil.getExistsQueryBaseSection(psDBBean,session,"o.MO_CSECTIONID_CK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 
 
