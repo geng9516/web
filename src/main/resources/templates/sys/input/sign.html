@@ -27,28 +27,44 @@
             </Row>
         </i-col>
         <i-col span="13" class="pl20 pt5">
-            <Carousel loop>
-                <carousel-item>
+            <Carousel :loop="cardData.length > 1">
+                <carousel-item v-for="item of cardData">
                     <Row>
                         <i-col span="11" class="card" style="margin: 15px 10px 10px 15px;">
-                            <div class="title">月間出勤日数</div>
-                            <span class="num">{{dutyAndRelaxData.dutyDates}}</span><span class="mr5 lp">日</span>
+                            <div class="title">{{ item[0] && item[0].title || '--- ---' }}</div>
+                            <span v-if="item[0] && item[0].num.length > 0">
+                                <span v-for="(detail, i) of item[0].num">
+                                    <span class="num">{{ item[0].num[i] }}</span><span class="mr5 lp">{{ item[0].unit[i] }}</span>
+                                </span>
+                            </span>
+                            <span class="num" v-else>-- --</span>
                         </i-col>
                         <i-col span="11" class="card" style="margin: 15px 10px 10px 10px;">
-                            <div class="title">有休残日数</div>
-                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[0]}}</span><span class="mr5 lp">日</span>
-                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[1]}}</span><span class="mr5 lp">時</span>
-                            <span class="num">{{dutyAndRelaxData.npaidRestDaysHour[2]}}</span><span class="mr5 lp">分</span>
+                            <div class="title">{{ item[1] && item[1].title || '--- ---' }}</div>
+                            <span v-if="item[1] && item[1].num.length > 0">
+                                <span v-for="(detail, i) of item[1].num">
+                                    <span class="num">{{ item[1].num[i] }}</span><span class="mr5 lp">{{ item[1].unit[i] }}</span>
+                                </span>
+                            </span>
+                            <span class="num" v-else>-- --</span>
                         </i-col>
                         <i-col span="11" class="card" style="margin: 10px 10px 15px 15px;">
-                            <div class="title">月間実労働時間</div>
-                            <span class="num">{{dutyAndRelaxData.dutyHours[0]}}</span><span class="mr5 lp">時</span>
-                            <span class="num">{{dutyAndRelaxData.dutyHours[1]}}</span><span class="mr5 lp">分</span>
+                            <div class="title">{{ item[2] && item[2].title || '--- ---' }}</div>
+                            <span v-if="item[2] && item[2].num.length > 0">
+                                <span v-for="(detail, i) of item[2].num">
+                                    <span class="num">{{ item[2].num[i] }}</span><span class="mr5 lp">{{ item[2].unit[i] }}</span>
+                                </span>
+                            </span>
+                            <span class="num" v-else>-- --</span>
                         </i-col>
                         <i-col span="11" class="card" style="margin: 10px 10px 15px 10px;">
-                            <div class="title">超過勤務時間</div>
-                            <span class="num">{{dutyAndRelaxData.overTime[0]}}</span><span class="mr5 lp">時</span>
-                            <span class="num">{{dutyAndRelaxData.overTime[1]}}</span><span class="mr5 lp">分</span>
+                            <div class="title">{{ item[3] && item[3].title || '--- ---' }}</div>
+                            <span v-if="item[3] && item[3].num.length > 0">
+                                <span v-for="(detail, i) of item[3].num">
+                                    <span class="num">{{ item[3].num[i] }}</span><span class="mr5 lp">{{ item[3].unit[i] }}</span>
+                                </span>
+                            </span>
+                            <span class="num" v-else>-- --</span>
                         </i-col>
                     </Row>
                 </carousel-item>
@@ -314,14 +330,10 @@
                 exiting: false,
                 clockDisable: false,
                 discretionDisable: true,
-                dutyAndRelaxData: {
-                    dutyDates: '0',
-                    dutyHours: ['0', '00'],
-                    npaidRestDaysHour: ['0', '0', '0'],
-                    overTime: ['0', '0']
-                },
+                cardData: [
+                    []
+                ],
                 requestFlag: false,
-                /**********/
                 monthlyLoading: false,
                 dailyloading: false,
                 contentScrollTop: 0,
@@ -586,7 +598,7 @@
             this.getClockInfo()
             this.getIsDiscretion()
             this.getServerTime()
-            await this.getDutyAndRelaxDate()
+            this.getDutyAndRelaxDate()
             await this.getScheduleInfo()
             await this.getOverTime()
             this.dynamicScheduleFit()
@@ -778,30 +790,22 @@
             },
             //　職員有休等情報を取得する
             async getDutyAndRelaxDate() {
-                const {data} = await this.http.postForm('sys/timePunch/selectDutyAndRelaxDate', this.query_schedule)
-
-                if (data) {
-                    //月間出勤日数
-                    if (data.dutyDates) {
-                        this.dutyAndRelaxData.dutyDates = data.dutyDates.substring(0, data.dutyDates.indexOf("日"))
+                try {
+                  let {data} = await this.http.postForm('sys/timePunch/selectDutyAndRelaxDate', this.query_schedule)
+                  data = data.map(e=> {
+                    return {
+                      title: e.title,
+                      num: e.context.split(/\D+/).slice(0,-1),
+                      unit: e.context.split(/\d+/).slice(1),
                     }
-                    //月間実労働時間
-                    if (data.dutyHours) {
-                        this.dutyAndRelaxData.dutyHours[0] = data.dutyHours.substring(0, data.dutyHours.indexOf("時"))
-                        this.dutyAndRelaxData.dutyHours[1] = data.dutyHours.substring(data.dutyHours.indexOf("時") + 1, data.dutyHours.length - 1)
-                    }
-                    //残業時間
-                    if (data.overTime) {
-                        this.dutyAndRelaxData.overTime[0] = data.overTime.substring(0, data.overTime.indexOf("時"))
-                        this.dutyAndRelaxData.overTime[1] = data.overTime.substring(data.overTime.indexOf("時") + 1, data.overTime.length - 1)
-                    }
-                    //有休残日数
-                    if (data.npaidRestDaysHour) {
-                        this.dutyAndRelaxData.npaidRestDaysHour[0] = data.npaidRestDaysHour.substring(0, data.npaidRestDaysHour.indexOf("日"))
-                        this.dutyAndRelaxData.npaidRestDaysHour[1] = data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("日") + 1, data.npaidRestDaysHour.indexOf("時"))
-                        this.dutyAndRelaxData.npaidRestDaysHour[2] = data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("時") + 1, data.npaidRestDaysHour.length - 1)
-                    }
-
+                  })
+                  let list = []
+                  for(let i=0; data.length > i; i=i+4){
+                    list.push(data.slice(i,i+4));
+                  }
+                  this.cardData = list
+                } catch (error) {
+                } finally {
                 }
 
             },
