@@ -89,8 +89,9 @@
     </div>
     <div class="content_body">
         <Alert class="primary-info">※承認済の場合、文字色が「水色」で表示されます。</Alert>
-        <i-table  no-data-text="所属から職員を選んでください。" border :columns="columns"
-                  　:row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOList" :loading="updateloading" >
+        <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                 no-data-text="所属から職員を選んでください。" border :columns="columns"
+                 :row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOList" :loading="updateloading" >
             <template slot-scope="{ row , index}" slot="empname" >
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="hwApplyShowFlg(hwApplyShow,HomeWorkVOList[index].empid,HomeWorkVOList[index].empname)">{{ HomeWorkVOList[index].empname }}</span>
             </template>
@@ -99,12 +100,13 @@
             </template>
 
         </i-table>
-        <div class="titlenorm mb10 mt10 ">
+        <div class="titlenorm mb10 mt10 " ref="tablewrap">
             <Icon type="logo-buffer"></Icon>
             月次勤務
         </div>
-        <i-table  class="mb10" no-data-text="所属から職員を選んでください。" border :columns="columns3" width="555"
-                  　:row-class-name="() => 'select-col'"  :data="HomeWorkMonthVO" :loading="updateloading" >
+        <i-table :class="tableHeadFixed2 ? 'table-head-fixed long-table' : 'long-table'"
+                 class="mb10" no-data-text="所属から職員を選んでください。" border :columns="columns3" width="555"
+                 :row-class-name="() => 'select-col'"  :data="HomeWorkMonthVO" :loading="updateloading" >
             <template slot-scope="{ row  }" slot="empname">
                 <span >{{row.empname}}</span>
             </template>
@@ -356,6 +358,7 @@
                 HomeWorkVOListupdate:[],
                 HomeWorkVOListEditBack:[],
                 HomeWorkMonthVO:[],
+                tableHeight:'',
                 slotList: Utils.getNumArray(1, 31).map(e => `hwhomeworkflg${e}`),
                 deptName:'',
                 empName:'',
@@ -428,6 +431,14 @@
             window.removeEventListener('scroll',this.handleScroll,{ passive: true })
         },
         computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 160 && this.contentScrollTop < this.tableHeight-100) return true
+                else return false
+            },
+            tableHeadFixed2() {
+                if (this.contentScrollTop > this.tableHeight) return true
+                else return false
+            },
             columns() {
                 let result = [
                     {
@@ -644,6 +655,9 @@
                     return
                 } finally {
                     this.updateloading = false
+                    console.log("-----------------1---------------------")
+                    this.tableHeight = this.$refs.tablewrap.offsetTop
+                    console.log(this.tableHeight)
                 }
             },
             async getHomeWorkListInfo() {
