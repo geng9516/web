@@ -505,6 +505,7 @@
 
         //日次承认画面使用参数
                     dailyloading:false,
+                    contentScrollTop: 0,
                     title: {
                         type: String,
                         default: ''
@@ -682,6 +683,7 @@
             },
             async mounted() {
                 await this.getInit()
+                window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             created() {
             },
@@ -942,12 +944,7 @@
 
                 },
                 handleScroll: Throttle(function (e) {
-                    this.contentScrollTop = e.target.scrollTop
-                    if (e.target.scrollTop > 200) {
-                        this.isScroll = true
-                    } else {
-                        this.isScroll = false
-                    }
+                    this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
                 }, 50),
                 async getSearchCondition() {
                     const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
