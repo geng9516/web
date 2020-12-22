@@ -120,7 +120,8 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table no-data-text="" border :columns="columns"
+        <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                 no-data-text="" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
             <div slot-scope="{ row }" slot="name" class="tc">
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click.stop="showDay(row)">{{ row.name }}</span>
@@ -306,6 +307,9 @@
 <script type="text/babel" th:inline="javascript">
     const VACATION = new Vue({
         methods: {
+            handleScroll: Throttle(function(e) {
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50),
             // 職員検索
             async getSearchTableData() {
                 if (this.referListObject.hidSearchData === null || this.referListObject.hidSearchData.trim() == '') {
@@ -1488,6 +1492,7 @@
                 empDeptName: this.deptName,
                 paidHolidayInitRList: false,
                 isShow: false,
+                contentScrollTop: 0,
                 title: '',
                 name: '',
                 workertypenm: '',
@@ -1559,6 +1564,10 @@
             }
         },
         computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 180) return true
+                else return false
+            },
             paidNowData() {
                 return [
                     {
@@ -1624,6 +1633,7 @@
         },
         async mounted() {
             await this.getInit()
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
         }
     })
 </script>
