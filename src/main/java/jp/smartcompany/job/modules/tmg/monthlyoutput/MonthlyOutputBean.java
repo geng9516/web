@@ -23,7 +23,6 @@ import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.jvm.hotspot.utilities.Hashtable;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
