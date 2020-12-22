@@ -520,6 +520,7 @@
               }
             })
             this.pageValue.amount = data.totalCount
+            this.mailInputIndex = -1
           } catch (error) {
           } finally {
             this.loading = false
@@ -686,8 +687,7 @@
           try {
             const { data } = await this.http.post('sys/mailmanager/update', [updateValue])
             this.$Message.success('更新完了')
-            this.getTableData()
-            this.mailInputIndex = -1
+            this.getTableData(true)
             } catch (error) {
             } finally {
           }

@@ -103,7 +103,8 @@
            <!-- 老就业全て参照可能的时候 与 OR 发生混用，需要排除'0001'这个单独的情况 vFullId = document.getElementById("fullPermissonId"); -->
            <span v-if="row[item].hgpCpermnecessityname && row[item].hgpCpermnecessity !== '0001'  || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
            <span v-if="row[item].hgpCpermmustname || row[item].hgpCbasesectionFlagMust === '1'">{{ `AND:${row[item].hgpCpermmustname}` }}</span>
-           <span v-else>&nbsp;</span>
+           <!-- 2020/12/22 删去 O R:自所属以下または自分の部下 时空出的一个行 -->
+           <!-- <span v-else>&nbsp;</span> -->
          </div>
          <div class="ml20" style="color: var(--primary-info);">
            <span v-if="row[item].hgpCbasesectionFlagNeed == '1' || row[item].hgpCbasesectionFlagMust == '1'">基点組織設定を使用する</span>
