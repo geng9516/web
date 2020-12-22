@@ -2,6 +2,7 @@ package jp.smartcompany.controller.tmg_inp;
 
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeBoardDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -32,10 +33,11 @@ public class NoticeBoardController {
        return noticeBoardLogic.getValidReadEmpList(typeIds,session);
     }
 
-    @PostMapping("upload/attachments")
+    @PostMapping("add")
     @ResponseBody
-    public List<UploadFileInfo> uploadAttachment(@Valid @RequestParam List<MultipartFile> files, @RequestParam Long articleId) {
-        return noticeBoardLogic.uploadNoticeAttachment(files,articleId);
+    public String addNotice(@Valid @RequestParam NoticeBoardDTO dto) {
+        noticeBoardLogic.addNotice(dto);
+        return "保存成功";
     }
 
 }

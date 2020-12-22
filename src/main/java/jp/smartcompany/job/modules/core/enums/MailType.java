@@ -102,7 +102,11 @@ public enum MailType {
     /**
      * 超勤申請登録／変更通知
      */
-    TMG_RESULTS_INPUT_OT("TmgResultsInputOT");
+    TMG_RESULTS_INPUT_OT("TmgResultsInputOT"),
+    /**
+     * 送信テスト用メールアドレス
+     */
+    TEST_SEND("TestMailSend");
 
     @EnumValue
     @JsonValue

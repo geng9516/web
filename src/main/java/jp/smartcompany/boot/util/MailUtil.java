@@ -88,13 +88,12 @@ public class MailUtil {
     }
 
     @Async
-    public void sendText(String to,String title,String content) {
+    public void sendTestMail(String to,String title,String content,String from) {
         boolean status = Boolean.parseBoolean(cacheUtil.getSystemProperty(MAIL_ENABLE));
         if (!status) {
             throw new GlobalException("メール機能はまだ起用されていません");
         }
         init();
-        String from = "progresssite@scientia.co.jp";
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setFrom(from);

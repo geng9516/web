@@ -42,7 +42,8 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
         mailUtil.sendMail(mailType,mailTemplateInfo.getMmCaddress(),sendData.getEmpId(),sendData.getStandardDate(),sendData.getToAddress(),title,content);
     }
 
-    private MastMailInfoDO queryMailTemplate(MailType sendType) {
+    @Override
+    public MastMailInfoDO queryMailTemplate(MailType sendType) {
         return getOne(SysUtil.<MastMailInfoDO>query().eq("mm_cid",sendType.getDesc()));
     }
 

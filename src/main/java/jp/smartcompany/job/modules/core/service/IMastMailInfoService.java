@@ -9,4 +9,5 @@ public interface IMastMailInfoService extends IService<MastMailInfoDO> {
 
     void sendMail(MailType mailType, SendMailBO sendMailBO);
 
+    MastMailInfoDO queryMailTemplate(MailType sendType);
 }

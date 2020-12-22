@@ -21,6 +21,7 @@ import java.util.Date;
 @KeySequence("HIST_BULLETINBOARD_FILE_SEQ")
 public class HistBulletinBoardFileDO implements Serializable {
 
+    private static final long serialVersionUID = 7554200610592160013L;
     @TableId
     private Long hbfId;
 

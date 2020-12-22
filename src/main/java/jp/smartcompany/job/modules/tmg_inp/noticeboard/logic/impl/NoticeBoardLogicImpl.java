@@ -20,6 +20,7 @@ import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeBoardDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardFileDO;
@@ -137,35 +138,37 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public List<UploadFileInfo> uploadNoticeAttachment(List<MultipartFile> files, Long articleId) {
-        HistBulletinBoardDO histBulletinBoardDO = histBulletinBoardService.getById(articleId);
-        if (histBulletinBoardDO == null) {
-            throw new GlobalException("掲示板データは存在しません、アップロードできません");
-        }
-        UploadFileUtil uploadFileUtil = new UploadFileUtil();
+    public void addNotice(NoticeBoardDTO dto) {
+//        HistBulletinBoardDO histBulletinBoardDO = histBulletinBoardService.getById(articleId);
+//        if (histBulletinBoardDO == null) {
+//            throw new GlobalException("掲示板データは存在しません、アップロードできません");
+//        }
+//        UploadFileUtil uploadFileUtil = new UploadFileUtil();
         // 如果已经存在上传的附件，则先删除原来的，再保存新的
-        // 删除上一次上传的附件
-        List<HistBulletinBoardFileDO> oldFileList = histBulletinBoardFileService.listFileById(articleId);
-        if (CollUtil.isNotEmpty(oldFileList)) {
-            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardFileDO::getHbfFileRealPath).collect(Collectors.toList());
-           realPathList.forEach(uploadFileUtil::removePreFile);
-           histBulletinBoardFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardFileDO::getHbfId).collect(Collectors.toList()));
-        }
+//        // 删除上一次上传的附件
+//        List<HistBulletinBoardFileDO> oldFileList = histBulletinBoardFileService.listFileById(articleId);
+//        if (CollUtil.isNotEmpty(oldFileList)) {
+//            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardFileDO::getHbfFileRealPath).collect(Collectors.toList());
+//           realPathList.forEach(uploadFileUtil::removePreFile);
+//           histBulletinBoardFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardFileDO::getHbfId).collect(Collectors.toList()));
+//        }
         // 上传成功后保存到揭示板的文件存储数据表中
-        List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(files,"notice-board","TMG_NOTICE_BOARD_UPLOAD_PATH");
-        if (CollUtil.isNotEmpty(uploadFileInfoList)) {
-              List<HistBulletinBoardFileDO> uploadBoardFileList = CollUtil.newArrayList();
-              uploadFileInfoList.forEach(item -> {
-                  HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
-                  fileDO.setHbIdFk(articleId);
-                  fileDO.setHbfFileUrl(item.getFileUrl());
-                  fileDO.setHbfFileName(item.getFilename());
-                  fileDO.setHbfFileRealPath(item.getRealPath());
-                  uploadBoardFileList.add(fileDO);
-              });
-              histBulletinBoardFileService.saveBatch(uploadBoardFileList);
-        }
-        return uploadFileInfoList;
+//        List<MultipartFile> uploadFiles = dto.getFiles();
+//        if (CollUtil.isNotEmpty(uploadFiles)) {
+//            List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
+//            if (CollUtil.isNotEmpty(uploadFileInfoList)) {
+//                List<HistBulletinBoardFileDO> uploadBoardFileList = CollUtil.newArrayList();
+//                uploadFileInfoList.forEach(item -> {
+//                    HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
+//                    fileDO.setHbIdFk(articleId);
+//                    fileDO.setHbfFileUrl(item.getFileUrl());
+//                    fileDO.setHbfFileName(item.getFilename());
+//                    fileDO.setHbfFileRealPath(item.getRealPath());
+//                    uploadBoardFileList.add(fileDO);
+//                });
+//                histBulletinBoardFileService.saveBatch(uploadBoardFileList);
+//            }
+//        }
     }
 
     private void getEmpIdRanges(List<String> typeIds, PsSession psSession, Date date, List<String> groupIds, List<String> sectionIds, List<String> empIdResult, Connection conn) throws SQLException {

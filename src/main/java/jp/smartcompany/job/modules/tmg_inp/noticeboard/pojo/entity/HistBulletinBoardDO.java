@@ -22,6 +22,7 @@ import java.util.Date;
 @KeySequence("HIST_BULLETINBOARD_SEQ")
 public class HistBulletinBoardDO implements Serializable {
 
+    private static final long serialVersionUID = 7930041822403037380L;
     @TableId
     private Long hbId;
     // 顧客コード
@@ -36,8 +37,6 @@ public class HistBulletinBoardDO implements Serializable {
     private String hbCtitle;
     // 掲示内容
     private String hbCcontents;
-    // 関連情報リンク
-    private String hbClink;
     // 掲示者ユーザID
     private String hbCmnuser;
     // 掲示者氏名
