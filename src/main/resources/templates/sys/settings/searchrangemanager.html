@@ -98,13 +98,12 @@
 
         <!-- 循环slotList -->
         <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-         <div style="color: var(--primary-info);" :class="isEditing ?  'cursor' :''">
+         <div style="color: var(--primary-info);" :class="isEditing && row.m1.hgpCappid ?  'cursor' :''">
            <span v-if="row[item].fullPermission === '0'">{{ row[item].hgpCpermnecessityname }}</span>
            <!-- 老就业全て参照可能的时候 与 OR 发生混用，需要排除'0001'这个单独的情况 vFullId = document.getElementById("fullPermissonId"); -->
            <span v-if="row[item].hgpCpermnecessityname && row[item].hgpCpermnecessity !== '0001'  || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
            <span v-if="row[item].hgpCpermmustname || row[item].hgpCbasesectionFlagMust === '1'">{{ `AND:${row[item].hgpCpermmustname}` }}</span>
-           <!-- 2020/12/22 删去 O R:自所属以下または自分の部下 时空出的一个行 -->
-           <!-- <span v-else>&nbsp;</span> -->
+           <span>&nbsp;</span>
          </div>
          <div class="ml20" style="color: var(--primary-info);">
            <span v-if="row[item].hgpCbasesectionFlagNeed == '1' || row[item].hgpCbasesectionFlagMust == '1'">基点組織設定を使用する</span>
@@ -508,8 +507,8 @@
           })
         },
         handleCellClick(row, column, data, event) {
-          // 点到名字的第一列是也不要弹出操作浮层
-          if (!this.isEditing ||  column.slot === 'objectName') {
+          // 点到名字的第一列是也不要弹出操作浮层 2020/12/22 点击site列也不要弹出
+          if (!this.isEditing ||  column.slot === 'objectName' || !row.m1.hgpCappid) {
             return
           }
           // console.log(row[column.slot])
