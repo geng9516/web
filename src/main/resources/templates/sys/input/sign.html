@@ -597,7 +597,6 @@
             this.$refs.clock.showTime()
             this.getClockInfo()
             this.getIsDiscretion()
-            this.getServerTime()
             this.getDutyAndRelaxDate()
             await this.getScheduleInfo()
             await this.getOverTime()
@@ -691,21 +690,6 @@
             }
         },
         methods: {
-            async getServerTime() {
-                try {
-                    const {data} = await this.http.get('sys/timePunch/serverTime', null)
-                    var current = Date.parse(data.sysdate.replace(/-/g, "/"))
-                    localStorage.setItem('Mobile_Sever_Time', current)
-                    localStorage.setItem('Mobile_Local_Time', current)
-                    this.data.serverTime = current
-                    //console.log(this.data.serverTime)
-                    return
-                } catch (e) {
-                    //console.log(e)
-                    this.data.serverTime = Date.now()
-                }
-
-            },
             //超過勤務時間を取得する
             async getOverTime() {
                 const {data} = await this.http.post('sys/timePunch/queryOverWorkTime', this.query_overWork)
