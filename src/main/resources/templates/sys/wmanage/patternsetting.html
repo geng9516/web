@@ -77,11 +77,13 @@
         <Alert class="primary-info tl" v-if="periodDate != ''">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
         <Row :gutter="8">
             <i-col span="7">
-                <i-table :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="" :row-class-name="() => 'select-col'">
+                <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                         :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="" :row-class-name="() => 'select-col'">
                 </i-table>
             </i-col>
             <i-col :span="17">
-                <i-table :class="" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
+                <i-table :class="tableHeadFixed2 ? 'table-head-fixed long-table' : 'long-table'"
+                         :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
                     <!-- 勤務時間 -->
                     <template slot-scope="{ row }" slot="dutyTime">
                         <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
@@ -490,8 +492,22 @@
             }
             await this.getInit()
             this.selectTmgPatternApplies()
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        },
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 180) return true
+                else return false
+            },
+            tableHeadFixed2() {
+                if (this.contentScrollTop > 180) return true
+                else return false
+            }
         },
         methods: {
+            handleScroll: Throttle(function(e) {
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50),
             // 勤務パターンリスト
             async getTmgPatternList() {
                 this.query.txtAction = 'ACTION_DISP_DISP'
