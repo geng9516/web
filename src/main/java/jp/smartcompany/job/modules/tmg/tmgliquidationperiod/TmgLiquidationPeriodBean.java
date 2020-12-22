@@ -196,7 +196,7 @@ public class TmgLiquidationPeriodBean {
         tlpDo.setTlpCworktypeid(updateDto.getWorkTypeId());
 
         //週平均勤務時間数
-        tlpDo.setTlpCavgworktime(!StrUtil.hasEmpty(updateDto.getAvgWorkTime())?Long.parseLong(updateDto.getAvgWorkTime()):(long)40);
+        tlpDo.setTlpCavgworktime(!StrUtil.hasEmpty(updateDto.getAvgWorkTime())?Long.parseLong(updateDto.getAvgWorkTime()):(long)2400);
         //最長働く一日労働時間上限
         tlpDo.setTlpCmaxdayhours(!StrUtil.hasEmpty(updateDto.getDailyMaxWorkTime())?Long.parseLong(updateDto.getDailyMaxWorkTime()):(long)600);
         //最長働く週間労働時間上限
@@ -230,64 +230,43 @@ public class TmgLiquidationPeriodBean {
             switch(errCheckDo.getTldcCerrcode()){
                 //1 日check。每天最大工作时间10小时
                 case "TMG_ERRCODE|LIQUIDATION_001" :
-                    if(tlpInfo.getTlpCmaxdayhours() != 0){
-                        errMg=errMg.replace("@MAXDAYHOURS",minToHours("600"));
-                    }else{
-                        errMg=errMg.replace("@MAXDAYHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxdayhours())));
-                    }
+                    errMg=errMg.replace("@MAXDAYHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxdayhours())));
                     break;
                 //2	周check。每周最大工作小时52小时
                 case "TMG_ERRCODE|LIQUIDATION_002" :
-                    if(tlpInfo.getTlpCmaxweekhours() != 0 ){
-                        errMg=errMg.replace("@MAXWEEKHOURS",minToHours("3120"));
-                    }else{
-                        errMg=errMg.replace("@MAXWEEKHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxweekhours())));
-                    }
+
+                    errMg=errMg.replace("@MAXWEEKHOURS",minToHours(String.valueOf(tlpInfo.getTlpCmaxweekhours())));
                     break;
                 //3	连续工作日数 不能超过6天
                 case "TMG_ERRCODE|LIQUIDATION_003" :
-                    if(tlpInfo.getTlpCmaxcontiday() != 0){
-                        errMg=errMg.replace("@MAXCONTIDAY","6");
-                    }else{
-                        errMg=errMg.replace("@MAXCONTIDAY",String.valueOf(tlpInfo.getTlpCmaxcontiday()));
-                    }
+
+                    errMg=errMg.replace("@MAXCONTIDAY",String.valueOf(tlpInfo.getTlpCmaxcontiday()));
+
                     break;
                 //4	不能连续3周超过48小时
                 case "TMG_ERRCODE|LIQUIDATION_004" :
-                    if(tlpInfo.getTlpCmaxcontiweek() != 0){
-                        errMg=errMg.replace("@MAXCONTIWEEK","3");
-                    }else{
-                        errMg=errMg.replace("@MAXCONTIWEEK",String.valueOf(tlpInfo.getTlpCmaxcontiweek()));
-                    }
+
+                    errMg=errMg.replace("@MAXCONTIWEEK",String.valueOf(tlpInfo.getTlpCmaxcontiweek()));
+
                     break;
                 //5	每3个月 ，不能存在 3周以上 最大工作时间超过48小时
                 case "TMG_ERRCODE|LIQUIDATION_005" :
                     errMg=errMg.replace("@MONTH",DateUtil.format(errCheckDo.getTldcDyyyymm(),"yyyy年MM月"));
-                    if(tlpInfo.getTlpCoverweekcount() != 0){
-                        errMg=errMg.replace("@OVERWEEKCOUNT","3");
-                    }else{
-                        errMg=errMg.replace("@OVERWEEKCOUNT",String.valueOf(tlpInfo.getTlpCoverweekcount()));
-                    }
+                    errMg=errMg.replace("@OVERWEEKCOUNT",String.valueOf(tlpInfo.getTlpCoverweekcount()));
+
                     break;
                 //6	期间内最大工作日数		280* （日数/365）
                 case "TMG_ERRCODE|LIQUIDATION_006" :
-                    String maxDays;
-                    if(tlpInfo.getTlpCtotalworkdays() != 0){
-                        maxDays="280";
-                    }else{
-                        maxDays=String.valueOf(tlpInfo.getTlpCtotalworkdays());
-                    }
+                    String maxDays=String.valueOf(tlpInfo.getTlpCtotalworkdays());
                     String days=String.valueOf(DateUtil.betweenDay(tlpInfo.getTlpDstartdate(),tlpInfo.getTlpDenddate(),true));
                     days= String.valueOf(NumberUtil.round(NumberUtil.mul( NumberUtil.div(Double.valueOf(days),Double.valueOf("365"),4),Double.parseDouble(maxDays)),0));
                     errMg=errMg.replace("@TOTALWORKDAYS",days);
                     break;
                 //7	期间内平均每周不能超过 周法定
                 case "TMG_ERRCODE|LIQUIDATION_007" :
-                    if(StrUtil.hasEmpty(String.valueOf(tlpInfo.getTlpCavgworktime()))){
-                        errMg=errMg.replace("@AVGWORKTIME",minToHours("3"));
-                    }else{
-                        errMg=errMg.replace("@AVGWORKTIME",minToHours(String.valueOf(tlpInfo.getTlpCavgworktime())));
-                    }
+
+                    errMg=errMg.replace("@AVGWORKTIME",minToHours(String.valueOf(tlpInfo.getTlpCavgworktime())));
+
                     break;
             }
             if(!StrUtil.hasEmpty(errMg)){

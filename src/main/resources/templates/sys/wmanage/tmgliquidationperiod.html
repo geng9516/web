@@ -108,7 +108,7 @@
                 精算期間一覧
             </div>
             <i-table class="mt10"  border :columns="columns4Year" :data="tableData4Year"
-                     :loading="EditLoading" :span-method="handleSpan" ref="tableDisp">
+                     max-height="850" :loading="EditLoading" :span-method="handleSpan" ref="tableDisp" show-header>
                 <template slot-scope="{ row }" slot="yyyymm">
                     <span style="text-decoration: underline" @click="showMonth(row.month)">{{ row.month }}</span>
                 </template>
@@ -134,7 +134,7 @@
                     <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
                 </template>
             </i-table>
-            <div v-if="tableData4Year.lenght > 10">
+            <div v-if="tableData4Year.length > 6">
                 <Row class="mt20">
                     <i-col span="24" class="tr">
                         <i-button type="primary" class="mr5" ghost @click="checkLiquidationDaily" icon="md-podium">
@@ -924,7 +924,11 @@
                 }
                 //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
                 if (rowIndex % 2 === 1 && columnIndex === 1) {
-                    return [1, (7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
+                    if((7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())>7){
+                        return [1, (this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
+                    }else{
+                        return [1, (7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
+                    }
                     // 9为周日开始 8为周一开始 类推
                 } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date(row.month+'/01').getDay())) {
                     return [0, 0];

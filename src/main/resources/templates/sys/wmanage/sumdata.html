@@ -415,6 +415,7 @@
                     this.optsDisp.year=Utils.formatDate(this.curDate,'yyyy').concat('/01/01')
                     try {
                         const { data } = await this.http.get('sys/sumdate/monthlyOutputDisp', this.optsDisp)
+                        this.tableData =[]
                         this.tableData = data.reverse().slice(0,12)
                     } catch (error) {
                         return
@@ -447,6 +448,7 @@
                     }
                 },
                 async handleClickLeaf(e) {
+                    console.log(e)
                     this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
