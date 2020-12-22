@@ -104,7 +104,8 @@
             <template>
                 <div>
                     <Alert class="primary-info tl" v-show="isEditable">※「管理対象者」「超過勤務対象者」が編集対象になります、編集するときチェックボックスをクリック又は一括チェックをご利用ください。</Alert>
-                    <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
+                    <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                             border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
                              :row-class-name="() => 'select-col'"  no-data-text="">
                         <template slot-scope="{ row }" slot="manageFlg">
                                 <span :class="row.manageFlg ? 'blue' : 'red'"
@@ -475,10 +476,18 @@
         },
         async mounted() {
             this.getInit()
-
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
-
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 180) return true
+                else return false
+            }
+        },
         methods: {
+            handleScroll: Throttle(function(e) {
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50),
             // 職員検索
             async getSearchTableData() {
                 if (this.opts.hidSearchData === null || this.opts.hidSearchData.trim() == '') {
@@ -1137,9 +1146,9 @@
                     this.empDeptLoading = false
                 }
             }),
-            handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-            }, 50),
+            // handleScroll: Throttle(function (e) {
+            //     this.contentScrollTop = e.target.scrollTop
+            // }, 50),
 
             dateRangeOverlaps(a_start, a_end, b_start, b_end) {
                 if (b_start >= a_start && a_end >= b_start) return true
