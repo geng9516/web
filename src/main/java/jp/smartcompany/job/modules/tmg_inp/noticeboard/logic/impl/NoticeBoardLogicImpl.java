@@ -173,7 +173,9 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
              for (String typeId : typeIds) {
                 List<String> partEmpIds = CollUtil.newArrayList();
                 if (StrUtil.equals(FG_COMP_SEC,typeId)) {
-                     partEmpIds = groupsectionpostmappingService.selectEmpIdByCompanySectionIdList(sectionIds,groupId,FG_COMP_SEC);
+                    if (CollUtil.isNotEmpty(sectionIds)) {
+                        partEmpIds = groupsectionpostmappingService.selectEmpIdByCompanySectionIdList(sectionIds, groupId, FG_COMP_SEC);
+                    }
                 } else if (StrUtil.equals(FG_COMP_SEC_POST,typeId)) {
                      partEmpIds = groupsectionpostmappingService.selectEmpIdByCompanySectionPostIdList(groupId);
                 } else if (StrUtil.equals(FG_COMP_SEC_BOSS,typeId)) {

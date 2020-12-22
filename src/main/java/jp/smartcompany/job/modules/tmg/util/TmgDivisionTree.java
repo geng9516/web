@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -33,10 +34,9 @@ public class TmgDivisionTree {
     public static final int DEFAULT_KEY_CUST    = 5;
     public static final int DEFAULT_KEY_COMP    = 6;
 
-    private PsDBBean psDBBean = null;
-    private String beanDesc = null;
+    private PsDBBean psDBBean;
     private List dataArray = null;
-    private String[] keyArray = null;
+    private String[] keyArray;
 
     private Boolean gbAllDivision;
     private String gsRootSection;
@@ -60,12 +60,11 @@ public class TmgDivisionTree {
      */
     public TmgDivisionTree(PsDBBean psDBBean, String beanDesc) {
         this.psDBBean = psDBBean;
-        this.beanDesc = beanDesc;
         keyArray = DEFAULT_KEY_ARRAY;
     }
 
     public void createDivisionTree(String custId, String compCode, String language, String baseDate) throws Exception{
-        String sExists = "";
+        String sExists = getDivTreeSearchRange(psDBBean, ContextUtil.getSession());
         String sql1=  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
         //最上位組織コードを取得する
         String sql2 =  buildSQLForSelectRootSection(custId, compCode, language, baseDate);

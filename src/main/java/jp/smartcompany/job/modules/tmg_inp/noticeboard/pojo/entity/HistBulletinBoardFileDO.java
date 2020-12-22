@@ -10,6 +10,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -30,5 +31,11 @@ public class HistBulletinBoardFileDO implements Serializable {
     private String hbfFileUrl;
 
     private String hbfFileRealPath;
+
+    private Date hbfStartDate;
+
+    private Date hbfEndDate;
+
+    private Boolean hbfValid;
 
 }

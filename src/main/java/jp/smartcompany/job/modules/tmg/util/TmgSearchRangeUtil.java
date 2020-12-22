@@ -43,7 +43,7 @@ public class TmgSearchRangeUtil  {
     /**
      * 自所属以下を示すグループ
      */
-    public static final String SEARCH_RANGE_USER_SECTION_DEFS ="'0008'";
+    public static final String SEARCH_RANGE_USER_SECTION_DEFS ="'0005'";
     /**
      * 自所属のみ示すグループ
      */
