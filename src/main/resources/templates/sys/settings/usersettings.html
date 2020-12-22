@@ -478,8 +478,11 @@
         getTableData: Debounce(async function (onlyChangePage) {
           // 2020/12/21 如果只是切页则还原条件
           if(onlyChangePage) this.opts.searchType = this.historySearchType
-          // 2020/12/21 如果另换条件则重置页
-          if(this.opts.searchType !== this.historySearchType) this.opts.page = 1
+          else {
+            // 2020/12/22 如果再搜索则重置页
+            this.opts.page = 1
+            this.pageValue.curPage = 1
+          }
           if (this.opts.searchType === 7 && !this.opts.empId) {
             return this.$Notice.warning({ title: '注意', desc: '職員番号条件を入力ください。', duration: 6.5 })
           }
