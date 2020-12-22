@@ -33,8 +33,9 @@
                     <div>※休暇・休業一括登録(および取消)は、{{useTime}} の時間帯のみ使用できます。</div>
                     <div class="mt5">※処理状態が［エラー］の場合は反映処理中に想定外の問題が発生しました。詳細は システム管理者までお問合せください。</div>
                 </Alert>
-                <i-table border :columns="columns" :data="tableData" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
-                    :disabled-hover="true">
+                <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                         border :columns="columns" :data="tableData" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
+                         :disabled-hover="true">
                     <template slot-scope="{ row }" slot="moCsectionname">
                         <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
                         <span @click="SectionDetailShow(row.tbnNtbnid)" v-else>{{ row.moCsectionname }} <span class="cursor" style="color: var(--row-label-primary);">[全て表示]</span>
@@ -298,6 +299,7 @@
                     treeDataBackUp: [],                //組織ツリーbackup用
                     isSearchHistory: false,
                     cancelBotton: false,
+                    contentScrollTop: 0,
                     opts: {
                         baseDate: '',
                         ntfId: '',
@@ -318,12 +320,19 @@
                 await this.getOrgTree();
                 this.getHistoryDisp();
                 this.getNtfType();
+                window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
 
             computed: {
-
+                tableHeadFixed() {
+                    if (this.contentScrollTop > 180) return true
+                    else return false
+                }
             },
             methods: {
+                handleScroll: Throttle(function(e) {
+                    this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+                }, 50),
                 async ntfUpload() {
                     this.UploadDto.bulkNtfId = this.ntfType
                     this.UploadDto.beginDate = this.fromDate
