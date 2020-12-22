@@ -9,6 +9,11 @@
     <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
+    <style>
+        .name-hover-underline:hover {
+            text-decoration:underline;
+        }
+    </style>
     <main class="content monthWorkConfirm-warp" @scroll.passive="handleScroll" ref="layout">
         <div class="content_head">
             <div class="header">
@@ -191,10 +196,10 @@
                      :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
                      no-data-text="">
                 <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
-                    <span :class="dayRed(row,0)" style="text-decoration: underline" @click="showDay(row.TDA_DYYYYMMDD)" >{{ row.TDA_DYYYYMMDD_DD }}</span>
+                    <span :class="dayRed(row,0)" class="name-hover-underline" @click="showDay(row.TDA_DYYYYMMDD)" >{{ row.TDA_DYYYYMMDD_DD }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DY">
-                    <span :class="dayRed(row,0)" style="text-decoration: underline" @click="showDay(row.TDA_DYYYYMMDD)">{{ row.TDA_DYYYYMMDD_DY }}</span>
+                    <span :class="dayRed(row,0)" class="name-hover-underline" @click="showDay(row.TDA_DYYYYMMDD)">{{ row.TDA_DYYYYMMDD_DY }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="TDA_CWORKINGID_R_NAME">
                     <span :class="dayRed(row,1)">{{ row.TDA_CWORKINGID_R_NAME }}</span>
