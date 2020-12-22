@@ -79,7 +79,8 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
+        <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                 border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  no-data-text= "" :row-class-name="() => 'select-col'" >
             <template slot-scope="{ row }" slot="name"><span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100"  @click.stop="handleRowClick(row)">{{ row.name }}</span>
             </template>
@@ -511,6 +512,7 @@
                 dataLoading: false,
                 forRest: true,
                 radioCheckedIndex: 0,
+                contentScrollTop: 0,
                 targetAdminSection: '',
                 loginDesignationSection: '',
                 targetAdminSectionFlag: false,
@@ -526,7 +528,7 @@
         },
         computed: {
             tableHeadFixed() {
-                if (this.contentScrollTop > 300) return true
+                if (this.contentScrollTop > 180) return true
                 else return false
             },
         },
