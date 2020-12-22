@@ -68,8 +68,9 @@
         </div>
         <div class="content_body">
             <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
-            <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading" :row-class-name="() => 'select-col'"
-                no-data-text="" :disabled-hover="true">
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                    　border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading" :row-class-name="() => 'select-col'"
+                    　no-data-text="" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
                         :class="row.main ? 'width75 tl' : 'ml30 width75 tl'" style="font-weight: bold;">{{ row.group }}</span>
@@ -412,6 +413,7 @@
                     treeData2: [],
                     weekHelper: ['日', '月', '火', '水', '木', '金', '土'],
                     isSearchHistory: false,
+                    contentScrollTop: 0,
                     deptLoading: false,
                     deptDrawShow: false,
                     permissionAdminAddModal: false,
@@ -668,6 +670,13 @@
             },
             mounted() {
                 this.getInit()
+                window.addEventListener('scroll',this.handleScroll,{ passive: true })
+            },
+            computed: {
+                tableHeadFixed() {
+                    if (this.contentScrollTop > 180) return true
+                    else return false
+                }
             },
             watch: {
                 data: {
@@ -724,6 +733,9 @@
                 }
             },
             methods: {
+                handleScroll: Throttle(function(e) {
+                    this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+                }, 50),
                 async getInit() {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     this.referListObject.txtDYYYYMMDD = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
