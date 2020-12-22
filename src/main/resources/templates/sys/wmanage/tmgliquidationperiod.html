@@ -114,19 +114,22 @@
                 </template>
                 <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j] && row._index % 2 === 0 ">
-                                <div class="sum-row" v-if="row[j].ntftype && row[j].ntftype.length > 1">
-                                <Tooltip trigger="click"　theme="light" placement="left" transfer>
-                                    <i-button type="primary" ghost icon="md-alarm" size="small" v-if="row[j].ntftype.length > 0"></i-button>
-                                        <div slot="content">
-                                            <div class="mt2" v-for="(item) of row[j].ntftype">{{item.item}}</div>
-                                        </div>
-                                </Tooltip >
+                                <div class="sum-row error-label" v-if="row[j].ntftype[0] && row[j].ntftype[0].indexOf(':') > 0">
+                                    <Poptip trigger="hover"　theme="light" placement="left" transfer>
+                                        <span style="font-size: 31px;line-height: 0px">...</span>
+                                            <div slot="content">
+                                                <div class="mt2" v-for="item of row[j].ntftype">{{item}}</div>
+                                            </div>
+                                    </Poptip >
                                 </div>
                                 <div class="sum-row" v-else ><span :class="row[j].ntftype[0] && 'error-label'">{{ row[j].ntftype[0] || '&nbsp;'}}</span></div>
 
-                                <div class="divi-hour-line sum-row">{{ row[j].kubun || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500'"><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+                                <div class="divi-hour-line sum-row" v-else-if="row[j].kubunid === 'TMG_WORK|000'" >{{ row[j].kubun || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+
                                 <div class="divi-hour-line sum-row"><span :class="row[j].workhours && Utils.timeToMinute(row[j].workhours) > limitInfo.dailymaxworktime && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
-                                <div class="divi-hour-line sum-row">{{ row[j].resttime || '&nbsp;' }}</div>
+                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'?'&nbsp;' : row[j].resttime }}</div>
                         </span>
                     <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
                 </template>
@@ -289,6 +292,7 @@
                     </Row>
                 </form-item>
                 <div class="tr">
+
                     <i-button @click="insertNewPattern">登録</i-button>
                 </div>
 
@@ -299,6 +303,7 @@
 
         <Modal title="月編集画面" 　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
             <div class="tr mb20">
+                <i-button @click="recovery" icon="ios-undo-outline">復原</i-button>
                 <i-button @click="updateMonthInfo" 　icon="md-filing">登録</i-button>
             </div>
             <Row :gutter="10">
@@ -578,6 +583,7 @@
                 },
 
                 //編集画面
+                visible:false,
                 EditLoading: false,
                 show3: true,
                 button4Pattern: ['1', '2'],
@@ -648,6 +654,7 @@
                     },
                 ],
                 monthData: [],
+                monthDateBack: [],
                 monthlyEditFlg: false,
                 dailyDisabedArr: [],
                 workPattern: '',
@@ -1055,6 +1062,8 @@
                         }
                     })
                     this.monthData = monthInfo
+                    this.monthDateBack = this.monthData
+                    console.log(this.monthDateBack)
                     //获取patternList
                     this.workPatternList = data.workPatternList
                     console.log(e)
@@ -1209,6 +1218,20 @@
                         },
                     ]
                 }
+            },
+            recovery(){
+
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    width: 480,
+                    title: '注意',
+                    content: 'この精算を復原します、本画面のデータを保存しません、よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.showMonth(this.editMonth)
+                    }
+                })
             },
             //登陆新规pattern
             async insertNewPattern() {

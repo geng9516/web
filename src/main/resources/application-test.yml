@@ -47,4 +47,5 @@ mybatis-plus:
 security:
   ssl: off
 info:
+  basePath: /
   siteUrl: http://localhost:6879

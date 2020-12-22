@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper.MastGenericDetail;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.core.pojo.dto.GenericDetailItemDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
@@ -244,5 +245,15 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     @Select("SELECT CASE WHEN MIN(MGD_DSTART_CK) IS NULL THEN null ELSE MIN(MGD_DSTART_CK) - 1 END MaxEndDate FROM MAST_GENERIC_DETAIL WHERE MGD_CCUSTOMERID = '01' AND MGD_CCOMPANYID_CK_FK = '01' AND MGD_CGENERICGROUPID = #{groupId} AND MGD_CGENERICDETAILID_CK = #{detailId} AND MGD_CLANGUAGE_CK = 'ja' AND MGD_DSTART_CK > #{searchDate}")
     Date selectMaxEndDate(@Param("groupId") String groupId,@Param("detailId") String detailId,@Param("searchDate") String searchDate);
 
+    @Select("SELECT MGD_CMASTERCODE,MGD_CGENERICDETAILDESC,MGD_CSPARECHAR1,MGD_CSPARECHAR2,MGD_CSPARECHAR3,MGD_CSPARECHAR4,MGD_CSPARECHAR5,MGD_NSPARENUM1,MGD_NSPARENUM2," +
+            "MGD_NSPARENUM3,MGD_NSPARENUM4,MGD_NSPARENUM5,MGD_DSPAREDATE1,MGD_DSPAREDATE2,MGD_DSPAREDATE3,MGD_DSPAREDATE4,MGD_DSPAREDATE5 FROM MAST_GENERIC_DETAIL " +
+            "WHERE MGD_DSTART_CK <= TRUNC(SYSDATE) " +
+            "AND MGD_DEND >= TRUNC(SYSDATE) " +
+            "AND MGD_CCUSTOMERID = '01' " +
+            "AND MGD_CCOMPANYID_CK_FK = '01' " +
+            "AND MGD_CLANGUAGE_CK = 'ja' " +
+            "AND MGD_CGENERICGROUPID = #{value} " +
+            "ORDER BY MGD_CMASTERCODE")
+    List<GenericDetailItemDTO> selectByDetailGroupId(String detailGroupId);
 }
 

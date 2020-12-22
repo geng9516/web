@@ -51,5 +51,6 @@ public class UserManagerListDTO {
     /** カラム：ME_DSTARTDATE*/
     private Date meDstartdate; //ME_DSTARTDATE
     private String status;
+    private String tmaEmail;
 
 }

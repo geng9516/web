@@ -43,7 +43,7 @@
     </div>
     <div class="content_body">
         <div style="position: relative;">
-            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
                      no-data-text="所属から職員を選んでください。" border :columns="columns" v-if=" !hwApplyShow"
                      :row-class-name="() => 'select-col'" :disabled-hover="true" :data="HomeWorkVOList" >
 

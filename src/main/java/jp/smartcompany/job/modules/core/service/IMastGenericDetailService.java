@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.core.pojo.dto.GenericDetailItemDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
@@ -349,4 +350,5 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
 
     MastGenericDetailDO getGenericDetail(String groupId,String detailId,String searchDate);
 
+    List<GenericDetailItemDTO> listItemsByDetailGroupId(String detailGroupId);
 }

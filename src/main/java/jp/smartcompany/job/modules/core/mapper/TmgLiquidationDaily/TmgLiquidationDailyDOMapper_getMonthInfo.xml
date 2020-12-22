@@ -8,6 +8,7 @@
                 A.TLDD_CWEEKS           AS WEEK,
                 TMG_F_CONV_MIN2HHMI(A.TLDD_CWORKHOURS)       AS WORKHOURS,
                 TMG_F_GET_MGD(A.TLDD_CKUBUN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBUN,
+                A.TLDD_CKUBUN AS KUBUNID,
                 A.TLDD_CSTARTTIME       AS STARTTIME,
                 A.TLDD_CENDTIME         AS ENDTIME,
                 A.TLDD_CSPARECHAR2      AS NTFSTATUS,

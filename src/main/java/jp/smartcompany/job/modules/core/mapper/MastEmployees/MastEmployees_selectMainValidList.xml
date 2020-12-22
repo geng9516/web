@@ -60,10 +60,10 @@
         ME_CCUSTOMERID_CK = #{custId}
         AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
         AND mindate.ME_CUSERID = main.ME_CUSERID
-        <if test="companyId neq null">
+        <if test="companyId!=null">
             AND ME_CCOMPANYID = #{companyId}
         </if>
-        <if test="companyList neq null and companyList.size() gt 0">
+        <if test="companyList!=null and companyList.size()>0">
             AND ME_CCOMPANYID IN
             <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
                 #{compId}
