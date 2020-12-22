@@ -427,9 +427,9 @@
                 async getOrgTree() {
                     this.empDeptLoading = true
                     try {
-                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                        const { divisionTree, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 转为可用数据
-                        this.treeData = Utils.convertTreeData(orgList)
+                        this.treeData = Utils.convertTreeData(divisionTree)
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
                         return
