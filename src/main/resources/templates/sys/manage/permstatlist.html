@@ -122,7 +122,9 @@
             </Row>
         </div>
         <Alert class="primary-info tl" v-show="this.tableData.length>0">※日付をクリックすると、一括承認画面を表示します。※承認ステータスをクリックすると、就業承認コンテンツを表示します。</Alert>
-        <i-table v-if="initLoading"  class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
+        <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                 v-if="initLoading" border ref="selection" :columns="columns"
+                 :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
                  :disabled-hover="true" :loading="listLoading" no-data-text="">
             <template slot-scope="{ row }" slot="name">
                 <span class="ml5">{{ row.empname }}</span>
@@ -501,6 +503,7 @@
                 bHoliday: false, //就業区分マスタ
                 bFixed: false, //確定状態
                 hasPassedTimeCheck: false,
+                contentScrollTop: 0,
                 // 更新履歴の表示制御
                 isLogShow: false,
                 updateDailyLoading: false,
@@ -679,10 +682,11 @@
         async mounted() {
             console.log([[${ session }]])
             await this.getInit()
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
         computed: {
             tableHeadFixed() {
-                if (this.contentScrollTop > 300) return true
+                if (this.contentScrollTop > 180) return true
                 else return false
             },
             columns() {
