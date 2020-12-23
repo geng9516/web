@@ -77,12 +77,12 @@
         <Alert class="primary-info tl" v-if="periodDate != ''">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
         <Row :gutter="8">
             <i-col span="7">
-                <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"
                          :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="" :row-class-name="() => 'select-col'">
                 </i-table>
             </i-col>
             <i-col :span="17">
-                <i-table :class="tableHeadFixed2 ? 'table-head-fixed long-table' : 'long-table'"
+                <i-table :class="tableHeadFixed2 ? 'table-head-fixed' : ''"
                          :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
                     <!-- 勤務時間 -->
                     <template slot-scope="{ row }" slot="dutyTime">
