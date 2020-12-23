@@ -94,7 +94,8 @@ public class UploadFileUtil {
         String uuid = UUID.randomUUID().toString(true);
         //文件路径
         UploadFileInfo uploadFileInfo = new UploadFileInfo();
-        String path = "rich-text-"+DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + uuid;
+        // 暂时写死路径中的模块名
+        String path = DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + uuid;
         String realPath = "";
         String filename = "";
         if(StrUtil.isNotBlank(prefix)){

@@ -146,7 +146,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     @Override
     public String uploadImageUrl(MultipartFile file) {
         UploadFileUtil uploadFileUtil = new UploadFileUtil();
-        return uploadFileUtil.uploadRichTextImage(file,"TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH");
+        return "/upload"+uploadFileUtil.uploadRichTextImage(file,"TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH");
     }
 
     @Override
