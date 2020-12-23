@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationService;
@@ -123,4 +124,11 @@ import java.util.Map;
                 return notificationListVoList;
         }
 
+        /**
+         * Mail表示項目
+         */
+        @Override
+        public UserManagerListDTO selectEmoloyMail(String keyword){
+                return baseMapper.selectEmoloyMail(keyword);
         }
+}

@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
@@ -81,4 +82,5 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          */
         List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto paramCheck);
 
+        UserManagerListDTO selectEmoloyMail(String keyword);
 }

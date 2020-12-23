@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper.TmgNotification;
 
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
@@ -24,7 +25,10 @@ import java.util.Map;
 
 @Mapper
 public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
-
+        /**
+         * Mail表示項目
+         */
+        UserManagerListDTO selectEmoloyMail(@Param("keyword") String keyword);
 
         /**
          * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目

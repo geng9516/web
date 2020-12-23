@@ -582,6 +582,9 @@
                     this.rotate = !this.rotate
                 },
                 cancel: Debounce(async function (e, i) {
+                    console.log("--------------------1----------------------")
+                    console.log(e)
+                    console.log(i)
                     this.$Modal.confirm({
                         inDrawer: true,
                         title: '注意',
@@ -594,6 +597,8 @@
                             this.$set(this.cacelBtnLoading ,i , true)
                             try {
                                 await this.http.post('sys/vapply/EditWithdrop',{
+                                    day:e.tntfDbegin,
+                                    vacation:e.tntfCtype,
                                     action:'ACT_EditApply_UWithdraw',
                                     ntfNo:e.tntfCntfNo,
                                     psSite: this.opts.psSite

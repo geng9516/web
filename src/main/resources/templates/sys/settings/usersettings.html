@@ -108,7 +108,8 @@
         </template>
 
         <template slot-scope="{ row }" slot="meCmail">
-          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary width100" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex">{{ row.tmaEmail || '編集' }}</span>
+          <span v-show="row.status === '入社後未登録'">{{ row.tmaEmail }}</span>
+          <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary width100" @click="changeMailShow(row, true)" icon="md-create" v-show="row._index !== mailInputIndex && row.status !== '入社後未登録'">{{ row.tmaEmail || '編集' }}</span>
           <Row :gutter="8" v-show="row._index === mailInputIndex">
             <i-col span="15"><i-input :value="row.tmaEmail" :ref="`input${row._index}`"></i-input></i-col>
             <i-col span="5"><i-button @click="updateMail(row)" type="primary" ghost long>更新</i-button></i-col>
