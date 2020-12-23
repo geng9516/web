@@ -87,7 +87,10 @@ const get = (url, params) => {
       const { data, headers } = await axios({
         method: 'get',
         url,
-        params: params
+        params: params,
+        paramsSerializer: params => {
+          return Stringify(params, { indices : false })
+        }
       })
       if(/csv|pdf|octet/g.test(headers['content-type'])) {
         resolve({ data:data, headers: headers})
