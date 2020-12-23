@@ -11,7 +11,9 @@ import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.boot.util.UploadFileUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
@@ -19,10 +21,13 @@ import jp.smartcompany.job.modules.core.service.IMastGroupsectionpostmappingServ
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardService;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardFileService;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempFileDO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempFileService;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,8 +52,8 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     private final IMastGroupsectionpostmappingService groupsectionpostmappingService;
     private final IMastGroupbasesectionService baseSectionService;
     private final DataSource dataSource;
-    private final IHistBulletinBoardService histBulletinBoardService;
-    private final IHistBulletinBoardFileService histBulletinBoardFileService;
+    private final IHistBulletinBoardTempFileService histBulletinBoardTempFileService;
+    private final IHistBulletinBoardTempService histBulletinBoardTempService;
 
     /** 処理区分(法人＆組織指定リスト) */
     public static final String FG_COMP_SEC         = "02";
@@ -134,37 +139,58 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         return employs;
     }
 
+    private static final String IS_DRAFT = "0";
+    private static final String COMPANY_ID = "01";
+    private static final String CUSTOMER_ID = "01";
+
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public void addOrUpdateDraft(DraftNoticeDTO dto, MultipartFile[] attachments) {
+    public void addOrUpdateDraft(DraftNoticeDTO dto) {
         Long id = dto.getHbtId();
         Date startDate = dto.getHbtDdateofannouncement();
         Date endDate = dto.getHbtDdateofexpire();
         if (Objects.isNull(endDate)) {
             endDate = SysUtil.getMaxDateObject();
         }
-        // 修改草稿动作
-        if (Objects.nonNull(id)) {
-
-        // 新增草案动作
-        } else {
-
+        String loginUserId = SecurityUtil.getUserId();
+        String loginEmpName = SecurityUtil.getLoginUser().getMeCemployeename();
+        boolean isDraft = StrUtil.equals(dto.getHbtCfix(),IS_DRAFT);
+        String content = dto.getHbtCcontents();
+        String title = dto.getHbtCtitle();
+        String top = dto.getHbtCheaddisp();
+        Date now = DateUtil.date();
+        boolean isUpdate = Objects.nonNull(id);
+        List<MultipartFile> uploadFiles = dto.getAttachments();
+        // 保存草稿
+        if (isDraft) {
+            // 设置基础属性
+            HistBulletinBoardTempDO tempDO = new HistBulletinBoardTempDO();
+            tempDO.setHbtCcompanyid(COMPANY_ID);
+            tempDO.setHbtCcustomerid(CUSTOMER_ID);
+            tempDO.setHbtCcontents(content);
+            tempDO.setHbtCtitle(title);
+            tempDO.setHbtCheaddisp(top);
+            tempDO.setHbtCmnuser(loginUserId);
+            tempDO.setHbtCmnusername(loginEmpName);
+            tempDO.setHbtCmodifieruserid(loginUserId);
+            tempDO.setHbtDmodifieddate(now);
+            tempDO.setHbtDdateofannouncement(startDate);
+            tempDO.setHbtDdateofexpire(endDate);
+            tempDO.setHbtCempRange(dto.getEmpRangeIds());
+            // 修改草稿动作
+            if (isUpdate) {
+                tempDO.setHbtId(id);
+                histBulletinBoardTempService.updateById(tempDO);
+            // 新增草案动作
+            } else {
+               tempDO.setHbtId(1L);
+               histBulletinBoardTempService.save(tempDO);
+               // 保存草稿后将草稿id赋给
+               id = tempDO.getHbtId();
+            }
+            // 如果有附件则需要保存用户上传的附件
+            uploadAttachments(id,uploadFiles,isUpdate,isDraft);
         }
-        System.out.println(dto);
-        System.out.println(attachments.length);
-//        HistBulletinBoardDO histBulletinBoardDO = histBulletinBoardService.getById(articleId);
-//        if (histBulletinBoardDO == null) {
-//            throw new GlobalException("掲示板データは存在しません、アップロードできません");
-//        }
-//        UploadFileUtil uploadFileUtil = new UploadFileUtil();
-        // 如果已经存在上传的附件，则先删除原来的，再保存新的
-//        // 删除上一次上传的附件
-//        List<HistBulletinBoardFileDO> oldFileList = histBulletinBoardFileService.listFileById(articleId);
-//        if (CollUtil.isNotEmpty(oldFileList)) {
-//            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardFileDO::getHbfFileRealPath).collect(Collectors.toList());
-//           realPathList.forEach(uploadFileUtil::removePreFile);
-//           histBulletinBoardFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardFileDO::getHbfId).collect(Collectors.toList()));
-//        }
         // 上传成功后保存到揭示板的文件存储数据表中
 //        List<MultipartFile> uploadFiles = dto.getFiles();
 //        if (CollUtil.isNotEmpty(uploadFiles)) {
@@ -184,6 +210,57 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 //        }
     }
 
+    /**
+     * 上传公告附件
+     * @param articleId 草稿或公告id
+     * @param uploadFiles 附件个数
+     * @param isUpdate 是否是草稿的更新动作
+     * @param isDraft 是否保存为正式公告
+     */
+    public void uploadAttachments(Long articleId,List<MultipartFile> uploadFiles,boolean isUpdate,boolean isDraft) {
+        UploadFileUtil uploadFileUtil = new UploadFileUtil();
+        // 如果是编辑草稿
+        if (isDraft) {
+            // 如果上传了新的附件，则要把原来已经上传的附件删除
+            if (CollUtil.isNotEmpty(uploadFiles)) {
+                // 如果是修改操作，则需要删除之前相对应的附件
+                if (!isUpdate) {
+                    List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
+                    if (CollUtil.isNotEmpty(oldFileList)) {
+                        List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                        realPathList.forEach(uploadFileUtil::removePreFile);
+                        histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+                    }
+                }
+                // 将新的附件保存
+                List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
+                if (CollUtil.isNotEmpty(uploadFileInfoList)) {
+                    List<HistBulletinBoardTempFileDO> uploadBoardFileList = CollUtil.newArrayList();
+                    uploadFileInfoList.forEach(item -> {
+                        HistBulletinBoardTempFileDO fileDO = new HistBulletinBoardTempFileDO();
+                        fileDO.setHbtIdFk(articleId);
+                        fileDO.setHbtfFileUrl(item.getFileUrl());
+                        fileDO.setHbtfFilename(item.getFilename());
+                        fileDO.setHbtfFileRealPath(item.getRealPath());
+                        uploadBoardFileList.add(fileDO);
+                    });
+                    histBulletinBoardTempFileService.saveBatch(uploadBoardFileList);
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据group定义的typeId获取相应的用户
+     * @param typeIds
+     * @param psSession
+     * @param date
+     * @param groupIds
+     * @param sectionIds
+     * @param empIdResult
+     * @param conn
+     * @throws SQLException
+     */
     private void getEmpIdRanges(List<String> typeIds, PsSession psSession, Date date, List<String> groupIds, List<String> sectionIds, List<String> empIdResult, Connection conn) throws SQLException {
         for (String groupId : groupIds) {
              for (String typeId : typeIds) {

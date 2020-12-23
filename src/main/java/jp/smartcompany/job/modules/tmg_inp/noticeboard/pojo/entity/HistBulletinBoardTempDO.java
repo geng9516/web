@@ -24,13 +24,13 @@ public class HistBulletinBoardTempDO implements Serializable {
   private Long hbtId;
   private String hbtCcustomerid;
   private String hbtCcompanyid;
-  private String hbtDdateofannouncement;
-  private String hbtDdateofexpire;
+  private Date hbtDdateofannouncement;
+  private Date hbtDdateofexpire;
   private String hbtCtitle;
   private String hbtCmnuser;
   private String hbtCmnusername;
+  private String hbtCempRange;
   private String hbtCheaddisp;
-  private String hbtCfix;
   private String hbtCmodifieruserid;
   private Date hbtDmodifieddate;
   private String hbtCcontents;
