@@ -187,7 +187,7 @@ public class TmgNotificationController {
             @RequestBody Map map,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return tmgNotificationBean.actionEditWithdrop(map.get("action").toString(),map.get("ntfNo").toString(),psDBBean);
+        return tmgNotificationBean.actionEditWithdrop(map.get("day").toString(),map.get("vacation").toString(),map.get("action").toString(),map.get("ntfNo").toString(),psDBBean);
     }
 
     /**

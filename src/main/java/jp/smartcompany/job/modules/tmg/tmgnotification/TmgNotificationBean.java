@@ -4,16 +4,23 @@ package jp.smartcompany.job.modules.tmg.tmgnotification;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.job.modules.core.enums.MailType;
+import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
+import jp.smartcompany.job.modules.core.service.impl.MastMailInfoServiceImpl;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
@@ -56,6 +63,7 @@ public class TmgNotificationBean {
     private final ITmgEmployeesService iTmgEmployeesService;
     private final HttpSession httpSession;
     private final PsDBBeanUtil psDBBeanUtil;
+    private final IMastMailInfoService mailService;
 
     // アクション
     public static final String ACT_DISPINP_RLIST = "ACT_DispInp_RList";            // 一覧表示(本人)
@@ -944,7 +952,7 @@ public class TmgNotificationBean {
      * editWithdraw
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public GlobalResponse actionEditWithdrop(String action,String ntfNo,PsDBBean psDBBean) throws Exception{
+    public GlobalResponse actionEditWithdrop(String day,String vacation,String action,String ntfNo,PsDBBean psDBBean) throws Exception{
         ParamNotificationListDto param=new ParamNotificationListDto();
         param.setAction(action);
         param.setCustId(psDBBean.getCustID());
@@ -960,6 +968,24 @@ public class TmgNotificationBean {
         int deleteTrigger = deleteTrigger(param);
 
         if(updateNotificationWithdraw==1&&insertTrigger==1&&deleteTrigger==1){
+
+            PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+            UserManagerListDTO a = iTmgNotificationService.selectEmoloyMail(param.getUserCode());
+
+            Map<String,Object> extraContent = MapUtil.newHashMap();
+            String empName = psSession.getLoginKanjiName();
+            String empId = param.getUserCode();
+            String message = day + "    " + vacation;
+            extraContent.put(MastMailInfoServiceImpl.KEY_EMPLOY_NAME,empName);
+            extraContent.put(MastMailInfoServiceImpl.KEY_MESSAGE,message);
+            SendMailBO mailInfo = new SendMailBO();
+            mailInfo.setToAddress(a.getTmaEmail());
+            mailInfo.setEmpName(empName);
+            mailInfo.setEmpId(empId);
+            mailInfo.setExtraContent(extraContent);
+
+            mailService.sendMail(MailType.TMG_NTF_CANCELED,mailInfo);
+
             return GlobalResponse.ok();
         }else{
             return GlobalResponse.error();
