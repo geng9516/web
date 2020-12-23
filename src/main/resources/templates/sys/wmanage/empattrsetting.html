@@ -104,7 +104,7 @@
             <template>
                 <div>
                     <Alert class="primary-info tl" v-show="isEditable">※「管理対象者」「超過勤務対象者」が編集対象になります、編集するときチェックボックスをクリック又は一括チェックをご利用ください。</Alert>
-                    <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                    <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"
                              border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
                              :row-class-name="() => 'select-col'"  no-data-text="">
                         <template slot-scope="{ row }" slot="manageFlg">

@@ -68,7 +68,7 @@
         </div>
         <div class="content_body">
             <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"
                     　border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading" :row-class-name="() => 'select-col'"
                     　no-data-text="" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">

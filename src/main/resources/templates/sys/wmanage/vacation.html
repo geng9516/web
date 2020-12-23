@@ -120,7 +120,7 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+        <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"
                  no-data-text="" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
             <div slot-scope="{ row }" slot="name" class="tc">

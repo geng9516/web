@@ -33,7 +33,7 @@
                     <div>※休暇・休業一括登録(および取消)は、{{useTime}} の時間帯のみ使用できます。</div>
                     <div class="mt5">※処理状態が［エラー］の場合は反映処理中に想定外の問題が発生しました。詳細は システム管理者までお問合せください。</div>
                 </Alert>
-                <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
+                <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"
                          border :columns="columns" :data="tableData" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
                          :disabled-hover="true">
                     <template slot-scope="{ row }" slot="moCsectionname">
