@@ -179,7 +179,7 @@
                             <div class="tr" slot="content">
                                 <div v-for="(item,category,index) in SM_EMOJI" class="tl">
                                     <div :class="index > 0 ? 'mt5 mb2': 'mb2'" style="font-size: 16px;">{{category}}</div>
-                                    <div style="display: flex;flex-wrap: wrap;">
+                                    <div style="display: flex;flex-wrap: wrap;overflow-y: hidden;">
                                         <!-- display: flex; flex-wrap: wrap; justify-content: space-between; -->
                                         <span v-for="(emoji, emojiName) in item" class="emoji" @click="handleClickEmoji(emoji)">{{ emoji }}</span>
                                     </div>
@@ -200,6 +200,7 @@
             <Upload :show-upload-list="false" multiple action="/" :before-upload="handleBeforeUpload" style="display: none;">
                 <i-button icon="ios-cloud-upload-outline" ref="uploadBtn"></i-button>
               </Upload>
+              <i-button @click="uploadNotice">uppppppppppppppppp</i-button>
         </div>
         <back-top></back-top>
     </main>
@@ -240,6 +241,7 @@
                     },
                     debugquill: '',
                     tableData: [],
+                    uploadFiles:[],
                     conditionsList: [],
                     contentScrollTop: 0
                 }
@@ -325,7 +327,7 @@
                                 },
                                 'upload': ((value) => {
                                     if (value) {
-                                        alert('自定义文件上传')
+                                        that.$refs.uploadBtn.$el.click()
                                     }
                                 }),
                                 redo() {
@@ -420,33 +422,39 @@
                 getQuill() {
                     this.debugquill = this.quill.getContents()
                 },
-                handleBeforeUpload(files) {
+                async handleBeforeUpload(files) {
                     // 返回false, 取消自带上传
-                    // let checkPassed = true
-                    // if (this.uploadFiles.length >= 5) {
-                    //     this.$Notice.warning({
-                    //         desc: '添付可能なファイル数が上限（5個）を超えました。'
-                    //     })
-                    //     checkPassed = false
-                    // }
+                    let checkPassed = true
                     // if (files.size / 1024 > 500) {
                     //     this.$Notice.warning({
                     //         desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
                     //     })
                     //     checkPassed = false
                     // }
+                    this.uploadFiles.push(files)
+                    // console.log(this.uploadFiles)
+                    // const {data} =  await this.http.uploadFiles('sys/noticeboard/upload/attachments', {files:[files]})
+                    // console.log(data)
                     // if (checkPassed) {
                     //     this.uploadFiles.push(files)
                     // }
-                    console.dir(this.quill.getSelection().index)
+                    // console.dir(this.quill.getSelection().index)
                     // 插入图片，res为服务器返回的图片链接地址
                     // quill.insertEmbed(length, 'image', res)
                     // // 调整光标到最后
-                    this.quill.setSelection(length + 1)
+                    // this.quill.setSelection(length + 1)
                     return false;
                 },
-                resolveUploaded() {
-
+                async uploadNotice() {
+                    await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', {
+                        attachments: this.uploadFiles,
+                        hbtDdateofannouncement:'2020/12/25',
+                        hbtCtitle:'xixixixxx',
+                        hbtCcontents:'hahahahahaahnei'
+                    })
+                },
+                async resolveUploaded() {
+                    await this.http.uploadFiles('sys/noticeboard/upload/attachments', this.uploadFiles)
                 },
                 handleClickEmoji(emoji) {
                     let length = this.quill.selection.savedRange.index
