@@ -1,11 +1,9 @@
 package jp.smartcompany.controller.tmg_inp;
 
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeBoardDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("sys/noticeboard")
 @RequiredArgsConstructor
-@Validated
 public class NoticeBoardController {
 
     private final INoticeBoardLogic noticeBoardLogic;
@@ -33,11 +30,15 @@ public class NoticeBoardController {
        return noticeBoardLogic.getValidReadEmpList(typeIds,session);
     }
 
-    @PostMapping("add")
-    @ResponseBody
-    public String addNotice(@Valid @RequestParam NoticeBoardDTO dto) {
-        noticeBoardLogic.addNotice(dto);
-        return "保存成功";
+    @PostMapping("draft/addOrUpdate")
+    public String addOrUpdateDraft(
+            @RequestParam("files") List<MultipartFile> attachments,
+            @Valid @RequestParam DraftNoticeDTO dto
+                                   ) {
+        System.out.println(attachments);
+        System.out.println(dto);
+//        noticeBoardLogic.addOrUpdateDraft(dto,attachments);
+        return "下書き操作成功";
     }
 
 }

@@ -11,7 +11,7 @@ import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.UploadFileUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
@@ -19,11 +19,8 @@ import jp.smartcompany.job.modules.core.service.IMastGroupsectionpostmappingServ
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeBoardDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardFileDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardService;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardFileService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,7 +136,22 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
     @Override
     @Transactional(rollbackFor = GlobalException.class)
-    public void addNotice(NoticeBoardDTO dto) {
+    public void addOrUpdateDraft(DraftNoticeDTO dto, MultipartFile[] attachments) {
+        Long id = dto.getHbtId();
+        Date startDate = dto.getHbtDdateofannouncement();
+        Date endDate = dto.getHbtDdateofexpire();
+        if (Objects.isNull(endDate)) {
+            endDate = SysUtil.getMaxDateObject();
+        }
+        // 修改草稿动作
+        if (Objects.nonNull(id)) {
+
+        // 新增草案动作
+        } else {
+
+        }
+        System.out.println(dto);
+        System.out.println(attachments.length);
 //        HistBulletinBoardDO histBulletinBoardDO = histBulletinBoardService.getById(articleId);
 //        if (histBulletinBoardDO == null) {
 //            throw new GlobalException("掲示板データは存在しません、アップロードできません");
