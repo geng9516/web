@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg_inp.noticeboard.logic;
 
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -14,5 +15,7 @@ public interface INoticeBoardLogic {
     List<Map<String,String>> getValidReadEmpList(List<String> typeIds, HttpSession session);
 
     void addOrUpdateDraft(DraftNoticeDTO dto);
+
+    String uploadImageUrl(MultipartFile file);
 
 }

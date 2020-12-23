@@ -144,6 +144,12 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     private static final String CUSTOMER_ID = "01";
 
     @Override
+    public String uploadImageUrl(MultipartFile file) {
+        UploadFileUtil uploadFileUtil = new UploadFileUtil();
+        return uploadFileUtil.uploadRichTextImage(file,"TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH");
+    }
+
+    @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void addOrUpdateDraft(DraftNoticeDTO dto) {
         Long id = dto.getHbtId();
@@ -191,23 +197,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             // 如果有附件则需要保存用户上传的附件
             uploadAttachments(id,uploadFiles,isUpdate,isDraft);
         }
-        // 上传成功后保存到揭示板的文件存储数据表中
-//        List<MultipartFile> uploadFiles = dto.getFiles();
-//        if (CollUtil.isNotEmpty(uploadFiles)) {
-//            List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
-//            if (CollUtil.isNotEmpty(uploadFileInfoList)) {
-//                List<HistBulletinBoardFileDO> uploadBoardFileList = CollUtil.newArrayList();
-//                uploadFileInfoList.forEach(item -> {
-//                    HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
-//                    fileDO.setHbIdFk(articleId);
-//                    fileDO.setHbfFileUrl(item.getFileUrl());
-//                    fileDO.setHbfFileName(item.getFilename());
-//                    fileDO.setHbfFileRealPath(item.getRealPath());
-//                    uploadBoardFileList.add(fileDO);
-//                });
-//                histBulletinBoardFileService.saveBatch(uploadBoardFileList);
-//            }
-//        }
     }
 
     /**

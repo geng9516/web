@@ -60,6 +60,11 @@ public class NoticeBoardController {
         return "下書き操作成功";
     }
 
+    @PostMapping("upload/image")
+    public String uploadRichTextImage(@RequestParam MultipartFile file) {
+        return noticeBoardLogic.uploadImageUrl(file);
+    }
+
     private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String empRangeIds) {
         DraftNoticeDTO dto = new DraftNoticeDTO();
         dto.setAttachments(attachments);

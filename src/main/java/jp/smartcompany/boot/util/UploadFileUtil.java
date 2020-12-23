@@ -17,6 +17,33 @@ import java.util.Objects;
 
 public class UploadFileUtil {
 
+    public String uploadRichTextImage(MultipartFile image,String configUploadPath) {
+        ScCacheUtil cacheUtil = SpringUtil.getBean(ScCacheUtil.class);
+        String uploadRootPath = cacheUtil.getSystemProperty(configUploadPath);
+        if (Objects.isNull(uploadRootPath)) {
+            throw new GlobalException("ファイル保存パスはまだ設定していません");
+        }
+        String originalFilename = image.getOriginalFilename();
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        if (!StrUtil.equalsAnyIgnoreCase(suffix,"jpg","jpeg","png","gif")) {
+            throw new GlobalException("無効な画像サフィックス："+suffix);
+        }
+        // 没有存储文件夹的话先创建好存储文件夹
+        createUploadFolder(uploadRootPath);
+        UploadFileInfo uploadFileInfo = getRichTextImagePath(uploadRootPath,"." + suffix);
+        String destFilename = uploadFileInfo.getRealPath();
+        // 没有存储文件夹的话要先创建存储文件夹
+        int filePathEndIndex = destFilename.lastIndexOf(File.separator);
+        String destFilePath = destFilename.substring(0,filePathEndIndex);
+        createUploadFolder(destFilePath);
+        try {
+            uploadImage2Local(image, destFilename);
+        } catch(IOException e) {
+            throw new GlobalException("ファイル保存失敗");
+        }
+        return uploadFileInfo.getFileUrl();
+    }
+
     public List<UploadFileInfo> uploadAttachment(List<MultipartFile> files, String module, String configUploadPath) {
         ScCacheUtil cacheUtil = SpringUtil.getBean(ScCacheUtil.class);
         String uploadRootPath = cacheUtil.getSystemProperty(configUploadPath);
@@ -54,6 +81,30 @@ public class UploadFileUtil {
      */
     private void uploadImage2Local(MultipartFile file, String filename) throws IllegalStateException, IOException {
         file.transferTo(new File(filename));
+    }
+
+    /**
+     * 富文本上传图片路径
+     * @param prefix 前缀
+     * @param suffix 后缀
+     * @return 返回上传路径
+     */
+    private UploadFileInfo getRichTextImagePath(String prefix, String suffix) {
+        //生成uuid
+        String uuid = UUID.randomUUID().toString(true);
+        //文件路径
+        UploadFileInfo uploadFileInfo = new UploadFileInfo();
+        String path = "rich-text-"+DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator + uuid;
+        String realPath = "";
+        String filename = "";
+        if(StrUtil.isNotBlank(prefix)){
+            filename = path+suffix;
+            uploadFileInfo.setFilename(filename);
+            realPath = prefix + File.separator + filename;
+        }
+        uploadFileInfo.setFileUrl("/"+filename.replaceAll("\\\\","/"));
+        uploadFileInfo.setRealPath(realPath);
+        return uploadFileInfo;
     }
 
     /**
