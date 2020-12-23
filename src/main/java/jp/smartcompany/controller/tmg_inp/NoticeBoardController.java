@@ -32,7 +32,7 @@ public class NoticeBoardController {
 
     @PostMapping("draft/addOrUpdate")
     public String addOrUpdateDraft(
-            @RequestParam("files") List<MultipartFile> attachments,
+            @RequestParam(value="files",required = false) List<MultipartFile> attachments,
             @Valid @RequestParam DraftNoticeDTO dto
                                    ) {
         System.out.println(attachments);
