@@ -57,7 +57,13 @@
             </div>
         </div>
         <div class="content_body">
-            <Alert v-show="hasChange" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
+            <Alert v-show="this.selectedPeople.length > 0" class="primary-info tl">
+                <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+                    <span style="display: inline-block;width: 160px;color: var(--grey);">掲示範囲にいる社員： </span>
+                    <span class="tl width100"> {{ selectedPeople }}</span>
+                  </div>
+                  <Spin size="large" fix v-if="selectedPeopleloading"></Spin>
+            </Alert>
             <!-- <div class="table-top">
             <Row :gutter="16">
               <i-col span="24" class="tr">
@@ -236,8 +242,9 @@
                     emojiPop: false,
                     editLoading: false,
                     btnLoading: false,
-                    hasChange: false,
-                    searchRange:[],
+                    selectedPeople: '',
+                    selectedPeopleloading: false,
+                    searchRange: [],
                     defaultOption: false,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -246,7 +253,7 @@
                     ],
                     debugquill: '',
                     tableData: [],
-                    uploadFiles:[],
+                    uploadFiles: [],
                     rangeList: [],
                     contentScrollTop: 0
                 }
@@ -398,11 +405,30 @@
                     // }
                 },
                 async getSelection() {
-                  const { data } = await this.http.get('sys/noticeboard/rangelist')
-                  this.rangeList = data
+                    const { data } = await this.http.get('sys/noticeboard/rangelist')
+                    this.rangeList = data
                 },
                 async getPeopleBySelection() {
-                  await this.http.get('sys/noticeboard/validemps', {typeIds:this.searchRange})
+                    if (this.searchRange.length === 0) return
+                    try {
+                        this.selectedPeopleloading = true
+                        const { data } = await this.http.get('sys/noticeboard/validemps', { typeIds: this.searchRange })
+                        let text = ''
+                        this.selectedPeople = data.map(e => {
+                            let key = Object.keys(e)[0]
+                            let value = Object.values(e)[0]
+                            text = text.concat(`${key} ${value} , `)
+                            return {
+                                key: key,
+                                value: value,
+                            }
+                        })
+                        this.selectedPeople = text.slice(0, -2)
+                    } catch (error) {
+                    } finally {
+                        this.selectedPeopleloading = false
+                    }
+
                 },
                 getQuill() {
                     this.debugquill = this.quill.getContents()

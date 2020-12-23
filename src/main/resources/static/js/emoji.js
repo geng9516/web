@@ -2,7 +2,7 @@ const SM_EMOJI = {
     'Frequently used': {
       'thumbs_up': '👍',
       '-1': '👎',
-      'cry': '😢',
+      'sweat_smile': '😅',
       'eyes': '👀',
       'rocket': '🚀',
       'sparkling_heart': '💖',
