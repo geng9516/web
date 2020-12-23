@@ -109,7 +109,7 @@ security:
     - ${info.basePath}expirePassword
     - ${info.basePath}changeExpirePassword
     - ${info.basePath}changePassword
-    - ${info.basePath}/header/flags
+    - ${info.basePath}header/flags
   # 需要忽略的静态资源url
   resourceList:
     - /favicon.ico
