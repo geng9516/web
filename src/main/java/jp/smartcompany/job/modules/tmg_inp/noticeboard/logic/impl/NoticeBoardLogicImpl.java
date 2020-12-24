@@ -8,12 +8,10 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.handler.StringHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.SecurityUtil;
-import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.boot.util.UploadFileUtil;
+import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
@@ -26,6 +24,7 @@ import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempFileDO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempFileService;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempService;
 import lombok.RequiredArgsConstructor;
@@ -68,13 +67,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
     public static final String BASE_ONLY = "09";
     public static final String BASE_UNDER = "10";
-
-    // 获取能进行揭示板发布的group
-    private List<LoginGroupBO> getPublishGroupList() {
-        HttpSession session = ContextUtil.getSession();
-        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
-        return psSession.getLoginGroups().get("01").stream().filter(LoginGroupBO::getPublishing).collect(Collectors.toList());
-    }
 
     @Override
     public List<NoticeRangeDTO> getSendNoticeRangeList(HttpSession session) {
@@ -139,16 +131,30 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         return employs;
     }
 
-    private static final String IS_DRAFT = "0";
-    private static final String COMPANY_ID = "01";
-    private static final String CUSTOMER_ID = "01";
+    @Override
+    public PageUtil getSelfDraftNoticeList(Map<String,Object> params) {
+      String loginUserId = SecurityUtil.getUserId();
+      IPage<DraftNoticeVO> pageQuery = new PageQuery<DraftNoticeVO>().getPage(params);
+      IPage<DraftNoticeVO> page = histBulletinBoardTempService.listBulletinBoardTempByPublisherId(pageQuery,loginUserId);
+      return new PageUtil(page);
+    }
 
+    /**
+     * 供前端富文本插件图文混排时上传图片使用
+     * @param file 上传图片
+     * @return 上传后的图片路径
+     */
     @Override
     public String uploadImageUrl(MultipartFile file) {
         UploadFileUtil uploadFileUtil = new UploadFileUtil();
         return "/upload"+uploadFileUtil.uploadRichTextImage(file,"TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH");
     }
 
+
+    /**
+     * 保存或修改草稿
+     * @param dto
+     */
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void addOrUpdateDraft(DraftNoticeDTO dto) {
@@ -238,6 +244,25 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                 }
             }
         }
+    }
+
+
+    /**
+     * ================================
+     * 以下为私有使用方法
+     * ===============================
+     */
+
+    private static final String IS_DRAFT = "0";
+    private static final String COMPANY_ID = "01";
+    private static final String CUSTOMER_ID = "01";
+
+
+    // 获取能进行揭示板发布的group
+    private List<LoginGroupBO> getPublishGroupList() {
+        HttpSession session = ContextUtil.getSession();
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
+        return psSession.getLoginGroups().get("01").stream().filter(LoginGroupBO::getPublishing).collect(Collectors.toList());
     }
 
     /**

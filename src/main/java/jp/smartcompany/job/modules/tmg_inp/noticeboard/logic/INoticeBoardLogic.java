@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg_inp.noticeboard.logic;
 
+import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,5 +18,7 @@ public interface INoticeBoardLogic {
     void addOrUpdateDraft(DraftNoticeDTO dto);
 
     String uploadImageUrl(MultipartFile file);
+
+    PageUtil getSelfDraftNoticeList(Map<String,Object> params);
 
 }
