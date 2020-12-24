@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
@@ -38,10 +39,7 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -220,6 +218,61 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
         }
         histBulletinBoardTempService.removeByIds(draftIds);
+    }
+
+    @Override
+    public DraftNoticeVO getDraftNoticeDetail(Long id) {
+        HistBulletinBoardTempDO tempDO = histBulletinBoardTempService.getById(id);
+        if (tempDO == null) {
+            throw new GlobalException("下書きは存在しません");
+        }
+        DraftNoticeVO noticeVO = new DraftNoticeVO();
+        BeanUtil.copyProperties(tempDO,noticeVO);
+        List<HistBulletinBoardTempFileDO> attachments = histBulletinBoardTempFileService.listFileById(id);
+        if (CollUtil.isEmpty(attachments)) {
+            noticeVO.setAttachments(CollUtil.newArrayList());
+        } else {
+            noticeVO.setAttachments(attachments);
+        }
+        List<String> empIds = Arrays.asList(tempDO.getHbtCempRange().split(",").clone());
+        if (CollUtil.isEmpty(empIds)) {
+            throw new GlobalException("照会できるの社員範囲は設定していません");
+        }
+        List<Map<String,String>> tempEmpRangeList = CollUtil.newArrayList();
+        try (Connection conn = dataSource.getConnection()) {
+            for (String empId : empIds) {
+                String empName = SqlExecutor.query(conn, "select me_ckanjiname from mast_employees  where me_cemployeeid_ck = ? and me_dstartdate <= trunc(sysdate) and me_denddate >= trunc(sysdate)", new StringHandler(), empId);
+                Map<String, String> empMap = MapUtil.<String, String>builder().put(empId, empName).build();
+                tempEmpRangeList.add(empMap);
+            }
+            noticeVO.setEmpRangeList(tempEmpRangeList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
+        }
+        List<String> rangeTypeIds = Arrays.asList(tempDO.getHbtCrangeTypes().split(",").clone());
+        if (CollUtil.isEmpty(rangeTypeIds)) {
+            throw new GlobalException("照会の範囲は設定されていません");
+        }
+        List<NoticeRangeDTO> typeRangeList = CollUtil.newArrayList();
+        for (String rangeTypeId : rangeTypeIds) {
+            NoticeRangeDTO rangeDTO = new NoticeRangeDTO();
+            rangeDTO.setTypeId(rangeTypeId);
+            if (StrUtil.equals(FG_COMP_SEC,rangeTypeId)) {
+                rangeDTO.setTypeName("自所属以下");
+            } else if (StrUtil.equals(FG_COMP_SEC_POST,rangeTypeId)) {
+                rangeDTO.setTypeName("所属以下の役職");
+            }else if (StrUtil.equals(FG_COMP_SEC_BOSS ,rangeTypeId)) {
+                rangeDTO.setTypeName("所属以下の所属長");
+            }else if (StrUtil.equals(FG_COMP_POST,rangeTypeId)) {
+                rangeDTO.setTypeName("法人の役職");
+            }else if (StrUtil.equals(FG_COMP_EMP,rangeTypeId)) {
+                rangeDTO.setTypeName("法人の職員");
+            }
+            typeRangeList.add(rangeDTO);
+        }
+        noticeVO.setTypeRangeList(typeRangeList);
+        return noticeVO;
     }
 
     /**

@@ -34,6 +34,11 @@ public class DraftNoticeVO implements Serializable {
     private String hbtCheaddisp;
     // 確定フラグ
     private String hbtCfix;
+    // 掲示者ID
+    private String hbtCmnuser;
+    // 形状
+    private String hbtCmnusername;
+
     // 附件
     private List<HistBulletinBoardTempFileDO> attachments;
     // 可查看此公告的用户id

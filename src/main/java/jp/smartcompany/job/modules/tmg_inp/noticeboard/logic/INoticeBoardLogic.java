@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg_inp.noticeboard.logic;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -22,5 +23,7 @@ public interface INoticeBoardLogic {
     PageUtil getSelfDraftNoticeList(Map<String,Object> params);
 
     void deleteDraft(List<Long> ids);
+
+    DraftNoticeVO getDraftNoticeDetail(Long id);
 
 }
