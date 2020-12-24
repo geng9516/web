@@ -660,6 +660,14 @@
                                 })
                                 this.$Message.success(hbtCfix === '1' ? '投稿完了' : '一時保存完了')
                                 this.isEditing = false
+                                this.updateValue = {
+                                    hbtCheaddisp: '0'
+                                },
+                                this.uploadFiles = []
+                                this.searchRange = ''
+                                this.selectedPeople = ''
+                                this.selectedPeopleText = ''
+                                this.quill.setText('');
                                 this.getTableData()
                             } catch (error) {
                             } finally {
