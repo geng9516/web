@@ -541,7 +541,7 @@
                         okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
-                            await this.http.post('sys/noticeboard/draft/delete', {ids:[row.hbtId]})
+                            await this.http.post('sys/noticeboard/draft/delete', [row.hbtId])
                             this.getTableData()
                             this.$Message.success('削除完了')
                         }
