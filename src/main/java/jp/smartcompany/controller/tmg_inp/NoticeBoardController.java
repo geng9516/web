@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
@@ -96,6 +97,17 @@ public class NoticeBoardController {
         DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";
+    }
+
+    /**
+     * 删除草稿，支持多条删除
+     * @param ids 草稿id
+     */
+    // http://localhost:6879/sys/noticeboard/draft/list
+    @PostMapping("draft/delete")
+    public String deleteDraft(@RequestBody @NotEmpty List<Long> ids) {
+        noticeBoardLogic.deleteDraft(ids);
+        return "下書き削除成功";
     }
 
     /**

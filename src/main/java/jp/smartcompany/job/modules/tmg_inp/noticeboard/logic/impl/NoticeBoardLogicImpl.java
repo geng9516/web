@@ -11,6 +11,7 @@ import cn.hutool.db.sql.SqlExecutor;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
@@ -165,7 +166,9 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             endDate = SysUtil.getMaxDateObject();
         }
         String loginUserId = SecurityUtil.getUserId();
-        String loginEmpName = SecurityUtil.getLoginUser().getMeCemployeename();
+        SmartUserDetails loginUser = SecurityUtil.getLoginUser();
+        String loginEmpName = loginUser.getMeCemployeename();
+        String deptName = loginUser.getMoCsectionname();
         boolean isDraft = StrUtil.equals(dto.getHbtCfix(),IS_DRAFT);
         String content = dto.getHbtCcontents();
         String title = dto.getHbtCtitle();
@@ -183,7 +186,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             tempDO.setHbtCtitle(title);
             tempDO.setHbtCheaddisp(top);
             tempDO.setHbtCmnuser(loginUserId);
-            tempDO.setHbtCmnusername(loginEmpName);
+            tempDO.setHbtCmnusername(loginEmpName+"("+deptName+")");
             tempDO.setHbtCmodifieruserid(loginUserId);
             tempDO.setHbtDmodifieddate(now);
             tempDO.setHbtDdateofannouncement(startDate);
@@ -202,8 +205,21 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                id = tempDO.getHbtId();
             }
             // 如果有附件则需要保存用户上传的附件
-            uploadAttachments(id,uploadFiles,isUpdate,isDraft);
+            uploadAttachments(id,uploadFiles,isUpdate,true);
         }
+    }
+
+    @Transactional(rollbackFor = GlobalException.class)
+    @Override
+    public void deleteDraft(List<Long> draftIds) {
+        UploadFileUtil uploadFileUtil = new UploadFileUtil();
+        List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileByIds(draftIds);
+        if (CollUtil.isNotEmpty(oldFileList)) {
+            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+            realPathList.forEach(uploadFileUtil::removePreFile);
+            histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+        }
+        histBulletinBoardTempService.removeByIds(draftIds);
     }
 
     /**

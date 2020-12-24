@@ -21,4 +21,6 @@ public interface INoticeBoardLogic {
 
     PageUtil getSelfDraftNoticeList(Map<String,Object> params);
 
+    void deleteDraft(List<Long> ids);
+
 }

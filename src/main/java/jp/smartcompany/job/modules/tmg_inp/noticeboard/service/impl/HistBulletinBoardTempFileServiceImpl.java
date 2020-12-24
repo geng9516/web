@@ -21,4 +21,11 @@ implements IHistBulletinBoardTempFileService {
         return list(qw);
     }
 
+    @Override
+    public List<HistBulletinBoardTempFileDO> listFileByIds(List<Long> boardIds) {
+        QueryWrapper<HistBulletinBoardTempFileDO> qw = SysUtil.query();
+        qw.in("HBT_ID_FK",boardIds);
+        return list(qw);
+    }
+
 }
