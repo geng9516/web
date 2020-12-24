@@ -6,6 +6,9 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
@@ -33,10 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 
-import java.sql.Struct;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -49,6 +54,7 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgNotificationBean {
 
+    private final DataSource dataSource;
     public TmgReferList referList = null; // 汎用参照リスト;
     public final IMastGenericDetailService iMastGenericDetailService;
     public final ITmgNotificationService iTmgNotificationService;
@@ -832,6 +838,7 @@ public class TmgNotificationBean {
 //            //全取消のときに、コメントを自動添加する
 //            param.setCancelcomment(psSession.getLoginKanjiName()+"("+TmgUtil.getSysdate()+")");
         }
+        String selectErrMsg = null;
         try{
             // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
             int deleteErrMsg = deleteErrMsg(param);
@@ -850,11 +857,51 @@ public class TmgNotificationBean {
                 int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
             }
             int insertErrmsg = insertErrMsg(param);
-            String selectErrMsg = selectErrCode(param);
+            selectErrMsg = selectErrCode(param);
             if(!selectErrMsg.equals("0")&&!param.getAction().equals(ACT_EDITAPPLY_UDEL) ){
                 return GlobalResponse.error(selectErrMsg);
             }else{
                 int insertTrigger = insertTrigger(param);
+
+                // 承认者
+                PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+                String empNameList[];
+                String empIdList[];
+                String vacation;
+                String day = DateUtil.format(param.getBegin(), TmgReferList.DEFAULT_DATE_FORMAT);
+                String sql ="select MGD_CGENERICDETAILDESC ,empName ,empId " +
+                        " from MAST_GENERIC_DETAIL," +
+                        "(select TMG_F_GET_NEXT_NTFAPPROVER_Mail('"+psDBBean.getUserCode()+"', TRUNC(SYSDATE), ',',1) empName," +
+                        "TMG_F_GET_NEXT_NTFAPPROVER_Mail('"+psDBBean.getUserCode()+"', TRUNC(SYSDATE), ',',0) empId" +
+                        " from dual)" +
+                        " where MGD_CMASTERCODE = '" +param.getTypeNew() + "' ";
+
+                try (Connection conn = dataSource.getConnection()) {
+                    Entity entity = SqlExecutor.query(conn,sql,new EntityHandler());
+                    vacation = (String)entity.get("MGD_CGENERICDETAILDESC");
+                    if(entity.get("EMPNAME") != null ){
+                        empNameList = ((String)entity.get("EMPNAME")).split(",");
+                        empIdList =((String)entity.get("EMPID")).split(",");
+                        for (int i = 0; i < empNameList.length; i++) {
+                            UserManagerListDTO userManagerListDTOList = iTmgNotificationService.selectEmoloyMail(empIdList[i]);
+                            if(userManagerListDTOList != null){
+                                Map<String,Object> extraContentList = MapUtil.newHashMap();
+                                String messageList = psSession.getLoginKanjiName() + "    " + day + "    " + vacation;
+                                extraContentList.put(MastMailInfoServiceImpl.KEY_EMPLOY_NAME,empNameList[i]);
+                                extraContentList.put(MastMailInfoServiceImpl.KEY_MESSAGE,messageList);
+                                SendMailBO mailInfoList = new SendMailBO();
+                                mailInfoList.setToAddress(userManagerListDTOList.getTmaEmail());
+                                mailInfoList.setEmpName(empNameList[i]);
+                                mailInfoList.setEmpId(empIdList[i]);
+                                mailInfoList.setExtraContent(extraContentList);
+                                mailService.sendMail(MailType.TMG_NTF_AWAIT_APPROVAL,mailInfoList);
+                            }
+                        }
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 return GlobalResponse.ok();
             }
         }catch (GlobalException e){
@@ -968,23 +1015,55 @@ public class TmgNotificationBean {
         int deleteTrigger = deleteTrigger(param);
 
         if(updateNotificationWithdraw==1&&insertTrigger==1&&deleteTrigger==1){
-
+            // 申请者
             PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-            UserManagerListDTO a = iTmgNotificationService.selectEmoloyMail(param.getUserCode());
+            UserManagerListDTO userManagerListDTO = iTmgNotificationService.selectEmoloyMail(param.getUserCode());
+            if(userManagerListDTO != null){
+                Map<String,Object> extraContent = MapUtil.newHashMap();
+                String empName = psSession.getLoginKanjiName();
+                String empId = param.getUserCode();
+                String message = day + "    " + vacation;
+                extraContent.put(MastMailInfoServiceImpl.KEY_EMPLOY_NAME,empName);
+                extraContent.put(MastMailInfoServiceImpl.KEY_MESSAGE,message);
+                SendMailBO mailInfo = new SendMailBO();
+                mailInfo.setToAddress(userManagerListDTO.getTmaEmail());
+                mailInfo.setEmpName(empName);
+                mailInfo.setEmpId(empId);
+                mailInfo.setExtraContent(extraContent);
+                mailService.sendMail(MailType.TMG_NTF_CANCELED,mailInfo);
+            }
 
-            Map<String,Object> extraContent = MapUtil.newHashMap();
-            String empName = psSession.getLoginKanjiName();
-            String empId = param.getUserCode();
-            String message = day + "    " + vacation;
-            extraContent.put(MastMailInfoServiceImpl.KEY_EMPLOY_NAME,empName);
-            extraContent.put(MastMailInfoServiceImpl.KEY_MESSAGE,message);
-            SendMailBO mailInfo = new SendMailBO();
-            mailInfo.setToAddress(a.getTmaEmail());
-            mailInfo.setEmpName(empName);
-            mailInfo.setEmpId(empId);
-            mailInfo.setExtraContent(extraContent);
+            // 承认者
+            String empName1[];
+            String empId1[];
+            String sql ="select TMG_F_GET_NEXT_NTFAPPROVER('"+ntfNo+"', TRUNC(SYSDATE), ',',1) empName," +
+                    "TMG_F_GET_NEXT_NTFAPPROVER('"+ntfNo+"', TRUNC(SYSDATE), ',',0) empId" +
+                    " from dual";
+            try (Connection conn = dataSource.getConnection()) {
+                Entity entity = SqlExecutor.query(conn,sql,new EntityHandler());
+                if(entity.get("EMPNAME") != null ){
+                    empName1 = ((String)entity.get("EMPNAME")).split(",");
+                    empId1 =((String)entity.get("EMPID")).split(",");
+                    for (int i = 0; i < empName1.length; i++) {
+                        UserManagerListDTO userManagerListDTOList = iTmgNotificationService.selectEmoloyMail(empId1[i]);
+                        if(userManagerListDTOList != null){
+                            Map<String,Object> extraContentList = MapUtil.newHashMap();
+                            String messageList = psSession.getLoginKanjiName() + "    " + day + "    " + vacation;
+                            extraContentList.put(MastMailInfoServiceImpl.KEY_EMPLOY_NAME,empName1[i]);
+                            extraContentList.put(MastMailInfoServiceImpl.KEY_MESSAGE,messageList);
+                            SendMailBO mailInfoList = new SendMailBO();
+                            mailInfoList.setToAddress(userManagerListDTOList.getTmaEmail());
+                            mailInfoList.setEmpName(empName1[i]);
+                            mailInfoList.setEmpId(empId1[i]);
+                            mailInfoList.setExtraContent(extraContentList);
+                            mailService.sendMail(MailType.TMG_NTF_CANCELED,mailInfoList);
+                        }
+                    }
+                }
 
-            mailService.sendMail(MailType.TMG_NTF_CANCELED,mailInfo);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
             return GlobalResponse.ok();
         }else{

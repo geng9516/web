@@ -265,6 +265,8 @@ new Vue({
          this.$set(this.cacelBtnLoading, i, true)
          try {
             await this.http.post('sys/vapply/EditWithdrop', {
+               day:e.tntfDbegin,
+               vacation:e.tntfCtype,
                action: 'ACT_EditApply_UWithdraw',
                ntfNo: e.tntfCntfNo,
                psSite: this.opts.psSite
