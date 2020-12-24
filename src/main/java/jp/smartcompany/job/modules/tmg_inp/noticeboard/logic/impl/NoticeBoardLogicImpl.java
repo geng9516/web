@@ -182,6 +182,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             tempDO.setHbtDmodifieddate(now);
             tempDO.setHbtDdateofannouncement(startDate);
             tempDO.setHbtDdateofexpire(endDate);
+            tempDO.setHbtCrangeTypes(dto.getRangeTypes());
             tempDO.setHbtCempRange(dto.getEmpRangeIds());
             // 修改草稿动作
             if (isUpdate) {

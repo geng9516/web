@@ -34,6 +34,7 @@ public class HistBulletinBoardTempDO implements Serializable {
   private String hbtCmodifieruserid;
   private Date hbtDmodifieddate;
   private String hbtCcontents;
+  private String hbtCrangeTypes;
   @Version
   private Long versionno;
 

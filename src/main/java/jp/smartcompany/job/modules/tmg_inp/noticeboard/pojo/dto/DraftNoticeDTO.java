@@ -28,7 +28,10 @@ public class DraftNoticeDTO {
     private String hbtCfix;
     // 附件
     private List<MultipartFile> attachments;
+
+
     // 可查看此公告的用户id，支持多个，中间用逗号隔开
     private String empRangeIds;
-
+    // 所选发送范围type，用逗号隔开
+    private String rangeTypes;
 }

@@ -23,17 +23,41 @@ public class NoticeBoardController {
 
     private final INoticeBoardLogic noticeBoardLogic;
 
+    /**
+     * 查询可用于发送的人的范围type
+     * @param session
+     * @return
+     */
     @GetMapping("rangelist")
     public List<NoticeRangeDTO> getNoticeRangeList(HttpSession session) {
        return noticeBoardLogic.getSendNoticeRangeList(session);
     }
 
+    /**
+     * 查询当前可用的发送用户组
+     * @param typeIds
+     * @param session
+     * @return
+     */
     // http://localhost:6879/sys/noticeboard/validemps?typeIds=02&typeIds=03&typeIds=05&typeIds=06&typeIds=07&typeIds=09&typeIds=10
     @GetMapping("validemps")
     public List<Map<String,String>> getValidReadEmpList(@RequestParam List<String> typeIds, HttpSession session) {
        return noticeBoardLogic.getValidReadEmpList(typeIds,session);
     }
 
+    /**
+     * 添加或修改草稿
+     * @param attachments
+     * @param hbtId
+     * @param hbtDdateofannouncement
+     * @param hbtDdateofexpire
+     * @param hbtCtitle
+     * @param hbtCcontents
+     * @param empRangeIds
+     * @param hbtCheaddisp
+     * @param hbtCfix
+     * @return
+     */
     @PostMapping("draft/addOrUpdate")
     public String addOrUpdateDraft(
             // 公告附件，最大支持五个附件
@@ -48,6 +72,8 @@ public class NoticeBoardController {
             @RequestParam String hbtCtitle,
             // 公告内容
             @RequestParam String hbtCcontents,
+            // 所选发送范围type，用逗号隔开
+            @RequestParam String sendRangeTypes,
             // 可查看此公告的用户id，用逗号隔开
             @RequestParam String empRangeIds,
             // 1:置顶 0:不置顶 不填默认0
@@ -55,17 +81,23 @@ public class NoticeBoardController {
             // 0:当作草稿存储 1:保存为正式公告 不填默认0
             @RequestParam(required = false,defaultValue = "0") String hbtCfix
     ) {
-        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, empRangeIds);
+        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";
     }
 
+    /**
+     * 富文本上传图片
+     * @param file 上传图片
+     * @return 图片地址
+     */
     @PostMapping("upload/image")
     public String uploadRichTextImage(@RequestParam MultipartFile file) {
         return noticeBoardLogic.uploadImageUrl(file);
     }
 
-    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String empRangeIds) {
+
+    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String sendRangeTypes,String empRangeIds) {
         DraftNoticeDTO dto = new DraftNoticeDTO();
         dto.setAttachments(attachments);
         dto.setHbtCcontents(hbtCcontents);
@@ -75,6 +107,7 @@ public class NoticeBoardController {
         dto.setHbtDdateofannouncement(hbtDdateofannouncement);
         dto.setHbtDdateofexpire(hbtDdateofexpire);
         dto.setHbtId(hbtId);
+        dto.setRangeTypes(sendRangeTypes);
         dto.setEmpRangeIds(empRangeIds);
         return dto;
     }
