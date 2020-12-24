@@ -1,12 +1,10 @@
 package jp.smartcompany.controller.tmg_inp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonView;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +53,6 @@ public class NoticeBoardController {
      */
     // http://localhost:6879/sys/noticeboard/draft/list
     @GetMapping("draft/list")
-    @JsonView(DraftNoticeVO.DraftNoticeListItemView.class)
     public PageUtil getSelfDraftNoticeList(@RequestParam Map<String,Object> params) {
         return noticeBoardLogic.getSelfDraftNoticeList(params);
     }

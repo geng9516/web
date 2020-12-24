@@ -61,7 +61,6 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
                 "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")+"/",
                 "file:"+cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")+"/"
         );
-        System.out.println(Arrays.toString(uploadFilePaths.toArray(new String[0])));
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations(
                         uploadFilePaths.toArray(new String[0])
