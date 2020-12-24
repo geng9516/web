@@ -45,7 +45,7 @@ public class TmgLiquidationPeriodBean {
     private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
-    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
+    //private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     private final  ITmgNotificationService iTmgNotificationService;
     // 职种获取
@@ -362,23 +362,31 @@ public class TmgLiquidationPeriodBean {
                 tlddDo.setTlddCsparechar3(dailyDto.getKubunid());
                 tlddDo.setTlddCkubun(dailyDto.getKubunid());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
-                tlddDo.setTlddCstarttime(null);
-                tlddDo.setTlddCendtime(null);
-                tlddDo.setTlddCreststarttime1(null);
-                tlddDo.setTlddCrestendtime1(null);
-                tlddDo.setTlddCreststarttime2(null);
-                tlddDo.setTlddCrestendtime2(null);
+                tlddDo.setTlddCstarttime("");
+                tlddDo.setTlddCendtime("");
+                tlddDo.setTlddCreststarttime1("");
+                tlddDo.setTlddCrestendtime1("");
+                tlddDo.setTlddCreststarttime2("");
+                tlddDo.setTlddCrestendtime2("");
+                tlddDo.setTlddCreststarttime3("");
+                tlddDo.setTlddCrestendtime3("");
+                tlddDo.setTlddCreststarttime4("");
+                tlddDo.setTlddCrestendtime4("");
             }
             //出勤或者休出 选用pattern
             if(dailyDto.getKubunid().indexOf("TMG_LIQUIDATION_PATTERN")> -1){
                 tlddDo.setTlddCpattern(dailyDto.getKubunid());
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
-                tlddDo.setTlddCstarttime(dailyDto.getStarttime());
-                tlddDo.setTlddCendtime(dailyDto.getEndtime());
-                tlddDo.setTlddCreststarttime1(dailyDto.getReststarttime1());
-                tlddDo.setTlddCrestendtime1(dailyDto.getRestendtime1());
-                tlddDo.setTlddCreststarttime2(dailyDto.getReststarttime2());
-                tlddDo.setTlddCrestendtime2(dailyDto.getRestendtime2());
+                tlddDo.setTlddCstarttime(String.valueOf(timeToMin(dailyDto.getStarttime())));
+                tlddDo.setTlddCendtime(String.valueOf(timeToMin(dailyDto.getEndtime())));
+                tlddDo.setTlddCreststarttime1(String.valueOf(timeToMin(dailyDto.getReststarttime1())));
+                tlddDo.setTlddCrestendtime1(String.valueOf(timeToMin(dailyDto.getRestendtime1())));
+                tlddDo.setTlddCreststarttime2(String.valueOf(timeToMin(dailyDto.getReststarttime2())));
+                tlddDo.setTlddCrestendtime2(String.valueOf(timeToMin(dailyDto.getRestendtime2())));
+                tlddDo.setTlddCreststarttime3(String.valueOf(timeToMin(dailyDto.getReststarttime3())));
+                tlddDo.setTlddCrestendtime3(String.valueOf(timeToMin(dailyDto.getRestendtime3())));
+                tlddDo.setTlddCreststarttime4(String.valueOf(timeToMin(dailyDto.getReststarttime4())));
+                tlddDo.setTlddCrestendtime4(String.valueOf(timeToMin(dailyDto.getRestendtime4())));
             }
             //原值
 //            if(dailyDto.getKubunid().indexOf("TMG_WORK")> -1){
@@ -387,8 +395,8 @@ public class TmgLiquidationPeriodBean {
             tlddDo.setTlddCmodifieruserid(psDBBean.getUserCode());
             tlddDo.setTlddDmodifieddate(DateTime.now());
             //数据插入
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");//注意月份是MM
-            Date date = simpleDateFormat.parse(dailyDto.getDays());
+            //SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");//注意月份是MM
+            //Date date = simpleDateFormat.parse(dailyDto.getDays());
             updateNum = updateNum+iTmgliquidationDailyService.getBaseMapper().update(tlddDo,
                     SysUtil.<TmgLiquidationDailyDO>query()
                             .eq("TLDD_CCUSTOMERID", psDBBean.getCustID())
@@ -396,11 +404,11 @@ public class TmgLiquidationPeriodBean {
                             .eq("TLDD_DSTARTDATE", startDate)
                             .eq("TLDD_DENDDATE", endDate)
                             .eq("TLDD_CEMPLOYEEID", empid)
-                            .eq("TLDD_DYYYYMMDD", date) );
+                            .eq("TLDD_DYYYYMMDD", dailyDto.getDays()) );
         }
         if (updateNum>0){
             //check LiquidationDaily 执行
-            errNum=checkLiquidationDaily(empid,monthList.get(0).getYyyymmdd(),psDBBean);
+            errNum=checkLiquidationDaily(empid,monthList.get(0).getDays(),psDBBean);
         }
         return  errNum;
     }

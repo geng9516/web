@@ -24,6 +24,10 @@ public class LqdDto {
     private String restendtime1;
     private String reststarttime2;
     private String restendtime2;
+    private String reststarttime3;
+    private String restendtime3;
+    private String reststarttime4;
+    private String restendtime4;
     private String weekworktime;
     private String ntfstatus;
     private String resttime;

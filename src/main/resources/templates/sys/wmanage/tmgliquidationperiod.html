@@ -361,9 +361,8 @@
                 </template>
 
                 <template slot-scope="{ row, index }" slot="workhours">
-                    <span v-if="row.kubunid.indexOf('TMG_WORK') >-1 ">{{row.workhours | handleTime}}</span>
-                    <span
-                            v-else>{{computeWorkTime( monthData[index].starttime,monthData[index].endtime,monthData[index].restTime,index ) }}</span>
+<!--                    <span v-if="row.kubunid.indexOf('TMG_WORK') >-1 ">{{row.workhours | handleTime}}</span>-->
+                    <span>{{computeWorkTime( monthData[index].starttime,monthData[index].endtime,monthData[index].restTime,index ) }}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="starttime">
