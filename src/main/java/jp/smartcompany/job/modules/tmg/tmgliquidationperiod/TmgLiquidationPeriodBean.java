@@ -352,10 +352,10 @@ public class TmgLiquidationPeriodBean {
 
     //月数据更新
     public int UpdateLiquidationDaily(MonthDto monthDto,String empid,String startDate,String endDate,PsDBBean psDBBean) throws ParseException {
-        List<LiquidationDailyDto> monthList=monthDto.getMonthList();
+        List<LqdDto> monthList=monthDto.getMonthList();
         int updateNum=0;
         int errNum=0;
-        for (LiquidationDailyDto dailyDto: monthList) {
+        for (LqdDto dailyDto: monthList) {
             TmgLiquidationDailyDO tlddDo= new TmgLiquidationDailyDO();
             //定休日调整
             if(dailyDto.getKubunid().indexOf("TMG_HOLFLG")> -1){

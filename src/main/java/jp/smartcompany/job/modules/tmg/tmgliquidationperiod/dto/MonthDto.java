@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @ToString
 public class MonthDto {
-    private List<LiquidationDailyDto> monthList;
+    private List<LqdDto> monthList;
     private String empId;
     private String startDate;
     private String endDate;
