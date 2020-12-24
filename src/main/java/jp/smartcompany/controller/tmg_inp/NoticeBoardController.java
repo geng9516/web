@@ -59,6 +59,11 @@ public class NoticeBoardController {
         return noticeBoardLogic.getSelfDraftNoticeList(params);
     }
 
+    /**
+     * 查询草稿详情
+     * @param id 草稿id
+     * @return
+     */
     // http://localhost:6879/sys/noticeboard/draft/2
     @GetMapping("draft/{id:\\d+}")
     public DraftNoticeVO getDraftNoticeDetail(@PathVariable Long id) {
