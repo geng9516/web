@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.tmg.tmgliquidationperiod;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
@@ -9,7 +8,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
@@ -168,6 +166,9 @@ public class TmgLiquidationPeriodBean {
         insertTlp(seq, updateDto, psDBBean);
         //详细数据新规
         insertTlDD(updateDto.getEmpId(), updateDto.getCurDateFrom(), updateDto.getCurDateTo(), psDBBean);
+
+        checkLiquidationDaily(updateDto.getEmpId(),updateDto.getCurDateFrom(),psDBBean);
+
         return GlobalResponse.ok();
     }
 
@@ -180,6 +181,9 @@ public class TmgLiquidationPeriodBean {
         iTmgliquidationPeriodService.getBaseMapper().delete(SysUtil.<TmgLiquidationPeriodDO>query().eq("TLP_CEMPLOYEEID", empId)
                 .eq("TLP_DSTARTDATE", startDate)
                 .eq("TLP_DENDDATE", endDate));
+        iTmgliquidationDailyCheckService.getBaseMapper().delete(SysUtil.<TmgLiquidationDailyCheckDO>query().eq("TLDC_CEMPLOYEEID", empId)
+                .eq("TLDC_DSTARTDATE", startDate)
+                .eq("TLDC_DENDDATE", endDate));
         return GlobalResponse.ok();
     }
 

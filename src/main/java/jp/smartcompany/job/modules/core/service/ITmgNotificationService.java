@@ -77,7 +77,7 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
         /**
          * 休暇・休業申請を一覧を取得するSQLを返す
          *
-         * @param params 　params
+         * @param 　params
          * @return String パターン
          */
         List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto paramCheck);

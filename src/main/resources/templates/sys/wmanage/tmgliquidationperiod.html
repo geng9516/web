@@ -22,7 +22,6 @@
                 <i-button type="primary" icon="ios-albums" ghost @click="patternManager">パターン管理</i-button>
             </div>
         </div>
-        <!--todo:button-->
     </div>
     <div class="searchwrap">
         <!-- 共通組織図画面 start-->
@@ -73,7 +72,7 @@
             </template>
         </i-table>
 
-        <Modal title="精算期間詳細" width="90" :mask-closable="false" footer-hide v-model="editFlag">
+        <Modal title="精算期間詳細" :styles="{top: '0px'}" fullscreen :mask-closable="false" footer-hide v-model="editFlag">
             <div class="table-top">
                 <Row class="mb10">
                     <i-col span="24" class="tr">
@@ -110,19 +109,21 @@
             <i-table class="mt10"  border :columns="columns4Year" :data="tableData4Year"
                      max-height="850" :loading="EditLoading" :span-method="handleSpan" ref="tableDisp" show-header>
                 <template slot-scope="{ row }" slot="yyyymm">
-                    <span style="text-decoration: underline" @click="showMonth(row.month)">{{ row.month }}</span>
+                    <span style="text-decoration: underline" class="cursor" @click="showMonth(row.month)">{{ row.month }}</span>
                 </template>
                 <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j] && row._index % 2 === 0 ">
-                                <div class="sum-row error-label" v-if="row[j].ntftype[0] && row[j].ntftype[0].indexOf(':') > 0">
-                                    <Poptip trigger="hover"　theme="light" placement="left" transfer>
-                                        <span style="font-size: 31px;line-height: 0px">...</span>
+                                <div class="cursor sum-row" style="height: 13px;" v-if="row[j].ntftype.length > 0 && row[j].ntftype[0]">
+                                    <Poptip trigger="hover"　theme="light" placement="left" transfer style="height: 13px">
+                                        <span style="height: 13px;width: 30px;line-height:13px;display:inline-block;border-radius: 0;border-style:solid;border-width:thin;border-color: var(--primary-info);line-height:11px;" class="pl5 pr5 tc">
+                                            <div style="top: -7px;left: -4px;font-size: 25px;position: absolute;color: var(--primary-info)">&nbsp;&nbsp;...&nbsp;&nbsp;</div>
+                                        </span>
                                             <div slot="content">
                                                 <div class="mt2" v-for="item of row[j].ntftype">{{item}}</div>
                                             </div>
                                     </Poptip >
                                 </div>
-                                <div class="sum-row" v-else ><span :class="row[j].ntftype[0] && 'error-label'">{{ row[j].ntftype[0] || '&nbsp;'}}</span></div>
+                                <div class="sum-row" v-else ><span>{{ '&nbsp;'}}</span></div>
 
                                 <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500'"><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
                                 <div class="divi-hour-line sum-row" v-else-if="row[j].kubunid === 'TMG_WORK|000'" >{{ row[j].kubun || '&nbsp;' }}</div>
@@ -831,7 +832,6 @@
             },
             async showDetails(e) {
                 console.log(e)
-                if (e.status === 'TMG_LPSTATUS|5') return
                 if (e) {
                     this.empInfo.empId = e.employeeid
                     this.empInfo.empWorkTypeId = e.worktypeid
@@ -843,7 +843,8 @@
                     this.optsEmp.startDate = e.startdate
                     this.optsEmp.endDate = e.enddate
                 }
-                if (e.newflag || !e) {
+                if (e && e.status === 'TMG_LPSTATUS|5') return
+                if (!e || e.newflag) {
                     try {
                         this.editFlag = true
                         this.EditLoading = true

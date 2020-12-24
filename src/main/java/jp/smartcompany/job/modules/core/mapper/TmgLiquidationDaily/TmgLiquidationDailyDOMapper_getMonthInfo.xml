@@ -7,7 +7,7 @@
                 TO_CHAR(A.TLDD_DYYYYMMDD, 'yyyy/mm/dd') AS YYYYMMDD,
                 A.TLDD_CWEEKS           AS WEEK,
                 TMG_F_CONV_MIN2HHMI(A.TLDD_CWORKHOURS)       AS WORKHOURS,
-                TMG_F_GET_MGD(A.TLDD_CKUBUN, SYSDATE, TLDD_CCOMPANYID, TLDD_CCOMPANYID, 'ja') AS KUBUN,
+                TMG_F_GET_MGD_C(A.TLDD_CKUBUN, SYSDATE,3) AS KUBUN,
                 A.TLDD_CKUBUN AS KUBUNID,
                 A.TLDD_CSTARTTIME       AS STARTTIME,
                 A.TLDD_CENDTIME         AS ENDTIME,
@@ -21,18 +21,18 @@
                 TMG_LIQUIDATION_DAILY A,
                 (
                     SELECT
-                        SUM(TLDD_CWORKHOURS) AS WEEKWORKTIME,
-                        TLDD_CWEEKS AS WEEKS,
-                        TO_CHAR(TLDD_DYYYYMMDD,'yyyy') AS YYYY
+                        SUM(C.TLDD_CWORKHOURS) AS WEEKWORKTIME,
+                        C.TLDD_CWEEKS AS WEEKS,
+                        TO_CHAR(C.TLDD_DYYYYMMDD,'yyyy') AS YYYY
                     FROM
-                        TMG_LIQUIDATION_DAILY
+                        TMG_LIQUIDATION_DAILY C
                     WHERE
-                          TLDD_CEMPLOYEEID = TLDD_CEMPLOYEEID
-                      AND TLDD_DSTARTDATE =  #{startDate}
-                      AND TLDD_DENDDATE =#{endDate}
+                          C.TLDD_CEMPLOYEEID = #{empId}
+                      AND C.TLDD_DSTARTDATE =  #{startDate}
+                      AND C.TLDD_DENDDATE =#{endDate}
                     GROUP BY
-                        TO_CHAR(TLDD_DYYYYMMDD,'yyyy'),TLDD_CWEEKS
-                    ORDER BY  YYYY,TLDD_CWEEKS
+                        TO_CHAR(C.TLDD_DYYYYMMDD,'yyyy'),C.TLDD_CWEEKS
+                    ORDER BY  YYYY,C.TLDD_CWEEKS
                 ) B
             WHERE
                     B.WEEKS = A.TLDD_CWEEKS
