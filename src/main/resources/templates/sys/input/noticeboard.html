@@ -39,28 +39,32 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="success" icon="md-done-all" @click="getQuill" :loading="editLoading">登録</i-button>
+                    <i-button type="success" ghost icon="md-create" @click="isEditing = true" v-show="!isEditing && editPermission">新規投稿</i-button>
+                    <i-button @click="isEditing = false" v-show="isEditing">一覧に戻る</i-button>
+                    <i-button type="success" ghost icon="md-create" @click="uploadNotice('0')" :loading="editLoading" v-show="isEditing">一時保存</i-button>
+                    <i-button type="success" icon="md-done-all" @click="uploadNotice('1')" :loading="editLoading" v-show="isEditing">投稿</i-button>
                 </div>
             </div>
-            <div class="searchwrap">
+            <div class="searchwrap" v-show="isEditing">
                 <span class="label">掲示範囲</span>
                 <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple  @on-change="getPeopleBySelection">
                     <i-option v-for="(item, index) of rangeList" :key="index" :label="item.typeName" :value="item.typeId">
                     </i-option>
                 </i-select>
-                <!-- <span class="label">所属</span>
-                <span class="input-like-span width15">
-                    <Tooltip transfer　v-if="sectionName"trigger="hover" 　:theme="toolTipTheme()">{{ sectionName }}
-                        <div slot="content">{{ sectionName }}</div>
-                    </Tooltip>
-                </span> -->
+                <span class="label" style="width: 190px;">掲示板に一番上にします</span>
+                <span style="padding-left: 8px;border: 1px solid var(--input-border-grey);line-height: 29px; width: 15%;">
+                    <radio-group class="tl" v-model="updateValue.hbtCheaddisp">
+                        <Radio label="0">いいえ</Radio>
+                        <Radio label="1">はい</Radio>
+                     </radio-group>
+                </span>
             </div>
         </div>
         <div class="content_body">
-            <Alert v-show="this.selectedPeople.length > 0" class="primary-info tl">
+            <Alert v-show="this.selectedPeopleText.length > 0" class="primary-info tl">
                 <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
                     <span style="display: inline-block;width: 160px;color: var(--grey);">掲示範囲にいる社員： </span>
-                    <span class="tl width100"> {{ selectedPeople }}</span>
+                    <span class="tl width100"> {{ selectedPeopleText }}</span>
                   </div>
                   <Spin size="large" fix v-if="selectedPeopleloading"></Spin>
             </Alert>
@@ -74,7 +78,7 @@
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table">
           </i-table> -->
-            <Row :gutter="16">
+            <Row :gutter="16" v-show="isEditing">
                 <i-col span="12">
                     <div id="toolbar">
                         <span class="ql-formats">
@@ -213,18 +217,58 @@
                     </div>
                 </i-col>
                 <i-col span="12">
-                    <div class="width100" style="    white-space: pre;">{{debugquill}}</div>
+                    <!-- <div class="width100" style="    white-space: pre;">{{debugquill}}</div> -->
+
+                     <Row :gutter="10">
+                        <i-col span="13">
+                          <div class="label pl10 tc">件名</div>
+                          <div class="person-info">
+                            <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="updateValue.hbtCtitle" :maxlength="1000"></i-input>
+                          </div>
+                        </i-col>
+                        <i-col span="11">
+                          <div class="label pl10 tc">掲示期間</div>
+                          <div class="person-info">
+                            <Row :gutter="8">
+                              <i-col span="12">
+                                <date-picker v-model="updateValue.hbtDdateofannouncement" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd" @on-change="updateValue.hbtDdateofannouncement = $event"></date-picker>
+                              </i-col>
+                              <i-col span="12">
+                                <date-picker v-model="updateValue.hbtDdateofexpire" type="date" size="small" :clearable="false" :options="rangeOptions" format="yyyy/MM/dd"　@on-change="updateValue.hbtDdateofexpire = $event"></date-picker>
+                              </i-col>
+                            </Row>
+                          </div>
+                        </i-col>
+                        <i-col span="24" class="mt10" v-show="uploadFiles.length > 0">
+                            <div class="label pl10 tc">添付ファイル</div>
+                            <div style="border-right: 1px solid var(--border-grey); border-bottom: 1px solid var(--border-grey); border-left: 1px solid var(--border-grey); background-color: var(--selection-input-bg); padding: 8px; }">
+                                <ul class="ivu-upload-list tl mb10">
+                                    <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+                                        <span @click="">
+                                            <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
+                                        </span>
+                                        <!-- <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p> -->
+                                        <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                          </i-col>
+                      </Row>
                 </i-col>
             </Row>
             <Upload :show-upload-list="false" multiple action="/" :before-upload="handleBeforeUpload" style="display: none;">
                 <i-button icon="ios-cloud-upload-outline" ref="uploadBtn"></i-button>
-              </Upload>
-              <i-button @click="uploadNotice">uppppppp</i-button>
+            </Upload>
+            <Upload :show-upload-list="false" action="/" :before-upload="handleBeforeUpload2" style="display: none;">
+                <i-button icon="ios-cloud-upload-outline" ref="uploadImgBtn"></i-button>
+            </Upload>
         </div>
+        <Spin size="large" fix v-if="loading"></Spin>
         <back-top></back-top>
     </main>
     <div th:replace="layout/head::header"></div>
     <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}"></script>
+    <script th:src="${baseUrl + '/static/libs/image-resize.min.js?t='+ new java.util.Date().getTime()}"></script>
     <script th:src="${baseUrl + '/static/js/emoji.js?t='+ new java.util.Date().getTime()}"></script>
     <script>
         var UPLOAD_ICON = '<i class="ivu-icon ivu-icon-md-cloud-upload" style="font-size: 18px;" aria-hidden="true"></i>'
@@ -238,17 +282,27 @@
             data() {
                 return {
                     isShow: false,
-                    loading: true,
+                    loading: false,
                     emojiPop: false,
                     editLoading: false,
+                    isEditing: false,
                     btnLoading: false,
+                    editPermission: [[${ session }]].psSession.hasPublishPermission,
                     selectedPeople: '',
+                    selectedPeopleText: '',
                     selectedPeopleloading: false,
                     searchRange: [],
                     defaultOption: false,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    updateValue: {},
+                    updateValue: {
+                        hbtCheaddisp: '0'
+                    },
+                    rangeOptions: {
+                        disabledDate: date => {
+                            return date.valueOf() < -3600000 || date.valueOf() > 7983759600000
+                        }
+                    },
                     columns: [
                     ],
                     debugquill: '',
@@ -259,7 +313,7 @@
                 }
             },
             async created() {
-                // this.getTableData()
+                this.getTableData()
                 this.getSelection()
                 window.addEventListener('scroll', this.handleScroll, { passive: true })
             },
@@ -279,7 +333,7 @@
                 //     let node = super.create(value); //调用父类的方法生成node节点
                 //     value = this.sanitize(value); // 使用sanitize取出value
                 //     //判断是否拥有协议前缀 无则添加默认前缀
-                //     if (!(value.indexOf("http://") === 0 || value.indexOf("https://") === 0)) { 
+                //     if (!(value.indexOf("http://") === 0 || value.indexOf("https://") === 0)) {
                 //       value = "http://" + value;
                 //     }
                 //     // 设置href属性
@@ -328,12 +382,20 @@
                 const that = this
                 this.quill = new Quill(this.$refs.editor, {
                     modules: {
+                        imageResize: {
+                            displayStyles: {
+                                backgroundColor: 'black',
+                                border: 'none',
+                                color: 'white'
+                            },
+                            modules: ['Resize', 'DisplaySize', 'Toolbar']
+                        },
                         toolbar: {
-                            container: '#toolbar',  // 工具栏
+                            container: '#toolbar',
                             handlers: {
                                 'image': function (value) {
                                     if (value) {
-                                        that.$refs.uploadBtn.$el.click()
+                                        that.$refs.uploadImgBtn.$el.click()
                                     } else {
                                         this.quill.format('image', false);
                                     }
@@ -361,10 +423,10 @@
                     theme: 'snow'
                 });
                 // this.quill.enable(false)
-                this.quill.on('text-change', (delta, oldDelta, source) => {
-                    this.debugquill = this.quill.getContents()
-                    // this.debugquill = this.$refs.editor.children[0].innerHTML
-                })
+                // this.quill.on('text-change', (delta, oldDelta, source) => {
+                //     this.debugquill = this.quill.getContents()
+                //     // this.debugquill = this.$refs.editor.children[0].innerHTML
+                // })
                 this.quill.on('selection-change', range => {
                     if (!range) {
                         let e = document.querySelector('.ql-tooltip,.ql-editing')
@@ -387,22 +449,14 @@
             },
             methods: {
                 async getTableData() {
-                    // const OPTS = { ...this.opts }
-                    // OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-                    // OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-                    // Object.keys(OPTS).forEach(key => {
-                    //     if (OPTS[key] === '0') {
-                    //         delete OPTS[key]
-                    //     }
-                    // })
-                    // this.loading = true
-                    // try {
-                    //     const { data } = await this.http.get('sys/appmanager/applist', OPTS)
-                    //     this.tableData = data
-                    // } catch (error) {
-                    // } finally {
-                    //     this.loading = false
-                    // }
+                    try {
+                        const { data } = await this.http.get('sys/noticeboard/draft/list')
+                        console.log(data)
+                        // this.tableData = data
+                    } catch (error) {
+                    } finally {
+                        this.loading = false
+                    }
                 },
                 async getSelection() {
                     const { data } = await this.http.get('sys/noticeboard/rangelist')
@@ -423,52 +477,112 @@
                                 value: value,
                             }
                         })
-                        this.selectedPeople = text.slice(0, -2)
+                        this.selectedPeopleText = text.slice(0, -2)
                     } catch (error) {
                     } finally {
                         this.selectedPeopleloading = false
                     }
 
                 },
-                getQuill() {
-                    this.debugquill = this.quill.getContents()
-                },
                 handleBeforeUpload(files) {
-                    // 返回false, 取消自带上传
+                    // 上传附件
                     let checkPassed = true
-                    // if (files.size / 1024 > 500) {
-                    //     this.$Notice.warning({
-                    //         desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
-                    //     })
-                    //     checkPassed = false
-                    // }
-                    this.uploadFiles.push(files)
-                    // console.log(this.uploadFiles)
-                    // const {data} =  await this.http.uploadFiles('sys/noticeboard/upload/attachments', {files:[files]})
-                    // console.log(data)
-                    // if (checkPassed) {
-                    //     this.uploadFiles.push(files)
-                    // }
-                    // console.dir(this.quill.getSelection().index)
-                    // 插入图片，res为服务器返回的图片链接地址
-                    // quill.insertEmbed(length, 'image', res)
-                    // // 调整光标到最后
-                    // this.quill.setSelection(length + 1)
+                    if (this.uploadFiles.length >= 5) {
+                        this.$Notice.warning({
+                            title: '注意',
+                            desc: '添付可能なファイル数が上限（5個）を超えました。', duration: 6.5
+                        })
+                        checkPassed = false
+                    }
+                    if (files.size / (1024 * 1024) > 20) {
+                        this.$Notice.warning({
+                            title: '注意',
+                            desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました。', duration: 6.5
+                        })
+                        checkPassed = false
+                    }
+                    if (checkPassed) {
+                        this.uploadFiles.push(files)
+                    }
                     return false;
                 },
-                async uploadNotice() {
-                    // await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', {
-                    //     attachments: this.uploadFiles,
-                    //     hbtDdateofannouncement:'2020/12/25',
-                    //     hbtCtitle:'xixixixxx',
-                    //     hbtCcontents:'hahahahahaahnei'
-                    // })
-                    await this.http.uploadFiles('sys/noticeboard/upload/image', {
-                        file: this.uploadFiles,
+                handleBeforeUpload2(files) {
+                    // 上传图片
+                    let checkPassed = true
+                    if (files.size / (1024 * 1024) > 20) {
+                        this.$Notice.warning({
+                            desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました。', duration: 6.5
+                        })
+                        checkPassed = false
+                    }
+                    const imgType = ["jpg", "jpeg", "png", "gif"]
+                    if (!imgType.includes(files.type.split('image/')[1])) {
+                        this.$Notice.warning({
+                            desc: 'ファイル「' + files.name + '」のタイプがjpg、jpeg、png、gifではありません', duration: 6.5
+                        })
+                        checkPassed = false
+                    }
+                    if (checkPassed) {
+                        this.http.uploadFiles('sys/noticeboard/upload/image', {
+                            file: files,
+                        }).then(res => {
+                            let length = this.quill.getSelection().index
+                            this.quill.insertEmbed(length, 'image', `${BASE_URL}${res.data}`)
+                            this.quill.setSelection(length + 1)
+                        })
+                    }
+                    return false
+                },
+                uploadNotice(hbtCfix) {
+                    if(this.selectedPeople.length === 0) {
+                        return this.$Notice.warning({ title: '注意', desc: '掲示範囲を選択してください', duration: 6.5 })
+
+                    }
+                    if(!this.updateValue.hbtCtitle) {
+                        return this.$Notice.warning({ title: '注意', desc: '件名を入力してください', duration: 6.5 })
+
+                    }
+                    if(!this.updateValue.hbtDdateofannouncement) {
+                        return this.$Notice.warning({ title: '注意', desc: '開始時間を入力してください', duration: 6.5 })
+
+                    }
+                    if(this.updateValue.hbtDdateofexpire && new Date(this.updateValue.hbtDdateofannouncement) > new Date(this.updateValue.hbtDdateofexpire)) {
+                        return this.$Notice.warning({ title: '注意', desc: '掲示期間(終了時間)は(開始時間)より後の時刻を入力してください', duration: 6.5 })
+                    }
+
+                    if(!this.updateValue.hbtDdateofexpire) delete this.updateValue.hbtDdateofexpire
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: '投稿します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', {
+                                    attachments: this.uploadFiles,
+                                    ...this.updateValue,
+                                    hbtCcontents: this.$refs.editor.children[0].innerHTML,
+                                    sendRangeTypes: this.searchRange.join(),
+                                    empRangeIds: this.selectedPeople.map(e => e.key).join(),
+                                    hbtCfix: hbtCfix,
+                                })
+                                this.$Message.success(hbtCfix === '1' ? '投稿完了' : '一時保存完了')
+                                this.isEditing = false
+                                this.getTableData()
+                            } catch (error) {
+                            } finally {
+                                this.loading = false
+                            }
+                        }
                     })
                 },
-                async resolveUploaded() {
-                    await this.http.uploadFiles('sys/noticeboard/upload/attachments', this.uploadFiles)
+                handleDelFile(file) {
+                    // 删除文件
+                    // this.deleteFiles.push(file.name)
+                    this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
                 },
                 handleClickEmoji(emoji) {
                     let length = this.quill.selection.savedRange.index
