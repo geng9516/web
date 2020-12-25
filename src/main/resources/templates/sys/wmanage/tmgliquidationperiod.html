@@ -116,7 +116,7 @@
                                 <div class="cursor sum-row" style="height: 13px;" v-if="row[j].ntftype.length > 0 && row[j].ntftype[0]">
                                     <Poptip trigger="hover"　theme="light" placement="left" transfer style="height: 13px">
                                         <span style="height: 13px;width: 30px;line-height:13px;display:inline-block;border-radius: 0;border-style:solid;border-width:thin;border-color: var(--primary-info);line-height:11px;" class="pl5 pr5 tc">
-                                            <div style="top: -35%;transform: translate(-30%,0%);font-size: 25px;position: absolute;color: var(--primary-info)">&nbsp;&nbsp;...&nbsp;&nbsp;</div>
+                                            <div style="transform: translate(-25%, -70%);font-size: 25px;position: absolute;color: var(--primary-info)">&nbsp;&nbsp;...&nbsp;&nbsp;</div>
                                         </span>
                                             <div slot="content">
                                                 <div class="mt2" v-for="item of row[j].ntftype">{{item}}</div>
@@ -346,7 +346,7 @@
                     <i-button @click="makeNewPattern" type="dashed" icon="ios-add">新規</i-button>
                 </i-col>
             </Row>
-            <Alert class="primary-info tl">123</Alert>
+            <Alert class="primary-info tl">patter  - 代表 未改动 </Alert>
             <i-table border ref="monthTable" :columns="columnsMonth" :data="monthData"
                      :row-class-name="monthColDisabled" @on-row-click="patternSet" :loading="EditMonthLoading">
                 <template slot-scope="{ row, index }" slot="yyyymmdd">

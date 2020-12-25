@@ -24,10 +24,16 @@
             TLDD_CSPARECHAR2         AS NTFSTATUS,
             TLDD_CSPARECHAR3         AS HOLFLG,
             TLDD_CNOTIFICATIONTYPE   AS NTFTYPE, --仅第一个
-            TLDD_CPATTERN            AS PATTERNID
+            TLDD_CPATTERN            AS PATTERNID,
+            TPA_CPATTERNNAME         AS PATTERNNAME
         FROM
-            TMG_LIQUIDATION_DAILY
+            TMG_LIQUIDATION_DAILY LEFT JOIN
+                TMG_LIQUIDATION_PATTERN ON
+                TLDD_CPATTERN = TPA_CPATTERNID
+                AND TPA_CCUSTOMERID = TLDD_CCUSTOMERID
+                AND TPA_CCOMPANYID = TLDD_CCOMPANYID
         WHERE
+
             TRUNC(TLDD_DYYYYMMDD, 'mm') = TO_DATE(#{yyyymm},'yyyy/mm')
             AND TLDD_CEMPLOYEEID = #{empId}
             AND TLDD_CCUSTOMERID = #{custID}

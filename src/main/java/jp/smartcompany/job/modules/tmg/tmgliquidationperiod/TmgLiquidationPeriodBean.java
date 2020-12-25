@@ -292,6 +292,12 @@ public class TmgLiquidationPeriodBean {
         //月data
         List<LiquidationDailyInfoVo> liquidationDailyInfoVoList = iTmgliquidationDailyService.selectDailyInfo(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
         for (int i=0;i<liquidationDailyInfoVoList.size();i++) {
+
+            if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getNtfStatus()) && liquidationDailyInfoVoList.get(i).getNtfStatus().equals("TMG_NTFSTATUS|5")){
+                List<String> ntfInfo= iTmgNotificationService.getSelectNtfInfo(liquidationDailyInfoVoList.get(i).getDays(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
+                liquidationDailyInfoVoList.get(i).setComment(ntfInfo.stream().filter(ntf-> ntf!=null).collect(Collectors.joining("\\n")));
+            }
+
             if(!StrUtil.hasEmpty(liquidationDailyInfoVoList.get(i).getNtfStatus()) && liquidationDailyInfoVoList.get(i).getNtfStatus().equals("TMG_NTFSTAUTS|5")){
                 List<String> ntfList=iTmgNotificationService.getSelectNtfInfo(liquidationDailyInfoVoList.get(i).getDays(),empId,psDBBean.getCustID(),psDBBean.getCompCode());
                 liquidationDailyInfoVoList.get(i).setComment(ntfList.stream().filter(string ->!ntfList.isEmpty()).collect(Collectors.joining("\\")));
