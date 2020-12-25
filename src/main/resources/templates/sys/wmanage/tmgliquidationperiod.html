@@ -19,7 +19,7 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" icon="ios-albums" ghost @click="patternManager">パターン管理</i-button>
+                <i-button type="primary" icon="ios-albums" ghost @click="patternManagerBtn">パターン管理</i-button>
             </div>
         </div>
     </div>
@@ -33,7 +33,6 @@
                         <i-option value="1" label="カタカナ"></i-option>
                         <i-option value="2" label="番号"></i-option>
                     </i-select>
-
                 </i-input>
                 <i-button class="mr15" type="primary" icon="md-search" ghost :loading="DispLoading"
                           @click="getSearchTableData">検索</i-button>
@@ -224,11 +223,33 @@
         <Modal title="新規パターン" width="40" v-model="patternFlg" footer-hide :mask-closable="false">
             <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
             <i-form :label-width="120" ref="localValue">
-                <!--                <form-item label="所属">-->
-                <!--                    <span class="input-like-span">-->
-                <!--                        {{ empInfo.deptName }}-->
-                <!--                    </span>-->
-                <!--                </form-item>-->
+                <form-item label="区分">
+                    <div v-if="patternManager">
+                        <Row>
+                            <i-col span="6">
+                                <i-select v-model="patternDropDown.selectType" slot="prepend" >
+                                    <i-option value="0" label="全て"></i-option>
+                                    <i-option value="1" label="所属"></i-option>
+                                    <i-option value="2" label="種別"></i-option>
+                                </i-select>
+                            </i-col>
+                            <i-col span="18">
+                                <i-select v-model="optsSearch.type" slot="prepend" style="width: 100px;" v-if="patternDropDown.selectType === '1'">
+                                    <i-option v-for="(e, i) of patternDropDown.section" :value="e.sectionid" :key="i" :label="e.sectionname">
+                                    </i-option>
+                                </i-select>
+                                <i-select v-model="optsSearch.type" slot="prepend" style="width: 100px;" v-if="patternDropDown.selectType === '2'">
+                                    <i-option v-for="(e, i) of patternDropDown.workerType" :value="e.worktypeid" :key="i" :label="e.worktypename">
+                                    </i-option>
+                                </i-select>
+                            </i-col>
+                        </Row>
+                    </div>
+                    <div v-else>
+                        <span class="input-like-span">{{empInfo.empName}}</span>
+                    </div>
+                </form-item>
+
                 <form-item label="名称">
                     <i-input v-model="patternInfo.patternName" placeholder="入力してください"></i-input>
                 </form-item>
@@ -242,7 +263,7 @@
                         </i-col>
                         <i-col span="2">
                                 <span
-                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 10px">～</span>
                         </i-col>
                         <i-col span="11">
                             <i-input v-model="patternInfo.endTime" placeholder="終了時間" maxlength="5"
@@ -262,7 +283,7 @@
                         </i-col>
                         <i-col span="2">
                                 <span
-                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 10px">～</span>
                         </i-col>
                         <i-col span="11">
                             <i-input v-model="patternInfo.restTime[0].restClose" placeholder="終了時間" maxlength="5"
@@ -282,12 +303,52 @@
                         </i-col>
                         <i-col span="2">
                                 <span
-                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 10px">～</span>
                         </i-col>
                         <i-col span="11">
                             <i-input v-model="patternInfo.restTime[1].restClose" placeholder="終了時間" maxlength="5"
                                      icon="ios-clock-outline"
                                      @on-blur="handleInputChange(patternInfo.restTime[1],'restClose',$event.target)">
+                            </i-input>
+                        </i-col>
+                    </Row>
+                </form-item>
+                <form-item label="休憩時間3">
+                    <Row>
+                        <i-col span="11">
+                            <i-input v-model="patternInfo.restTime[2].restOpen" placeholder="開始時間" maxlength="5"
+                                     icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[2],'restOpen',$event.target)">
+                            </i-input>
+                        </i-col>
+                        <i-col span="2">
+                                <span
+                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 10px">～</span>
+                        </i-col>
+                        <i-col span="11">
+                            <i-input v-model="patternInfo.restTime[2].restClose" placeholder="終了時間" maxlength="5"
+                                     icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[2],'restClose',$event.target)">
+                            </i-input>
+                        </i-col>
+                    </Row>
+                </form-item>
+                <form-item label="休憩時間4">
+                    <Row>
+                        <i-col span="11">
+                            <i-input v-model="patternInfo.restTime[3].restOpen" placeholder="開始時間" maxlength="5"
+                                     icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[3],'restOpen',$event.target)">
+                            </i-input>
+                        </i-col>
+                        <i-col span="2">
+                                <span
+                                        style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 10px">～</span>
+                        </i-col>
+                        <i-col span="11">
+                            <i-input v-model="patternInfo.restTime[3].restClose" placeholder="終了時間" maxlength="5"
+                                     icon="ios-clock-outline"
+                                     @on-blur="handleInputChange(patternInfo.restTime[3],'restClose',$event.target)">
                             </i-input>
                         </i-col>
                     </Row>
@@ -662,8 +723,12 @@
 
 
 
-                //pattern編集画面
-
+                //pattern編集画
+                patternDropDown:{
+                   selectType:'1',
+                   workerType:[],
+                   section:[]
+                },
                 patternInfo: {
                     sectionId: '',
                     worktypeId: '',
@@ -680,9 +745,18 @@
                             restOpen: '',
                             restClose: ''
                         },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
                     ]
                 },
                 patternFlg: false,
+                patternManager:false,
                 patternErrorMsg: '',
             }
         },
@@ -826,8 +900,36 @@
                     this.handleClickLeaf()
                 }
             },
-            patternManager() {
-
+            patternManagerBtn() {
+                this.patternManager=true;
+                this.patternFlg=true;
+                console.log(this.patternManager)
+                this.patternInfo = {
+                    sectionId: '',
+                    worktypeId: '',
+                    empId: '',
+                    patternName: '',
+                    startTime: '',
+                    endTime: '',
+                    restTime: [
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                    ]
+                }
             },
             async showDetails(e) {
                 console.log(e)
@@ -1202,12 +1304,13 @@
 
             //新規パターン画面の表示
             makeNewPattern() {
+                this.patternManager=false
                 this.patternFlg = true
                 //重制新规pattern
                 this.patternInfo = {
                     sectionId: '',
                     worktypeId: '',
-                    empId: '',
+                    empId: this.empInfo.empId,
                     patternName: '',
                     startTime: '',
                     endTime: '',
@@ -1220,11 +1323,18 @@
                             restOpen: '',
                             restClose: ''
                         },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
+                        {
+                            restOpen: '',
+                            restClose: ''
+                        },
                     ]
                 }
             },
             recovery(){
-
                 this.$Modal.confirm({
                     inDrawer: true,
                     width: 480,
