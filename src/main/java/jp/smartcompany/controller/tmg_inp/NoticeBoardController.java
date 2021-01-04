@@ -1,5 +1,7 @@
 package jp.smartcompany.controller.tmg_inp;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
@@ -14,9 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("sys/noticeboard")
@@ -106,8 +110,12 @@ public class NoticeBoardController {
             // 0:当作草稿存储 1:保存为正式公告 不填默认0
             @RequestParam(required = false,defaultValue = "0") String hbtCfix,
             // 修改时删除的附件id
-            @RequestParam(required = false) List<Long> deleteAttachmentIdList
+            @RequestParam(required = false) String deleteAttachmentIdStr
     ) {
+        List<Long> deleteAttachmentIdList = CollUtil.newArrayList();
+        if (StrUtil.isNotBlank(deleteAttachmentIdStr)) {
+            deleteAttachmentIdList = Arrays.stream(deleteAttachmentIdStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
+        }
         DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";

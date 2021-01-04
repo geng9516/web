@@ -30,8 +30,8 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/logout","/expirePassword","/favicon.ico","/sys/log/**","/static/**","/error");
-        registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/static/**");
+        registry.addInterceptor(auditInterceptor).excludePathPatterns("/upload/**","/login","/logout","/expirePassword","/favicon.ico","/sys/log/**","/static/**","/error");
+        registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/upload/**","/static/**");
 
         String[] loginInterceptorUrlPattern = {
                 "/",
@@ -58,9 +58,10 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/favicon.ico")
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
         List<String> uploadFilePaths = CollUtil.newArrayList(
-                "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")+"/",
-                "file:"+cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH").replaceAll("\\\\","/")+"/"
+                "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH")+"\\",
+                "file:"+cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH")+"\\"
         );
+        System.out.println(Arrays.toString(uploadFilePaths.toArray(new String[0])));
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations(
                         uploadFilePaths.toArray(new String[0])
