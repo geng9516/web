@@ -22,7 +22,6 @@ import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftAttachmentDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
