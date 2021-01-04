@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper.TmgTimepunch;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
@@ -120,4 +121,12 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
                        @Param("modProgramId")String modProgramId,
                        @Param("customerId")String customerId,
                        @Param("companyId")String companyId);
+
+    /**
+     * 個人勤務及び休暇情報
+     *
+     * @param params
+     * @return
+     */
+    List<DutyAndRelaxDateDTO> selectDisplayInfo(HashMap<String, Object> params);
 }

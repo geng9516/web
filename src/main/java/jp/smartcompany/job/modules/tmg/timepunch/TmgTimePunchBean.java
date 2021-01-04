@@ -339,8 +339,6 @@ public class TmgTimePunchBean {
      */
     public List<DutyAndRelaxDateDTO> getDutyAndRelaxDate(String baseDate) {
 
-        List<DutyAndRelaxDateDTO> dutyAndRelaxDateDTOList = new ArrayList<DutyAndRelaxDateDTO>();
-        DutyAndRelaxDateDTO dutyAndRelaxDateDTO = new DutyAndRelaxDateDTO();
         //01
         String custId = psDBBean.getCustID();
         //01
@@ -350,71 +348,8 @@ public class TmgTimePunchBean {
         //言語
         String language = psDBBean.getLanguage();
 
-        // 月初
-        String startDate = "";
-        //　月末
-        String endDate = "";
-        if (null == baseDate || "".equals(baseDate)) {
-            startDate = DateUtil.format(DateUtil.beginOfMonth(new Date()), DATE_FORMAT);
-            endDate = DateUtil.format(DateUtil.endOfMonth(new Date()), DATE_FORMAT);
-        } else {
-            startDate = DateUtil.format(DateUtil.beginOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
-            endDate = DateUtil.format(DateUtil.endOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
-        }
-
-        // 1.月間出勤日数   月間出勤時間
-        HashMap<String, Object> result = this.selectDutyDaysAndHours(custId, compCode, employeeId, language, startDate);
-        if (null != result) {
-            //月間出勤日数
-            if (null != result.get(DUTYDAYS_KEY)) {
-                String dutyDays = result.get(DUTYDAYS_KEY).toString() + "日";
-                //月間出勤日数
-                dutyAndRelaxDateDTO.setTitle("月間出勤日数");
-                dutyAndRelaxDateDTO.setContext(dutyDays);
-            }
-            dutyAndRelaxDateDTOList.add(0,dutyAndRelaxDateDTO);
-
-            //月間出勤時間
-            DutyAndRelaxDateDTO dutyAndRelaxDateDTO5 = new DutyAndRelaxDateDTO();
-            if (null != result.get(DUTYHOURS_KEY)) {
-                String dutyHours = result.get(DUTYHOURS_KEY).toString();
-                if (dutyHours.indexOf(":") > 0) {
-                    dutyAndRelaxDateDTO5.setContext(dutyHours.substring(0, dutyHours.indexOf(":")) + "時" + dutyHours.substring(dutyHours.indexOf(":") + 1, dutyHours.length()) + "分");
-                }
-            }
-            dutyAndRelaxDateDTO5.setTitle("出勤時間");
-            dutyAndRelaxDateDTOList.add(1,dutyAndRelaxDateDTO5);
-        }
-        //２.月間実働時間
-        DutyAndRelaxDateDTO dutyAndRelaxDateDTO1 = new DutyAndRelaxDateDTO();
-        String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
-        //月間実働時間
-        dutyAndRelaxDateDTO1.setTitle("月間実働時間");
-        dutyAndRelaxDateDTO1.setContext(dutyHours);
-        dutyAndRelaxDateDTOList.add(2,dutyAndRelaxDateDTO1);
-
-        // ３.超過勤務時間
-        DutyAndRelaxDateDTO dutyAndRelaxDateDTO3 = new DutyAndRelaxDateDTO();
-        String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);
-        //超過勤務時間
-        dutyAndRelaxDateDTO3.setTitle("超過勤務時間");
-        dutyAndRelaxDateDTO3.setContext(overTime);
-        dutyAndRelaxDateDTOList.add(3,dutyAndRelaxDateDTO3);
-
-        // ４.年次休暇
-        DutyAndRelaxDateDTO dutyAndRelaxDateDTO4 = new DutyAndRelaxDateDTO();
-        String npaidRestDaysHour = this.getNpaidRestDaysHour(employeeId, startDate, compCode, custId);
-        //年次休暇
-        dutyAndRelaxDateDTO4.setTitle("有休残日数");
-        dutyAndRelaxDateDTO4.setContext(npaidRestDaysHour);
-        dutyAndRelaxDateDTOList.add(4,dutyAndRelaxDateDTO4);
-        // lruCache.put(CACHE_DUTYANDRELAXTIME, dutyAndRelaxDateDTO);
-        // logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache までロードする");
-        return dutyAndRelaxDateDTOList;
-        /*} else {
-            logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache から取り出す");
-            return dutyAndRelaxDateDTO;
-        }*/
+        List<DutyAndRelaxDateDTO> dutyAndRelaxDateListDTO = this.selectDisplayInfo(custId, compCode, employeeId, language);
+        return dutyAndRelaxDateListDTO;
     }
 
     /**
@@ -803,6 +738,22 @@ public class TmgTimePunchBean {
         Integer[] schSection = new Integer[]{startTime, startTime + 24};
 
         return schSection;
+    }
+
+    /**
+     * 出勤日数と出勤時間
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language 2020/04/01
+     * @return
+     */
+    private List<DutyAndRelaxDateDTO> selectDisplayInfo(String custId, String compCode, String employeeId, String language) {
+        //出勤日数と時間数を取得
+        List<DutyAndRelaxDateDTO> result = iTmgTimepunchService.selectDisplayInfo(custId, compCode, employeeId, language);
+
+        return result;
     }
 
 

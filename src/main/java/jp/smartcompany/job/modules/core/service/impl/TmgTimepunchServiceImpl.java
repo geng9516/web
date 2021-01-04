@@ -11,6 +11,7 @@ import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
@@ -174,6 +175,16 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
     @Override
     public void execTDAInsert(String modUserId, String modProgramId, String customerId, String companyId){
         baseMapper.execTDAInsert(modUserId,  modProgramId,  customerId, companyId);
+    }
+
+    @Override
+    public List<DutyAndRelaxDateDTO> selectDisplayInfo(String custId, String compCode, String employeeId, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("employeeId", employeeId);
+        params.put("language", language);
+        return baseMapper.selectDisplayInfo(params);
     }
 
 }

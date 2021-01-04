@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
@@ -180,4 +181,15 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      * @return
      */
     void execTDAInsert(String modUserId, String modProgramId, String customerId, String companyId);
+
+    /**
+     * 個人勤務及び休暇情報
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @return
+     */
+    List<DutyAndRelaxDateDTO> selectDisplayInfo(String custId, String compCode, String employeeId, String language);
 }
