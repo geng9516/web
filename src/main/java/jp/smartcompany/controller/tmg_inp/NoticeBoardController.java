@@ -106,7 +106,7 @@ public class NoticeBoardController {
             @RequestParam(required = false,defaultValue = "0") String hbtCheaddisp,
             // 0:当作草稿存储 1:保存为正式公告 不填默认0
             @RequestParam(required = false,defaultValue = "0") String hbtCfix,
-            // 附件对应删除标识位
+            // 修改时删除的附件id
             @RequestParam(required = false) List<Long> deleteAttachmentIdList
     ) {
         DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList);
