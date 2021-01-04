@@ -702,7 +702,7 @@
                                     ...this.updateValue,
                                     hbtCcontents: this.$refs.editor.children[0].innerHTML,
                                     sendRangeTypes: this.searchRange.join(),
-                                    deleteAttachmentIdList: [...this.deleteFiles],
+                                    deleteAttachmentIdList: this.deleteFiles.join(),
                                     empRangeIds: this.selectedPeople.map(e => e.key).join(),
                                     hbtCfix: hbtCfix,
                                 }

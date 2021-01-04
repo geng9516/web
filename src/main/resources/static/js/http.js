@@ -62,7 +62,7 @@ const uploadFiles = (url, formData) => {
         transformRequest: [function (data) {
           const formData = new FormData()
           for (const key of Object.keys(data)) {
-            if(data[key] instanceof Array && data[key][0] instanceof Object) {
+            if(data[key] instanceof Array) {
               data[key].forEach(e=>{
                 formData.append(key, e, e.name)
               })
