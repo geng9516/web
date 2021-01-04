@@ -382,6 +382,7 @@
                     debugquill: '',
                     tableData: [],
                     uploadFiles: [],
+                    deleteFiles:[],
                     rangeList: [],
                     contentScrollTop: 0
                 }
@@ -560,6 +561,7 @@
                                     name: e.hbtfFilename.split('\\')[1],
                                     url: `${BASE_URL}/${e.hbtfFileUrl}`,
                                     type: e.hbtfFilename.split('.')[1],
+                                    hbtfId: e.hbtfId,
                                     isDefault: true
                                 }
                             })
@@ -700,6 +702,7 @@
                                     ...this.updateValue,
                                     hbtCcontents: this.$refs.editor.children[0].innerHTML,
                                     sendRangeTypes: this.searchRange.join(),
+                                    deleteAttachmentIdList: [...this.deleteFiles],
                                     empRangeIds: this.selectedPeople.map(e => e.key).join(),
                                     hbtCfix: hbtCfix,
                                 }
@@ -711,6 +714,7 @@
                                 this.resetDraft()
                                 this.getTableData()
                             } catch (error) {
+                                console.log(error)
                             } finally {
                                 this.loading = false
                             }
@@ -722,8 +726,9 @@
                     this.isEditing = false
                     this.updateValue = {
                         hbtCheaddisp: '0'
-                    },
-                        this.uploadFiles = []
+                    }
+                    this.uploadFiles = []
+                    this.deleteFiles = []
                     this.searchRange = ''
                     this.selectedPeople = ''
                     this.selectedPeopleText = ''
@@ -731,7 +736,7 @@
                 },
                 handleDelFile(file) {
                     // 删除文件
-                    // this.deleteFiles.push(file.name)
+                    if(file.isDefault) this.deleteFiles.push(file.hbtfId)
                     this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
                 },
                 handleClickEmoji(emoji) {
