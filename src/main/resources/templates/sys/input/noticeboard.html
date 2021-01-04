@@ -42,16 +42,18 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="success" ghost icon="md-create" @click="isEditing = true"
-                        v-show="!isEditing && editPermission">新規投稿</i-button>
-                    <i-button @click="isEditing = false" v-show="isEditing">一覧に戻る</i-button>
+                    <i-button type="success" ghost icon="md-create" @click="isAdding = true"
+                        v-show="!isAdding && editPermission">新規投稿</i-button>
+                    <i-button @click="resetDraft" v-show="isAdding">一覧に戻る</i-button>
                     <i-button type="success" ghost icon="md-create" @click="uploadNotice('0')" :loading="editLoading"
-                        v-show="isEditing">一時保存</i-button>
+                        v-show="isAdding">一時保存</i-button>
                     <i-button type="success" icon="md-done-all" @click="uploadNotice('1')" :loading="editLoading"
-                        v-show="isEditing">投稿</i-button>
+                        v-show="isAdding">投稿</i-button>
+                    <i-button type="error" ghost icon="md-trash" @click="deleteDraft({hbtId:editId})" :loading="editLoading"
+                    v-show="isAdding && isEditing">削除</i-button>
                 </div>
             </div>
-            <div class="searchwrap" v-show="isEditing">
+            <div class="searchwrap" v-show="isAdding">
                 <span class="label">掲示範囲</span>
                 <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple
                     @on-change="getPeopleBySelection">
@@ -70,7 +72,7 @@
             </div>
         </div>
         <div class="content_body">
-            <Alert v-show="this.selectedPeopleText.length > 0 && isEditing" class="primary-info tl">
+            <Alert v-show="this.selectedPeopleText.length > 0 && isAdding" class="primary-info tl">
                 <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
                     <span style="display: inline-block;width: 160px;color: var(--grey);">掲示範囲にいる社員： </span>
                     <span class="tl width100"> {{ selectedPeopleText }}</span>
@@ -87,7 +89,7 @@
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table">
           </i-table> -->
-            <span v-show="!isEditing">
+            <span v-show="!isAdding">
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
                     <Icon type="logo-buffer"></Icon>
                     下書
@@ -96,13 +98,13 @@
                     :columns="draftColumns" :disabled-hover="true" :data="draftData" :loading="drafLoading" ref="table">
                     <template slot-scope="{ row }" slot="action">
                         <div>
-                            <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px">編集</i-button>
+                            <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="editDraft(row)">編集</i-button>
                             <i-button type="error" ghost size="small" icon="ios-trash" 　class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" style="margin-right: 5px" @click="deleteDraft(row)" >削除</i-button>
                         </div>
                     </template>
                 </i-table>
             </span>
-            <Row :gutter="16" v-show="isEditing">
+            <Row :gutter="16" v-show="isAdding">
                 <i-col span="12">
                     <div id="toolbar">
                         <span class="ql-formats">
@@ -271,12 +273,12 @@
                                 style="border-right: 1px solid var(--border-grey); border-bottom: 1px solid var(--border-grey); border-left: 1px solid var(--border-grey); background-color: var(--selection-input-bg); padding: 8px; }">
                                 <ul class="ivu-upload-list tl mb10">
                                     <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                                        <span @click="">
+                                        <span @click="openFile(item)">
                                             <Icon
                                                 :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
                                             </Icon> {{ item.name }}
                                         </span>
-                                        <!-- <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p> -->
+                                        <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
                                         <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove"
                                             @click="handleDelFile(item)"></i>
                                     </li>
@@ -296,6 +298,7 @@
         </div>
         <Spin size="large" fix v-if="loading"></Spin>
         <back-top></back-top>
+        <a href='' download style="display: none;" ref="downloadBtn"></a>
     </main>
     <div th:replace="layout/head::header"></div>
     <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}"></script>
@@ -317,6 +320,7 @@
                     drafLoading: false,
                     emojiPop: false,
                     editLoading: false,
+                    isAdding: false,
                     isEditing: false,
                     btnLoading: false,
                     editPermission: [[${ session }]].psSession.hasPublishPermission,
@@ -533,6 +537,46 @@
                         this.drafLoading = false
                     }
                 },
+                async editDraft(row) {
+                    const id = row.hbtId
+                    try {
+                        this.drafLoading = true
+                        const { data } = await this.http.get(`sys/noticeboard/draft/${id}`)
+                        this.isAdding = true
+                        // 编辑的时候多一个删除按键
+                        this.isEditing = true
+                        // 这里v-model会自动触发一次 this.getPeopleBySelection()
+                        this.searchRange = data.typeRangeList.map(e => e.typeId)
+                        this.$refs.editor.children[0].innerHTML = data.hbtCcontents
+                        this.updateValue.hbtCtitle = data.hbtCtitle
+                        this.updateValue.hbtDdateofannouncement = Utils.formatDate(data.hbtDdateofannouncement, 'yyyy/mm/dd')
+                        this.updateValue.hbtDdateofexpire = data.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbtDdateofexpire, 'yyyy/mm/dd')
+                        this.updateValue.hbtCheaddisp = data.hbtCheaddisp
+                        this.editId = data.hbtId
+                        // 文件
+                        this.$nextTick(() => {
+                            this.uploadFiles = data.attachments.map(e => {
+                                return {
+                                    name: e.hbtfFilename.split('\\')[1],
+                                    url: `${BASE_URL}/${e.hbtfFileUrl}`,
+                                    type: e.hbtfFilename.split('.')[1],
+                                    isDefault: true
+                                }
+                            })
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.drafLoading = false
+                    }
+                },
+                openFile(item) {
+                    if(item.url) {
+                        console.log(this.$refs.downloadBtn)
+                        this.$refs.downloadBtn.href= item.url
+                        this.$refs.downloadBtn.click()
+                        // window.open(item.url, '_blank')
+                    }
+                },
                 deleteDraft(row) {
                     this.$Modal.confirm({
                         title: '注意',
@@ -542,6 +586,7 @@
                         cancelText: '戻る',
                         onOk: async () => {
                             await this.http.post('sys/noticeboard/draft/delete', [row.hbtId])
+                            this.resetDraft()
                             this.getTableData()
                             this.$Message.success('削除完了')
                         }
@@ -650,24 +695,20 @@
                         onOk: async () => {
                             try {
                                 this.loading = true
-                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', {
-                                    attachments: this.uploadFiles,
+                                let opts ={
+                                    attachments: this.uploadFiles.filter(e=> !e.isDefault),
                                     ...this.updateValue,
                                     hbtCcontents: this.$refs.editor.children[0].innerHTML,
                                     sendRangeTypes: this.searchRange.join(),
                                     empRangeIds: this.selectedPeople.map(e => e.key).join(),
                                     hbtCfix: hbtCfix,
-                                })
+                                }
+                                if(this.isEditing) {
+                                    opts.hbtId = this.editId
+                                }
+                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
                                 this.$Message.success(hbtCfix === '1' ? '投稿完了' : '一時保存完了')
-                                this.isEditing = false
-                                this.updateValue = {
-                                    hbtCheaddisp: '0'
-                                },
-                                this.uploadFiles = []
-                                this.searchRange = ''
-                                this.selectedPeople = ''
-                                this.selectedPeopleText = ''
-                                this.quill.setText('');
+                                this.resetDraft()
                                 this.getTableData()
                             } catch (error) {
                             } finally {
@@ -675,6 +716,18 @@
                             }
                         }
                     })
+                },
+                resetDraft() {
+                    this.isAdding = false
+                    this.isEditing = false
+                    this.updateValue = {
+                        hbtCheaddisp: '0'
+                    },
+                        this.uploadFiles = []
+                    this.searchRange = ''
+                    this.selectedPeople = ''
+                    this.selectedPeopleText = ''
+                    this.quill.setText('');
                 },
                 handleDelFile(file) {
                     // 删除文件
