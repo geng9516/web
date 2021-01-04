@@ -34,4 +34,6 @@ public class DraftNoticeDTO {
     private String empRangeIds;
     // 所选发送范围type，用逗号隔开
     private String rangeTypes;
+    // 文件删除标识位
+    private List<Long> deleteAttachmentIdList;
 }

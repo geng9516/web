@@ -22,6 +22,7 @@ import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftAttachmentDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
@@ -203,7 +204,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                id = tempDO.getHbtId();
             }
             // 如果有附件则需要保存用户上传的附件
-            uploadAttachments(id,uploadFiles,isUpdate,true);
+            uploadAttachments(id,uploadFiles,isUpdate,true,dto.getDeleteAttachmentIdList());
         }
     }
 
@@ -282,19 +283,34 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
      * @param isUpdate 是否是草稿的更新动作
      * @param isDraft 是否保存为正式公告
      */
-    public void uploadAttachments(Long articleId,List<MultipartFile> uploadFiles,boolean isUpdate,boolean isDraft) {
+    public void uploadAttachments(Long articleId, List<MultipartFile> uploadFiles, boolean isUpdate, boolean isDraft, List<Long> deleteAttachmentIdList) {
         UploadFileUtil uploadFileUtil = new UploadFileUtil();
         // 如果是编辑草稿
         if (isDraft) {
             // 如果上传了新的附件，则要把原来已经上传的附件删除
             if (CollUtil.isNotEmpty(uploadFiles)) {
-                // 如果是修改操作，则需要删除之前相对应的附件
-                if (!isUpdate) {
+                // 如果是修改操作
+                List<HistBulletinBoardTempFileDO> needDeleteFileList = CollUtil.newArrayList();
+                if (isUpdate) {
                     List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
-                    if (CollUtil.isNotEmpty(oldFileList)) {
-                        List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
-                        realPathList.forEach(uploadFileUtil::removePreFile);
-                        histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+                    // 如果附件删除标识列表不为空,如果为空则会删除之前上传的所有附件
+                    if (CollUtil.isNotEmpty(deleteAttachmentIdList)) {
+                        for (Long id : deleteAttachmentIdList) {
+                            // 如果此附件需要删除
+                            Optional<HistBulletinBoardTempFileDO> deleteFile = oldFileList.stream().filter(item -> item.getHbtfId().equals(id)).findAny();
+                            deleteFile.ifPresent(needDeleteFileList::add);
+                        }
+                        if (CollUtil.isNotEmpty(needDeleteFileList)) {
+                            List<String> realPathList = needDeleteFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                            realPathList.forEach(uploadFileUtil::removePreFile);
+                            histBulletinBoardTempFileService.removeByIds(needDeleteFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+                        }
+                    } else {
+                        if (CollUtil.isNotEmpty(oldFileList)) {
+                            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                            realPathList.forEach(uploadFileUtil::removePreFile);
+                            histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+                        }
                     }
                 }
                 // 将新的附件保存
@@ -310,6 +326,18 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                         uploadBoardFileList.add(fileDO);
                     });
                     histBulletinBoardTempFileService.saveBatch(uploadBoardFileList);
+                }
+            }
+            // 如果没有上传附件，则要检查原先是否存在附件，如果存在要全部删除
+            else {
+                // 如果是修改动作才需要检查是否存在附件
+                if (isUpdate) {
+                    List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
+                    if (CollUtil.isNotEmpty(oldFileList)) {
+                        List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                        realPathList.forEach(uploadFileUtil::removePreFile);
+                        histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
+                    }
                 }
             }
         }

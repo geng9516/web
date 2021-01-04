@@ -3,6 +3,7 @@ package jp.smartcompany.controller.tmg_inp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftAttachmentDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
@@ -104,9 +105,11 @@ public class NoticeBoardController {
             // 1:置顶 0:不置顶 不填默认0
             @RequestParam(required = false,defaultValue = "0") String hbtCheaddisp,
             // 0:当作草稿存储 1:保存为正式公告 不填默认0
-            @RequestParam(required = false,defaultValue = "0") String hbtCfix
+            @RequestParam(required = false,defaultValue = "0") String hbtCfix,
+            // 附件对应删除标识位
+            @RequestParam(required = false) List<Long> deleteAttachmentIdList
     ) {
-        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds);
+        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";
     }
@@ -133,7 +136,7 @@ public class NoticeBoardController {
     }
 
 
-    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String sendRangeTypes,String empRangeIds) {
+    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String sendRangeTypes,String empRangeIds,List<Long> deleteAttachmentIdList) {
         DraftNoticeDTO dto = new DraftNoticeDTO();
         dto.setAttachments(attachments);
         dto.setHbtCcontents(hbtCcontents);
@@ -145,6 +148,7 @@ public class NoticeBoardController {
         dto.setHbtId(hbtId);
         dto.setRangeTypes(sendRangeTypes);
         dto.setEmpRangeIds(empRangeIds);
+        dto.setDeleteAttachmentIdList(deleteAttachmentIdList);
         return dto;
     }
 
