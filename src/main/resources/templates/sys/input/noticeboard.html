@@ -558,7 +558,7 @@
                         this.$nextTick(() => {
                             this.uploadFiles = data.attachments.map(e => {
                                 return {
-                                    name: e.hbtfFilename.split('\\')[1],
+                                    name: e.hbtfFilename,
                                     url: `${BASE_URL}/${e.hbtfFileUrl}`,
                                     type: e.hbtfFilename.split('.')[1],
                                     hbtfId: e.hbtfId,
