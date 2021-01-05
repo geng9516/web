@@ -108,30 +108,30 @@
                 <i-col span="12">
                     <div id="toolbar">
                         <span class="ql-formats">
-                            <button class="ql-bold"></button>
-                            <button class="ql-italic"></button>
-                            <button class="ql-underline"></button>
-                            <button class="ql-strike"></button>
+                            <button class="ql-bold" title="太字"></button>
+                            <button class="ql-italic" title="斜体"></button>
+                            <button class="ql-underline" title="下線"></button>
+                            <button class="ql-strike" title="打ち消し線"></button>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-list" value="ordered"></button>
-                            <button class="ql-list" value="bullet"></button>
+                            <button class="ql-list" value="ordered" title="番号付きリスト"></button>
+                            <button class="ql-list" value="bullet" title="リスト"></button>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-script" value="sub"></button>
-                            <button class="ql-script" value="super"></button>
+                            <button class="ql-script" value="sub" title="下付き文字"></button>
+                            <button class="ql-script" value="super" title="上付き文字"></button>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-indent" value="-1"></button>
-                            <button class="ql-indent" value="+1"></button>
+                            <button class="ql-indent" value="-1" title="字上げ"></button>
+                            <button class="ql-indent" value="+1" title="字下げ"></button>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-clean"></button>
-                            <button class="ql-undo"></button>
-                            <button class="ql-redo"></button>
+                            <button class="ql-clean" title="フォーマットクリア"></button>
+                            <button class="ql-undo" title="元に戻す"></button>
+                            <button class="ql-redo" title="やり直す"></button>
                         </span>
                         <span class="ql-formats">
-                            <select class="ql-color">
+                            <select class="ql-color" title="フォントの色">
                                 <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
                                 <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
                                 <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
@@ -167,7 +167,7 @@
                                 <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)" />
                                 <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)" />
                             </select>
-                            <select class="ql-background">
+                            <select class="ql-background" title="塗りつぶしの色">
                                 <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
                                 <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
                                 <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
@@ -206,12 +206,12 @@
                             </select>
                         </span>
                         <span class="ql-formats">
-                            <button class="ql-link"></button>
-                            <button class="ql-image"></button>
-                            <button class="ql-upload"></button>
+                            <button class="ql-link" title="リンク"></button>
+                            <button class="ql-image" title="画像"></button>
+                            <button class="ql-upload" title="アップロード"></button>
                         </span>
                         <span class="ql-formats">
-                            <select class="ql-size">
+                            <select class="ql-size" title="フォント サイズ">
                                 <option value="14px"></option>
                                 <option value="16px"></option>
                                 <option value="18px"></option>
@@ -224,13 +224,13 @@
                         </span>
                         <span class="ql-formats">
                             <Poptip v-model="emojiPop" placement="right-start" class="emoji-poptip">
-                                <i-button size="small" icon="md-happy" style="font-size: 18px;" class="ql-emoji">
+                                <i-button size="small" icon="md-happy" style="font-size: 18px;" class="ql-emoji" title="絵文字">
                                 </i-button>
                                 <div class="tr" slot="content">
                                     <div v-for="(item,category,index) in SM_EMOJI" class="tl">
                                         <div :class="index > 0 ? 'mt5 mb2': 'mb2'" style="font-size: 16px;">{{category}}
                                         </div>
-                                        <div style="display: flex;flex-wrap: wrap;overflow-y: hidden;">
+                                        <div class="tc" style="display: flex;flex-wrap: wrap;overflow-y: hidden;">
                                             <span v-for="(emoji, emojiName) in item" class="emoji"
                                                 @click="handleClickEmoji(emoji)">{{ emoji }}</span>
                                         </div>
