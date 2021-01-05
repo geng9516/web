@@ -57,7 +57,6 @@ public class WebConfiguration implements WebMvcConfigurer {
                 "file:" + cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH") + "\\",
                 "file:" + cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH") + "\\"
         };
-        System.out.println(Arrays.toString(uploadFilePaths));
         registry.addResourceHandler("/upload/**").addResourceLocations(
                 uploadFilePaths
         );
