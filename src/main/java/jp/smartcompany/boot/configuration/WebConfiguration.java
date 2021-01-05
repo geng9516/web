@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.configuration;
 
-import cn.hutool.core.collection.CollUtil;
 import jp.smartcompany.boot.interceptor.AuditInterceptor;
 import jp.smartcompany.boot.interceptor.LoginInfoInterceptor;
 import jp.smartcompany.boot.interceptor.SmartParameterInterceptor;
@@ -11,17 +10,16 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Xiao Wenpeng
  */
 @Configuration
 @RequiredArgsConstructor
-public class WebConfiguration extends WebMvcConfigurationSupport {
+public class WebConfiguration implements WebMvcConfigurer {
 
     private final AuditInterceptor auditInterceptor;
     private final LoginInfoInterceptor loginInfoInterceptor;
@@ -55,18 +53,14 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/");
         registry.addResourceHandler("/favicon.ico")
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
-        registry.addResourceHandler("/favicon.ico")
-                .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
-        List<String> uploadFilePaths = CollUtil.newArrayList(
-                "file:"+cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH")+"\\",
-                "file:"+cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH")+"\\"
+        String[] uploadFilePaths = {
+                "file:" + cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH") + "\\",
+                "file:" + cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH") + "\\"
+        };
+        System.out.println(Arrays.toString(uploadFilePaths));
+        registry.addResourceHandler("/upload/**").addResourceLocations(
+                uploadFilePaths
         );
-        System.out.println(Arrays.toString(uploadFilePaths.toArray(new String[0])));
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations(
-                        uploadFilePaths.toArray(new String[0])
-                );
-        super.addResourceHandlers(registry);
     }
 
     @Override

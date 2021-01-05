@@ -65,6 +65,8 @@ public class UploadFileUtil {
             String originalName = originalFilename.substring(0,originalFilename.lastIndexOf("."));
             String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
             UploadFileInfo uploadFileInfo = getPath(uploadRootPath,"." + suffix,module,originalName);
+            System.out.println("++==");
+            System.out.println(uploadFileInfo);
             String destFilename = uploadFileInfo.getRealPath();
             // 没有存储文件夹的话要先创建存储文件夹
             int filePathEndIndex = destFilename.lastIndexOf(File.separator);
@@ -101,13 +103,14 @@ public class UploadFileUtil {
         //文件路径
         UploadFileInfo uploadFileInfo = new UploadFileInfo();
         // 暂时写死路径中的模块名
-        String path=DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator;
+        String path="";
+        String timestampStr = DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN);
         if (randomName) {
           //生成uuid
           String uuid = UUID.randomUUID().toString(true);
-          path  += SecurityUtil.getUserId()+"-"+uuid;
+          path  += SecurityUtil.getUserId()+"-"+uuid+timestampStr;
         } else {
-          path +=  SecurityUtil.getUserId()+"-"+originalName;
+          path +=  SecurityUtil.getUserId()+"-"+originalName+"-"+timestampStr;
         }
         String realPath = "";
         String filename = "";
@@ -116,7 +119,7 @@ public class UploadFileUtil {
             uploadFileInfo.setFilename(filename);
             realPath = prefix + File.separator + filename;
         }
-        uploadFileInfo.setFileUrl("/"+filename.replaceAll("\\\\","/"));
+        uploadFileInfo.setFileUrl("/upload/"+filename.replaceAll("\\\\","/"));
         uploadFileInfo.setRealPath(realPath);
         return uploadFileInfo;
     }
@@ -130,13 +133,14 @@ public class UploadFileUtil {
     private UploadFileInfo getPath(String prefix, String suffix,String module,String originalName) {
         //文件路径
         UploadFileInfo uploadFileInfo = new UploadFileInfo();
-        String path=DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN) + File.separator;
+        String path="";
+        String timestampStr = DateUtil.format(DateUtil.date(), DatePattern.PURE_DATE_PATTERN);
         if (randomName) {
             //生成uuid
             String uuid = UUID.randomUUID().toString(true);
-            path += SecurityUtil.getUserId()+"-"+uuid;
+            path += module+"-"+SecurityUtil.getUserId()+"-"+uuid+timestampStr;
         } else {
-            path += SecurityUtil.getUserId()+"-"+originalName;
+            path += module+"-"+SecurityUtil.getUserId()+"-"+originalName+timestampStr;
         }
         String realPath = "";
         String filename = "";
@@ -145,7 +149,7 @@ public class UploadFileUtil {
             uploadFileInfo.setFilename(filename);
             realPath = prefix + File.separator + filename;
         }
-        uploadFileInfo.setFileUrl(module+"/"+filename.replaceAll("\\\\","/"));
+        uploadFileInfo.setFileUrl("/upload/"+filename.replaceAll("\\\\","/"));
         uploadFileInfo.setRealPath(realPath);
         return uploadFileInfo;
     }
