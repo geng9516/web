@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,6 +47,8 @@ public class TmgLiquidationPeriodBean {
     private final ITmgliquidationDailyCheckService iTmgliquidationDailyCheckService;
     private final ITmgliquidationDailyService iTmgliquidationDailyService;
     private final IMastGenericDetailService iMastGenericDetailService;
+    private final IMastOrganisationService iMastOrganisationService;
+    private final TmgSearchRangeUtil tmgSearchRangeUtil;
     //private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     private final  ITmgNotificationService iTmgNotificationService;
@@ -124,7 +128,7 @@ public class TmgLiquidationPeriodBean {
 
 
     //详细页面api
-    public EditDispVo getEditDisop(String empId, String startDate, String endDate, PsDBBean psDBBean) throws Exception {
+    public EditDispVo getEditDisp(String empId, String startDate, String endDate, PsDBBean psDBBean) throws Exception {
         EditDispVo editVo = new EditDispVo();
         //清算期间月列表获取
         List<String> monthlist = iTmgliquidationDailyService.getMonthList(empId, startDate, endDate);
@@ -323,9 +327,17 @@ public class TmgLiquidationPeriodBean {
 
         monthlyMap.put("liquidationDailyInfoVoList", liquidationDailyInfoVoList);
         //pattern list（选取用）
-        List<SelectPatternDto> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode());
-        List<PatternInfoDto> patternInfoDtoList=new ArrayList<PatternInfoDto>();
 
+        monthlyMap.put("workPatternList", getPatternList(empId, yyyymm,psDBBean.getCustID(),psDBBean.getCompCode()));
+        return monthlyMap;
+    }
+
+
+
+    //pattern 处理
+    public List<PatternInfoDto> getPatternList(String empId ,String yyyymm,String custId,String compCode){
+        List<SelectPatternDto> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId , yyyymm, custId, compCode);
+        List<PatternInfoDto> patternInfoDtoList=new ArrayList<PatternInfoDto>();
         for (SelectPatternDto selectPatternDto:patternInfoVos){
             boolean exist=false;
             for(int i=0 ;i<patternInfoDtoList.size();i++){
@@ -343,18 +355,38 @@ public class TmgLiquidationPeriodBean {
                 PatternInfoDto patternInfoDto=new PatternInfoDto();
                 patternInfoDto.setPatternId(selectPatternDto.getPatternid());
                 patternInfoDto.setPatternName(selectPatternDto.getPatternname());
+                patternInfoDto.setTarget(selectPatternDto.getTarget());
                 patternInfoDto.setStartTime(selectPatternDto.getOpentime());
                 patternInfoDto.setEndTime(selectPatternDto.getClosetime());
                 PattternRestTime restTime=new PattternRestTime();
                 restTime.setRestClose(selectPatternDto.getRestclose());
                 restTime.setRestOpen(selectPatternDto.getRestopen());
                 patternInfoDto.getRestTime().add(restTime);
+                patternInfoDto.setModifierdDate(selectPatternDto.getModifierddate());
+                patternInfoDto.setModifierUser(selectPatternDto.getModifieruser());
                 patternInfoDtoList.add(patternInfoDto);
             }
         }
-        monthlyMap.put("workPatternList", patternInfoDtoList);
-        return monthlyMap;
+        return patternInfoDtoList;
     }
+
+    //删除pattern
+    public GlobalResponse deletePattern(String patternId,PsDBBean psDBBean){
+        iTmgLiquidationPatternService.getBaseMapper().delete(
+                SysUtil.<TmgLiquidationPatternDO>query()
+                        .eq("TPA_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TPA_CCOMPANYID", psDBBean.getCompCode())
+                        .eq("TPA_CPATTERNID", patternId));
+
+        iTmgLiquidationPatternRestService.getBaseMapper().delete(
+                SysUtil.<TmgLiquidationPatternRestDO>query()
+                        .eq("TPR_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TPR_CCOMPANYID", psDBBean.getCompCode())
+                        .eq("TPR_CPATTERNID", patternId));
+        return GlobalResponse.ok();
+    }
+
+
 
     //月数据更新
     public int UpdateLiquidationDaily(MonthDto monthDto,String empid,String startDate,String endDate,PsDBBean psDBBean) throws ParseException {
@@ -419,6 +451,8 @@ public class TmgLiquidationPeriodBean {
         return  errNum;
     }
 
+
+    //check所有数据
     public int checkLiquidationDaily(String empId, String yyyymm, PsDBBean psDBBean){
         return iTmgliquidationDailyService.checkLiquidationDaily(psDBBean.getCustID(),psDBBean.getCompCode(),empId,yyyymm);
     }
@@ -439,6 +473,7 @@ public class TmgLiquidationPeriodBean {
         tlpDo.setTpaCemployeeid(patternInfoDto.getEmpId());
         tlpDo.setTpaCsectionid(patternInfoDto.getSectionId());
         tlpDo.setTpaCworktypeid(patternInfoDto.getWorktypeId());
+
         tlpDo.setTpaCpatternid("TMG_LIQUIDATION_PATTERN|"+seq);
         tlpDo.setTpaCpatternname(patternInfoDto.getPatternName());
         tlpDo.setTpaNopen(timeToMin(patternInfoDto.getStartTime()));
@@ -497,4 +532,31 @@ public class TmgLiquidationPeriodBean {
         long mins= hour* 60 + min;
         return mins;
     }
+
+
+
+    public List<Map<String,String>> getSectionList(PsDBBean psDBBean){
+        List<Map<String,String>> sectionList=new ArrayList<>();
+        String sql = getDivTreeSearchRange(psDBBean, ContextUtil.getSession());
+        if(!StrUtil.isBlank(sql)){
+            sectionList =iMastOrganisationService.getSearchRangeSection(psDBBean.getCustID(),psDBBean.getCompCode(),sql);
+        }
+        return sectionList;
+
+    }
+    /**
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * @param psDBBean
+     * @param session
+     * @return
+     */
+    public String getDivTreeSearchRange(PsDBBean psDBBean, HttpSession session) {
+        try {
+            return  tmgSearchRangeUtil.getExistsQueryBaseSection(psDBBean,session,"o.MO_CSECTIONID_CK");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 }

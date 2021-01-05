@@ -4,6 +4,7 @@ import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
@@ -24,6 +25,8 @@ import java.util.Map;
  */
 public interface IMastOrganisationService extends IService<MastOrganisationDO> {
 
+
+    List<Map<String,String>> getSearchRangeSection(String custId, String compId, String sql);
 
     /**
      * 指定組織の検索

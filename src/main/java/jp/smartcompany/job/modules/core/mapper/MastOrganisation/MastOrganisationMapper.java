@@ -111,4 +111,8 @@ public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
                                               @Param("compCode")String compCode,
                                               @Param("language")String language,
                                               @Param("sectionId")String sectionId);
+
+     List<Map<String,String>> getSearchRangeSection(@Param("custId") String custId,
+                                               @Param("compId")String compId,
+                                               @Param("sql")String sql);
 }

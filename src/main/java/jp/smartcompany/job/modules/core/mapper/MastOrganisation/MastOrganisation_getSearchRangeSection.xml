@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastOrganisation.MastOrganisationMapper">
+
+    <select id="getSearchRangeSection" resultType="java.util.Map">
+        SELECT
+            o.MO_CSECTIONID_CK AS sectionId,
+            o.MO_CSECTIONNAME AS sectionName
+        FROM
+            MAST_ORGANISATION o
+        WHERE
+            o.MO_CCUSTOMERID_CK_FK =#{custId}
+        AND o.MO_CCOMPANYID_CK_FK  = #{compId}
+        AND o.MO_DSTART  <![CDATA[ <= ]]> sysdate
+        AND o.MO_DEND  >= sysdate
+        ${sql}
+    </select>
+
+</mapper>

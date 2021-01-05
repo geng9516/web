@@ -14,6 +14,9 @@ public class PatternInfoDto {
     private String sectionId;
     private String worktypeId;
     private String empId;
+    private String target;
+    private String modifierUser;
+    private String modifierdDate;
     private String patternName;
     private String patternId;
     private String startTime;

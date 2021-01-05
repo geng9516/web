@@ -220,30 +220,42 @@
             </div>
         </Modal>
         <!-- 勤務パターンSTART -->
+
+
+        <Modal title="パターン管理" width="70" v-model="patternManagerFlg" footer-hide :mask-closable="false">
+            <div class="tr mb15">
+                <i-button @click="makeNewPattern('manager')">新規パターン</i-button>
+            </div>
+            <div>
+                <i-table :disabled-hover="true" border :row-class-name="() => 'select-col'" :data="tableDataForPattern"
+                         :loading="patternLoading" :columns="columnForPattern" >
+                    <template slot-scope="{ row, index }" slot="restTime">
+                        <div>
+                            <Row :gutter="10" v-for="(item, i) of tableDataForPattern[index].restTime" :key="i" class="mb5">
+                                <i-col span="12">
+                                    <span class="input-like-span">{{tableDataForPattern[index].restTime[i].restOpen}}</span>
+                                </i-col>
+                                <i-col span="12">
+                                    <span class="input-like-span">{{tableDataForPattern[index].restTime[i].restClose}}</span>
+                                </i-col>
+                            </Row>
+                        </div>
+                    </template>
+                    <template slot-scope="{ row ,index }" slot="button">
+                        <i-button v-if="tableDataForPattern[index].target" size="small" @click="deletePattern(tableDataForPattern[index].patternId)">取消</i-button>
+                    </template>
+                </i-table>
+            </div>
+        </Modal>
         <Modal title="新規パターン" width="40" v-model="patternFlg" footer-hide :mask-closable="false">
             <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
             <i-form :label-width="120" ref="localValue">
-                <form-item label="区分">
+                <form-item :label="patternManager? '所属' : '個人パターン'">
                     <div v-if="patternManager">
-                        <Row>
-                            <i-col span="6">
-                                <i-select v-model="patternDropDown.selectType" slot="prepend" >
-                                    <i-option value="0" label="全て"></i-option>
-                                    <i-option value="1" label="所属"></i-option>
-                                    <i-option value="2" label="種別"></i-option>
-                                </i-select>
-                            </i-col>
-                            <i-col span="18">
-                                <i-select v-model="optsSearch.type" slot="prepend" style="width: 100px;" v-if="patternDropDown.selectType === '1'">
-                                    <i-option v-for="(e, i) of patternDropDown.section" :value="e.sectionid" :key="i" :label="e.sectionname">
-                                    </i-option>
-                                </i-select>
-                                <i-select v-model="optsSearch.type" slot="prepend" style="width: 100px;" v-if="patternDropDown.selectType === '2'">
-                                    <i-option v-for="(e, i) of patternDropDown.workerType" :value="e.worktypeid" :key="i" :label="e.worktypename">
-                                    </i-option>
-                                </i-select>
-                            </i-col>
-                        </Row>
+                        <i-select v-model="patternInfo.sectionId"  v-if="patternDropDown.selectType === '1'" ref="selectSec">
+                            <Tree class="mt2" :data="patternDropDown.section" v-on:on-select-change="handleClickForSection" ref="tree"
+                                  empty-text="所属データなし"></Tree>
+                        </i-select>
                     </div>
                     <div v-else>
                         <span class="input-like-span">{{empInfo.empName}}</span>
@@ -361,8 +373,6 @@
             </i-form>
         </Modal>
 
-
-
         <Modal title="月編集画面" 　width="90" :mask-closable="false" footer-hide v-model="monthlyEditFlg">
             <div class="tr mb20">
                 <i-button @click="recovery" icon="ios-undo-outline">復原</i-button>
@@ -472,7 +482,6 @@
                 </template>
             </i-table>
         </Modal>
-
     </div>
 </main>
 
@@ -724,9 +733,74 @@
 
 
                 //pattern編集画
+                referListObject: {
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    hidSearchData:'',
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 31
+                },
+                tableDataForPattern:[],
+                columnForPattern:[
+                    {
+                        title: 'パターン名',
+                        key: 'patternName',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '適用対象',
+                        key: 'target',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '更新者',
+                        key: 'modifierUser',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '更新日付',
+                        key: 'modifierdDate',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '開始時間',
+                        key: 'startTime',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '終了時間',
+                        key: 'endTime',
+                        width: 100,
+                        align: 'center',
+                    },
+                    {
+                        title: '休憩時間',
+                        slot: 'restTime',
+                        minWidth: 100,
+                        align: 'left'
+                    },
+                    {
+                        title: '',
+                        slot: 'button',
+                        width: 100,
+                        align: 'center',
+                    },
+                ],
+
                 patternDropDown:{
-                   selectType:'1',
-                   workerType:[],
+                   selectType: '1' ,
+                   //workerType:[],
                    section:[]
                 },
                 patternInfo: {
@@ -757,7 +831,10 @@
                 },
                 patternFlg: false,
                 patternManager:false,
+                patternManagerFlg:false,
+                patternLoading:false,
                 patternErrorMsg: '',
+                sectionSearchRange:[],
             }
         },
         created() {
@@ -798,7 +875,6 @@
                 try {
                     this.DispLoading = true
                     const { data } = await this.http.get('sys/tmgliquidationperiod/WorkTypeList')
-                    const convertedTreeData = this.convertTreeData(data)
                     this.dispWorkTypeList = this.convertTreeData(data)
                     this.handleClickLeaf()
                 } catch (error) {
@@ -873,8 +949,9 @@
                     this.DispLoading = false
                 }
             },
+
+
             async getSearchTableData() {
-                console.log(this.optsSearch)
                 if (this.optsSearch.searchText && this.optsSearch.searchText != '') {
                     try {
                         let OPTS = {
@@ -900,39 +977,25 @@
                     this.handleClickLeaf()
                 }
             },
-            patternManagerBtn() {
-                this.patternManager=true;
-                this.patternFlg=true;
-                console.log(this.patternManager)
-                this.patternInfo = {
-                    sectionId: '',
-                    worktypeId: '',
-                    empId: '',
-                    patternName: '',
-                    startTime: '',
-                    endTime: '',
-                    restTime: [
-                        {
-                            restOpen: '',
-                            restClose: ''
-                        },
-                        {
-                            restOpen: '',
-                            restClose: ''
-                        },
-                        {
-                            restOpen: '',
-                            restClose: ''
-                        },
-                        {
-                            restOpen: '',
-                            restClose: ''
-                        },
-                    ]
+            async patternManagerBtn() {
+                this.patternManager = true;
+                this.patternManagerFlg = true;
+                let OPTS={
+                    empId:[[${ session.psSession.loginAccount}]],
+                    ...this.referListObject
+                }
+                try {
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/getPattern', OPTS)
+                    //table数据获取
+                    this.tableDataForPattern=data.patternList
+                    //可选组织获取
+                    this.sectionSearchRange = data.sectionList
+                } catch (error) {
+                    return
+                } finally {
                 }
             },
             async showDetails(e) {
-                console.log(e)
                 if (e) {
                     this.empInfo.empId = e.employeeid
                     this.empInfo.empWorkTypeId = e.worktypeid
@@ -974,10 +1037,10 @@
                         this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                         this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
                         this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
+                        //致御上限获取
                         this.limitInfo.dailymaxworktime=e.dailymaxworktime
                         this.limitInfo.weeklymaxworktime=e.weeklymaxworktime
                         this.limitInfo.beginOfWeek=e.beginofweek ? +(e.beginofweek):0;
-                        console.log(this.limitInfo)
                     } catch (error) {
                         return
                     } finally {
@@ -1086,7 +1149,6 @@
                     }
                 })
             },
-
             //日期天数差
             DateDiff(sDate1, sDate2) {
                 iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24)    //把相差的毫秒数转换为天数
@@ -1168,11 +1230,10 @@
                         }
                     })
                     this.monthData = monthInfo
+                    //数据备份
                     this.monthDateBack = this.monthData
-                    console.log(this.monthDateBack)
                     //获取patternList
                     this.workPatternList = data.workPatternList
-                    console.log(e)
                     this.empInfo.yyyymm=e.substring(0,3)+'年'+e.substring(5,7)+'月'
                 } catch (error) {
                     return
@@ -1303,8 +1364,10 @@
             },
 
             //新規パターン画面の表示
-            makeNewPattern() {
-                this.patternManager=false
+            makeNewPattern(e) {
+                if(e != 'manager'){
+                    this.patternManager=false
+                }
                 this.patternFlg = true
                 //重制新规pattern
                 this.patternInfo = {
@@ -1333,7 +1396,100 @@
                         },
                     ]
                 }
+                //获取下拉框数据处理
+                this.getDropDownTree()
             },
+
+            //下拉框树 点击操作
+            async handleClickForSection(e){
+                console.log(e[0])
+                console.log(this.$refs.selectSec)
+                this.$refs.selectSec.$el.children[0].children[1].children[0].className = 'ivu-select-selected-value'
+                this.$refs.selectSec.$el.children[0].children[1].children[0].innerHTML= e[0].secname
+                this.patternInfo.sectionId = e[0].secid
+                this.$refs.selectSec.hideMenu()
+            },
+
+
+            async getDropDownTree(refreshDept) {
+                this.empDeptLoading = true
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    if(this.sectionSearchRange.length > 0 ){
+                        this.patternDropDown.section = this.convertTree(orgList,this.sectionSearchRange)
+                    }else{
+                        this.patternDropDown.section = Utils.convertTreeData(orgList)
+                    }
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
+
+            //组织树结构处理
+            convertTree(treeData,searchRange) {
+                if(!treeData) {
+                    Vue.prototype.$Message.error({
+                        background:true,
+                        closable: true,
+                        duration: 6.5,
+                        content: msg || '参照できる組織図が存在しません。'
+                    });
+                    return []
+                }
+                return treeData.map((e, i) => {
+                    const children =  e.child || e.children
+                    let checkSec = searchRange.some(j=> {
+                        return j.SECTIONID === e.data.secid
+                    })
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            expand: true,
+                            disabled: !checkSec,
+                            children: this.convertTree(children,searchRange),
+                            render:(h, { root, node, data }) => {
+                                return h('span', {
+                                    style: {
+                                        color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
+                                    }
+                                },data.title)
+                            }
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            disabled: !checkSec,
+                            title: e.data.label,
+                            render:(h, { root, node, data }) => {
+                                return h('span', {
+                                    style: {
+                                        color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
+                                    }
+                                },data.title)
+                            }
+                        }
+                    }
+                })
+            },
+            deletePattern(e){
+                if(!e) return
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    width: 480,
+                    title: '注意',
+                    content: 'このパターンを取消します、よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        await this.http.postForm('sys/tmgliquidationperiod/deletePattern', {patternId:e})
+                        this.patternManagerBtn()
+                    }
+                })
+            },
+
             recovery(){
                 this.$Modal.confirm({
                     inDrawer: true,
@@ -1371,13 +1527,17 @@
                 try {
                     //登陆新规pattern
                     const { data } = await this.http.post('sys/tmgliquidationperiod/insertPattern', this.patternInfo)
-                    //重新加载页面
-                    this.showMonth(this.editMonth)
                     this.patternFlg = false
                 } catch (error) {
                     return
                 } finally {
-
+                    if (this.patternManager) {
+                        //跳转管理
+                        this.patternManagerBtn()
+                    }else{
+                        //重新加载页面
+                        this.showMonth(this.editMonth)
+                    }
                 }
             }
 

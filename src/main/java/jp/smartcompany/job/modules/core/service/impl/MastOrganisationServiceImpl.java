@@ -42,6 +42,12 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
 
     private final IHistDesignationService iHistDesignationService;
 
+
+    @Override
+    public List<Map<String,String>> getSearchRangeSection(String custId,String compId, String sql){
+        return baseMapper.getSearchRangeSection( custId,  compId,  sql);
+    }
+
     @Override
     public MastOrganisationDO selectOrganisation(String customerId, String companyId, String sectionId, Date yyyymmdd) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();

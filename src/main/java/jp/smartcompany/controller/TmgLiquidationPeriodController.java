@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class TmgLiquidationPeriodController {
             @RequestParam(value = "endDate",required = false) String endDate,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return tmgLiquidationPeriodBean.getEditDisop(empId,startDate,endDate,psDBBean);
+        return tmgLiquidationPeriodBean.getEditDisp(empId,startDate,endDate,psDBBean);
     }
 
 
@@ -103,18 +104,18 @@ public class TmgLiquidationPeriodController {
 
 
     /**
-     * 編集画面
+     *pattern 管理
      * @return　エラー
      */
-    @GetMapping("getEditDisop")
-    public EditDispVo getEditDisop(
-            @RequestParam("empId") String empId,
-            @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate,
-            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        return tmgLiquidationPeriodBean.getEditDisop(empId,startDate,endDate,psDBBean);
+    @GetMapping("getPattern")
+    public Map<String ,Object> getPattern(
+            @RequestParam(value = "empId",required = false) String empId,
+            @RequestAttribute("BeanName") PsDBBean psDBBean){
+        Map<String ,Object> patternInfo = new HashMap<>();
+        patternInfo.put("patternList",tmgLiquidationPeriodBean.getPatternList(empId,TmgUtil.getSysdate(),psDBBean.getCustID(),psDBBean.getCompCode()));
+        patternInfo.put("sectionList",tmgLiquidationPeriodBean.getSectionList(psDBBean));
+        return patternInfo;
     }
-
 
 
     /**
@@ -153,6 +154,19 @@ public class TmgLiquidationPeriodController {
             @RequestBody PatternInfoDto patternInfoDto,
             @RequestAttribute("BeanName") PsDBBean psDBBean){
          return tmgLiquidationPeriodBean.insertPattern(patternInfoDto,psDBBean);
+    }
+
+
+    /**
+     * delete パターン
+     * @return　エラー
+     */
+    @PostMapping("deletePattern")
+    @ResponseBody
+    public GlobalResponse deletePattern(
+            @RequestParam("patternId") String patternId,
+            @RequestAttribute("BeanName") PsDBBean psDBBean){
+        return tmgLiquidationPeriodBean.deletePattern(patternId,psDBBean);
     }
 
     /**
