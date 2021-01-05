@@ -733,6 +733,11 @@
                     this.selectedPeople = ''
                     this.selectedPeopleText = ''
                     this.quill.setText('');
+                    // 修正当富文本内有图像时，点击后，残留裁剪边框的bug
+                    const quillImgCutFrame = document.querySelector('.ql-tooltip.ql-hidden').nextSibling
+                    if(quillImgCutFrame) {
+                        quillImgCutFrame.style.display = 'none'
+                    }
                 },
                 handleDelFile(file) {
                     // 删除文件
