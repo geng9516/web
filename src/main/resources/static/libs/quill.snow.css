@@ -975,11 +975,11 @@
 }
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
   border-right: 0px;
-  content: 'Save';
+  content: '保存';
   padding-right: 0px;
 }
 .ql-snow .ql-tooltip[data-mode=link]::before {
-  content: "Enter link:";
+  content: "リンク:";
 }
 .ql-snow .ql-tooltip[data-mode=formula]::before {
   content: "Enter formula:";
