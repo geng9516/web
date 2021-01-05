@@ -273,7 +273,7 @@
                                 style="border-right: 1px solid var(--border-grey); border-bottom: 1px solid var(--border-grey); border-left: 1px solid var(--border-grey); background-color: var(--selection-input-bg); padding: 8px; }">
                                 <ul class="ivu-upload-list tl mb10">
                                     <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                                        <span @click="openFile(item)">
+                                        <span @click="openFile(item)" :style="{cursor: item.isDefault ? 'pointer' : 'default'}">
                                             <Icon
                                                 :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
                                             </Icon> {{ item.name }}
@@ -559,7 +559,7 @@
                             this.uploadFiles = data.attachments.map(e => {
                                 return {
                                     name: e.hbtfFilename,
-                                    url: `${BASE_URL}/${e.hbtfFileUrl}`,
+                                    url: `${BASE_URL}${e.hbtfFileUrl}`,
                                     type: e.hbtfFilename.split('.')[1],
                                     hbtfId: e.hbtfId,
                                     isDefault: true
