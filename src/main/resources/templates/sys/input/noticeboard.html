@@ -403,38 +403,24 @@
                 icons["undo"] = UNDO_ICON
                 icons["redo"] = REDO_ICON
 
-                // class MyLink extends Link {  // 继承父类
-                //   static create(value) {
-                //     let node = super.create(value); //调用父类的方法生成node节点
-                //     value = this.sanitize(value); // 使用sanitize取出value
-                //     //判断是否拥有协议前缀 无则添加默认前缀
-                //     if (!(value.indexOf("http://") === 0 || value.indexOf("https://") === 0)) {
-                //       value = "http://" + value;
+                // class FileBlot extends Link {  // 继承Link Blot
+                //     static create(value) {
+                //         let node = undefined
+                //         if (value && !value.href) {  // 适应原本的Link Blot
+                //             node = super.create(value);
+                //         }
+                //         else {  // 自定义Link Blot
+                //             node = super.create(value.href);
+                //             // node.setAttribute('download', value.innerText);  // 左键点击即下载
+                //             node.innerText = value.innerText;
+                //             node.download = value.innerText;
+                //         }
+                //         return node;
                 //     }
-                //     // 设置href属性
-                //     node.setAttribute("href", value);
-                //     return node;
-                //   }
                 // }
-
-                // Quill.register(MyLink, true);
-
-                class FileBlot extends Link {  // 继承Link Blot
-                    static create(value) {
-                        let node = undefined
-                        if (value && !value.href) {  // 适应原本的Link Blot
-                            node = super.create(value);
-                        }
-                        else {  // 自定义Link Blot
-                            node = super.create(value.href);
-                            // node.setAttribute('download', value.innerText);  // 左键点击即下载
-                            node.innerText = value.innerText;
-                            node.download = value.innerText;
-                        }
-                        return node;
-                    }
-                }
-
+                // FileBlot.blotName = 'link';
+                // FileBlot.tagName = 'A';
+                // Quill.register(FileBlot);
                 class SPAN extends Embed {
                     static create(paramValue) {
                         let node = super.create();
@@ -448,10 +434,6 @@
                 }
                 SPAN.blotName = 'span';
                 SPAN.tagName = 'span';
-
-                FileBlot.blotName = 'link';
-                FileBlot.tagName = 'A';
-                Quill.register(FileBlot);
                 Quill.register(SPAN);
 
                 const that = this
@@ -480,6 +462,7 @@
                                         that.$refs.uploadBtn.$el.click()
                                     }
                                 }),
+                                'emoji': function (value) {},
                                 redo() {
                                     this.quill.history.redo()
                                 },
