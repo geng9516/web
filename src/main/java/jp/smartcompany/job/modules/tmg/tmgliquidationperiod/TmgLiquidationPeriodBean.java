@@ -337,7 +337,7 @@ public class TmgLiquidationPeriodBean {
     //pattern 处理
     public List<PatternInfoDto> getPatternList(String empId ,String yyyymm,String custId,String compCode){
         List<SelectPatternDto> patternInfoVos=iTmgLiquidationPatternService.selectLiquidationPatternInfo( empId , yyyymm, custId, compCode);
-        List<PatternInfoDto> patternInfoDtoList=new ArrayList<PatternInfoDto>();
+        List<PatternInfoDto> patternInfoDtoList=new ArrayList<>();
         for (SelectPatternDto selectPatternDto:patternInfoVos){
             boolean exist=false;
             for(int i=0 ;i<patternInfoDtoList.size();i++){
