@@ -151,7 +151,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
 
     /**
-     * 保存或修改草稿
+     * 保存或修改公告草稿
      * @param dto
      */
     @Override
@@ -289,74 +289,38 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             // 公告添加操作的话不需要判断是否已经添加过附件，只要将上传的附件保存即可
             if (!isUpdate) {
                 if (CollUtil.isNotEmpty(uploadFiles)) {
-                    List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
-                    if (CollUtil.isNotEmpty(uploadFileInfoList)) {
-                        addNewAttachments(articleId, uploadFiles, uploadFileUtil);
-                   }
+                    addNewAttachments(articleId, uploadFiles, uploadFileUtil);
                 }
             }
             // 公告修改操作的话则要判断之前一回添加的附件哪些需要删除，哪些需要保留，之后再将本次上传的新的文件与比对后的附件结果进行合并保存
             else {
                 // 查询此草稿是否存在附件信息。不存在且本次上传了附件的话则直接将附件添加即可
                 List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
-                if (CollUtil.isEmpty(oldFileList) && CollUtil.isNotEmpty(uploadFiles)) {
-                    addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                if (CollUtil.isEmpty(oldFileList)) {
+                    if (CollUtil.isNotEmpty(uploadFiles)) {
+                        addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                    }
+                }
+                // 如果原先已经存在草稿附件,且本次没有上传新的附件，则需要根据前端传过来的deleteAttachmentIdStr和keepAttachmentIdStr进行筛选，对附件进行有条件地增减
+                else {
+                   List<Long> historyFileIdList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList());
+                   // 获取本次编辑草稿时要删除的附件对应的id
+                   List<Long> deletedTempFileIdList = CollUtil.newArrayList(CollUtil.intersection(historyFileIdList, deleteAttachmentIdList));
+                   if (CollUtil.isNotEmpty(deletedTempFileIdList)) {
+                       // 根据id找到要删除的附件,如果确实存在则删除此附件
+                       List<HistBulletinBoardTempFileDO> deletedTempFileList =  histBulletinBoardTempFileService.listByIds(deletedTempFileIdList);
+                       if (CollUtil.isNotEmpty(deletedTempFileList)) {
+                           List<String> realPathList = deletedTempFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                            realPathList.forEach(uploadFileUtil::removePreFile);
+                            histBulletinBoardTempFileService.removeByIds(deletedTempFileIdList);
+                       }
+                   }
+                   // 处理完本次要删除的附件后，还要判断是否有本次新添加的附件，如果有本次新添加的附件则也要进行保存
+                   if (CollUtil.isNotEmpty(uploadFiles)) {
+                       addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                   }
                 }
             }
-//            // 如果上传了新的附件，则要把原来已经上传的附件删除
-//            if (CollUtil.isNotEmpty(uploadFiles)) {
-//                // 如果是修改操作
-//                List<HistBulletinBoardTempFileDO> needDeleteFileList = CollUtil.newArrayList();
-//                if (isUpdate) {
-//                    List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
-//                    // 如果附件删除标识列表不为空,如果为空则会删除之前上传的所有附件
-//                    if (CollUtil.isNotEmpty(deleteAttachmentIdList)) {
-//                        for (Long id : deleteAttachmentIdList) {
-//                            // 如果此附件需要删除
-//                            Optional<HistBulletinBoardTempFileDO> deleteFile = oldFileList.stream().filter(item -> item.getHbtfId().equals(id)).findAny();
-//                            deleteFile.ifPresent(needDeleteFileList::add);
-//                        }
-//                        if (CollUtil.isNotEmpty(needDeleteFileList)) {
-//                            List<String> realPathList = needDeleteFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
-//                            realPathList.forEach(uploadFileUtil::removePreFile);
-//                            histBulletinBoardTempFileService.removeByIds(needDeleteFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
-//                        }
-//                    }
-////                    else {
-////                        if (CollUtil.isNotEmpty(oldFileList)) {
-////                            List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
-////                            realPathList.forEach(uploadFileUtil::removePreFile);
-////                            histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
-////                        }
-////                    }
-//                }
-//                // 将新的附件保存
-//                List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
-//                if (CollUtil.isNotEmpty(uploadFileInfoList)) {
-//                    List<HistBulletinBoardTempFileDO> uploadBoardFileList = CollUtil.newArrayList();
-//                    uploadFileInfoList.forEach(item -> {
-//                        HistBulletinBoardTempFileDO fileDO = new HistBulletinBoardTempFileDO();
-//                        fileDO.setHbtIdFk(articleId);
-//                        fileDO.setHbtfFileUrl(item.getFileUrl());
-//                        fileDO.setHbtfFilename(item.getFilename());
-//                        fileDO.setHbtfFileRealPath(item.getRealPath());
-//                        uploadBoardFileList.add(fileDO);
-//                    });
-//                    histBulletinBoardTempFileService.saveBatch(uploadBoardFileList);
-//                }
-//            }
-//            // 如果没有上传附件，则要检查原先是否存在附件，如果存在要全部删除
-//            else {
-//                // 如果是修改动作才需要检查是否存在附件
-//                if (isUpdate) {
-//                    List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
-//                    if (CollUtil.isNotEmpty(oldFileList)) {
-//                        List<String> realPathList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
-//                        realPathList.forEach(uploadFileUtil::removePreFile);
-//                        histBulletinBoardTempFileService.removeByIds(oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList()));
-//                    }
-//                }
-//            }
         }
     }
 

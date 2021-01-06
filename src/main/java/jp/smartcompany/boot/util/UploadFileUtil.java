@@ -46,7 +46,8 @@ public class UploadFileUtil {
         try {
             uploadImage2Local(image, destFilename);
         } catch(IOException e) {
-            throw new GlobalException("ファイル保存失敗");
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
         }
         return uploadFileInfo.getFileUrl();
     }
@@ -65,8 +66,6 @@ public class UploadFileUtil {
             String originalName = originalFilename.substring(0,originalFilename.lastIndexOf("."));
             String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
             UploadFileInfo uploadFileInfo = getPath(uploadRootPath,"." + suffix,module,originalName);
-            System.out.println("++==");
-            System.out.println(uploadFileInfo);
             String destFilename = uploadFileInfo.getRealPath();
             // 没有存储文件夹的话要先创建存储文件夹
             int filePathEndIndex = destFilename.lastIndexOf(File.separator);
@@ -75,7 +74,8 @@ public class UploadFileUtil {
             try {
                 uploadImage2Local(file, destFilename);
             } catch(IOException e) {
-                throw new GlobalException("ファイル保存失敗");
+                e.printStackTrace();
+                throw new GlobalException("ファイル保存失敗:"+e.getMessage());
             }
             uploadFileInfos.add(uploadFileInfo);
         }
