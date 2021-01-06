@@ -702,6 +702,7 @@
                                     ...this.updateValue,
                                     hbtCcontents: this.$refs.editor.children[0].innerHTML,
                                     sendRangeTypes: this.searchRange.join(),
+                                    keepAttachmentIdStr: this.uploadFiles.filter(e=> e.isDefault).map(e=>e.hbtfId).join(),
                                     deleteAttachmentIdStr: this.deleteFiles.join(),
                                     empRangeIds: this.selectedPeople.map(e => e.key).join(),
                                     hbtCfix: hbtCfix,
