@@ -26,7 +26,7 @@ new Vue({
          opts: {
             ntfTypeId: '',
             statusFlg: 0,
-            year: 2020,
+            year: new Date().getFullYear(),
             psSite: Utils.getUrlParam(location.href, 'psSite'),
             page: 1,
          },
