@@ -36,10 +36,10 @@
                 ) B
             WHERE
                     B.WEEKS = A.TLDD_CWEEKS
-              AND TLDD_CEMPLOYEEID = #{empId}
-              AND TO_CHAR(TRUNC(TLDD_DYYYYMMDD, 'mm'), 'yyyy/mm/dd') = #{yyyymm}
-              AND TLDD_DSTARTDATE = #{startDate}
-              AND TLDD_DENDDATE =#{endDate}
+              AND A.TLDD_CEMPLOYEEID = #{empId}
+              AND TO_CHAR(TRUNC(A.TLDD_DYYYYMMDD, 'mm'), 'yyyy/mm/dd') = #{yyyymm}
+              AND A.TLDD_DSTARTDATE = #{startDate}
+              AND A.TLDD_DENDDATE =#{endDate}
             ORDER BY
                 A.TLDD_DYYYYMMDD
     </select>
