@@ -255,5 +255,8 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
             "AND MGD_CGENERICGROUPID = #{value} " +
             "ORDER BY MGD_CMASTERCODE")
     List<GenericDetailItemDTO> selectByDetailGroupId(String detailGroupId);
+
+    @Select("select MGD_CWORKID FROM TMG_V_MGD_HOLFLG WHERE MGD_CHOLFLG = #{value}")
+    String getHolFlg(String kubunid);
 }
 

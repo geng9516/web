@@ -30,5 +30,5 @@ public class LqdDto {
     private String restendtime4;
     private String weekworktime;
     private String ntfstatus;
-    private String resttime;
+    //private String[] resttime;
 }

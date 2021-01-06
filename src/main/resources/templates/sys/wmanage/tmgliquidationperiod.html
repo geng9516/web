@@ -124,7 +124,7 @@
                                 </div>
                                 <div class="sum-row" v-else ><span>{{ '&nbsp;'}}</span></div>
 
-                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500'"><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500' || row[j].kubunid.indexOf('TMG_HOLFLG') > -1 "><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
                                 <div class="divi-hour-line sum-row" v-else-if="row[j].kubunid === 'TMG_WORK|000'" >{{ row[j].kubun || '&nbsp;' }}</div>
                                 <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
 
@@ -1326,7 +1326,7 @@
                 restTimeList.forEach(e => {
                     computeTime = computeTime + Utils.timeToMinute(e.restClose) - Utils.timeToMinute(e.restOpen)
                 })
-                if (index) {
+                if (index >= 0) {
                     this.monthData[index].workhours = Utils.timeToMinute(endTime) - Utils.timeToMinute(startTime) - computeTime
                 }
                 const handleTime = Vue.filter('handleTime');
@@ -1335,14 +1335,19 @@
             //更新月数据
             async updateMonthInfo() {
                 this.monthData.forEach((e, i) => {
-                    if (e.restTime.length === 1) {
+                    if (e.restTime[0]) {
                         this.monthData[i].reststarttime1 = this.monthData[i].restTime[0].restOpen
                         this.monthData[i].restendtime1 = this.monthData[i].restTime[0].restClose
-                    } else if (e.restTime.length === 2) {
+                    } else if (e.restTime[1]) {
                         this.monthData[i].reststarttime2 = this.monthData[i].restTime[1].restOpen
                         this.monthData[i].restendtime2 = this.monthData[i].restTime[1].restClose
-                        this.monthData[i].reststarttime1 = this.monthData[i].restTime[0].restOpen
-                        this.monthData[i].restendtime1 = this.monthData[i].restTime[0].restClose
+
+                    } else if (e.restTime[2]){
+                        this.monthData[i].reststarttime3 = this.monthData[i].restTime[2].restOpen
+                        this.monthData[i].restendtime3 = this.monthData[i].restTime[2].restClose
+                    }else if (e.restTime[3]){
+                        this.monthData[i].reststarttime4 = this.monthData[i].restTime[3].restOpen
+                        this.monthData[i].restendtime4 = this.monthData[i].restTime[3].restClose
                     }
                 })
                 let OPTS = {

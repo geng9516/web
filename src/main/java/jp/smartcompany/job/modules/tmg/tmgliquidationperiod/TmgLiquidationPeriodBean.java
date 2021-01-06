@@ -397,11 +397,16 @@ public class TmgLiquidationPeriodBean {
             TmgLiquidationDailyDO tlddDo= new TmgLiquidationDailyDO();
             //定休日调整
             if(dailyDto.getKubunid().indexOf("TMG_HOLFLG")> -1){
+                //holflg column
                 tlddDo.setTlddCsparechar3(dailyDto.getKubunid());
-                tlddDo.setTlddCkubun(dailyDto.getKubunid());
+                tlddDo.setTlddCkubun(iMastGenericDetailService.getHolFlg(dailyDto.getKubunid()));
+                //日承認状態
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
+
+                tlddDo.setTlddCpattern("");
                 tlddDo.setTlddCstarttime("");
                 tlddDo.setTlddCendtime("");
+                tlddDo.setTlddCworkhours("");
                 tlddDo.setTlddCreststarttime1("");
                 tlddDo.setTlddCrestendtime1("");
                 tlddDo.setTlddCreststarttime2("");
@@ -414,17 +419,19 @@ public class TmgLiquidationPeriodBean {
             //出勤或者休出 选用pattern
             if(dailyDto.getKubunid().indexOf("TMG_LIQUIDATION_PATTERN")> -1){
                 tlddDo.setTlddCpattern(dailyDto.getKubunid());
+                tlddDo.setTlddCkubun("TMG_WORK|000");
                 tlddDo.setTlddCsparechar1("TMG_DATASTATUS|3");
-                tlddDo.setTlddCstarttime(String.valueOf(timeToMin(dailyDto.getStarttime())));
-                tlddDo.setTlddCendtime(String.valueOf(timeToMin(dailyDto.getEndtime())));
-                tlddDo.setTlddCreststarttime1(String.valueOf(timeToMin(dailyDto.getReststarttime1())));
-                tlddDo.setTlddCrestendtime1(String.valueOf(timeToMin(dailyDto.getRestendtime1())));
-                tlddDo.setTlddCreststarttime2(String.valueOf(timeToMin(dailyDto.getReststarttime2())));
-                tlddDo.setTlddCrestendtime2(String.valueOf(timeToMin(dailyDto.getRestendtime2())));
-                tlddDo.setTlddCreststarttime3(String.valueOf(timeToMin(dailyDto.getReststarttime3())));
-                tlddDo.setTlddCrestendtime3(String.valueOf(timeToMin(dailyDto.getRestendtime3())));
-                tlddDo.setTlddCreststarttime4(String.valueOf(timeToMin(dailyDto.getReststarttime4())));
-                tlddDo.setTlddCrestendtime4(String.valueOf(timeToMin(dailyDto.getRestendtime4())));
+                tlddDo.setTlddCstarttime(timeToMin(dailyDto.getStarttime()));
+                tlddDo.setTlddCendtime(timeToMin(dailyDto.getEndtime()));
+                tlddDo.setTlddCworkhours(dailyDto.getWorkhours());
+                tlddDo.setTlddCreststarttime1(timeToMin(dailyDto.getReststarttime1()));
+                tlddDo.setTlddCrestendtime1(timeToMin(dailyDto.getRestendtime1()));
+                tlddDo.setTlddCreststarttime2(timeToMin(dailyDto.getReststarttime2()));
+                tlddDo.setTlddCrestendtime2(timeToMin(dailyDto.getRestendtime2()));
+                tlddDo.setTlddCreststarttime3(timeToMin(dailyDto.getReststarttime3()));
+                tlddDo.setTlddCrestendtime3(timeToMin(dailyDto.getRestendtime3()));
+                tlddDo.setTlddCreststarttime4(timeToMin(dailyDto.getReststarttime4()));
+                tlddDo.setTlddCrestendtime4(timeToMin(dailyDto.getRestendtime4()));
             }
             //原值
 //            if(dailyDto.getKubunid().indexOf("TMG_WORK")> -1){
@@ -476,8 +483,8 @@ public class TmgLiquidationPeriodBean {
 
         tlpDo.setTpaCpatternid("TMG_LIQUIDATION_PATTERN|"+seq);
         tlpDo.setTpaCpatternname(patternInfoDto.getPatternName());
-        tlpDo.setTpaNopen(timeToMin(patternInfoDto.getStartTime()));
-        tlpDo.setTpaNclose(timeToMin(patternInfoDto.getEndTime()));
+        tlpDo.setTpaNopen(Long.parseLong(timeToMin(patternInfoDto.getStartTime())));
+        tlpDo.setTpaNclose(Long.parseLong(timeToMin(patternInfoDto.getEndTime())));
         iTmgLiquidationPatternService.getBaseMapper().insert(tlpDo);
 
         //新规TmgLiquidationPatternRest
@@ -492,8 +499,8 @@ public class TmgLiquidationPeriodBean {
             tlprDo.setTprDenddate(TmgUtil.maxDate);
 
             tlprDo.setTprCpatternid("TMG_LIQUIDATION_PATTERN|"+seq);
-            tlprDo.setTprNrestopen(timeToMin(patternInfoDto.getRestTime().get(i).getRestOpen()));
-            tlprDo.setTprNrestclose(timeToMin(patternInfoDto.getRestTime().get(i).getRestClose()));
+            tlprDo.setTprNrestopen(Long.parseLong(timeToMin(patternInfoDto.getRestTime().get(i).getRestOpen())));
+            tlprDo.setTprNrestclose(Long.parseLong(timeToMin(patternInfoDto.getRestTime().get(i).getRestClose())));
             tlprDo.setTprSeq((long)i+1);
 
             iTmgLiquidationPatternRestService.getBaseMapper().insert(tlprDo);
@@ -522,14 +529,14 @@ public class TmgLiquidationPeriodBean {
     }
 
     //时间转分钟
-    private long timeToMin(String time){
-        if(StrUtil.hasEmpty(time) || time.indexOf(":") < 0){ return 0;}
+    private String  timeToMin(String time){
+        if(StrUtil.hasEmpty(time) || time.indexOf(":") < 0){ return "";}
         int hour =Integer.valueOf(time.split(":")[0]);
         int min =Integer.valueOf(time.split(":")[1]);
         if(hour == 0 && min == 0){
-            return 0;
+            return "";
         }
-        long mins= hour* 60 + min;
+        String mins= String.valueOf(hour* 60 + min);
         return mins;
     }
 

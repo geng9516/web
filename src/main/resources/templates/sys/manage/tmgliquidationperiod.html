@@ -124,7 +124,7 @@
                                 </div>
                                 <div class="sum-row" v-else ><span>{{ '&nbsp;'}}</span></div>
 
-                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500'"><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
+                                <div class="divi-hour-line sum-row" v-if="row[j].kubunid === 'TMG_WORK|570' || row[j].kubunid === 'TMG_WORK|500' || row[j].kubunid.indexOf('TMG_HOLFLG') > -1 "><span class="hoilday-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
                                 <div class="divi-hour-line sum-row" v-else-if="row[j].kubunid === 'TMG_WORK|000'" >{{ row[j].kubun || '&nbsp;' }}</div>
                                 <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
 
@@ -1317,7 +1317,7 @@
                 restTimeList.forEach(e => {
                     computeTime = computeTime + Utils.timeToMinute(e.restClose) - Utils.timeToMinute(e.restOpen)
                 })
-                if (index) {
+                if (index >= 0) {
                     this.monthData[index].workhours = Utils.timeToMinute(endTime) - Utils.timeToMinute(startTime) - computeTime
                 }
                 const handleTime = Vue.filter('handleTime');

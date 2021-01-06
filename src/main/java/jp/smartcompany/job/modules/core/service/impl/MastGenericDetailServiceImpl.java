@@ -612,4 +612,8 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
        return baseMapper.selectByDetailGroupId(detailGroupId);
     }
 
+    @Override
+    public String getHolFlg(String kubunid){
+        return baseMapper.getHolFlg(kubunid);
+    }
 }
