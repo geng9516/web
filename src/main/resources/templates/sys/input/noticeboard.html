@@ -107,120 +107,158 @@
             <Row :gutter="16" v-show="isAdding">
                 <i-col span="12">
                     <div id="toolbar">
-                        <span class="ql-formats">
-                            <button class="ql-bold" title="太字"></button>
-                            <button class="ql-italic" title="斜体"></button>
-                            <button class="ql-underline" title="下線"></button>
-                            <button class="ql-strike" title="打ち消し線"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="太字" placement="top">
+                                <button class="ql-bold"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="斜体" placement="top">
+                                <button class="ql-italic"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="下線" placement="top">
+                                <button class="ql-underline"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="打ち消し線" placement="top">
+                                <button class="ql-strike"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <button class="ql-list" value="ordered" title="番号付きリスト"></button>
-                            <button class="ql-list" value="bullet" title="リスト"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="番号付きリスト" placement="top">
+                                <button class="ql-list" value="ordered"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="リスト" placement="top">
+                                <button class="ql-list" value="bullet"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <button class="ql-script" value="sub" title="下付き文字"></button>
-                            <button class="ql-script" value="super" title="上付き文字"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="下付き文字" placement="top">
+                                <button class="ql-script" value="sub"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="上付き文字" placement="top">
+                                <button class="ql-script" value="super"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <button class="ql-indent" value="-1" title="字上げ"></button>
-                            <button class="ql-indent" value="+1" title="字下げ"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="字上げ" placement="top">
+                                <button class="ql-indent" value="-1"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="字下げ" placement="top">
+                                <button class="ql-indent" value="+1"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <button class="ql-clean" title="フォーマットクリア"></button>
-                            <button class="ql-undo" title="元に戻す"></button>
-                            <button class="ql-redo" title="やり直す"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="フォーマットクリア" placement="top">
+                                <button class="ql-clean"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="元に戻す" placement="top">
+                                <button class="ql-undo"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="やり直す" placement="top">
+                                <button class="ql-redo"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <select class="ql-color" title="フォントの色">
-                                <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
-                                <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
-                                <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
-                                <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)" />
-                                <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)" />
-                                <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)" />
-                                <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)" />
-                                <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)" />
-                                <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)" />
-                                <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)" />
-                                <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)" />
-                                <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)" />
-                                <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)" />
-                                <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)" />
-                                <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)" />
-                                <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)" />
-                                <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)" />
-                                <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)" />
-                                <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)" />
-                                <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)" />
-                                <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)" />
-                                <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)" />
-                                <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)" />
-                                <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)" />
-                                <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)" />
-                                <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)" />
-                                <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)" />
-                                <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)" />
-                                <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)" />
-                                <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)" />
-                                <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)" />
-                                <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)" />
-                                <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)" />
-                                <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)" />
-                            </select>
-                            <select class="ql-background" title="塗りつぶしの色">
-                                <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
-                                <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
-                                <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
-                                <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)" />
-                                <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)" />
-                                <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)" />
-                                <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)" />
-                                <option value="rgb(255, 255, 255)" label="rgb(255, 255, 255)" />
-                                <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)" />
-                                <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)" />
-                                <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)" />
-                                <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)" />
-                                <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)" />
-                                <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)" />
-                                <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)" />
-                                <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)" />
-                                <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)" />
-                                <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)" />
-                                <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)" />
-                                <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)" />
-                                <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)" />
-                                <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)" />
-                                <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)" />
-                                <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)" />
-                                <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)" />
-                                <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)" />
-                                <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)" />
-                                <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)" />
-                                <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)" />
-                                <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)" />
-                                <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)" />
-                                <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)" />
-                                <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)" />
-                                <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)" />
-                                <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)" />
-                            </select>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="フォントの色" placement="top">
+                                <select class="ql-color">
+                                    <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
+                                    <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
+                                    <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
+                                    <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)" />
+                                    <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)" />
+                                    <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)" />
+                                    <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)" />
+                                    <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)" />
+                                    <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)" />
+                                    <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)" />
+                                    <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)" />
+                                    <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)" />
+                                    <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)" />
+                                    <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)" />
+                                    <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)" />
+                                    <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)" />
+                                    <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)" />
+                                    <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)" />
+                                    <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)" />
+                                    <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)" />
+                                    <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)" />
+                                    <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)" />
+                                    <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)" />
+                                    <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)" />
+                                    <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)" />
+                                    <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)" />
+                                    <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)" />
+                                    <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)" />
+                                    <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)" />
+                                    <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)" />
+                                    <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)" />
+                                    <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)" />
+                                    <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)" />
+                                    <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)" />
+                                </select>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="塗りつぶしの色" placement="top">
+                                <select class="ql-background" title="塗りつぶしの色">
+                                    <option value="rgb(0, 0, 0)" label="rgb(0, 0, 0)" />
+                                    <option value="rgb(230, 0, 0)" label="rgb(230, 0, 0)" />
+                                    <option value="rgb(255, 153, 0)" label="rgb(255, 153, 0)" />
+                                    <option value="rgb(255, 255, 0)" label="rgb(255, 255, 0)" />
+                                    <option value="rgb(0, 138, 0)" label="rgb(0, 138, 0)" />
+                                    <option value="rgb(0, 102, 204)" label="rgb(0, 102, 204)" />
+                                    <option value="rgb(153, 51, 255)" label="rgb(153, 51, 255)" />
+                                    <option value="rgb(255, 255, 255)" label="rgb(255, 255, 255)" />
+                                    <option value="rgb(250, 204, 204)" label="rgb(250, 204, 204)" />
+                                    <option value="rgb(255, 235, 204)" label="rgb(255, 235, 204)" />
+                                    <option value="rgb(255, 255, 204)" label="rgb(255, 255, 204)" />
+                                    <option value="rgb(204, 232, 204)" label="rgb(204, 232, 204)" />
+                                    <option value="rgb(204, 224, 245)" label="rgb(204, 224, 245)" />
+                                    <option value="rgb(235, 214, 255)" label="rgb(235, 214, 255)" />
+                                    <option value="rgb(187, 187, 187)" label="rgb(187, 187, 187)" />
+                                    <option value="rgb(240, 102, 102)" label="rgb(240, 102, 102)" />
+                                    <option value="rgb(255, 194, 102)" label="rgb(255, 194, 102)" />
+                                    <option value="rgb(255, 255, 102)" label="rgb(255, 255, 102)" />
+                                    <option value="rgb(102, 185, 102)" label="rgb(102, 185, 102)" />
+                                    <option value="rgb(102, 163, 224)" label="rgb(102, 163, 224)" />
+                                    <option value="rgb(194, 133, 255)" label="rgb(194, 133, 255)" />
+                                    <option value="rgb(136, 136, 136)" label="rgb(136, 136, 136)" />
+                                    <option value="rgb(161, 0, 0)" label="rgb(161, 0, 0)" />
+                                    <option value="rgb(178, 107, 0)" label="rgb(178, 107, 0)" />
+                                    <option value="rgb(178, 178, 0)" label="rgb(178, 178, 0)" />
+                                    <option value="rgb(0, 97, 0)" label="rgb(0, 97, 0)" />
+                                    <option value="rgb(0, 71, 178)" label="rgb(0, 71, 178)" />
+                                    <option value="rgb(107, 36, 178)" label="rgb(107, 36, 178)" />
+                                    <option value="rgb(68, 68, 68)" label="rgb(68, 68, 68)" />
+                                    <option value="rgb(92, 0, 0)" label="rgb(92, 0, 0)" />
+                                    <option value="rgb(102, 61, 0)" label="rgb(102, 61, 0)" />
+                                    <option value="rgb(102, 102, 0)" label="rgb(102, 102, 0)" />
+                                    <option value="rgb(0, 55, 0)" label="rgb(0, 55, 0)" />
+                                    <option value="rgb(0, 41, 102)" label="rgb(0, 41, 102)" />
+                                    <option value="rgb(61, 20, 102)" label="rgb(61, 20, 102)" />
+                                </select>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <button class="ql-link" title="リンク"></button>
-                            <button class="ql-image" title="画像"></button>
-                            <button class="ql-upload" title="アップロード"></button>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="リンク" placement="top">
+                                <button class="ql-link"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="画像" placement="top">
+                                <button class="ql-image"></button>
+                            </Tooltip>
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="アップロード" placement="top">
+                                <button class="ql-upload"></button>
+                            </Tooltip>
                         </span>
-                        <span class="ql-formats">
-                            <select class="ql-size" title="フォント サイズ">
-                                <option value="14px"></option>
-                                <option value="16px"></option>
-                                <option value="18px"></option>
-                                <option value="22px"></option>
-                                <option value="26px"></option>
-                                <option value="30px"></option>
-                                <option value="36px"></option>
-                                <option value="42px"></option>
-                            </select>
+                        <span class="ql-formats" style="margin-bottom:  -8px;">
+                            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="フォント サイズ" placement="top">
+                                <select class="ql-size">
+                                    <option value="14px"></option>
+                                    <option value="16px"></option>
+                                    <option value="18px"></option>
+                                    <option value="22px"></option>
+                                    <option value="26px"></option>
+                                    <option value="30px"></option>
+                                    <option value="36px"></option>
+                                    <option value="42px"></option>
+                                </select>
+                            </Tooltip>
                         </span>
                         <span class="ql-formats">
                             <Poptip v-model="emojiPop" placement="right-start" class="emoji-poptip">
