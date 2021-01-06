@@ -7,7 +7,6 @@
             SELECT
                 tlp.TPA_CPATTERNID as patternId,
                 tlp.TPA_CPATTERNNAME as patternname,
-
                 CASE WHEN tlp.TPA_CSECTIONID IS NOT NULL THEN
                         TMG_F_GET_MO(tlp.TPA_CSECTIONID,sysdate,0)
                      WHEN tlp.TPA_CEMPLOYEEID IS NOT NULL THEN
@@ -26,8 +25,7 @@
                 TMG_F_CONV_MIN2HHMI(tlpr.TPR_NRESTCLOSE)  as restclose,
                 tlpr.TPR_SEQ as seq
             FROM
-                MAST_ORGANISATION mo,
-                HIST_DESIGNATION hd,
+
                 TMG_LIQUIDATION_PATTERN tlp
                 LEFT JOIN TMG_LIQUIDATION_PATTERN_REST tlpr
                 on tlp.TPA_CPATTERNID=tlpr.TPR_CPATTERNID
@@ -37,9 +35,18 @@
             where
                     tlp.TPA_CCOMPANYID=#{compCode}
                 and tlp.TPA_CCUSTOMERID=#{custID}
-
---                 or mo.MO_CSECTIONID_CK = hd.
---                 or TMG_F_GET_WORKERTYPE(#{empId},sysdate) = tlp.TPA_CWORKTYPEID
+<!--                <if test="empId !=null">-->
+<!--                    MAST_ORGANISATION mo,-->
+<!--                    HIST_DESIGNATION hd,-->
+<!--                    AND EXISTS (-->
+<!--                        select 1-->
+<!--                        from MAST_ORGANISATION mo-->
+<!--                        where mo.MO_CCOMPANYID_CK_FK-->
+<!--                        and mo.MO_CCOMPANYID_CK_FK-->
+<!--                        and sysdate BETWEEN mo.MO_DSTART and mo.MO_DEND-->
+<!--                        and #{empId} = mo.-->
+<!--                    )-->
+<!--                </if>-->
                 and sysdate BETWEEN tlp.TPA_DSTARTDATE and tlp.TPA_DENDDATE
             order by
                 tlp.TPA_CPATTERNID,tlpr.TPR_SEQ
