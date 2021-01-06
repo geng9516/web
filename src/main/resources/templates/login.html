@@ -57,7 +57,7 @@
         //components: {Clock},
         data() {
             return {
-                time: (new Date()).getTime(),
+                time: Date.now(),
                 userCode: '',
                 password: '',
                 login: {
@@ -107,7 +107,6 @@
         async mounted() {
             // await this.getData()
             // this.$refs.clock.showTime()
-            // await this.nowTime()
         },
         beforeDestroy() {
             // this.$refs.clock.cleanClock()
@@ -220,82 +219,6 @@
                     this.exiting = false
                     this.clockDisable = false
                 }
-            },
-            nowTime() {
-                //1.先ずは、サーバー時間を取得する
-                var serverTime = "2020/07/15 18:50"
-                var reg = /-/g
-                var serverTime_date = new Date(serverTime.replace(reg, "/"))
-                this.year = serverTime_date.getFullYear()
-                this.month = serverTime_date.getMonth() + 1
-                this.date = serverTime_date.getDate()
-                this.hour = serverTime_date.getHours()
-                this.minu = serverTime_date.getMinutes()
-                this.seco = serverTime_date.getSeconds()
-                this.week = '日月火水木金土'.charAt(serverTime_date.getDay())
-                //2.
-                setInterval("this.serverTimeOper", 2000)
-                // this.serverTimeOper()
-                //setInterval(this.serverTimeOper, 1000)
-                //console.log(this.timeCount.serverTime)
-            },
-            //サーバー時間を更新
-            serverTimeOper() {
-                this.seco++;
-                if (this.seco == 60) {
-                    this.minu += 1
-                    this.seco = 0
-                }
-                if (this.minu == 60) {
-                    this.hour += 1
-                    this.minu = 0
-                }
-                if (this.hour == 24) {
-                    this.date += 1
-                    this.hour = 0
-                }
-                //日期处理
-                if (this.month == 1 || this.month == 3 || this.month == 5 || this.month == 7 || this.month == 8 || this.month == 10 || this.month == 12) {
-                    if (this.date == 32) {
-                        this.date = 1
-                        this.month += 1
-                    }
-                } else if (this.month == 4 || this.month == 6 || this.month == 9 || this.month == 11) {
-                    if (this.date == 31) {
-                        this.date = 1
-                        this.month += 1
-                    }
-                } else if (this.month == 2) {
-                    if (this.year % 4 == 0 && this.year % 100 != 0) {//闰年处理
-                        if (this.date == 29) {
-                            this.date = 1
-                            this.month += 1
-                        }
-                    } else {
-                        if (this.date == 28) {
-                            this.date = 1
-                            this.month += 1
-                        }
-                    }
-                }
-                if (this.month == 13) {
-                    this.year += 1
-                    this.month = 1
-                }
-                var sseco = this.addZero(this.seco)
-                var sminu = this.addZero(this.minu)
-                var shour = this.addZero(this.hour)
-                var sdate = this.addZero(this.date)
-                var smonth = this.addZero(this.month)
-                var syear = this.year
-                var cur = syear + "-" + smonth + "-" + sdate + " " + shour + ":" + sminu + ":" + sseco + " " + this.week;
-                console.log("今日は；" + cur)
-                //setTimeout(this.serverTimeOper(), 1000)
-            },
-            //"0"を追加する
-            addZero(num) {
-                num = Math.floor(num)
-                return ((9 >= num) ? ("0" + num) : num)
             },
             getData() {
                 /*   localStorage.setItem('Mobile_Sever_Time', Date.now())
