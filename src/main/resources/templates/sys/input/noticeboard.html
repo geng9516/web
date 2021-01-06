@@ -262,8 +262,10 @@
                         </span>
                         <span class="ql-formats">
                             <Poptip v-model="emojiPop" placement="right-start" class="emoji-poptip">
-                                <i-button size="small" icon="md-happy" style="font-size: 18px;" class="ql-emoji" title="絵文字">
-                                </i-button>
+                                <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="絵文字" placement="top">
+                                    <i-button size="small" icon="md-happy" style="font-size: 18px;" class="ql-emoji">
+                                    </i-button>
+                                </Tooltip>
                                 <div class="tr" slot="content">
                                     <div v-for="(item,category,index) in SM_EMOJI" class="tl">
                                         <div :class="index > 0 ? 'mt5 mb2': 'mb2'" style="font-size: 16px;">{{category}}
