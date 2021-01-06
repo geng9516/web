@@ -19,6 +19,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import jp.smartcompany.job.modules.core.service.impl.MastApptreeServiceImpl;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,11 @@ public class AppManagerMainLogicImpl implements AppManagerMainLogic {
         treeDO.setMtrCmodifieruserid(username);
         // 根节点无需变更层级
         if (StrUtil.equals(dto.getObjectId(),"TopPage") && StrUtil.equals(dto.getParentId(),"0")){
+            // 如果当前用户没有承认权限则无法将首页设为承认和承认相关的页面
+            boolean isApprover = (Boolean)session.getAttribute(Constant.IS_APPROVER);
+            if (!isApprover && StrUtil.containsIgnoreCase(dto.getUrl(), TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                throw new GlobalException("現在のユーザーには、このURLをホームページとして設定する権限がありません");
+            }
             appTreeService.updateById(treeDO);
         } else {
             MastApptreeDO parentTree = appTreeService.getByParentId(dto.getParentId());

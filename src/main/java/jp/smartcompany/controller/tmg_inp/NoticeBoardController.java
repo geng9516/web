@@ -109,14 +109,20 @@ public class NoticeBoardController {
             @RequestParam(required = false,defaultValue = "0") String hbtCheaddisp,
             // 0:当作草稿存储 1:保存为正式公告 不填默认0
             @RequestParam(required = false,defaultValue = "0") String hbtCfix,
-            // 修改时删除的附件id
-            @RequestParam(required = false) String deleteAttachmentIdStr
+            // 修改时需要删除的附件对应id
+            @RequestParam(required = false) String deleteAttachmentIdStr,
+            // 修改时需要保存的附件对应id
+            @RequestParam(required = false) String keepAttachmentIdStr
     ) {
         List<Long> deleteAttachmentIdList = CollUtil.newArrayList();
+        List<Long> keepAttachmentIdList = CollUtil.newArrayList();
         if (StrUtil.isNotBlank(deleteAttachmentIdStr)) {
             deleteAttachmentIdList = Arrays.stream(deleteAttachmentIdStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
         }
-        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList);
+        if (StrUtil.isNotBlank(keepAttachmentIdStr)) {
+            keepAttachmentIdList = Arrays.stream(keepAttachmentIdStr.split(",")).map(Long::parseLong).collect(Collectors.toList());
+        }
+        DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList,keepAttachmentIdList);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";
     }
@@ -143,7 +149,7 @@ public class NoticeBoardController {
     }
 
 
-    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String sendRangeTypes,String empRangeIds,List<Long> deleteAttachmentIdList) {
+    private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement, Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents, String hbtCheaddisp, String hbtCfix,String sendRangeTypes,String empRangeIds,List<Long> deleteAttachmentIdList,List<Long> keepAttachmentIdList) {
         DraftNoticeDTO dto = new DraftNoticeDTO();
         dto.setAttachments(attachments);
         dto.setHbtCcontents(hbtCcontents);
@@ -156,6 +162,7 @@ public class NoticeBoardController {
         dto.setRangeTypes(sendRangeTypes);
         dto.setEmpRangeIds(empRangeIds);
         dto.setDeleteAttachmentIdList(deleteAttachmentIdList);
+        dto.setKeepAttachmentIdList(keepAttachmentIdList);
         return dto;
     }
 

@@ -60,7 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers(HttpMethod.GET,
                 securityProperties.getResourceList()
-        );
+        ).antMatchers("/error");
     }
 
 }
