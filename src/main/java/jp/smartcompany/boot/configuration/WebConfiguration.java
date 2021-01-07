@@ -29,7 +29,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(auditInterceptor).excludePathPatterns("/upload/**","/login","/logout","/expirePassword","/favicon.ico","/sys/log/**","/static/**","/error");
-        registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/upload/**","/static/**");
+        registry.addInterceptor(smartParameterInterceptor).excludePathPatterns("/upload/**","/static/**","/error");
 
         String[] loginInterceptorUrlPattern = {
                 "/",
@@ -60,6 +60,7 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/upload/**").addResourceLocations(
                 uploadFilePaths
         );
+        registry.setOrder(1);
     }
 
     @Override

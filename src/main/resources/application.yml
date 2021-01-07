@@ -115,6 +115,7 @@ security:
     - /favicon.ico
     - /static/**
     - /upload/**
+    - /error
   # 退出成功后的转向url
   logoutSuccessUrl: ${info.basePath}login
   # 登录成功后的转向url

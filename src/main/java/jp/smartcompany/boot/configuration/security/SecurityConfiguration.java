@@ -9,6 +9,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -136,9 +137,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(HttpMethod.GET,
-                securityProperties.getResourceList()
-        ).antMatchers("/error");
+        web.ignoring()
+                .antMatchers(HttpMethod.GET, securityProperties.getResourceList())
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     private void configResponseJsonHeader(HttpServletResponse resp, int httpForbidden) {
