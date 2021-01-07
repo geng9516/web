@@ -4,14 +4,11 @@ import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.configuration.security.authentication.AuthenticationProcessingFilter;
-import jp.smartcompany.boot.configuration.security.authentication.LoginEntryPoint;
 import jp.smartcompany.boot.configuration.security.authentication.SmartAuthenticationManager;
-import jp.smartcompany.boot.configuration.security.handler.SmartLogoutHandler;
-import jp.smartcompany.boot.configuration.security.handler.SmartLogoutSuccessHandler;
-import jp.smartcompany.boot.configuration.security.handler.UrlAccessDeniedHandler;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Spring Security核心配置文件
@@ -35,10 +33,8 @@ import javax.servlet.RequestDispatcher;
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final UrlAccessDeniedHandler accessDeniedHandler;
-    private final LoginEntryPoint loginEntryPoint;
-    private final SmartLogoutHandler logoutHandler;
-    private final SmartLogoutSuccessHandler logoutSuccessHandler;
+    @Value("${info.basePath}")
+    private String basePath;
     private final ObjectMapper objectMapper;
     private final AuthBusiness authBusiness;
     private final SecurityProperties securityProperties;
@@ -81,24 +77,61 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
           http.csrf().ignoringAntMatchers(securityProperties.getCsrfWhiteList())
-                .and().cors()
-                .and().formLogin().usernameParameter("username").passwordParameter("password")
-                .and().logout().logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true).deleteCookies().clearAuthentication(true).permitAll()
-                // 防止iframe 造成跨域
                 .and()
+                // 允许跨域
+                .cors()
+                // 登出时进行的处理
+                .and()
+                .logout(logout ->
+                   logout
+                       .addLogoutHandler((req, resp, auth)-> authBusiness.logout(req))
+                       .logoutSuccessHandler((req,resp, auth)-> {
+                           if (SysUtil.isAjaxRequest(req)){
+                               resp.setCharacterEncoding("UTF-8");
+                               resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                               GlobalResponse r = GlobalResponse.ok(SecurityConstant.LOGOUT_SUCCESS);
+                               resp.getWriter().write(objectMapper.writeValueAsString(r));
+                           } else {
+                               resp.sendRedirect(securityProperties.getLogoutSuccessUrl());
+                           }
+                       })
+                       .logoutUrl("/logout")
+                       .invalidateHttpSession(true)
+                       .deleteCookies().clearAuthentication(true).permitAll()
+                )
+                // 防止iframe 造成跨域
                 .headers().frameOptions().disable()
                 .and()
+                // 访问认证和授权配置
                 .authorizeRequests()
                   .antMatchers(securityProperties.getWhiteList()).permitAll()
                   .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
                 .and()
-                  .addFilterAt(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
-                    // 自定义过滤器在登录时认证用户名、密码
-                    .exceptionHandling()
-                    // 未登录认证异常
-                    .authenticationEntryPoint(loginEntryPoint)
-                    // 登录过后访问无权限的接口时自定义403响应内容
-                    .accessDeniedHandler(accessDeniedHandler);
+                // 添加自定义认证filter
+                .addFilterAt(authenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+                // 自定义过滤器在登录时认证用户名、密码
+                .exceptionHandling()
+                // 认证失败后异常处理切入点
+                .authenticationEntryPoint((req, resp, e)-> {
+                    if (SysUtil.isAjaxRequest(req)) {
+                        configResponseJsonHeader(resp, HttpStatus.REQUEST_TIMEOUT.value());
+                        resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.REQUEST_TIMEOUT.value(), SecurityConstant.LOGIN_TIMEOUT)));
+                    } else {
+                        resp.sendRedirect(basePath +"login");
+                    }
+                })
+                // 授权处理器
+                .accessDeniedHandler((req, resp, e) -> {
+                    if (SysUtil.isAjaxRequest(req)) {
+                        configResponseJsonHeader(resp, cn.hutool.http.HttpStatus.HTTP_FORBIDDEN);
+                        GlobalResponse r = GlobalResponse.error(cn.hutool.http.HttpStatus.HTTP_FORBIDDEN,e.getMessage());
+                        resp.getWriter().write(JSONUtil.toJsonStr(r));
+                    } else {
+                        req.setAttribute("error",e.getMessage());
+                        RequestDispatcher dispatcher = req.getRequestDispatcher(securityProperties.getAccessDeniedUrl());
+                        dispatcher.forward(req, resp);
+                    }
+                });
     }
 
     @Override
@@ -106,6 +139,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(HttpMethod.GET,
                 securityProperties.getResourceList()
         ).antMatchers("/error");
+    }
+
+    private void configResponseJsonHeader(HttpServletResponse resp, int httpForbidden) {
+        resp.setStatus(httpForbidden);
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
     private String getLoginErrorMessage(AuthenticationException e) {

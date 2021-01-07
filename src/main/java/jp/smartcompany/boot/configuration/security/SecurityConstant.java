@@ -16,6 +16,10 @@ public interface SecurityConstant {
      */
     String LOGIN_SUCCESS = "ログインしました";
     /**
+     * 登出提示
+     */
+    String LOGOUT_SUCCESS = "ログアウトしました";
+    /**
      * 登录过程中出现错误的异常提示信息
      */
     String USERNAME_OR_PASSWORD_NOT_EXISTS = "ユーザ名またはパスワードを入力してください";
