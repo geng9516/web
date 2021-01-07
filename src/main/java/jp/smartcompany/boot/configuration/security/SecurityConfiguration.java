@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,6 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final SecurityProperties securityProperties;
     private final SmartAuthenticationManager authenticationManager;
 
+    @Bean
     public AuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
         AuthenticationProcessingFilter authFilter = new AuthenticationProcessingFilter(objectMapper);
         authFilter.setAuthenticationManager(authenticationManager);
