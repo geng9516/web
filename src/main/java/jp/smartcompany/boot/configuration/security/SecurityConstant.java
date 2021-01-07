@@ -12,8 +12,13 @@ public interface SecurityConstant {
     String ANONYMOUS_USER = "anonymous_user";
 
     /**
+     * 登录提示
+     */
+    String LOGIN_SUCCESS = "ログインしました";
+    /**
      * 登录过程中出现错误的异常提示信息
      */
+    String USERNAME_OR_PASSWORD_NOT_EXISTS = "ユーザ名またはパスワードを入力してください";
     String PROVIDER_NOT_FOUND = "内部エラーが発生しました、システム管理者までご連絡下さい";
     String ACCOUNT_LOCKED = "このアカウントはロックアウトされました、システム管理者へ連絡してください";
     String ACCOUNT_EXPIRED = "ログインできませんでした。アカウント、パスワードを確認してください";

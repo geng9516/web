@@ -2,7 +2,6 @@ package jp.smartcompany.boot.configuration.security.authentication;
 
 import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class SmartAuthenticationManager implements AuthenticationManager {
 
   private final SmartAuthenticationProvider authenticationProvider;

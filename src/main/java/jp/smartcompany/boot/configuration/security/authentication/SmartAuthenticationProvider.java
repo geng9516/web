@@ -5,7 +5,6 @@ import cn.hutool.crypto.digest.DigestUtil;
 import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class SmartAuthenticationProvider implements AuthenticationProvider {
 
     private final SmartUserDetailsServiceImpl userDetailsService;

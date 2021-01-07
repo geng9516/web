@@ -1,50 +1,38 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.smartcompany.boot.configuration.security.SecurityConstant;
-import jp.smartcompany.boot.configuration.security.handler.SmartAuthenticationFailureHandler;
-import jp.smartcompany.boot.configuration.security.handler.SmartAuthenticationSuccessHandler;
-import jp.smartcompany.boot.util.MultiReadHttpServletRequest;
-import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationServiceException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
-@Component
-public class AuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
+@RequiredArgsConstructor
+public class AuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
-  public AuthenticationProcessingFilter(SmartAuthenticationManager authenticationManager, SmartAuthenticationSuccessHandler adminAuthenticationSuccessHandler, SmartAuthenticationFailureHandler authenticationFailureHandler) {
-    super(new AntPathRequestMatcher("/login", "POST"));
-    setAuthenticationManager(authenticationManager);
-    setAuthenticationSuccessHandler(adminAuthenticationSuccessHandler);
-    setAuthenticationFailureHandler(authenticationFailureHandler);
-  }
+  private final ObjectMapper objectMapper;
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-    String contentType = request.getContentType();
-    if (StrUtil.isBlank(contentType) || !contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
-      throw new AuthenticationServiceException(SecurityConstant.INCORRECT_CONTENT_TYPE);
-    }
     UsernamePasswordAuthenticationToken authRequest;
-    try {
-        MultiReadHttpServletRequest wrappedRequest = new MultiReadHttpServletRequest(request);
-      // 将前端传递的数据转换成jsonBean数据格式
-      LoginDTO form = JSONUtil.toBean(wrappedRequest.getBodyJsonStrByJson(wrappedRequest), LoginDTO.class);
-      authRequest = new UsernamePasswordAuthenticationToken(form.getUsername(), form.getPassword(), null);
-      authRequest.setDetails(authenticationDetailsSource.buildDetails(wrappedRequest));
-    } catch (Exception e) {
-      throw new AuthenticationServiceException(e.getMessage());
+    try (InputStream is = request.getInputStream()) {
+      JsonNode loginForm = objectMapper.readTree(is);
+      String username = loginForm.get("username").textValue();
+      String password = loginForm.get("password").textValue();
+      authRequest = new UsernamePasswordAuthenticationToken(username,password);
+    } catch (IOException e) {
+      e.printStackTrace();
+      throw new BadCredentialsException(SecurityConstant.USERNAME_OR_PASSWORD_NOT_EXISTS);
     }
+    setDetails(request,authRequest);
     return this.getAuthenticationManager().authenticate(authRequest);
   }
 

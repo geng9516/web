@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.configuration.security.SecurityConstant;

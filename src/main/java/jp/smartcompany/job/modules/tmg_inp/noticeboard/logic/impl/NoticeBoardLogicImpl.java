@@ -205,6 +205,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             // 如果有附件则需要保存用户上传的附件
             uploadAttachments(id,uploadFiles,isUpdate,true,dto.getDeleteAttachmentIdList(),false);
         }
+        // 保存成正式公告
+        else {
+
+        }
     }
 
     @Transactional(rollbackFor = GlobalException.class)
@@ -254,23 +258,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (CollUtil.isEmpty(rangeTypeIds)) {
             throw new GlobalException("照会の範囲は設定されていません");
         }
-        List<NoticeRangeDTO> typeRangeList = CollUtil.newArrayList();
-        for (String rangeTypeId : rangeTypeIds) {
-            NoticeRangeDTO rangeDTO = new NoticeRangeDTO();
-            rangeDTO.setTypeId(rangeTypeId);
-            if (StrUtil.equals(FG_COMP_SEC,rangeTypeId)) {
-                rangeDTO.setTypeName("自所属以下");
-            } else if (StrUtil.equals(FG_COMP_SEC_POST,rangeTypeId)) {
-                rangeDTO.setTypeName("所属以下の役職");
-            }else if (StrUtil.equals(FG_COMP_SEC_BOSS ,rangeTypeId)) {
-                rangeDTO.setTypeName("所属以下の所属長");
-            }else if (StrUtil.equals(FG_COMP_POST,rangeTypeId)) {
-                rangeDTO.setTypeName("法人の役職");
-            }else if (StrUtil.equals(FG_COMP_EMP,rangeTypeId)) {
-                rangeDTO.setTypeName("法人の職員");
-            }
-            typeRangeList.add(rangeDTO);
-        }
+        List<NoticeRangeDTO> typeRangeList = assembleTypeRangeList(rangeTypeIds);
         noticeVO.setTypeRangeList(typeRangeList);
         return noticeVO;
     }
@@ -322,6 +310,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                 }
             }
         }
+        // 如果要保存为正式公告
+        else {
+
+        }
     }
 
     /**
@@ -333,6 +325,31 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     private static final String IS_DRAFT = "0";
     private static final String COMPANY_ID = "01";
     private static final String CUSTOMER_ID = "01";
+
+    private List<NoticeRangeDTO> assembleTypeRangeList(List<String> rangeTypeIds) {
+        List<NoticeRangeDTO> typeRangeList = CollUtil.newArrayList();
+        assembleTypeRangeItems(rangeTypeIds, typeRangeList);
+        return typeRangeList;
+    }
+
+    private void assembleTypeRangeItems(List<String> rangeTypeIds, List<NoticeRangeDTO> typeRangeList) {
+        for (String rangeTypeId : rangeTypeIds) {
+            NoticeRangeDTO rangeDTO = new NoticeRangeDTO();
+            rangeDTO.setTypeId(rangeTypeId);
+            if (StrUtil.equals(FG_COMP_SEC, rangeTypeId)) {
+                rangeDTO.setTypeName("自所属以下");
+            } else if (StrUtil.equals(FG_COMP_SEC_POST, rangeTypeId)) {
+                rangeDTO.setTypeName("所属以下の役職");
+            } else if (StrUtil.equals(FG_COMP_SEC_BOSS, rangeTypeId)) {
+                rangeDTO.setTypeName("所属以下の所属長");
+            } else if (StrUtil.equals(FG_COMP_POST, rangeTypeId)) {
+                rangeDTO.setTypeName("法人の役職");
+            } else if (StrUtil.equals(FG_COMP_EMP, rangeTypeId)) {
+                rangeDTO.setTypeName("法人の職員");
+            }
+            typeRangeList.add(rangeDTO);
+        }
+    }
 
     // 新增附件
     private void addNewAttachments(Long articleId, List<MultipartFile> uploadFiles, UploadFileUtil uploadFileUtil) {
