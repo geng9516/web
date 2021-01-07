@@ -60,7 +60,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // 登录失败后的回调
         authFilter.setAuthenticationFailureHandler(( req,resp,e) -> {
             String msg = getLoginErrorMessage(e);
-            resp.setStatus(HttpStatus.OK.value());
+            resp.setStatus(HttpStatus.UNAUTHORIZED.value());
             if (SysUtil.isAjaxRequest(req)) {
                 resp.setCharacterEncoding("UTF-8");
                 resp.setContentType(MediaType.APPLICATION_JSON_VALUE);

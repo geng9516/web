@@ -163,7 +163,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void addOrUpdateDraft(DraftNoticeDTO dto) {
-        Long id = dto.getHbtId();
+        Long hbtId = dto.getHbtId();
         Date startDate = dto.getHbtDdateofannouncement();
         Date endDate = dto.getHbtDdateofexpire();
         if (Objects.isNull(endDate)) {
@@ -179,7 +179,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         String title = dto.getHbtCtitle();
         String top = dto.getHbtCheaddisp();
         Date now = DateUtil.date();
-        boolean isUpdate = Objects.nonNull(id);
+        boolean isUpdate = Objects.nonNull(hbtId);
         List<MultipartFile> uploadFiles = dto.getAttachments();
         // 仅保存为草稿，不发布
         if (isDraft && !isPublish) {
@@ -200,17 +200,17 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             tempDO.setHbtCempRange(dto.getEmpRangeIds());
             // 修改草稿动作
             if (isUpdate) {
-                tempDO.setHbtId(id);
+                tempDO.setHbtId(hbtId);
                 histBulletinBoardTempService.updateById(tempDO);
             // 新增草案动作
             } else {
                tempDO.setHbtId(1L);
                histBulletinBoardTempService.save(tempDO);
                // 保存草稿后将草稿id赋给
-               id = tempDO.getHbtId();
+                hbtId = tempDO.getHbtId();
             }
             // 如果有附件则需要保存用户上传的附件
-            uploadTempAttachments(id,uploadFiles,isUpdate,dto.getDeleteAttachmentIdList(),false);
+            uploadTempAttachments(hbtId,uploadFiles,isUpdate,dto.getDeleteAttachmentIdList(),false);
         }
         // 保存成草稿的同时发布为正式公共
         if (isPublish) {
@@ -238,8 +238,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                 boardUserDO.setHbgCmodifieruserid(loginUserId);
                 boardUserDO.setHbgDmodifieddate(now);
                 histBulletinBoardUserService.save(boardUserDO);
-                // 判断是否有需要上传的附件
-                // todo
+                // 判断是否有需要上传的附件,如果是草稿则不需要调用上传文件方法上传，直接从草稿中保存的数据取出即可
+                if (isDraft) {
+
+                }
             // 经过编辑后的草稿发布成公告
             } else {
                 // todo

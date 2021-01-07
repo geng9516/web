@@ -3,7 +3,6 @@ package jp.smartcompany.controller.tmg_inp;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
