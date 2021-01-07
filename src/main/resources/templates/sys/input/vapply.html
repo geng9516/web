@@ -97,7 +97,7 @@
                                             {{ item.tntfDbegin }}<span style="color: var(--primary-info)"> ↔ </span>{{ item.tntfDend }} </i-col>
                                     <i-col span="12" style="position: absolute;left: 33%;top:-5px" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
-                                            <ul style="display:flex" v-if="item.ntfapprover">
+                                            <ul style="display:flex" v-if="item.ntfapprover.length > 1 || item.ntfapprover[0] != ' ' ">
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml3':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
