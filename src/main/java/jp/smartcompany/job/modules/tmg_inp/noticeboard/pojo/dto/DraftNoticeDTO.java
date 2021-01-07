@@ -36,7 +36,7 @@ public class DraftNoticeDTO {
     private String rangeTypes;
     // 要删除的文件idlist
     private List<Long> deleteAttachmentIdList;
-    // 要保留的文件idlist
-    private List<Long> keepAttachmentIdList;
+    // 是否在将草稿保存为正式公告的同时直接发布公告
+    private String isPublish;
 
 }

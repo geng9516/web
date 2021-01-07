@@ -25,6 +25,11 @@ public class SmartParameterInterceptor implements HandlerInterceptor {
         req.setAttribute("isIPhoneOrIPod", uaStr.contains("iPhone"));
         req.setAttribute("isIPad",uaStr.contains("iPad"));
         req.setAttribute("isAndroid",platform.isAndroid());
+        boolean isAndroidPad = false;
+        if (platform.isAndroid() && !StrUtil.containsIgnoreCase(uaStr, "mobile")) {
+            isAndroidPad = true;
+        }
+        req.setAttribute("isAndroidPad",isAndroidPad);
 
         String origin = req.getHeader("Origin");
         if(StrUtil.isBlank(origin)) {

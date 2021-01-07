@@ -30,9 +30,9 @@ public class HistBulletinBoardDO implements Serializable {
     // 法人コード
     private String hbCcompanyid;
     // 掲示開始日
-    private String hbDdateofannouncement;
+    private Date hbDdateofannouncement;
     // 掲示終了日
-    private String hbDdateofexpire;
+    private Date hbDdateofexpire;
     // タイトル
     private String hbCtitle;
     // 掲示内容

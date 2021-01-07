@@ -24,11 +24,12 @@ import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempFileDO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardUserDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempFileService;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempService;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,8 +51,13 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     private final IMastGroupsectionpostmappingService groupsectionpostmappingService;
     private final IMastGroupbasesectionService baseSectionService;
     private final DataSource dataSource;
+    // 草稿相关service
     private final IHistBulletinBoardTempFileService histBulletinBoardTempFileService;
     private final IHistBulletinBoardTempService histBulletinBoardTempService;
+    // 正式公告相关service
+    private final IHistBulletinBoardService histBulletinBoardService;
+    private final IHistBulletinBoardFileService histBulletinBoardFileService;
+    private final IHistBulletinBoardUserService histBulletinBoardUserService;
 
     /** 処理区分(法人＆組織指定リスト) */
     public static final String FG_COMP_SEC         = "02";
@@ -168,14 +174,15 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         String loginEmpName = loginUser.getMeCemployeename();
         String deptName = loginUser.getMoCsectionname();
         boolean isDraft = StrUtil.equals(dto.getHbtCfix(),IS_DRAFT);
+        boolean isPublish = StrUtil.equals(dto.getIsPublish(),IS_PUBLISH);
         String content = dto.getHbtCcontents();
         String title = dto.getHbtCtitle();
         String top = dto.getHbtCheaddisp();
         Date now = DateUtil.date();
         boolean isUpdate = Objects.nonNull(id);
         List<MultipartFile> uploadFiles = dto.getAttachments();
-        // 保存草稿
-        if (isDraft) {
+        // 仅保存为草稿，不发布
+        if (isDraft && !isPublish) {
             // 设置基础属性
             HistBulletinBoardTempDO tempDO = new HistBulletinBoardTempDO();
             tempDO.setHbtCcompanyid(COMPANY_ID);
@@ -203,11 +210,40 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                id = tempDO.getHbtId();
             }
             // 如果有附件则需要保存用户上传的附件
-            uploadAttachments(id,uploadFiles,isUpdate,true,dto.getDeleteAttachmentIdList(),false);
+            uploadTempAttachments(id,uploadFiles,isUpdate,dto.getDeleteAttachmentIdList(),false);
         }
-        // 保存成正式公告
-        else {
-
+        // 保存成草稿的同时发布为正式公共
+        if (isPublish) {
+            HistBulletinBoardDO bulletinBoardDO = new HistBulletinBoardDO();
+            bulletinBoardDO.setHbCcompanyid(COMPANY_ID);
+            bulletinBoardDO.setHbCcustomerid(CUSTOMER_ID);
+            bulletinBoardDO.setHbCcontents(content);
+            bulletinBoardDO.setHbCtitle(title);
+            bulletinBoardDO.setHbCheaddisp(top);
+            bulletinBoardDO.setHbCmnuser(loginUserId);
+            bulletinBoardDO.setHbCmnusername(loginEmpName+"("+deptName+")");
+            bulletinBoardDO.setHbCmodifieruserid(loginUserId);
+            bulletinBoardDO.setHbDmodifieddate(now);
+            bulletinBoardDO.setHbDdateofannouncement(startDate);
+            bulletinBoardDO.setHbDdateofexpire(endDate);
+            bulletinBoardDO.setHbCfix(dto.getIsPublish());
+            histBulletinBoardService.save(bulletinBoardDO);
+            Long articleId = bulletinBoardDO.getHbId();
+            // 首次创建就直接将此公告发布
+            if (!isUpdate) {
+                // 保存可查看此公告的用户idlist
+                HistBulletinBoardUserDO boardUserDO = new HistBulletinBoardUserDO();
+                boardUserDO.setHbgCuserids(dto.getEmpRangeIds());
+                boardUserDO.setHbgCarticleid(articleId);
+                boardUserDO.setHbgCmodifieruserid(loginUserId);
+                boardUserDO.setHbgDmodifieddate(now);
+                histBulletinBoardUserService.save(boardUserDO);
+                // 判断是否有需要上传的附件
+                // todo
+            // 经过编辑后的草稿发布成公告
+            } else {
+                // todo
+            }
         }
     }
 
@@ -268,51 +304,43 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
      * @param articleId 草稿或公告id
      * @param uploadFiles 附件个数
      * @param isUpdate 是否是草稿的更新动作
-     * @param isDraft 是否保存为正式公告
      */
-    public void uploadAttachments(Long articleId, List<MultipartFile> uploadFiles, boolean isUpdate, boolean isDraft, List<Long> deleteAttachmentIdList,boolean randomName) {
+    public void uploadTempAttachments(Long articleId, List<MultipartFile> uploadFiles, boolean isUpdate, List<Long> deleteAttachmentIdList,boolean randomName) {
         UploadFileUtil uploadFileUtil = new UploadFileUtil(randomName);
-        // 如果是编辑草稿
-        if (isDraft) {
-            // 公告添加操作的话不需要判断是否已经添加过附件，只要将上传的附件保存即可
-            if (!isUpdate) {
+        // 公告添加操作的话不需要判断是否已经添加过附件，只要将上传的附件保存即可
+        if (!isUpdate) {
+            if (CollUtil.isNotEmpty(uploadFiles)) {
+                addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+            }
+        }
+        // 公告修改操作的话则要判断之前一回添加的附件哪些需要删除，哪些需要保留，之后再将本次上传的新的文件与比对后的附件结果进行合并保存
+        else {
+            // 查询此草稿是否存在附件信息。不存在且本次上传了附件的话则直接将附件添加即可
+            List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
+            if (CollUtil.isEmpty(oldFileList)) {
                 if (CollUtil.isNotEmpty(uploadFiles)) {
                     addNewAttachments(articleId, uploadFiles, uploadFileUtil);
                 }
             }
-            // 公告修改操作的话则要判断之前一回添加的附件哪些需要删除，哪些需要保留，之后再将本次上传的新的文件与比对后的附件结果进行合并保存
+            // 如果原先已经存在草稿附件,且本次没有上传新的附件，则需要根据前端传过来的deleteAttachmentIdStr和keepAttachmentIdStr进行筛选，对附件进行有条件地增减
             else {
-                // 查询此草稿是否存在附件信息。不存在且本次上传了附件的话则直接将附件添加即可
-                List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
-                if (CollUtil.isEmpty(oldFileList)) {
-                    if (CollUtil.isNotEmpty(uploadFiles)) {
-                        addNewAttachments(articleId, uploadFiles, uploadFileUtil);
-                    }
-                }
-                // 如果原先已经存在草稿附件,且本次没有上传新的附件，则需要根据前端传过来的deleteAttachmentIdStr和keepAttachmentIdStr进行筛选，对附件进行有条件地增减
-                else {
-                   List<Long> historyFileIdList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList());
-                   // 获取本次编辑草稿时要删除的附件对应的id
-                   List<Long> deletedTempFileIdList = CollUtil.newArrayList(CollUtil.intersection(historyFileIdList, deleteAttachmentIdList));
-                   if (CollUtil.isNotEmpty(deletedTempFileIdList)) {
-                       // 根据id找到要删除的附件,如果确实存在则删除此附件
-                       List<HistBulletinBoardTempFileDO> deletedTempFileList =  histBulletinBoardTempFileService.listByIds(deletedTempFileIdList);
-                       if (CollUtil.isNotEmpty(deletedTempFileList)) {
-                           List<String> realPathList = deletedTempFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
-                            realPathList.forEach(uploadFileUtil::removePreFile);
-                            histBulletinBoardTempFileService.removeByIds(deletedTempFileIdList);
-                       }
+               List<Long> historyFileIdList = oldFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList());
+               // 获取本次编辑草稿时要删除的附件对应的id
+               List<Long> deletedTempFileIdList = CollUtil.newArrayList(CollUtil.intersection(historyFileIdList, deleteAttachmentIdList));
+               if (CollUtil.isNotEmpty(deletedTempFileIdList)) {
+                   // 根据id找到要删除的附件,如果确实存在则删除此附件
+                   List<HistBulletinBoardTempFileDO> deletedTempFileList =  histBulletinBoardTempFileService.listByIds(deletedTempFileIdList);
+                   if (CollUtil.isNotEmpty(deletedTempFileList)) {
+                       List<String> realPathList = deletedTempFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                        realPathList.forEach(uploadFileUtil::removePreFile);
+                        histBulletinBoardTempFileService.removeByIds(deletedTempFileIdList);
                    }
-                   // 处理完本次要删除的附件后，还要判断是否有本次新添加的附件，如果有本次新添加的附件则也要进行保存
-                   if (CollUtil.isNotEmpty(uploadFiles)) {
-                       addNewAttachments(articleId, uploadFiles, uploadFileUtil);
-                   }
-                }
+               }
+               // 处理完本次要删除的附件后，还要判断是否有本次新添加的附件，如果有本次新添加的附件则也要进行保存
+               if (CollUtil.isNotEmpty(uploadFiles)) {
+                   addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+               }
             }
-        }
-        // 如果要保存为正式公告
-        else {
-
         }
     }
 
@@ -323,6 +351,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
      */
 
     private static final String IS_DRAFT = "0";
+    private static final String IS_PUBLISH = "1";
     private static final String COMPANY_ID = "01";
     private static final String CUSTOMER_ID = "01";
 

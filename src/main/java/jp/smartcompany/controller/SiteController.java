@@ -30,14 +30,22 @@ public class SiteController {
 
     @GetMapping
     public String index(@RequestAttribute("isIPhoneOrIPod") Boolean isIPhoneOrIPod,
-                        @RequestAttribute("isAndroid") Boolean isAndroid) {
+                        @RequestAttribute("isAndroid") Boolean isAndroid,
+                        @RequestAttribute("isAndroidPad") Boolean isAndroidPad) {
         if (isIPhoneOrIPod || isAndroid) {
+            if (isAndroidPad) {
+                return indexPageDispatcher();
+            }
             return "mobile/index";
         }
-        String homeUrl = (String)timedCache.get(Constant.KEY_HOME_URL,true);
-        if (StrUtil.isBlank(homeUrl)){
+        return indexPageDispatcher();
+    }
+
+    private String indexPageDispatcher() {
+        String homeUrl = (String) timedCache.get(Constant.KEY_HOME_URL, true);
+        if (StrUtil.isBlank(homeUrl)) {
             homeUrl = appTreeService.getHomeUrl();
-            timedCache.put(Constant.KEY_HOME_URL,homeUrl);
+            timedCache.put(Constant.KEY_HOME_URL, homeUrl);
         }
         if (StrUtil.isNotBlank(homeUrl)) {
             return "forward:" + homeUrl;
