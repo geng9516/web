@@ -4,7 +4,7 @@
 <div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org">
   <svg th:replace="layout/logos::svg_logos"></svg>
   <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
-    <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css?t=${Date.now()}`">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/header.min.css?t='+ new java.util.Date().getTime()}">
     <a :href="baseUrl"><svg class="head-logo">
       <use xlink:href="#logo"></use>
     </svg></a>
