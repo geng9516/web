@@ -246,7 +246,7 @@
                             変更者コメント
                         </div>
                         <!--                        :autosize="{ miFnRows: 2, maxRows: 5 }"-->
-                        <i-input type="textarea" :rows="3" v-model="dataDetail.ccomment"></i-input>
+                        <i-input type="textarea" :rows="3" v-model.trim="dataDetail.ccomment"></i-input>
                     </i-col>
                 </Row>
                 <Spin size="large" fix v-if="paidDetailsLoading"></Spin>
@@ -1198,10 +1198,7 @@
 
             },
             length_check(Ps_para, Pn_type, Pn_keta) {
-
-                if (Ps_para === null) {
-                    return true
-                }
+                if (!Ps_para) return true
 
                 let Ln_length = this.getLengthB(Ps_para)
                 if (Ln_length > Pn_keta)
