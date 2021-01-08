@@ -389,7 +389,7 @@ new Vue({
         this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
         this.title = this.dailyEdit.tdaDyyyymmddDy
 
-        if (this.dailyEdit.tdaCerrcode !== null) {
+        if (this.dailyEdit.tdaCerrcode) {
 
           let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
           Object.keys(tempErrCode).some(e => {
