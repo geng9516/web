@@ -1,7 +1,7 @@
 <!--
    author: Dellen Shang
 -->
-<div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
   <svg th:replace="layout/logos::svg_logos"></svg>
   <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
     <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/header.min.css?t='+ new java.util.Date().getTime()}">
