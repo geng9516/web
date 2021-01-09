@@ -22,10 +22,10 @@ public class Query<T> {
         long curPage = 1;
         long limit = 10;
 
-        if(params.get(Constant.KEY_PAGE) != null){
+        if(StrUtil.isNotBlank((String)params.get(Constant.KEY_PAGE))){
             curPage = Long.parseLong((String)params.get(Constant.KEY_PAGE));
         }
-        if(params.get(Constant.KEY_LIMIT) != null){
+        if(StrUtil.isNotBlank((String)params.get(Constant.KEY_LIMIT))){
             limit = Long.parseLong((String)params.get(Constant.KEY_LIMIT));
         }
 

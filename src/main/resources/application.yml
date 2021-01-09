@@ -38,8 +38,8 @@ spring:
       pool-name: web-work-pool
       auto-commit: on
       connection-timeout: 60000
-      max-lifetime: 1800000
-      idle-timeout: 600000
+      max-lifetime: 1200000
+      idle-timeout: 1800000
       connection-test-query: SELECT 1 FROM DUAL
       validation-timeout: 3000
 mybatis-plus:
