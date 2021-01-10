@@ -51,7 +51,7 @@ public class BeanConfiguration {
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
         objectMapper.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"));
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
         simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
