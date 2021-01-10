@@ -1,4 +1,4 @@
-package jp.smartcompany.boot.configuration.security.authentication;
+package jp.smartcompany.boot.configuration.security.provider.database;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class SmartAuthenticationProvider implements AuthenticationProvider {
+public class DatabaseAuthenticationProvider implements AuthenticationProvider {
 
-    private final SmartUserDetailsServiceImpl userDetailsService;
+    private final DatabaseUserDetailsServiceImpl userDetailsService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

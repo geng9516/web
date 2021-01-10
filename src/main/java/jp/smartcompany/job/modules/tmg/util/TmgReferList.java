@@ -957,27 +957,6 @@ public class TmgReferList {
     }
 
     /**
-     * システム管理者かどうかを判定する。
-     * @return
-     */
-    public boolean isAdmin(){
-        boolean retval = false;
-        Connection connection;
-        try{
-            connection = dataSource.getConnection();
-            List<String> result = SqlExecutor.query(connection,buildSQLforCheckAdmin(), new StringListHandler());
-            if(CollUtil.isNotEmpty(result)) {
-                retval = true;
-            }
-        }catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-            retval = false;
-        }
-        return retval;
-    }
-
-    /**
      * システム管理者か判定するSQL
      * @return
      */

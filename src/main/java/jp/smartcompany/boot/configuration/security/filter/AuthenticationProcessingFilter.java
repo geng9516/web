@@ -1,4 +1,4 @@
-package jp.smartcompany.boot.configuration.security.authentication;
+package jp.smartcompany.boot.configuration.security.filter;
 
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,7 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -24,17 +23,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Component
 public class AuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
 
   private final ObjectMapper objectMapper;
 
   public AuthenticationProcessingFilter(
           SecurityProperties securityProperties, AuthBusiness authBusiness,
-          ObjectMapper objectMapper, SmartAuthenticationManager authenticationManager) {
+          ObjectMapper objectMapper) {
     super(new AntPathRequestMatcher("/login", "POST"));
     this.objectMapper = objectMapper;
-    setAuthenticationManager(authenticationManager);
     setAuthenticationSuccessHandler((req, resp, auth) -> {
       authBusiness.saveLoginInfo(true,auth.getName());
       if (SysUtil.isAjaxRequest(req)) {

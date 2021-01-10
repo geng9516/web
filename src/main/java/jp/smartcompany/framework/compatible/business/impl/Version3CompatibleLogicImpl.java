@@ -306,42 +306,42 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Vector<Object>> vsqlResult;
         Vector<Vector<Object>> vecResult;
 
-        Connection conn = dataSource.getConnection();
-        conn.setReadOnly(true);
-        // SQLの数分処理
-        for (int nSqlCnt = 0; nSqlCnt < pvSQL.size(); nSqlCnt++) {
-            sSql = pvSQL.elementAt(nSqlCnt).toString();
-            if (pbDesigSW) {	// Desig4項目の場合に正規区分を付加
-                sSql = this.addVirtualRole(sSql);
-            }
-            vecResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
-            try {
-                log.info("【executeMultiQuery：{}】",sSql);
-                // SQL実行
-                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult =dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
-                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
-                if (vsqlResult != null && vsqlResult.size() > 1) {
-
-                    // カラム名の１行目は設定しない
-                    for (int i = 1; i < vsqlResult.size(); i++) {
-                        // 検索結果をセット
-                        vecResult.add(vsqlResult.get(i));
-                    }
+        try (Connection conn = dataSource.getConnection()) {
+            conn.setReadOnly(true);
+            // SQLの数分処理
+            for (int nSqlCnt = 0; nSqlCnt < pvSQL.size(); nSqlCnt++) {
+                sSql = pvSQL.elementAt(nSqlCnt).toString();
+                if (pbDesigSW) {    // Desig4項目の場合に正規区分を付加
+                    sSql = this.addVirtualRole(sSql);
                 }
+                vecResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+                try {
+                    log.info("【executeMultiQuery：{}】", sSql);
+                    // SQL実行
+                    //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                    vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql), conn);
+                    //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                    if (vsqlResult != null && vsqlResult.size() > 1) {
 
-                // setExceptionにnew String()を設定
-                vecException.add("");
-            } catch (Exception e) {
+                        // カラム名の１行目は設定しない
+                        for (int i = 1; i < vsqlResult.size(); i++) {
+                            // 検索結果をセット
+                            vecResult.add(vsqlResult.get(i));
+                        }
+                    }
 
-                // e.getMessageをセット
-                vecException.add(nSqlCnt, e.getMessage());
+                    // setExceptionにnew String()を設定
+                    vecException.add("");
+                } catch (Exception e) {
+                    // e.getMessageをセット
+                    vecException.add(nSqlCnt, e.getMessage());
+                }
+                // 1個のSQL分の結果セット
+                vectorResult.add(vecResult);
             }
-
-            // 1個のSQL分の結果セット
-            vectorResult.add(vecResult);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        DbUtil.close(conn);
         psResult.setException(vecException);
         psResult.setResult(vectorResult);
         return psResult;
@@ -855,37 +855,37 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Boolean> vBehav;
         Vector<Vector<Object>> vResult;
 
-        Connection conn = dataSource.getConnection();
         // SQLの数分処理
-        for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
-            sSql = pvQuery.elementAt(nSqlCnt).toString();
-            vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
-            try {
+        try (Connection conn = dataSource.getConnection()) {
+            for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
+                sSql = pvQuery.elementAt(nSqlCnt).toString();
+                vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+                try {
 
-                // SQL実行
-                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
-                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
-                if (vsqlResult != null && vsqlResult.size() > 0) {
-                    // ビヘイビア適用
-                    vBehav = setBehaviorApply(vsqlResult.get(0), psSystemCode, psDomainid, pnRelationId);
-                    // マスキング判定結果により結果セット
-                    vResult = setColumnDataAndMask(
-                            vsqlResult, vBehav, vResult);
+                    // SQL実行
+                    //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                    vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql), conn);
+                    //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                    if (vsqlResult != null && vsqlResult.size() > 0) {
+                        // ビヘイビア適用
+                        vBehav = setBehaviorApply(vsqlResult.get(0), psSystemCode, psDomainid, pnRelationId);
+                        // マスキング判定結果により結果セット
+                        vResult = setColumnDataAndMask(
+                                vsqlResult, vBehav, vResult);
+                    }
+                    // setExceptionにnew String()を設定
+                    vecException.add("");
+                } catch (Exception e) {
+
+                    // e.getMessageをセット
+                    vecException.add(nSqlCnt, e.getMessage());
                 }
-                // setExceptionにnew String()を設定
-                vecException.add("");
-            } catch (Exception e) {
 
-                // e.getMessageをセット
-                vecException.add(nSqlCnt, e.getMessage());
+                // 1個のSQL分の結果セット
+                vbResult.add(vResult);
             }
-
-            // 1個のSQL分の結果セット
-            vbResult.add(vResult);
-        }
-        if (conn!=null){
-            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         psResult.setException(vecException);
         psResult.setResult(vbResult);
@@ -1017,37 +1017,37 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Vector<Vector<Object>>> vectorResult = new Vector<>();
         Vector<Vector<Object>> vsqlResult;
         Vector<Vector<Object>> vResult;
-        Connection conn = dataSource.getConnection();
         // SQLの数分処理
-        for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
-            // SQL文のカラム名4個目の次に正規区分のカラム"HD_NOFFCIALORNOT"追加
-            sSql = this.addVirtualRole(pvQuery.elementAt(nSqlCnt).toString());
-            vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
-            try {
-                // SQL実行
-                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
-                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
-                if (vsqlResult != null && vsqlResult.size() > 0) {
-                    // マスキング判定(ビヘイビア適用)・結果セット
-                    vResult = this.setColumnDataAndBehaviorApplyPlural(
-                            psCustid, psCompid, psUserid, psDate, psTarcomp, psTargetDept,
-                            vsqlResult,vsqlResult.get(0),
-                            psSystemCode, psDomainid, pnStartLine, pnEndLine,
-                            PsConst.REPORTLINE_TYPE_DEF,
-                            pHttpSession, psGroupid, psGUID);
+        try (Connection conn = dataSource.getConnection()) {
+            for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
+                // SQL文のカラム名4個目の次に正規区分のカラム"HD_NOFFCIALORNOT"追加
+                sSql = this.addVirtualRole(pvQuery.elementAt(nSqlCnt).toString());
+                vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+                try {
+                    // SQL実行
+                    //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                    vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql), conn);
+                    //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                    if (vsqlResult != null && vsqlResult.size() > 0) {
+                        // マスキング判定(ビヘイビア適用)・結果セット
+                        vResult = this.setColumnDataAndBehaviorApplyPlural(
+                                psCustid, psCompid, psUserid, psDate, psTarcomp, psTargetDept,
+                                vsqlResult, vsqlResult.get(0),
+                                psSystemCode, psDomainid, pnStartLine, pnEndLine,
+                                PsConst.REPORTLINE_TYPE_DEF,
+                                pHttpSession, psGroupid, psGUID);
+                    }
+                    // setExceptionにnew String()を設定
+                    vecException.add(new String());
+                } catch (Exception e) {
+                    // e.getMessageをセット
+                    vecException.add(nSqlCnt, e.getMessage());
                 }
-                // setExceptionにnew String()を設定
-                vecException.add(new String());
-            } catch (Exception e) {
-                // e.getMessageをセット
-                vecException.add(nSqlCnt, e.getMessage());
+                // 1個のSQL分の結果セット
+                vectorResult.add(vResult);
             }
-            // 1個のSQL分の結果セット
-            vectorResult.add(vResult);
-        }
-        if (conn!=null){
-            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         psResult.setException(vecException);
         psResult.setResult(vectorResult);

@@ -38,10 +38,12 @@ spring:
       pool-name: web-work-pool
       auto-commit: on
       connection-timeout: 60000
-      max-lifetime: 1200000
-      idle-timeout: 1800000
+      max-lifetime: 1800000
+      idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
       validation-timeout: 3000
+      minimum-idle: 30
+      maximum-pool-size: 150
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/genericmanager/mapper/**/*.xml,
                     classpath:jp/smartcompany/job/modules/tmg_setting/mailmanager/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_inp/noticeboard/mapper/**/*.xml

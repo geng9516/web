@@ -3,7 +3,8 @@ package jp.smartcompany.boot.configuration.security;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.configuration.security.authentication.AuthenticationProcessingFilter;
+import jp.smartcompany.boot.configuration.security.filter.AuthenticationProcessingFilter;
+import jp.smartcompany.boot.configuration.security.provider.database.DatabaseAuthenticationProvider;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,27 +36,36 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final ObjectMapper objectMapper;
     private final AuthBusiness authBusiness;
     private final SecurityProperties securityProperties;
-    private final AuthenticationProcessingFilter authenticationProcessingFilter;
+    private final DatabaseAuthenticationProvider databaseAuthenticationProvider;
+
+    public AuthenticationProcessingFilter authenticationProcessingFilter() throws Exception {
+        AuthenticationProcessingFilter authenticationProcessingFilter = new AuthenticationProcessingFilter(securityProperties, authBusiness, objectMapper);
+        authenticationProcessingFilter.setAuthenticationManager(authenticationManagerBean());
+        return authenticationProcessingFilter;
+    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-          http.csrf().ignoringAntMatchers(securityProperties.getCsrfWhiteList())
-                .and()
-                  // 允许跨域
-                  .cors()
-                .and()
+          http
+                     .csrf(csrf -> csrf.ignoringAntMatchers(securityProperties.getCsrfWhiteList()))
+                      // 允许跨域
+                     .cors()
+                  .and()
                   // 防止iframe 造成跨域
-                  .headers().frameOptions().disable()
-                .and()
-                  .formLogin().usernameParameter("username").passwordParameter("password")
-                .and()
+                      .headers(headers -> {
+                          headers.frameOptions().disable();
+                      })
+                      .formLogin(form-> {
+                          form.usernameParameter("username")
+                                  .passwordParameter("password");
+                      })
                   // 访问认证和授权配置
-                  .authorizeRequests()
-                    .antMatchers(securityProperties.getWhiteList()).permitAll()
-                    .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
-                .and()
+                    .authorizeRequests()
+                      .antMatchers(securityProperties.getWhiteList()).permitAll()
+                      .anyRequest().access("@hasUrlPermission.hasPermission(request,authentication)")
+                  .and()
                   // 添加自定义认证filter
-                  .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
+                  .addFilterAt(authenticationProcessingFilter() , UsernamePasswordAuthenticationFilter.class)
                   // 登出时进行的处理
                   .logout(logout ->
                        logout
@@ -104,6 +115,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring()
                 .antMatchers(HttpMethod.GET, securityProperties.getResourceList())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(databaseAuthenticationProvider);
     }
 
     private void configResponseJsonHeader(HttpServletResponse resp, int httpForbidden) {

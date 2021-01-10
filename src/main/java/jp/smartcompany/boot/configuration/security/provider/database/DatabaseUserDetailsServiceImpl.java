@@ -1,4 +1,4 @@
-package jp.smartcompany.boot.configuration.security.authentication;
+package jp.smartcompany.boot.configuration.security.provider.database;
 
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.cache.impl.TimedCache;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 @Service("smartUserDetails")
 @RequiredArgsConstructor
-public class SmartUserDetailsServiceImpl implements UserDetailsService {
+public class DatabaseUserDetailsServiceImpl implements UserDetailsService {
 
     private final IMastAccountService accountService;
     private final ScCacheUtil scCacheUtil;
