@@ -41,7 +41,7 @@ spring:
       max-lifetime: 1800000
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
-      validation-timeout: 3000
+      validation-timeout: 1500
       minimum-idle: 30
       maximum-pool-size: 150
 mybatis-plus:
