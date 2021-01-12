@@ -7,6 +7,7 @@ import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -121,6 +122,11 @@ public class NoticeBoardController {
         DraftNoticeDTO dto = assembleNotice(attachments, hbtId, hbtDdateofannouncement, hbtDdateofexpire, hbtCtitle, hbtCcontents, hbtCheaddisp, hbtCfix, sendRangeTypes,empRangeIds,deleteAttachmentIdList,isPublish);
         noticeBoardLogic.addOrUpdateDraft(dto);
         return "下書き操作成功";
+    }
+
+    @GetMapping("list")
+    public PageUtil getSelfNoticeList(@RequestParam Map<String,Object> params) {
+        return noticeBoardLogic.getSelfNoticeList(params);
     }
 
     /**

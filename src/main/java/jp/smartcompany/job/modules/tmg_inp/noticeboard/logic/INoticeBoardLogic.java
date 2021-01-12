@@ -26,4 +26,6 @@ public interface INoticeBoardLogic {
 
     DraftNoticeVO getDraftNoticeDetail(Long id);
 
+    PageUtil getSelfNoticeList(Map<String,Object> params);
+
 }

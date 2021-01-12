@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.tmg_inp.noticeboard.mapper.HistBulletinBoardMapper">
+
+    <select id="selectBulletinBoardByPublisherId" resultType="jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO">
+        SELECT
+            HB_ID,HB_DDATEOFANNOUNCEMENT,HB_DDATEOFEXPIRE,HB_CTITLE,HB_CHEADDISP,HB_CFIX
+        FROM
+            HIST_BULLETINBOARD
+        WHERE
+            HB_CCUSTOMERID = '01' AND HB_CCOMPANYID = '01' AND HB_CMNUSER = #{publisherId}
+        ORDER BY
+            HB_CHEADDISP DESC,HB_DMODIFIEDDATE DESC
+    </select>
+
+</mapper>

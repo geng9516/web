@@ -24,10 +24,7 @@ import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempFileDO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardUserDO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.*;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.*;
 import lombok.RequiredArgsConstructor;
@@ -144,6 +141,14 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
       return new PageUtil(page);
     }
 
+    @Override
+    public PageUtil getSelfNoticeList(Map<String,Object> params) {
+        String loginUserId = SecurityUtil.getUserId();
+        IPage<HistBulletinBoardDO> pageQuery = new PageQuery<HistBulletinBoardDO>().getPage(params);
+        IPage<HistBulletinBoardDO> page = histBulletinBoardService.listBulletinBoardByPublisherId(pageQuery,loginUserId);
+        return new PageUtil(page);
+    }
+
     /**
      * 供前端富文本插件图文混排时上传图片使用
      * @param file 上传图片
@@ -229,22 +234,23 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             bulletinBoardDO.setHbCfix(dto.getIsPublish());
             histBulletinBoardService.save(bulletinBoardDO);
             Long articleId = bulletinBoardDO.getHbId();
+
+            // 保存可查看此公告的用户idList
+            HistBulletinBoardUserDO boardUserDO = new HistBulletinBoardUserDO();
+            boardUserDO.setHbgCuserids(dto.getEmpRangeIds());
+            boardUserDO.setHbgCarticleid(articleId);
+            boardUserDO.setHbgCmodifieruserid(loginUserId);
+            boardUserDO.setHbgDmodifieddate(now);
+            histBulletinBoardUserService.save(boardUserDO);
+
             // 首次创建就直接将此公告发布
             if (!isUpdate) {
-                // 保存可查看此公告的用户idlist
-                HistBulletinBoardUserDO boardUserDO = new HistBulletinBoardUserDO();
-                boardUserDO.setHbgCuserids(dto.getEmpRangeIds());
-                boardUserDO.setHbgCarticleid(articleId);
-                boardUserDO.setHbgCmodifieruserid(loginUserId);
-                boardUserDO.setHbgDmodifieddate(now);
-                histBulletinBoardUserService.save(boardUserDO);
-                // 判断是否有需要上传的附件,如果是草稿则不需要调用上传文件方法上传，直接从草稿中保存的数据取出即可
-                if (isDraft) {
-
-                }
+                uploadOfficialAttachments(articleId,uploadFiles,false,dto.getDeleteAttachmentIdList(),false,hbtId);
             // 经过编辑后的草稿发布成公告
             } else {
-                // todo
+                uploadOfficialAttachments(articleId,uploadFiles,true,dto.getDeleteAttachmentIdList(),false,hbtId);
+                // 草稿附件处理完毕后要把草稿删除
+                histBulletinBoardTempService.removeById(hbtId);
             }
         }
     }
@@ -301,8 +307,65 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         return noticeVO;
     }
 
+    // 上传附件到正式公告（直接发布成正式公告的情况）
+    public void uploadOfficialAttachments(Long articleId,List<MultipartFile> uploadFiles,boolean isUpdate,List<Long> deleteAttachmentIdList,boolean randomName,Long draftId) {
+        UploadFileUtil uploadFileUtil = new UploadFileUtil(randomName);
+        // 公告添加操作的话不需要判断是否已经添加过附件，只要将上传的附件保存即可
+        if (!isUpdate) {
+            if (CollUtil.isNotEmpty(uploadFiles)) {
+                addNewAttachments(articleId, uploadFiles, uploadFileUtil,false);
+            }
+        } else {
+            // 查询是否存在此公告的草稿
+            List<HistBulletinBoardTempFileDO> tempFileList = histBulletinBoardTempFileService.listFileById(draftId);
+            // 如果此次编辑的草稿不存在附件且本次保存为正式公告时上传了附件
+            if (CollUtil.isEmpty(tempFileList)) {
+                if (CollUtil.isNotEmpty(uploadFiles)) {
+                    addNewAttachments(articleId, uploadFiles, uploadFileUtil,false);
+                }
+            } else {
+                List<Long> historyFileIdList = tempFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList());
+                // 获取本次编辑草稿时要删除的附件对应的id
+                List<Long> deletedTempFileIdList = CollUtil.newArrayList(CollUtil.intersection(historyFileIdList, deleteAttachmentIdList));
+                if (CollUtil.isNotEmpty(deletedTempFileIdList)) {
+                    // 根据id找到要删除的附件,如果确实存在则删除此附件
+                    List<HistBulletinBoardTempFileDO> deletedTempFileList =  histBulletinBoardTempFileService.listByIds(deletedTempFileIdList);
+                    if (CollUtil.isNotEmpty(deletedTempFileList)) {
+                        List<String> realPathList = deletedTempFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfFileRealPath).collect(Collectors.toList());
+                        realPathList.forEach(uploadFileUtil::removePreFile);
+                        histBulletinBoardTempFileService.removeByIds(deletedTempFileIdList);
+                    }
+                }
+                // 删除掉本次需要删除的附件后，再把删除后的tempFile的数据赋值给正式公告
+                List<HistBulletinBoardTempFileDO> tempStorageFileList = histBulletinBoardTempFileService.listFileById(draftId);
+                List<HistBulletinBoardFileDO> nowFileList = CollUtil.newArrayList();
+                if (CollUtil.isNotEmpty(tempStorageFileList)) {
+                    tempStorageFileList.forEach(tempFile -> {
+                        HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
+                        fileDO.setHbfFileRealPath(tempFile.getHbtfFileRealPath());
+                        fileDO.setHbfFileName(tempFile.getHbtfFilename());
+                        fileDO.setHbfFileUrl(tempFile.getHbtfFileUrl());
+                        fileDO.setHbfStartDate(tempFile.getHbtfStartDate());
+                        fileDO.setHbfEndDate(tempFile.getHbtfEndDate());
+                        fileDO.setHbIdFk(articleId);
+                        fileDO.setHbfValid(tempFile.getHbtfValid());
+                        nowFileList.add(fileDO);
+                    });
+                    histBulletinBoardFileService.saveBatch(nowFileList);
+                }
+                // 保存完毕后将相关草稿删除
+                List<Long> deleteTempStorageFileIdList = tempStorageFileList.stream().map(HistBulletinBoardTempFileDO::getHbtfId).collect(Collectors.toList());
+                histBulletinBoardTempFileService.removeByIds(deleteTempStorageFileIdList);
+                // 处理完原先草稿中的附件后再处理本次上传的附件
+                if (CollUtil.isNotEmpty(uploadFiles)) {
+                    addNewAttachments(articleId, uploadFiles, uploadFileUtil,false);
+                }
+            }
+        }
+    }
+
     /**
-     * 上传公告附件
+     * 上传公告附件(草稿)
      * @param articleId 草稿或公告id
      * @param uploadFiles 附件个数
      * @param isUpdate 是否是草稿的更新动作
@@ -312,7 +375,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         // 公告添加操作的话不需要判断是否已经添加过附件，只要将上传的附件保存即可
         if (!isUpdate) {
             if (CollUtil.isNotEmpty(uploadFiles)) {
-                addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                addNewAttachments(articleId, uploadFiles, uploadFileUtil,true);
             }
         }
         // 公告修改操作的话则要判断之前一回添加的附件哪些需要删除，哪些需要保留，之后再将本次上传的新的文件与比对后的附件结果进行合并保存
@@ -321,7 +384,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             List<HistBulletinBoardTempFileDO> oldFileList = histBulletinBoardTempFileService.listFileById(articleId);
             if (CollUtil.isEmpty(oldFileList)) {
                 if (CollUtil.isNotEmpty(uploadFiles)) {
-                    addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                    addNewAttachments(articleId, uploadFiles, uploadFileUtil,true);
                 }
             }
             // 如果原先已经存在草稿附件,且本次没有上传新的附件，则需要根据前端传过来的deleteAttachmentIdStr和keepAttachmentIdStr进行筛选，对附件进行有条件地增减
@@ -340,9 +403,41 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                }
                // 处理完本次要删除的附件后，还要判断是否有本次新添加的附件，如果有本次新添加的附件则也要进行保存
                if (CollUtil.isNotEmpty(uploadFiles)) {
-                   addNewAttachments(articleId, uploadFiles, uploadFileUtil);
+                   addNewAttachments(articleId, uploadFiles, uploadFileUtil,true);
                }
             }
+        }
+    }
+
+    // 新增附件
+    public void addNewAttachments(Long articleId, List<MultipartFile> uploadFiles, UploadFileUtil uploadFileUtil,boolean isDraft) {
+        List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
+
+        List<HistBulletinBoardTempFileDO> uploadBoardTempFileList = CollUtil.newArrayList();
+        List<HistBulletinBoardFileDO> uploadBoardFileList = CollUtil.newArrayList();
+
+        uploadFileInfoList.forEach(item -> {
+            if (isDraft) {
+                HistBulletinBoardTempFileDO fileDO = new HistBulletinBoardTempFileDO();
+                fileDO.setHbtIdFk(articleId);
+                fileDO.setHbtfFileUrl(item.getFileUrl());
+                fileDO.setHbtfFilename(item.getFilename());
+                fileDO.setHbtfFileRealPath(item.getRealPath());
+                uploadBoardTempFileList.add(fileDO);
+            } else {
+                HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
+                fileDO.setHbIdFk(articleId);
+                fileDO.setHbfFileUrl(item.getFileUrl());
+                fileDO.setHbfFileName(item.getFilename());
+                fileDO.setHbfFileRealPath(item.getRealPath());
+                uploadBoardFileList.add(fileDO);
+            }
+        });
+        if (CollUtil.isNotEmpty(uploadBoardTempFileList)) {
+            histBulletinBoardTempFileService.saveBatch(uploadBoardTempFileList);
+        }
+        if (CollUtil.isNotEmpty(uploadBoardFileList)) {
+            histBulletinBoardFileService.saveBatch(uploadBoardFileList);
         }
     }
 
@@ -380,21 +475,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             }
             typeRangeList.add(rangeDTO);
         }
-    }
-
-    // 新增附件
-    private void addNewAttachments(Long articleId, List<MultipartFile> uploadFiles, UploadFileUtil uploadFileUtil) {
-        List<UploadFileInfo> uploadFileInfoList = uploadFileUtil.uploadAttachment(uploadFiles, "notice-board", "TMG_NOTICE_BOARD_UPLOAD_PATH");
-        List<HistBulletinBoardTempFileDO> uploadBoardFileList = CollUtil.newArrayList();
-        uploadFileInfoList.forEach(item -> {
-            HistBulletinBoardTempFileDO fileDO = new HistBulletinBoardTempFileDO();
-            fileDO.setHbtIdFk(articleId);
-            fileDO.setHbtfFileUrl(item.getFileUrl());
-            fileDO.setHbtfFilename(item.getFilename());
-            fileDO.setHbtfFileRealPath(item.getRealPath());
-            uploadBoardFileList.add(fileDO);
-        });
-        histBulletinBoardTempFileService.saveBatch(uploadBoardFileList);
     }
 
     // 获取能进行揭示板发布的group
