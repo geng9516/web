@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -76,6 +77,16 @@ public class NoticeBoardController {
     }
 
     /**
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("notice/{id:\\d+}")
+    public NoticeVO getNoticeDetail(@PathVariable Long id) {
+        return noticeBoardLogic.getNoticeDetail(id);
+    }
+
+    /**
      * 添加或修改草稿
      * @param attachments
      * @param hbtId
@@ -124,6 +135,12 @@ public class NoticeBoardController {
         return "下書き操作成功";
     }
 
+    @PostMapping("notice/status")
+    public String changeNoticeStatus(@RequestParam Long id,@RequestParam(required = false,defaultValue = "1") String status) {
+        noticeBoardLogic.changeNoticeStatus(id,status);
+        return "照会フラグ変更成功";
+    }
+
     @GetMapping("list")
     public PageUtil getSelfNoticeList(@RequestParam Map<String,Object> params) {
         return noticeBoardLogic.getSelfNoticeList(params);
@@ -149,7 +166,6 @@ public class NoticeBoardController {
     public String uploadRichTextImage(@RequestParam MultipartFile file) {
         return noticeBoardLogic.uploadImageUrl(file);
     }
-
 
     private DraftNoticeDTO assembleNotice(List<MultipartFile> attachments, Long hbtId, Date hbtDdateofannouncement,
                                           Date hbtDdateofexpire, String hbtCtitle, String hbtCcontents,

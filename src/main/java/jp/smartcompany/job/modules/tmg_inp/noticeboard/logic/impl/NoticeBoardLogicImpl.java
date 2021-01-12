@@ -9,6 +9,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.handler.StringHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
@@ -26,6 +27,7 @@ import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.*;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -269,6 +271,40 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     }
 
     @Override
+    public NoticeVO getNoticeDetail(Long id) {
+        HistBulletinBoardDO boardDO = histBulletinBoardService.getById(id);
+        if (boardDO == null) {
+            throw new GlobalException("掲示板データは存在しません");
+        }
+        NoticeVO noticeVO = new NoticeVO();
+        BeanUtil.copyProperties(boardDO,noticeVO);
+        noticeVO.setUpdateDate(boardDO.getHbDmodifieddate());
+        List<HistBulletinBoardFileDO> attachments = histBulletinBoardFileService.listFileById(id);
+        noticeVO.setAttachmentList(attachments);
+        List<Map<String,String>> tempEmpRangeList = CollUtil.newArrayList();
+
+        QueryWrapper<HistBulletinBoardUserDO> qw = new QueryWrapper<>();
+        qw.eq("HBG_CARTICLEID",id);
+        HistBulletinBoardUserDO userRange = histBulletinBoardUserService.getOne(qw);
+        if (userRange == null) {
+            throw new GlobalException("照会できる人は見つかりません");
+        }
+        String[] empIds = userRange.getHbgCuserids().split(",");
+        try (Connection conn = dataSource.getConnection()) {
+            for (String empId : empIds) {
+                String empName = SqlExecutor.query(conn, "select me_ckanjiname from mast_employees  where me_cemployeeid_ck = ? and me_dstartdate <= trunc(sysdate) and me_denddate >= trunc(sysdate)", new StringHandler(), empId);
+                Map<String, String> empMap = MapUtil.<String, String>builder().put(empId, empName).build();
+                tempEmpRangeList.add(empMap);
+            }
+            noticeVO.setUserRangeList(tempEmpRangeList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
+        }
+        return noticeVO;
+    }
+
+    @Override
     public DraftNoticeVO getDraftNoticeDetail(Long id) {
         HistBulletinBoardTempDO tempDO = histBulletinBoardTempService.getById(id);
         if (tempDO == null) {
@@ -305,6 +341,14 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         List<NoticeRangeDTO> typeRangeList = assembleTypeRangeList(rangeTypeIds);
         noticeVO.setTypeRangeList(typeRangeList);
         return noticeVO;
+    }
+
+    @Override
+    public void changeNoticeStatus(Long id,String status) {
+        HistBulletinBoardDO histBulletinBoardDO = new HistBulletinBoardDO();
+        histBulletinBoardDO.setHbId(id);
+        histBulletinBoardDO.setHbCfix(status);
+        histBulletinBoardService.updateById(histBulletinBoardDO);
     }
 
     // 上传附件到正式公告（直接发布成正式公告的情况）
