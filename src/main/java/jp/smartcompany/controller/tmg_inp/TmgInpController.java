@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
  */
 @Controller
 @RequestMapping("tmg_inp")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class TmgInpController {
 
     /**
