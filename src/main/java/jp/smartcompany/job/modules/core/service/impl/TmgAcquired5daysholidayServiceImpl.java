@@ -35,6 +35,9 @@ public class TmgAcquired5daysholidayServiceImpl extends ServiceImpl<TmgAcquired5
             Map<String, Object> map = MapUtil.newHashMap(3);
             map.put("basedate", baseDate);
             map.put("empsql", empsql);
+            if("".equals(userCode)){
+                userCode=null;
+            }
             map.put("userCode", userCode);
 
             return this.baseMapper.buildSQLforList(map);
