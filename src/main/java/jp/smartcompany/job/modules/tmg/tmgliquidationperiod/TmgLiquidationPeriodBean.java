@@ -424,12 +424,18 @@ public class TmgLiquidationPeriodBean {
                 tlddDo.setTlddCstarttime(timeToMin(dailyDto.getStarttime()));
                 tlddDo.setTlddCendtime(timeToMin(dailyDto.getEndtime()));
                 tlddDo.setTlddCworkhours(dailyDto.getWorkhours());
+
+                tlddDo.setTlddCpattern(dailyDto.getPatternid());
+
                 tlddDo.setTlddCreststarttime1(timeToMin(dailyDto.getReststarttime1()));
                 tlddDo.setTlddCrestendtime1(timeToMin(dailyDto.getRestendtime1()));
+
                 tlddDo.setTlddCreststarttime2(timeToMin(dailyDto.getReststarttime2()));
                 tlddDo.setTlddCrestendtime2(timeToMin(dailyDto.getRestendtime2()));
+
                 tlddDo.setTlddCreststarttime3(timeToMin(dailyDto.getReststarttime3()));
                 tlddDo.setTlddCrestendtime3(timeToMin(dailyDto.getRestendtime3()));
+
                 tlddDo.setTlddCreststarttime4(timeToMin(dailyDto.getReststarttime4()));
                 tlddDo.setTlddCrestendtime4(timeToMin(dailyDto.getRestendtime4()));
             }
@@ -514,18 +520,19 @@ public class TmgLiquidationPeriodBean {
         //procedure 执行
         iTmgliquidationDailyService.execTDAInsert(empId, startDate, endDate, psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode());
         // procedure 执行时 err发生有无
-        TmgLiquidationPeriodDO tlpDo= iTmgliquidationPeriodService.getBaseMapper().selectOne(SysUtil.<TmgLiquidationPeriodDO>query()
-                .eq("TLP_CCUSTOMERID", psDBBean.getCustID())
-                .eq("TLP_CCOMPANYID", psDBBean.getCompCode())
-                .eq("TLP_DSTARTDATE", startDate)
-                .eq("TLP_DENDDATE", endDate)
-                .eq("TLP_CEMPLOYEEID", empId));
-        String stutas=tlpDo.getTlpCsparechar1();
-        if (!StrUtil.hasEmpty(stutas) && stutas.equals("TLD_STATUS|3")){
-            return GlobalResponse.ok("error");
-        }else{
-            return GlobalResponse.ok();
-        }
+//        TmgLiquidationPeriodDO tlpDo= iTmgliquidationPeriodService.getBaseMapper().selectOne(SysUtil.<TmgLiquidationPeriodDO>query()
+//                .eq("TLP_CCUSTOMERID", psDBBean.getCustID())
+//                .eq("TLP_CCOMPANYID", psDBBean.getCompCode())
+//                .eq("TLP_DSTARTDATE", startDate)
+//                .eq("TLP_DENDDATE", endDate)
+//                .eq("TLP_CEMPLOYEEID", empId));
+//        String stutas=tlpDo.getTlpCsparechar1();
+//        if (!StrUtil.hasEmpty(stutas) && stutas.equals("TLD_STATUS|3")){
+//            return GlobalResponse.ok("error");
+//        }else{
+//            return GlobalResponse.ok();
+//        }
+        return GlobalResponse.ok();
     }
 
     //时间转分钟

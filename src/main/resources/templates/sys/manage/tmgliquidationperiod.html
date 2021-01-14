@@ -66,8 +66,8 @@
             </template>
             <template slot-scope="{ row }" slot="detail">
                 <i-button size="small" v-if="row.newflag" @click="showDetails(row)">{{row.statusname}}</i-button>
-                <i-button size="small" v-if="row.newflag" @click="deleteLiquidation(row)">取消</i-button>
-                <i-button class="width100" size="small" v-else @click="showDetails(row)">新規</i-button>
+                <i-button size="small" v-if="row.newflag && row.status != 'TMG_LPSTATUS|5' " @click="deleteLiquidation(row)">取消</i-button>
+                <i-button class="width100" size="small" v-if= "!row.newflag" @click="showDetails(row)">新規</i-button>
             </template>
         </i-table>
 
@@ -418,7 +418,8 @@
                     <span>{{row.kubun}}</span>
                 </template>
                 <template slot-scope="{ row, index }" slot="patternname">
-                    <i-button type="primary" style="margin-right: 5px" ghost v-if="row.patternname">{{row.patternname}}</i-button>
+                    <i-button type="primary" style="margin-right: 5px" ghost v-if="row.patternid && row.patternname">{{row.patternname}}</i-button>
+                    <i-button type="primary" style="margin-right: 5px" ghost v-else-if="row.patternid && row.patternid.indexOf('CUSTOMIZE') > -1 ">カスタマイズ</i-button>
                     <i-button type="primary" style="margin-right: 5px" ghost v-else>-</i-button>
                 </template>
 
@@ -1170,6 +1171,8 @@
                 }
                 try {
                     await this.http.postForm('sys/tmgliquidationperiod/upload', OPTS)
+                    this.editFlag = false
+                    this.handleClickLeaf()
                 } catch (error) {
                     return
                 } finally {
@@ -1326,14 +1329,21 @@
             //更新月数据
             async updateMonthInfo() {
                 this.monthData.forEach((e, i) => {
-                    if (e.restTime.length === 1) {
+                    if (e.restTime[0]) {
                         this.monthData[i].reststarttime1 = this.monthData[i].restTime[0].restOpen
                         this.monthData[i].restendtime1 = this.monthData[i].restTime[0].restClose
-                    } else if (e.restTime.length === 2) {
+                    }
+                    if (e.restTime[1]) {
                         this.monthData[i].reststarttime2 = this.monthData[i].restTime[1].restOpen
                         this.monthData[i].restendtime2 = this.monthData[i].restTime[1].restClose
-                        this.monthData[i].reststarttime1 = this.monthData[i].restTime[0].restOpen
-                        this.monthData[i].restendtime1 = this.monthData[i].restTime[0].restClose
+                    }
+                    if (e.restTime[2]){
+                        this.monthData[i].reststarttime3 = this.monthData[i].restTime[2].restOpen
+                        this.monthData[i].restendtime3 = this.monthData[i].restTime[2].restClose
+                    }
+                    if (e.restTime[3]){
+                        this.monthData[i].reststarttime4 = this.monthData[i].restTime[3].restOpen
+                        this.monthData[i].restendtime4 = this.monthData[i].restTime[3].restClose
                     }
                 })
                 let OPTS = {

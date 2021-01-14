@@ -66,8 +66,8 @@
             </template>
             <template slot-scope="{ row }" slot="detail">
                 <i-button size="small" v-if="row.newflag" @click="showDetails(row)">{{row.statusname}}</i-button>
-                <i-button size="small" v-if="row.newflag" @click="deleteLiquidation(row)">取消</i-button>
-                <i-button class="width100" size="small" v-else @click="showDetails(row)">新規</i-button>
+                <i-button size="small" v-if="row.newflag && row.status != 'TMG_LPSTATUS|5' " @click="deleteLiquidation(row)">取消</i-button>
+                <i-button class="width100" size="small" v-if= "!row.newflag" @click="showDetails(row)">新規</i-button>
             </template>
         </i-table>
 
@@ -96,7 +96,7 @@
                     <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
                 </i-col>
             </Row>
-            <Alert type="error" class="error-info tl" v-if="errList.length > 1 ">エラーメッセージ
+            <Alert type="error" class="error-info tl" v-if="errList.length > 0">エラーメッセージ
                 <template slot="desc" v-for="(item) of errList">
                     <p>{{item}}</p>
                 </template>
@@ -129,9 +129,9 @@
                                 <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
 
                                 <div class="divi-hour-line sum-row"><span :class="row[j].workhours && Utils.timeToMinute(row[j].workhours) > limitInfo.dailymaxworktime && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
-                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'?'&nbsp;' : row[j].resttime }}</div>
+                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'? '&nbsp;' : row[j].resttime }}</div>
                         </span>
-                    <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
+                        <span v-if="row[j] && row._index % 2 === 1 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
                 </template>
             </i-table>
             <div v-if="tableData4Year.length > 6">
@@ -427,7 +427,8 @@
                     <span>{{row.kubun}}</span>
                 </template>
                 <template slot-scope="{ row, index }" slot="patternname">
-                    <i-button type="primary" style="margin-right: 5px" ghost v-if="row.patternname">{{row.patternname}}</i-button>
+                    <i-button type="primary" style="margin-right: 5px" ghost v-if="row.patternid && row.patternname">{{row.patternname}}</i-button>
+                    <i-button type="primary" style="margin-right: 5px" ghost v-else-if="row.patternid && row.patternid.indexOf('CUSTOMIZE') > -1 ">カスタマイズ</i-button>
                     <i-button type="primary" style="margin-right: 5px" ghost v-else>-</i-button>
                 </template>
 
@@ -1012,6 +1013,16 @@
                         this.editFlag = true
                         this.EditLoading = true
                         const { data } = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
+
+                        // data.monthDtoList.forEach( (z , i) => {
+                        //     let days = new Array(31).fill({kubunid:null})
+                        //     if(31 > z.length ){
+                        //         days.forEach( (x,j) => {
+                        //             days[j]=z[j]
+                        //         })
+                        //         data.monthDtoList[i]= days
+                        //     }
+                        // })
                         let list = []
                         data.monthDtoList.forEach(t => {
                             const month = t[0].yyyymmdd.slice(0, 7)
@@ -1032,6 +1043,7 @@
                             ])
                         })
                         this.tableData4Year = list
+                        console.log(this.tableData4Year)
                         this.errList = data.errList
                         this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
                         this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
@@ -1086,37 +1098,34 @@
                 if(!this.limitInfo.beginOfWeek){
                     this.limitInfo.beginOfWeek = 0
                 }
-                //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
-                if (rowIndex % 2 === 1 && columnIndex === 1) {
+                //console.log(column)
+                //每月第二行时 第一列时 计算周几并且合并
+                if (rowIndex % 2 === 1 && columnIndex === 1 && column.title === '1日') {
                     if((7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())>7){
                         return [1, (this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
                     }else{
                         return [1, (7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
                     }
-                    // 9为周日开始 8为周一开始 类推
-                } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date(row.month+'/01').getDay())) {
-                    return [0, 0];
+                    //每月第二行时 非第一列 合并
+                } else if (row[columnIndex] && rowIndex % 2 === 1 && column.title.indexOf(''+columnIndex) > -1 && columnIndex > 1 &&  (columnIndex - 1 + this.limitInfo.beginOfWeek  + new Date(row.month+'/01').getDay()) % 7 === 1) {
+                        if ( 7 < (32- columnIndex)) {
+                            if(rowIndex === 3){
+                                console.log(column.title + ':' + columnIndex)
+                            }
+                            return [1, 7];
+                        } else {
+                            return [1, 32 - columnIndex];
+                        }
+                    //return [1, 7];
+                    //每月第一行时 非日期列 合并2格  table存在fixed情况下 3张表同用index 用title作区分
+                } else if (row[columnIndex] && column.title != '1日' && rowIndex % 2 === 0 && columnIndex < 1) {
+                        return [2, 1];
+                    //其他第二行全部返回[0,0]
+                } else if (rowIndex % 2 === 1){
+                    return [0, 0]
                 }
+                return [1,1]
 
-                //每月第二行时 非第一列 合并（周一为周开始日的情况下）
-                // 8为周日开始 7为周一开始 类推
-                if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > ( - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 === 1 && columnIndex < 33) {
-                    //最后一个只合并剩余
-                    if ((32- columnIndex) < 7) {
-                        return [1, 32 - columnIndex + 1];
-                    } else {
-                        return [1, 7];
-                    }
-                } else if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > (8 - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 != 1 && columnIndex < 33) {
-                    return [0, 0];
-                }
-
-                //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分
-                if (column.title != '1日' && rowIndex % 2 === 0 && columnIndex < 1) {
-                    return [2, 1];
-                } else if (column.title != '1日' && rowIndex % 2 === 1) {
-                    return [0, 0];
-                }
             },
             //时间转换
             handleInputChange(object, index, el) {
@@ -1179,6 +1188,8 @@
                 }
                 try {
                     await this.http.postForm('sys/tmgliquidationperiod/upload', OPTS)
+                    this.editFlag = false
+                    this.handleClickLeaf()
                 } catch (error) {
                     return
                 } finally {
@@ -1338,14 +1349,16 @@
                     if (e.restTime[0]) {
                         this.monthData[i].reststarttime1 = this.monthData[i].restTime[0].restOpen
                         this.monthData[i].restendtime1 = this.monthData[i].restTime[0].restClose
-                    } else if (e.restTime[1]) {
+                    }
+                    if (e.restTime[1]) {
                         this.monthData[i].reststarttime2 = this.monthData[i].restTime[1].restOpen
                         this.monthData[i].restendtime2 = this.monthData[i].restTime[1].restClose
-
-                    } else if (e.restTime[2]){
+                    }
+                    if (e.restTime[2]){
                         this.monthData[i].reststarttime3 = this.monthData[i].restTime[2].restOpen
                         this.monthData[i].restendtime3 = this.monthData[i].restTime[2].restClose
-                    }else if (e.restTime[3]){
+                    }
+                    if (e.restTime[3]){
                         this.monthData[i].reststarttime4 = this.monthData[i].restTime[3].restOpen
                         this.monthData[i].restendtime4 = this.monthData[i].restTime[3].restClose
                     }
