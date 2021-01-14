@@ -548,8 +548,8 @@
                 this.privateInfo.taKijyunbi = e.basedDay[i]
                 this.privateInfo.Syutokudays = e.detailSyutokuDays[i]
                 this.privateInfo.ajustSyutokudays = e.detailAdjustSyutokuDays[i]
-                this.privateInfo.taMustdays8 = e.taMustdays8[i]
-                this.privateInfo.taLessdays9 = e.taLessdays9[i]
+                this.privateInfo.taMustdays8 = e.detailTaMustdays8[i]
+                this.privateInfo.taLessdays9 = e.detailTaLessdays9[i]
 
                 // this.privateInfo.deptName = this.deptName
                 // 職員情報取得（種別）
@@ -731,6 +731,8 @@
 
                             detailSyutokuDays:[e.fixSumSyutokudays16],   //詳細画面取得状況_取得日数
                             detailAdjustSyutokuDays:[e.tpfNusedaysAjdust13], //詳細画面取得状況_調整取得日数
+                            detailTaMustdays8:[e.taMustdays8],          //詳細画面取得状況_必要日数
+                            detailTaLessdays9:[e.taLessdays9],          //詳細画面取得状況_不足日数
                             season:[],
 
                             cemployeeid0:e.cemployeeid0,
@@ -799,6 +801,9 @@
 
                                 a[a.length-1].detailSyutokuDays.push(b[j].detailSyutokuDays[0])
                                 a[a.length-1].detailAdjustSyutokuDays.push(b[j].detailAdjustSyutokuDays[0])
+                                a[a.length-1].detailTaMustdays8.push(b[j].detailTaMustdays8[0])
+                                a[a.length-1].detailTaLessdays9.push(b[j].detailTaLessdays9[0])
+
                                 a[a.length-1].season.push(b[j].season[0])
                             }
                             i = i + +b[i].taRowpan10 - 1
