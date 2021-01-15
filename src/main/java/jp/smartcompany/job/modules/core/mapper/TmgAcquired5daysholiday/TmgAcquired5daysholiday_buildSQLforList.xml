@@ -100,7 +100,7 @@
         (last_day(add_months(TA.TPH_DYYYYMMDD,11)))) >=
         (select trunc(add_months(to_date(#{basedate}),-(select MGD_NSPARENUM1 FROM MAST_GENERIC_DETAIL WHERE MGD_CGENERICGROUPID = 'TMG_ACQUIRED5DAY_PRE')*12),'YYYY')  from dual )
         AND TA.TPH_DYYYYMMDD >='20190401'
-        <if test="userCode != NULL">
+        <if test= 'userCode != NULL  and userCode !="" '>
             AND TPH_CEMPLOYEEID = #{userCode}
         </if>
         order by CEMPLOYEEID_0,TA_DYYYYMMDD_3
