@@ -285,6 +285,18 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (boardDO == null) {
             throw new GlobalException("掲示板データは存在しません");
         }
+        String userId = SecurityUtil.getUserId();
+        QueryWrapper<HistBulletinBoardUserDO> qw = new QueryWrapper<>();
+        qw.eq("HBG_CARTICLEID",id);
+        HistBulletinBoardUserDO userRange = histBulletinBoardUserService.getOne(qw);
+        if (userRange == null) {
+            throw new GlobalException("照会できる人は見つかりません");
+        }
+        // 如果此用户不能查看此公告
+        if (!StrUtil.contains(userRange.getHbgCuserids(),userId)) {
+            throw new GlobalException("このアナウンスにアクセスする権限がありません");
+        }
+
         NoticeVO noticeVO = new NoticeVO();
         BeanUtil.copyProperties(boardDO,noticeVO);
         noticeVO.setUpdateDate(boardDO.getHbDmodifieddate());
@@ -292,12 +304,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         noticeVO.setAttachmentList(attachments);
         List<Map<String,String>> tempEmpRangeList = CollUtil.newArrayList();
 
-        QueryWrapper<HistBulletinBoardUserDO> qw = new QueryWrapper<>();
-        qw.eq("HBG_CARTICLEID",id);
-        HistBulletinBoardUserDO userRange = histBulletinBoardUserService.getOne(qw);
-        if (userRange == null) {
-            throw new GlobalException("照会できる人は見つかりません");
-        }
         String[] empIds = userRange.getHbgCuserids().split(",");
         try (Connection conn = dataSource.getConnection()) {
             for (String empId : empIds) {

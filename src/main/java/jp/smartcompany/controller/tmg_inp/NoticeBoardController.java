@@ -79,7 +79,6 @@ public class NoticeBoardController {
     /**
      * 查询草稿详情
      * @param id 草稿id
-     * @return
      */
     // http://localhost:6879/sys/noticeboard/draft/2
     @GetMapping("draft/{id:\\d+}")
@@ -88,9 +87,8 @@ public class NoticeBoardController {
     }
 
     /**
-     *
-     * @param id
-     * @return
+     * 查看公告详情接口
+     * @param id 公告id
      */
     @GetMapping("notice/{id:\\d+}")
     public NoticeVO getNoticeDetail(@PathVariable Long id) {
