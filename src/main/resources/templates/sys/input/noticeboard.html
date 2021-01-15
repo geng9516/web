@@ -92,7 +92,19 @@
             <span v-show="!isAdding">
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
                     <Icon type="logo-buffer"></Icon>
+                    通知
+                </div>
+                <div class="tr mb10">
+                    <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+                          :page-size="pageValue.curSize" @on-change="pageChangeNotice" simple/>
+                </div>
+                <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
+                    <Icon type="logo-buffer"></Icon>
                     下書
+                </div>
+                <div class="tr mb10">
+                    <Page :total="pageValueDraft.amount" :current="pageValueDraft.curPage" show-total style="display: inline"
+                          :page-size="pageValueDraft.curSize" @on-change="pageChangeDraft" simple/>
                 </div>
                 <i-table border :row-class-name="() => 'select-col'" v-if="editPermission"
                     :columns="draftColumns" :disabled-hover="true" :data="draftData" :loading="drafLoading" ref="table">
@@ -222,6 +234,28 @@
                     defaultOption: false,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    pageValueDraft: {
+                        amount: 0,
+                        curPage: 1,
+                        list: [20, 30, 50, 100],
+                        curSize: 20
+                    },
+                    opts: {
+                        order: 'desc',
+                        page: 1,
+                        limit: 50
+                    },
+                    pageValue: {
+                        amount: 0,
+                        curPage: 1,
+                        list: [20, 30, 50, 100],
+                        curSize: 20
+                    },
+                    opts2: {
+                        order: 'desc',
+                        page: 1,
+                        limit: 50
+                    },
                     updateValue: {
                         hbtCheaddisp: '0'
                     },
@@ -278,22 +312,40 @@
             },
             async created() {
                 this.getTableData()
+                this.getDraftData()
                 this.getSelection()
             },
             methods: {
-                async getTableData() {
+                async getDraftData() {
                     try {
                         this.drafLoading = true
-                        const { data } = await this.http.get('sys/noticeboard/draft/list')
+                        const { data } = await this.http.get('sys/noticeboard/draft/list', this.opts)
                         this.draftData = data.list.map(e=> {
                             return {
                                 date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
                                 ...e
                             }
                         })
+                        this.pageValueDraft.amount = data.totalCount
                     } catch (error) {
                     } finally {
                         this.drafLoading = false
+                    }
+                },
+                async getTableData() {
+                    try {
+                        this.loading = true
+                        const { data } = await this.http.get('sys/noticeboard/notice/list', this.opts2)
+                        this.tableData = data.list.map(e=> {
+                            return {
+                                date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
+                                ...e
+                            }
+                        })
+                        this.pageValue.amount = data.totalCount
+                    } catch (error) {
+                    } finally {
+                        this.loading = false
                     }
                 },
                 async editDraft(row) {
@@ -347,7 +399,7 @@
                         onOk: async () => {
                             await this.http.post('sys/noticeboard/draft/delete', [row.hbtId])
                             this.resetDraft()
-                            this.getTableData()
+                            this.getDraftData()
                             this.$Message.success('削除完了')
                         }
                     })
@@ -438,7 +490,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             try {
-                                this.loading = true
+                                if(hbtCfix) this.loading = true
                                 let opts ={
                                     attachments: this.uploadFiles.filter(e=> !e.isDefault),
                                     ...this.updateValue,
@@ -457,11 +509,12 @@
                                 this.$Message.success(hbtCfix ? '一時保存完了' : '投稿完了')
                                 this.drawerShow = false
                                 this.resetDraft()
-                                this.getTableData()
+                                if(hbtCfix) this.getDraftData()
+                                else this.getTableData()
                             } catch (error) {
                                 console.log(error)
                             } finally {
-                                this.loading = false
+                                if(hbtCfix) this.loading = false
                             }
                         }
                     })
@@ -470,7 +523,17 @@
                     // 删除文件
                     if(file.isDefault) this.deleteFiles.push(file.hbtfId)
                     this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
-                }
+                },
+                pageChangeNotice(e) {
+                    this.opts.sPage = e
+                    this.pageValueNotice.curPage = e
+                    this.getTableData()
+                },
+                pageChangeDraft(e) {
+                    this.opts.sPage = e
+                    this.pageValueDraft.curPage = e
+                    this.getDraftData()
+                },
             }
         })
     </script>
