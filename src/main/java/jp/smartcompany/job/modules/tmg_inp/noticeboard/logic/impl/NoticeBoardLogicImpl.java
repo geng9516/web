@@ -11,6 +11,7 @@ import cn.hutool.db.handler.StringHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
@@ -71,6 +72,14 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
     public static final String BASE_ONLY = "09";
     public static final String BASE_UNDER = "10";
+
+    @Override
+    public PageUtil getRangeNoticeList(Map<String,Object> params) {
+        String userId = SecurityUtil.getUserId();
+        Page<NoticeVO> pageQuery = new PageQuery<NoticeVO>().getPage(params);
+        IPage<NoticeVO> page = histBulletinBoardTempService.listBulletinBoard(pageQuery,userId);
+        return new PageUtil(page);
+    }
 
     @Override
     public List<NoticeRangeDTO> getSendNoticeRangeList(HttpSession session) {
@@ -348,6 +357,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         HistBulletinBoardDO histBulletinBoardDO = new HistBulletinBoardDO();
         histBulletinBoardDO.setHbId(id);
         histBulletinBoardDO.setHbCfix(status);
+        histBulletinBoardDO.setHbDmodifieddate(DateUtil.date());
         histBulletinBoardService.updateById(histBulletinBoardDO);
     }
 

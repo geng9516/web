@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.AUTH)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class AuthBusiness {
 

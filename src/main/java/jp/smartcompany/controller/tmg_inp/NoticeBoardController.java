@@ -33,6 +33,17 @@ public class NoticeBoardController {
     private final INoticeBoardLogic noticeBoardLogic;
 
     /**
+     * 查询公告列表 支持分页
+     * @param params
+     * @return
+     */
+    // http://localhost:6879/sys/noticeboard/notice/list?page=1&limit=10
+    @GetMapping("notice/list")
+    public PageUtil getNoticeList(@RequestParam Map<String,Object> params) {
+      return noticeBoardLogic.getRangeNoticeList(params);
+    }
+
+    /**
      * 查询可用于发送的人的范围type
      * @param session
      * @return

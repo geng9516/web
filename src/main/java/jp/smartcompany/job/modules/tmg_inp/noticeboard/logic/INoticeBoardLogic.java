@@ -33,4 +33,6 @@ public interface INoticeBoardLogic {
 
     void changeNoticeStatus(Long id,String status);
 
+    PageUtil getRangeNoticeList(Map<String,Object> params);
+
 }
