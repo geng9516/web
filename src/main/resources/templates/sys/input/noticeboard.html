@@ -337,9 +337,42 @@
             </Upload>
         </div>
         <Spin size="large" fix v-if="loading"></Spin>
+        <Drawer class="tc" placement="right" width="800" v-model="drawerShow" :title="noticeTitle">
+            <Row :gutter="10">
+                <i-col span="13">
+                    <div class="label pl10 tc">件名</div>
+                    <div class="person-info">
+                        <p>{{ updateValue.hbtCtitle }}</p>
+                    </div>
+                </i-col>
+                <i-col span="11">
+                    <div class="label pl10 tc">掲示期間</div>
+                    <div class="person-info">
+                        {{`${Utils.formatDate(updateValue.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${updateValue.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(updateValue.hbtDdateofexpire, 'yyyy/mm/dd')}`}}
+                    </div>
+                </i-col>
+            </Row>
+            <div class="titlenorm grey mb10 mt10" style="font-size:15px">
+                <Icon type="logo-buffer"></Icon>
+                内容
+            </div>
+            <div class="tl input-like-span" v-html="notice" style="padding: 5px;"></div>
+            <div style="clear: both"></div>
+            <div class="titlenorm grey mb10 mt10" style="font-size:15px">
+                <Icon type="logo-buffer"></Icon>
+                添付ファイル
+            </div>
+            <span class="input-like-span tl" style="padding:10px">
+                <div v-for="(item,i) of uploadFiles" :key="item.hbtfId">
+                    <span class="link-like" @click="openFile(item)" :style="{color: 'var(--primary-info)', cursor: item.isDefault ? 'pointer' : 'default', 'border-bottom-color': 'var(--primary-info)'}">{{ item.name }}</span>
+                </div>
+            </span>
+            <drawer-footer @ok="onOk" @cancel="onCancel" ok-text="投稿"></drawer-footer>
+        </Drawer>
         <back-top></back-top>
         <a href='' download style="display: none;" ref="downloadBtn"></a>
     </main>
+    <script th:src="${baseUrl + '/static/component/drawer-footer.js'}"></script>
     <div th:replace="layout/head::header"></div>
     <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}"></script>
     <script th:src="${baseUrl + '/static/libs/image-resize.min.js?t='+ new java.util.Date().getTime()}"></script>
@@ -353,6 +386,7 @@
     <script type="text/babel" th:inline="javascript">
         new Vue({
             el: '.protosettings-warp',
+            components: {DrawerFooter},
             data() {
                 return {
                     isShow: false,
@@ -364,6 +398,9 @@
                     isEditing: false,
                     btnLoading: false,
                     editPermission: [[${ session }]].psSession.hasPublishPermission,
+                    drawerShow:false,
+                    noticeTitle: '',
+                    notice:'',
                     selectedPeople: '',
                     selectedPeopleText: '',
                     selectedPeopleloading: false,
@@ -710,40 +747,13 @@
                     }
 
                     if (!this.updateValue.hbtDdateofexpire) delete this.updateValue.hbtDdateofexpire
-                    this.$Modal.confirm({
-                        inDrawer: true,
-                        title: '注意',
-                        width: 480,
-                        content: '投稿します。よろしいですか？',
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: async () => {
-                            try {
-                                this.loading = true
-                                let opts ={
-                                    attachments: this.uploadFiles.filter(e=> !e.isDefault),
-                                    ...this.updateValue,
-                                    hbtCcontents: this.$refs.editor.children[0].innerHTML,
-                                    sendRangeTypes: this.searchRange.join(),
-                                    keepAttachmentIdStr: this.uploadFiles.filter(e=> e.isDefault).map(e=>e.hbtfId).join(),
-                                    deleteAttachmentIdStr: this.deleteFiles.join(),
-                                    empRangeIds: this.selectedPeople.map(e => e.key).join(),
-                                    hbtCfix: hbtCfix,
-                                }
-                                if(this.isEditing) {
-                                    opts.hbtId = this.editId
-                                }
-                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
-                                this.$Message.success(hbtCfix === '1' ? '投稿完了' : '一時保存完了')
-                                this.resetDraft()
-                                this.getTableData()
-                            } catch (error) {
-                                console.log(error)
-                            } finally {
-                                this.loading = false
-                            }
-                        }
-                    })
+                    if(hbtCfix === '1') {
+                        this.noticeTitle = '掲示確認用'
+                        this.notice = this.$refs.editor.children[0].innerHTML
+                        this.drawerShow = true
+                    } else {
+                        this.postNotice(hbtCfix)
+                    }
                 },
                 resetDraft() {
                     this.isAdding = false
@@ -762,6 +772,49 @@
                     if(quillImgCutFrame) {
                         quillImgCutFrame.style.display = 'none'
                     }
+                },
+                onCancel() {
+                    this.drawerShow = false
+                },
+                onOk() {
+                    this.postNotice()
+                },
+                postNotice(hbtCfix) {
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '注意',
+                        width: 480,
+                        content: `${ hbtCfix ? '一時保存' : '投稿'}します。よろしいですか？`,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                let opts ={
+                                    attachments: this.uploadFiles.filter(e=> !e.isDefault),
+                                    ...this.updateValue,
+                                    hbtCcontents: this.$refs.editor.children[0].innerHTML,
+                                    sendRangeTypes: this.searchRange.join(),
+                                    keepAttachmentIdStr: this.uploadFiles.filter(e=> e.isDefault).map(e=>e.hbtfId).join(),
+                                    deleteAttachmentIdStr: this.deleteFiles.join(),
+                                    empRangeIds: this.selectedPeople.map(e => e.key).join(),
+                                    hbtCfix: hbtCfix ? hbtCfix : '1',
+                                }
+                                if(this.isEditing) {
+                                    opts.hbtId = this.editId
+                                }
+                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
+                                this.$Message.success(hbtCfix ? '一時保存完了' : '投稿完了')
+                                this.drawerShow = false
+                                this.resetDraft()
+                                this.getTableData()
+                            } catch (error) {
+                                console.log(error)
+                            } finally {
+                                this.loading = false
+                            }
+                        }
+                    })
                 },
                 handleDelFile(file) {
                     // 删除文件
