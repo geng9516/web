@@ -565,6 +565,12 @@
   border-bottom: 1px solid var(--text-light-grey);
   cursor: pointer;
 }
+.with-footer {
+  .ivu-drawer-body {
+    position: static;
+    padding-bottom: 80px;
+  }
+}
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}
