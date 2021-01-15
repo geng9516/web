@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.EqualsAndHashCode;
@@ -27,6 +28,7 @@ public class HistBulletinBoardFileDO implements Serializable {
 
     private Long hbIdFk;
 
+    @TableField(value="hbf_filename")
     private String hbfFileName;
 
     private String hbfFileUrl;
