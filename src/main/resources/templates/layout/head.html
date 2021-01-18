@@ -11,7 +11,7 @@
     <!-- 注意这里是row-reverse，要反着方 -->
     <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
       <a>
-        <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
+        <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.split(/\u3000|\s/)[0] }}</avatar>
         <span style="position: relative;  top: 3px; font-size: 16px; font-weight: bold; margin-left: 5px; padding-right: 30px;">{{ session.psSession.loginKanjiName }}</span>
       </a>
       <dropdown-menu slot="list">

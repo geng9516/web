@@ -42,7 +42,7 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="success" ghost icon="md-create" @click="isAdding = true"
+                    <i-button type="success" ghost icon="md-create" @click="createNotice"
                         v-show="!isAdding && editPermission">新規投稿</i-button>
                     <i-button @click="resetDraft" v-show="isAdding">一覧に戻る</i-button>
                     <i-button type="success" ghost icon="md-create" @click="uploadNotice('0')" :loading="editLoading"
@@ -209,7 +209,7 @@
                     </div>
                 </span>
                 <Spin size="large" fix v-if="noticeLoading"></Spin>
-            <drawer-footer @ok="onOk" @cancel="onCancel" ok-text="投稿"></drawer-footer>
+            <drawer-footer @ok="onOk" @cancel="onCancel" ok-text="投稿" v-show="isEditing || isAdding"></drawer-footer>
         </Drawer>
         <back-top></back-top>
         <a href='' download style="display: none;" ref="downloadBtn"></a>
@@ -384,19 +384,23 @@
                         this.drafLoading = false
                     }
                 },
+                createNotice() {
+                    this.resetDraft()
+                    this.isAdding = true
+                },
                 async checkoutNotice(row) {
                     const id = row.hbId
                     try {
                         this.noticeLoading = true
-                        this.noticeTitle = '通知'
+                        this.noticeTitle = '詳細'
                         this.drawerShow = true
                         const { data } = await this.http.get(`sys/noticeboard/notice/${id}`)
                         this.$refs.richText.setHtml(data.hbtCcontents)
                         this.updateValue.hbtCtitle = data.hbCtitle
-                        this.updateValue.hbtDdateofannouncement = Utils.formatDate(data.hbtDdateofannouncement, 'yyyy/mm/dd')
-                        this.updateValue.hbtDdateofexpire = data.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbtDdateofexpire, 'yyyy/mm/dd')
+                        this.updateValue.hbtDdateofannouncement = Utils.formatDate(data.hbDdateofannouncement, 'yyyy/mm/dd')
+                        this.updateValue.hbtDdateofexpire = data.hbDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbDdateofexpire, 'yyyy/mm/dd')
                         this.updateValue.hbtCheaddisp = data.hbtCheaddisp
-                        this.notice = this.$refs.richText.getHtml()
+                        this.notice = data.hbCcontents
                         this.$nextTick(() => {
                             this.uploadFiles = data.attachmentList.map(e => {
                                 return {
@@ -499,6 +503,7 @@
                     this.searchRange = ''
                     this.selectedPeople = ''
                     this.selectedPeopleText = ''
+                    this.notice = ''
                     this.$refs.richText.setText('');
                     // 修正当富文本内有图像时，点击后，残留裁剪边框的bug
                     const quillImgCutFrame = document.querySelector('.ql-tooltip.ql-hidden').nextSibling
