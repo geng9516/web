@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.EditNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Arrays;
@@ -93,6 +95,17 @@ public class NoticeBoardController {
     @GetMapping("notice/{id:\\d+}")
     public NoticeVO getNoticeDetail(@PathVariable Long id) {
         return noticeBoardLogic.getNoticeDetail(id);
+    }
+
+    /**
+     * 编辑公告接口
+     * @param dto
+     * @return
+     */
+    @PostMapping("notice/edit")
+    public String editNoticeContent(@RequestBody @Valid EditNoticeDTO dto) {
+        noticeBoardLogic.editNoticeContent(dto);
+        return "変更成功";
     }
 
     /**

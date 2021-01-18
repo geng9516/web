@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,8 +16,10 @@ public class DraftNoticeDTO {
 
     private Long hbtId;
     // 掲示開始日
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private Date hbtDdateofannouncement;
     // 掲示終了日
+    @JsonFormat(pattern = "yyyy/MM/dd")
     private Date hbtDdateofexpire;
     // タイトル
     private String hbtCtitle;

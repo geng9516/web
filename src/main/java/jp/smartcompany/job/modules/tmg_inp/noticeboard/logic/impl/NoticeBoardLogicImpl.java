@@ -25,6 +25,7 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.INoticeBoardLogic;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.bo.UploadFileInfo;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.DraftNoticeDTO;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.EditNoticeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.*;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
@@ -171,6 +172,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         return uploadFileUtil.uploadRichTextImage(file,"TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH");
     }
 
+    @Override
+    public void editNoticeContent(EditNoticeDTO dto) {
+
+    }
 
     /**
      * 保存或修改公告草稿

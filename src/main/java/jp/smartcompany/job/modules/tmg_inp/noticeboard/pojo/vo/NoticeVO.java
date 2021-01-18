@@ -26,12 +26,12 @@ public class NoticeVO implements Serializable {
     private String hbCcustomerid;
     private String hbCcompanyid;
     private Date hbDdateofannouncement;
-    private Date hbDdateofExpire;
+    private Date hbDdateofexpire;
     private String hbCtitle;
     private String hbCmnusername;
     private String hbCheaddisp;
     private String hbCfix;
-    private String hbContents;
+    private String hbCcontents;
     private Date updateDate;
 
     private List<Map<String,String>> userRangeList;

@@ -27,7 +27,7 @@
             and hb.HB_CFIX = '1'
             and hb.HB_DDATEOFANNOUNCEMENT <![CDATA[<=]]> trunc(sysdate)
             and hb.HB_DDATEOFEXPIRE >= trunc(sysdate)
-            and hbu.HBG_CUSERIDS LIKE '%${userId}%'
+            and (hbu.HBG_CUSERIDS LIKE '%${userId}%' or hb.HB_CMNUSER = #{userId})
         order by hb.HB_DMODIFIEDDATE desc,hb.HB_CFIX desc
     </select>
 
