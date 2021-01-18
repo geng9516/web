@@ -397,13 +397,12 @@
                         this.updateValue.hbtDdateofexpire = data.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbtDdateofexpire, 'yyyy/mm/dd')
                         this.updateValue.hbtCheaddisp = data.hbtCheaddisp
                         this.notice = this.$refs.richText.getHtml()
-                        文件
                         this.$nextTick(() => {
                             this.uploadFiles = data.attachmentList.map(e => {
                                 return {
-                                    name: e.hbtfFileName,
+                                    name: e.hbfFileName,
                                     url: `${BASE_URL}${e.hbfFileUrl}`,
-                                    type: e.hbtfFilename.split('.')[1],
+                                    type: e.hbfFileName.split('.')[1],
                                     hbtfId: e.hbfId,
                                     isDefault: true
                                 }
