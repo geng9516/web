@@ -59,6 +59,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     private final IHistBulletinBoardService histBulletinBoardService;
     private final IHistBulletinBoardFileService histBulletinBoardFileService;
     private final IHistBulletinBoardUserService histBulletinBoardUserService;
+    private final IHistBulletinBoardReadStatusService histBulletinBoardReadStatusService;
 
     /** 処理区分(法人＆組織指定リスト) */
     public static final String FG_COMP_SEC         = "02";
@@ -79,6 +80,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         String userId = SecurityUtil.getUserId();
         Page<NoticeVO> pageQuery = new PageQuery<NoticeVO>().getPage(params);
         IPage<NoticeVO> page = histBulletinBoardTempService.listBulletinBoard(pageQuery,userId);
+        page.getRecords().forEach(notice -> notice.setEnableEdit(StrUtil.equals(notice.getHbCmnuser(),userId)));
         return new PageUtil(page);
     }
 
@@ -174,7 +176,17 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
 
     @Override
     public void editNoticeContent(EditNoticeDTO dto) {
-
+        Long id = dto.getHbId();
+        String loginUserId = SecurityUtil.getUserId();
+        HistBulletinBoardDO originalNotice = histBulletinBoardService.getById(id);
+        if (originalNotice == null) {
+            throw new GlobalException("通知は既に存在しません。");
+        }
+        if (!StrUtil.equals(loginUserId,originalNotice.getHbCmnuser())) {
+            throw new GlobalException("該当する通知の掲示者ではありません。");
+        }
+        BeanUtil.copyProperties(dto,originalNotice);
+        histBulletinBoardService.updateById(originalNotice);
     }
 
     /**
@@ -285,6 +297,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     }
 
     @Override
+    @Transactional(rollbackFor = GlobalException.class)
     public NoticeVO getNoticeDetail(Long id) {
         HistBulletinBoardDO boardDO = histBulletinBoardService.getById(id);
         if (boardDO == null) {
@@ -321,6 +334,12 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             e.printStackTrace();
             throw new GlobalException(e.getMessage());
         }
+        // 更新已读状态
+        HistBulletinBoardReadStatusDO readStatusDO = new HistBulletinBoardReadStatusDO();
+        readStatusDO.setHbIdFk(id);
+        readStatusDO.setHbrsEmpIdFk(userId);
+        readStatusDO.setHbrsStatus(true);
+        histBulletinBoardReadStatusService.saveOrUpdate(readStatusDO);
         return noticeVO;
     }
 

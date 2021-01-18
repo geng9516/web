@@ -92,6 +92,7 @@ public class NoticeBoardController {
      * 查看公告详情接口
      * @param id 公告id
      */
+    // http://localhost:6879/sys/noticeboard/notice/142
     @GetMapping("notice/{id:\\d+}")
     public NoticeVO getNoticeDetail(@PathVariable Long id) {
         return noticeBoardLogic.getNoticeDetail(id);
