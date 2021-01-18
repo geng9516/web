@@ -95,56 +95,56 @@ new Vue({
       }
    },
    methods: {
-     showDatePicker(key,key2) {
-        if (!this.datePicker) {
-           this.datePicker = cube.dPicker.$create({
-           title: '日付',
-           min: new Date(`${new Date().getFullYear() - 20}/1/1`),
-           max: new Date(`${new Date().getFullYear() + 30}/12/31`),
-           value: new Date(),
-           zIndex: 900,
-        })
-           this.datePicker.$on('select',
-            (e) => {
-               if(typeof key2  ===  'number') {
-                  this.$set(this.restApply[key], key2, Utils.formatDate(e, 'yyyy/MM/dd'))
-               } else {
-                 this.$set(this.restApply, key, Utils.formatDate(e, 'yyyy/MM/dd'))
+      showDatePicker(key,key2) {
+         if (!this.datePicker) {
+            this.datePicker = cube.dPicker.$create({
+               title: '日付',
+               min: new Date(`${new Date().getFullYear() - 20}/1/1`),
+               max: new Date(`${new Date().getFullYear() + 30}/12/31`),
+               value: new Date(),
+               zIndex: 900,
+            })
+            this.datePicker.$on('select',
+                (e) => {
+                   if(typeof key2  ===  'number') {
+                      this.$set(this.restApply[key], key2, Utils.formatDate(e, 'yyyy/MM/dd'))
+                   } else {
+                      this.$set(this.restApply, key, Utils.formatDate(e, 'yyyy/MM/dd'))
+                   }
+                   this.datePicker.remove()
+                   this.datePicker = null
+                })
+         }
+         this.datePicker.show()
+      },
+      showYearSelector(key) {
+         if (!this.yearSelector) {
+            const numArray = Utils.getNumArray(1970, 2100)
+            const index = numArray.findIndex(e=> e === this.curYear)
+            console.log(index)
+            const column1 = Utils.getNumArray(1970, 2100).map(e=> {
+               return {
+                  value:e,
+                  text:e
                }
-               this.datePicker.remove()
-               this.datePicker = null
             })
-        }
-           this.datePicker.show()
-     },
-     showYearSelector(key) {
-        if (!this.yearSelector) {
-           const numArray = Utils.getNumArray(1970, 2100)
-           const index = numArray.findIndex(e=> e === this.curYear)
-           console.log(index)
-           const column1 = Utils.getNumArray(1970, 2100).map(e=> {
-              return {
-                 value:e,
-                 text:e
-              }
-           })
-           this.yearSelector = cube.picker.$create({
-           title: '年',
-           selectedIndex: [index],
-           data: [column1],
-           zIndex: 900,
-        })
-           this.yearSelector.$on('select',
-            (e) => {
-               this.opts.year = e[0]
-               this.curYear = e[0]
-               this.getApplyHistory()
-               this.yearSelector.remove()
-               this.yearSelector = null
+            this.yearSelector = cube.picker.$create({
+               title: '年',
+               selectedIndex: [index],
+               data: [column1],
+               zIndex: 900,
             })
-        }
-           this.yearSelector.show()
-     },
+            this.yearSelector.$on('select',
+                (e) => {
+                   this.opts.year = e[0]
+                   this.curYear = e[0]
+                   this.getApplyHistory()
+                   this.yearSelector.remove()
+                   this.yearSelector = null
+                })
+         }
+         this.yearSelector.show()
+      },
       async getRestTypeForApply() {
          // 获得休假选择 申请用
          this.loading = true
@@ -153,13 +153,13 @@ new Vue({
             // 手机端对应数据, 为了全量显示，这里只摘取第二层级
             let result = []
             data.forEach(e=>{
-              result = result.concat(...e.ntfTypeValue.map(t=> {
-                 return {
-                    ...t,
-                    value:t.ntfId,
-                    text: t.ntfName
-                 }
-              }))
+               result = result.concat(...e.ntfTypeValue.map(t=> {
+                  return {
+                     ...t,
+                     value:t.ntfId,
+                     text: t.ntfName
+                  }
+               }))
             })
             this.restTypeListForApply = result
          } catch (error) {
@@ -200,8 +200,8 @@ new Vue({
          const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
          this.statusList = [{ value:0, text: '全て'}].concat(data.map(e=> {
             return {
-              value: e.stutasId,
-              text:e.stutasName
+               value: e.stutasId,
+               text:e.stutasName
             }
          }))
       },
@@ -265,8 +265,6 @@ new Vue({
          this.$set(this.cacelBtnLoading, i, true)
          try {
             await this.http.post('sys/vapply/EditWithdrop', {
-               day:e.tntfDbegin,
-               vacation:e.tntfCtype,
                action: 'ACT_EditApply_UWithdraw',
                ntfNo: e.tntfCntfNo,
                psSite: this.opts.psSite

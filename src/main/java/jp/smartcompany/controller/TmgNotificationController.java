@@ -44,12 +44,12 @@ public class TmgNotificationController {
 
 
     /**
-         * 申請ステータス
+     * 申請ステータス
      *
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("StatusFlg")
-   public List<StutasFlgVo> getStutas(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public List<StutasFlgVo> getStutas(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         return tmgNotificationBean.getStutas(psDBBean);
     }
@@ -61,12 +61,12 @@ public class TmgNotificationController {
      */
     @GetMapping("NotificationList")
     public NotificationDispVo getNotificationList(@RequestParam(value = "statusFlg",required=false) String statusFlg,
-                                                        @RequestParam(value ="ntfTypeId",required=false) String ntfTypeId,
-                                                        @RequestParam(value ="serchEmpId",required=false) String serchEmpId,
-                                                        @RequestParam("year") String year,
-                                                        @RequestParam("page") int page,
-                                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-       // String filepath=request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/uploadFile";
+                                                  @RequestParam(value ="ntfTypeId",required=false) String ntfTypeId,
+                                                  @RequestParam(value ="serchEmpId",required=false) String serchEmpId,
+                                                  @RequestParam("year") String year,
+                                                  @RequestParam("page") int page,
+                                                  @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        // String filepath=request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/uploadFile";
         return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,serchEmpId,year,page,psDBBean,"");
     }
 
@@ -76,7 +76,7 @@ public class TmgNotificationController {
      */
     @GetMapping("NotificationDetail")
     public NotificationDetailVo getNotificationDetail(@RequestParam("ntfNo") String ntfNo,
-                                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                      @RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getNotificationDetail(ntfNo,psDBBean);
     }
 
@@ -187,7 +187,7 @@ public class TmgNotificationController {
             @RequestBody Map map,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return tmgNotificationBean.actionEditWithdrop(map.get("day").toString(),map.get("vacation").toString(),map.get("action").toString(),map.get("ntfNo").toString(),psDBBean);
+        return tmgNotificationBean.actionEditWithdrop(map.get("action").toString(),map.get("ntfNo").toString(),psDBBean);
     }
 
     /**

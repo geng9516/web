@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.core.service;
 
-import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
@@ -21,66 +20,65 @@ import java.util.List;
  */
 public interface ITmgNotificationService extends IService<TmgNotificationDO> {
 
-        /**
-         * 休暇・休業申請を一覧を取得するSQLを返す
-         *
-         * @param params 　params
-         * @return String パターン
-         */
-        List<NotificationListVo> selectNotificationList(ParamNotificationListDto params);
+    /**
+     * 休暇・休業申請を一覧を取得するSQLを返す
+     *
+     * @param params 　params
+     * @return String パターン
+     */
+    List<NotificationListVo> selectNotificationList(ParamNotificationListDto params);
 
-        /**
-         * 休暇・休業申請を一覧COUNT
-         *
-         * @param params 　params
-         * @return String パターン
-         */
-        int selectNotificationListCount(ParamNotificationListDto params);
+    /**
+     * 休暇・休業申請を一覧COUNT
+     *
+     * @param params 　params
+     * @return String パターン
+     */
+    int selectNotificationListCount(ParamNotificationListDto params);
 
-        /**
-         * 申請詳細を取得するSQLを返す
-         *buildSQLForSelectNotificationDetail
-         * @param params 　params
-         * @return String パターン
-         */
-        NotificationDetailVo selectNotificationDetail(ParamNotificationListDto params);
+    /**
+     * 申請詳細を取得するSQLを返す
+     *buildSQLForSelectNotificationDetail
+     * @param params 　params
+     * @return String パターン
+     */
+    NotificationDetailVo selectNotificationDetail(ParamNotificationListDto params);
 
-        /**
-         * シーケンス採番
-         * buildSQLForSelectNotificationSeq
-         * @return String
-         */
-        String selectNotificationSeq();
+    /**
+     * シーケンス採番
+     * buildSQLForSelectNotificationSeq
+     * @return String
+     */
+    String selectNotificationSeq();
 
-        /**
-         * 申請区分略称を取得する
-         * buildSQLForSelectNtfName
-         * @return String
-         */
-        String selectNtfName(String custId,String compId,String ntfNo);
-
-
-        /**
-         * 遡り期限を取得する
-         * buildSQLForSelectBackLimit
-         */
-        String selectBackLimit(String custId,String compId,String employeeId);
+    /**
+     * 申請区分略称を取得する
+     * buildSQLForSelectNtfName
+     * @return String
+     */
+    String selectNtfName(String custId,String compId,String ntfNo);
 
 
-        /**承認後更新のSEQ
-         * buildSQLForUpdateNotificationItem
-         * */
-        int updateNotificationItem(ParamNotificationListDto params);
+    /**
+     * 遡り期限を取得する
+     * buildSQLForSelectBackLimit
+     */
+    String selectBackLimit(String custId,String compId,String employeeId);
+
+
+    /**承認後更新のSEQ
+     * buildSQLForUpdateNotificationItem
+     * */
+    int updateNotificationItem(ParamNotificationListDto params);
 
     List<String> getSelectNtfInfo(String yyyymmdd, String empId, String custID, String compCode);
 
-        /**
-         * 休暇・休業申請を一覧を取得するSQLを返す
-         *
-         * @param 　params
-         * @return String パターン
-         */
-        List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto paramCheck);
+    /**
+     * 休暇・休業申請を一覧を取得するSQLを返す
+     *
+     * @param 　params
+     * @return String パターン
+     */
+    List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto paramCheck);
 
-        UserManagerListDTO selectEmoloyMail(String keyword);
 }
