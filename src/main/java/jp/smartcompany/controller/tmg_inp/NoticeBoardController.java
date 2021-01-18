@@ -103,6 +103,7 @@ public class NoticeBoardController {
      * @param dto
      * @return
      */
+    // http://localhost:6879/sys/noticeboard/notice/edit
     @PostMapping("notice/edit")
     public String editNoticeContent(@RequestBody @Valid EditNoticeDTO dto) {
         noticeBoardLogic.editNoticeContent(dto);
