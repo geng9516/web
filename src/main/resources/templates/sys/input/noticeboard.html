@@ -98,6 +98,15 @@
                     <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
                           :page-size="pageValue.curSize" @on-change="pageChangeNotice" simple/>
                 </div>
+                <i-table border :row-class-name="() => 'select-col'" :columns="columns"
+                    :disabled-hover="true" :data="tableData" :loading="loading">
+                    <template slot-scope="{ row }" slot="action">
+                        <div>
+                            <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px"
+                                @click="checkoutNotice(row)">詳細</i-button>
+                        </div>
+                    </template>
+                </i-table>
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
                     <Icon type="logo-buffer"></Icon>
                     下書
@@ -107,7 +116,7 @@
                           :page-size="pageValueDraft.curSize" @on-change="pageChangeDraft" simple/>
                 </div>
                 <i-table border :row-class-name="() => 'select-col'" v-if="editPermission"
-                    :columns="draftColumns" :disabled-hover="true" :data="draftData" :loading="drafLoading" ref="table">
+                    :columns="columns" :disabled-hover="true" :data="draftData" :loading="drafLoading">
                     <template slot-scope="{ row }" slot="action">
                         <div>
                             <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="editDraft(row)">編集</i-button>
@@ -199,6 +208,7 @@
                         <span class="link-like" @click="openFile(item)" :style="{color: 'var(--primary-info)', cursor: item.isDefault ? 'pointer' : 'default', 'border-bottom-color': 'var(--primary-info)'}">{{ item.name }}</span>
                     </div>
                 </span>
+                <Spin size="large" fix v-if="noticeLoading"></Spin>
             <drawer-footer @ok="onOk" @cancel="onCancel" ok-text="投稿"></drawer-footer>
         </Drawer>
         <back-top></back-top>
@@ -220,6 +230,7 @@
                     loading: false,
                     drafLoading: false,
                     editLoading: false,
+                    noticeLoading: false,
                     isAdding: false,
                     isEditing: false,
                     btnLoading: false,
@@ -265,28 +276,6 @@
                         }
                     },
                     columns: [
-                        {
-                            title: '掲示期間',
-                            key: 'date',
-                            align: 'left',
-                        },
-                        {
-                            title: '件名',
-                            key: 'hbtCtitle',
-                            align: 'left',
-                        },
-                        // {
-                        //     title: '掲示者',
-                        //     key: '',
-                        //     align: 'left',
-                        // },
-                        {
-                            title: ' ',
-                            key: '',
-                            align: 'left',
-                        },
-                    ],
-                    draftColumns: [
                     {
                             title: '掲示期間',
                             key: 'date',
@@ -305,12 +294,14 @@
                     ],
                     draftData: [],
                     tableData: [],
+                    selfList:[],
                     uploadFiles: [],
                     deleteFiles:[],
                     rangeList: [],
                 }
             },
-            async created() {
+            created() {
+                this.getSelfList()
                 this.getTableData()
                 this.getDraftData()
                 this.getSelection()
@@ -339,13 +330,25 @@
                         this.tableData = data.list.map(e=> {
                             return {
                                 date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
-                                ...e
+                                ...e,
+                                hbtCtitle:e.hbCtitle
                             }
                         })
                         this.pageValue.amount = data.totalCount
                     } catch (error) {
                     } finally {
                         this.loading = false
+                    }
+                },
+                async getSelfList() {
+                    try {
+                        // this.loading = true
+                        const { data } = await this.http.get('sys/noticeboard/list')
+                        this.selfList = data.list
+                        // this.pageValue.amount = data.totalCount
+                    } catch (error) {
+                    } finally {
+                        // this.loading = false
                     }
                 },
                 async editDraft(row) {
@@ -379,6 +382,36 @@
                     } catch (error) {
                     } finally {
                         this.drafLoading = false
+                    }
+                },
+                async checkoutNotice(row) {
+                    const id = row.hbId
+                    try {
+                        this.noticeLoading = true
+                        this.noticeTitle = '通知'
+                        this.drawerShow = true
+                        const { data } = await this.http.get(`sys/noticeboard/notice/${id}`)
+                        this.$refs.richText.setHtml(data.hbtCcontents)
+                        this.updateValue.hbtCtitle = data.hbCtitle
+                        this.updateValue.hbtDdateofannouncement = Utils.formatDate(data.hbtDdateofannouncement, 'yyyy/mm/dd')
+                        this.updateValue.hbtDdateofexpire = data.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbtDdateofexpire, 'yyyy/mm/dd')
+                        this.updateValue.hbtCheaddisp = data.hbtCheaddisp
+                        this.notice = this.$refs.richText.getHtml()
+                        文件
+                        this.$nextTick(() => {
+                            this.uploadFiles = data.attachmentList.map(e => {
+                                return {
+                                    name: e.hbtfFileName,
+                                    url: `${BASE_URL}${e.hbfFileUrl}`,
+                                    type: e.hbtfFilename.split('.')[1],
+                                    hbtfId: e.hbfId,
+                                    isDefault: true
+                                }
+                            })
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.noticeLoading = false
                     }
                 },
                 openFile(item) {
@@ -509,8 +542,8 @@
                                 this.$Message.success(hbtCfix ? '一時保存完了' : '投稿完了')
                                 this.drawerShow = false
                                 this.resetDraft()
-                                if(hbtCfix) this.getDraftData()
-                                else this.getTableData()
+                                this.getDraftData()
+                                this.getTableData()
                             } catch (error) {
                                 console.log(error)
                             } finally {
