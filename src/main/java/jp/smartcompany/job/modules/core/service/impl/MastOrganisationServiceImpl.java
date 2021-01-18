@@ -69,18 +69,16 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
     public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, Date date) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
         qw.eq("mo_ccustomerid_ck_fk", customerId)
-                .le("mo_dstart", SysUtil.transDateToString(date)).ge("mo_dend", SysUtil.transDateToString(date))
+                .le("mo_dstart", date).ge("mo_dend", date)
                 .eq("mo_clanguage", "ja")
                 .orderByDesc("mo_nseq");
         List<MastOrganisationDO> organisationDOList = list(qw);
-        List<BaseSectionOrganisationBO> organisationBOList = organisationDOList.stream().map(item -> {
-            BaseSectionOrganisationBO organisationBO = new BaseSectionOrganisationBO()
+        return organisationDOList.stream().map(item ->
+            new BaseSectionOrganisationBO()
                     .setMoClayeredsectionid(item.getMoClayeredsectionid())
                     .setMoCsectionidCk(item.getMoCsectionidCk())
-                    .setMoNseq(item.getMoNseq());
-            return organisationBO;
-        }).collect(Collectors.toList());
-        return organisationBOList;
+                    .setMoNseq(item.getMoNseq())
+        ).collect(Collectors.toList());
     }
 
     @Override

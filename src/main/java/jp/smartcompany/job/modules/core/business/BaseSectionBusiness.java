@@ -54,7 +54,6 @@ public class BaseSectionBusiness {
      */
     public BaseSectionBO getBaseSection(String date,HttpSession httpSession) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-        String userId = SecurityUtil.getUserId();
         Map<String, List<LoginGroupBO>> hmGroups = psSession.getLoginGroups();
         if (CollUtil.isEmpty(hmGroups)){
             throw new GlobalException(CoreError.LOGIN_GROUP_NOT_FOUND);
