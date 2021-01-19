@@ -208,6 +208,13 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         originalNotice.setHbDmodifieddate(now);
         originalNotice.setHbDdateofannouncement(startDate);
         originalNotice.setHbDdateofexpire(endDate);
+
+        // 重置通知的已读状态
+        HistBulletinBoardReadStatusDO statusDO = histBulletinBoardReadStatusService.getStatusByUserIdArticleId(loginUserId,id);
+        if (statusDO !=null){
+            statusDO.setHbrsStatus(false);
+            histBulletinBoardReadStatusService.updateById(statusDO);
+        }
         histBulletinBoardService.updateById(originalNotice);
     }
 

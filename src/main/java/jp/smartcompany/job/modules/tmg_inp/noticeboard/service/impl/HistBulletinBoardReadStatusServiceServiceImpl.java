@@ -20,4 +20,12 @@ implements IHistBulletinBoardReadStatusService {
         return count(qw)>0;
     }
 
+    @Override
+    public HistBulletinBoardReadStatusDO getStatusByUserIdArticleId(String userId, Long articleId) {
+        QueryWrapper<HistBulletinBoardReadStatusDO> qw = SysUtil.query();
+        qw.eq("hb_id_fk",articleId)
+                .eq("hbrs_emp_id_fk",userId);
+        return getOne(qw);
+    }
+
 }
