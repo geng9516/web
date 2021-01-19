@@ -1,5 +1,5 @@
 const SM_EMOJI = {
-    'Frequently used': {
+    '最近使用した絵文字': {
       'thumbs_up': '👍',
       '-1': '👎',
       'sweat_smile': '😅',
@@ -8,7 +8,7 @@ const SM_EMOJI = {
       'sparkling_heart': '💖',
       'heart_eyes': '😍',
     },
-    'People': {
+    '人物': {
       'smile': '😄',
       'smiley': '😃',
       'grinning': '😀',
@@ -188,7 +188,7 @@ const SM_EMOJI = {
       'speech_balloon': '💬',
       'footprints': '👣',
     },
-    'Nature': {
+    '自然': {
       'dog': '🐶',
       'wolf': '🐺',
       'cat': '🐱',
@@ -269,7 +269,7 @@ const SM_EMOJI = {
       'rainbow': '🌈',
       'ocean': '🌊',
     },
-    'Objects': {
+    '物': {
       'bamboo': '🎍',
       'gift_heart': '💝',
       'dolls': '🎎',
@@ -473,7 +473,7 @@ const SM_EMOJI = {
       'tomato': '🍅',
       'corn': '🌽',
     },
-    'Places': {
+    '場所': {
       'house': '🏠',
       'house_with_garden': '🏡',
       'school': '🏫',
@@ -540,7 +540,7 @@ const SM_EMOJI = {
       'round_pushpin': '📍',
       'triangular_flag_on_post': '🚩',
     },
-    'Symbols': {
+    '記号': {
       'keycap_ten': '🔟',
       '1234': '🔢',
       'symbols': '🔣',
