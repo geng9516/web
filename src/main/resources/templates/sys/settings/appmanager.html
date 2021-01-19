@@ -7,7 +7,7 @@
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
       now = ${new java.util.Date().getTime()
     }">
-  <script th:src="${baseUrl + '/static/libs/dTree.js?t='+ now">
+  <script th:src="${baseUrl + '/static/libs/dTree.js?t='+ now}">
   </script>
   <style>
     .drag-tree-table {

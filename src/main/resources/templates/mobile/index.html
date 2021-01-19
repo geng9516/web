@@ -6,9 +6,9 @@
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
       now = ${new java.util.Date().getTime()
     }">
-  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now">
+  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now}">
   </script>
-  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now">
+  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now}">
   </script>
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <main class="content mobile-warp">
@@ -207,7 +207,7 @@
     <back-top></back-top>
   </main>
   <div th:replace="layout/mobileHeader::header"></div>
-  <script th:src="${baseUrl + '/static/compliedjs/index.js?t='+ now">
+  <script th:src="${baseUrl + '/static/compliedjs/index.js?t='+ now}">
   </script>
 </body>
 

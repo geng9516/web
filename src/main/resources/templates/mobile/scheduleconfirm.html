@@ -6,9 +6,9 @@
 <body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
       now = ${new java.util.Date().getTime()
     }">
-  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now">
+  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now}">
   </script>
-  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now">
+  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now}">
   </script>
   <style>
     .title-timerange {
@@ -86,6 +86,6 @@
     var LOGIN_EMPOLYEE = [[${ session.psSession.loginEmployee }]]
     var SECTION_NAME = [[${ session.psSession.loginDesignation[0].sectionName }]]
   </script>
-  <script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ now"></script>
+  <script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ now}"></script>
 </body>
 </html>
