@@ -335,11 +335,14 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             throw new GlobalException(e.getMessage());
         }
         // 更新已读状态
-        HistBulletinBoardReadStatusDO readStatusDO = new HistBulletinBoardReadStatusDO();
-        readStatusDO.setHbIdFk(id);
-        readStatusDO.setHbrsEmpIdFk(userId);
-        readStatusDO.setHbrsStatus(true);
-        histBulletinBoardReadStatusService.saveOrUpdate(readStatusDO);
+        boolean hasRead = histBulletinBoardReadStatusService.checkNoticeHasRead(userId,id);
+        if (!hasRead){
+            HistBulletinBoardReadStatusDO readStatusDO = new HistBulletinBoardReadStatusDO();
+            readStatusDO.setHbIdFk(id);
+            readStatusDO.setHbrsEmpIdFk(userId);
+            readStatusDO.setHbrsStatus(true);
+            histBulletinBoardReadStatusService.save(readStatusDO);
+        }
         return noticeVO;
     }
 

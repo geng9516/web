@@ -33,7 +33,7 @@ public class NoticeVO implements Serializable {
     private String hbCfix;
     private String hbCcontents;
     private Date updateDate;
-    private Boolean hasRead;
+    private Boolean hasRead = false;
     private Boolean enableEdit;
     private String hbCmnuser;
 
