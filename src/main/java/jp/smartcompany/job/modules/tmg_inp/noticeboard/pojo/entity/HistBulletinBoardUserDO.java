@@ -26,6 +26,7 @@ public class HistBulletinBoardUserDO implements Serializable {
     private String hbgCuserids;
     private String hbgCmodifieruserid;
     private Date hbgDmodifieddate;
+    private String hbgCrangeTypes;
     @Version
     private Long versionno;
 

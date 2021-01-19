@@ -56,8 +56,6 @@ public class NoticeBoardController {
 
     /**
      * 查询可用于发送的人的范围type
-     * @param session
-     * @return
      */
     @GetMapping("rangelist")
     public List<NoticeRangeDTO> getNoticeRangeList(HttpSession session) {

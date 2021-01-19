@@ -175,6 +175,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     }
 
     @Override
+    @Transactional(rollbackFor = GlobalException.class)
     public void editNoticeContent(EditNoticeDTO dto) {
         Long id = dto.getHbId();
         String loginUserId = SecurityUtil.getUserId();
@@ -185,6 +186,13 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (!StrUtil.equals(loginUserId,originalNotice.getHbCmnuser())) {
             throw new GlobalException("該当する通知の掲示者ではありません。");
         }
+        HistBulletinBoardUserDO userRangeDO = histBulletinBoardUserService.getByNoticeId(id);
+        if (userRangeDO == null) {
+            throw new GlobalException("照会範囲の設定は存在しません。");
+        }
+        userRangeDO.setHbgCrangeTypes(dto.getRangeTypes());
+        userRangeDO.setHbgCuserids(dto.getEmpRangeIds());
+        histBulletinBoardUserService.updateById(userRangeDO);
         BeanUtil.copyProperties(dto,originalNotice);
         histBulletinBoardService.updateById(originalNotice);
     }
@@ -277,6 +285,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             boardUserDO.setHbgCarticleid(articleId);
             boardUserDO.setHbgCmodifieruserid(loginUserId);
             boardUserDO.setHbgDmodifieddate(now);
+            boardUserDO.setHbgCrangeTypes(dto.getRangeTypes());
             histBulletinBoardUserService.save(boardUserDO);
 
             // 首次创建就直接将此公告发布
