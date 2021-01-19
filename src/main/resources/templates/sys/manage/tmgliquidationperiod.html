@@ -17,10 +17,6 @@
                     {{  '清算期間設定' }}
                 </h1>
             </div>
-<!--            <div class="btnbox">-->
-<!--                <span style="flex:1"></span>-->
-<!--                <i-button type="primary" icon="ios-albums" ghost @click="patternManagerBtn">パターン管理</i-button>-->
-<!--            </div>-->
         </div>
     </div>
     <div class="searchwrap">
@@ -62,7 +58,11 @@
             <template slot-scope="{ row }" slot="weeklymaxworktime"
                       v-if="row.dailymaxworktime">{{row.weeklymaxworktime | handleTime}}時
             </template>
+
             <template slot-scope="{ row }" slot="totalworkdays" v-if="row.totalworkdays">{{row.totalworkdays}}日
+            </template>
+
+            <template slot-scope="{ row }" slot="beginofweek">{{ getDayName(row.beginofweek )}}
             </template>
             <template slot-scope="{ row }" slot="detail">
                 <i-button size="small" v-if="row.newflag" @click="showDetails(row)">{{row.statusname}}</i-button>
@@ -96,21 +96,23 @@
                     <div class="person-info">{{ empInfo.empWorkTypeName }}</div>
                 </i-col>
             </Row>
-            <Alert type="error" class="error-info tl" v-if="errList.length > 1 ">エラーメッセージ
-                <template slot="desc" v-for="(item) of errList">
-                    <p>{{item}}</p>
-                </template>
-            </Alert>
-            <div class="titlenorm mb10 mt10" style="font-size:15px">
-                <Icon type="logo-buffer"></Icon>
-                精算期間一覧
-            </div>
-            <i-table class="mt10"  border :columns="columns4Year" :data="tableData4Year"
-                     max-height="850" :loading="EditLoading" :span-method="handleSpan" ref="tableDisp" show-header>
-                <template slot-scope="{ row }" slot="yyyymm">
-                    <span style="text-decoration: underline" class="cursor" @click="showMonth(row.month)">{{ row.month }}</span>
-                </template>
-                <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
+
+            <div style="position: relative;">
+                <Alert type="error" class="error-info tl" v-if="errList.length > 0" :loading="EditLoading">エラーメッセージ
+                    <template slot="desc" v-for="(item) of errList">
+                        <p>{{item}}</p>
+                    </template>
+                </Alert>
+                <div class="titlenorm mb10 mt10" style="font-size:15px">
+                    <Icon type="logo-buffer"></Icon>
+                    精算期間一覧
+                </div>
+                <i-table class="mt10"  border :columns="columns4Year" :data="tableData4Year"
+                         max-height="850" :loading="EditLoading" :span-method="handleSpan" ref="tableDisp" show-header>
+                    <template slot-scope="{ row }" slot="yyyymm">
+                        <span style="text-decoration: underline" class="cursor" @click="showMonth(row.month)">{{ row.month }}</span>
+                    </template>
+                    <template v-for="(e, j) of tableHead" slot-scope="{ row }" :slot="`${j + 1}`">
                         <span v-if="row[j] && row._index % 2 === 0 ">
                                 <div class="cursor sum-row" style="height: 13px;" v-if="row[j].ntftype.length > 0 && row[j].ntftype[0]">
                                     <Poptip trigger="hover"　theme="light" placement="left" transfer style="height: 13px">
@@ -129,11 +131,13 @@
                                 <div class="divi-hour-line sum-row" v-else><span class="rest-label">{{ row[j].kubun || '&nbsp;' }}</span></div>
 
                                 <div class="divi-hour-line sum-row"><span :class="row[j].workhours && Utils.timeToMinute(row[j].workhours) > limitInfo.dailymaxworktime && 'error-label'" style="height: 13px;line-height: 14px;">{{ row[j].workhours || '&nbsp;' }}</span></div>
-                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'?'&nbsp;' : row[j].resttime }}</div>
+                                <div class="divi-hour-line sum-row">{{ row[j].resttime ==='0:00'? '&nbsp;' : row[j].resttime }}</div>
                         </span>
-                    <span v-if="row[j] && row._index % 2 !== 0 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
-                </template>
-            </i-table>
+                        <span v-if="row[j] && row._index % 2 === 1 " :class="row[j] && row[j].weekworktime && Utils.timeToMinute(row[j].weekworktime) > limitInfo.weeklymaxworktime && 'error-label'">{{ row[j].weekworktime }}</span>
+                    </template>
+                </i-table>
+                <Spin size="large" fix v-if="EditLoading"></Spin>
+            </div>
             <div v-if="tableData4Year.length > 6">
                 <Row class="mt20">
                     <i-col span="24" class="tr">
@@ -221,38 +225,19 @@
         </Modal>
         <!-- 勤務パターンSTART -->
 
-
-<!--        <Modal title="パターン管理" width="70" v-model="patternManagerFlg" footer-hide :mask-closable="false">-->
-<!--            <div class="tr mb15">-->
-<!--                <i-button @click="makeNewPattern('manager')">新規パターン</i-button>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <i-table :disabled-hover="true" border :row-class-name="() => 'select-col'" :data="tableDataForPattern"-->
-<!--                         :loading="patternLoading" :columns="columnForPattern" >-->
-<!--                    <template slot-scope="{ row, index }" slot="restTime">-->
-<!--                        <div>-->
-<!--                            <Row :gutter="10" v-for="(item, i) of tableDataForPattern[index].restTime" :key="i" class="mb5">-->
-<!--                                <i-col span="12">-->
-<!--                                    <span class="input-like-span">{{tableDataForPattern[index].restTime[i].restOpen}}</span>-->
-<!--                                </i-col>-->
-<!--                                <i-col span="12">-->
-<!--                                    <span class="input-like-span">{{tableDataForPattern[index].restTime[i].restClose}}</span>-->
-<!--                                </i-col>-->
-<!--                            </Row>-->
-<!--                        </div>-->
-<!--                    </template>-->
-<!--                    <template slot-scope="{ row ,index }" slot="button">-->
-<!--                        <i-button v-if="tableDataForPattern[index].target" size="small" @click="deletePattern(tableDataForPattern[index].patternId)">取消</i-button>-->
-<!--                    </template>-->
-<!--                </i-table>-->
-<!--            </div>-->
-<!--        </Modal>-->
-
         <Modal title="新規パターン" width="40" v-model="patternFlg" footer-hide :mask-closable="false">
             <Alert type="error" class="error-info" v-show="patternErrorMsg">{{ patternErrorMsg }}</Alert>
             <i-form :label-width="120" ref="localValue">
-                <form-item label="個人パターン">
-                    <span class="input-like-span">{{empInfo.empName}}</span>
+                <form-item :label="patternManager? '所属' : '個人パターン'">
+                    <div v-if="patternManager">
+                        <i-select v-model="patternInfo.sectionId"  v-if="patternDropDown.selectType === '1'" ref="selectSec">
+                            <Tree class="mt2" :data="patternDropDown.section" v-on:on-select-change="handleClickForSection" ref="tree"
+                                  empty-text="所属データなし"></Tree>
+                        </i-select>
+                    </div>
+                    <div v-else>
+                        <span class="input-like-span">{{empInfo.empName}}</span>
+                    </div>
                 </form-item>
 
                 <form-item label="名称">
@@ -359,8 +344,10 @@
                     </Row>
                 </form-item>
                 <div class="tr">
+
                     <i-button @click="insertNewPattern">登録</i-button>
                 </div>
+
             </i-form>
         </Modal>
 
@@ -532,6 +519,11 @@
                         align: 'center'
                     },
                     {
+                        title: '週開始日',
+                        slot: 'beginofweek',
+                        align: 'center'
+                    },
+                    {
                         title: '更新者',
                         minWidth: 60,
                         key: 'modifieduser',
@@ -547,7 +539,7 @@
                         title: '登録内容',
                         Width: 40,
                         slot: 'detail',
-                        align: 'left'
+                        align: 'center'
                     },
                 ],
                 tableData: [],
@@ -653,9 +645,6 @@
                 tableData4Year: [],
                 tableHead: Utils.getNumArray(1, 31),
                 columns4Year: [],
-                leftTable: [],
-                centerTable: [],
-                rightTable: [],
 
                 //月编辑画面
                 editMonth: '',
@@ -730,10 +719,10 @@
                     [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
                     hidSearchData:'',
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
+                    txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
@@ -861,8 +850,20 @@
         },
 
         computed: {
+
         },
         methods: {
+            getDayName(e){
+                let week = new Map()
+                    .set('0','日曜日')
+                    .set('1','月曜日')
+                    .set('2','火曜日')
+                    .set('3','水曜日')
+                    .set('4','木曜日')
+                    .set('5','金曜日')
+                    .set('6','土曜日')
+                return week.get(e)
+            },
             async getWorkTypeList() {
                 try {
                     this.DispLoading = true
@@ -968,25 +969,26 @@
                     this.handleClickLeaf()
                 }
             },
-            // async patternManagerBtn() {
-            //     this.patternManager = true;
-            //     this.patternManagerFlg = true;
-            //     let OPTS={
-            //         empId:[[${ session.psSession.loginAccount}]],
-            //         ...this.referListObject
-            //     }
-            //     try {
-            //         const {data} = await this.http.get('sys/tmgliquidationperiod/getPattern', OPTS)
-            //         //table数据获取
-            //         this.tableDataForPattern=data.patternList
-            //         //可选组织获取
-            //         this.sectionSearchRange = data.sectionList
-            //     } catch (error) {
-            //         return
-            //     } finally {
-            //     }
-            // },
+            async patternManagerBtn() {
+                this.patternManager = true;
+                this.patternManagerFlg = true;
+                let OPTS={
+                    empId:[[${ session.psSession.loginAccount}]],
+                    ...this.referListObject
+                }
+                try {
+                    const {data} = await this.http.get('sys/tmgliquidationperiod/getPattern', OPTS)
+                    //table数据获取
+                    this.tableDataForPattern=data.patternList
+                    //可选组织获取
+                    this.sectionSearchRange = data.sectionList
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
             async showDetails(e) {
+                console.log(e)
                 if (e) {
                     this.empInfo.empId = e.employeeid
                     this.empInfo.empWorkTypeId = e.worktypeid
@@ -1004,6 +1006,16 @@
                         this.editFlag = true
                         this.EditLoading = true
                         const { data } = await this.http.get('sys/tmgliquidationperiod/EditDisp', this.optsEmp)
+
+                        // data.monthDtoList.forEach( (z , i) => {
+                        //     let days = new Array(31).fill({kubunid:null})
+                        //     if(31 > z.length ){
+                        //         days.forEach( (x,j) => {
+                        //             days[j]=z[j]
+                        //         })
+                        //         data.monthDtoList[i]= days
+                        //     }
+                        // })
                         let list = []
                         data.monthDtoList.forEach(t => {
                             const month = t[0].yyyymmdd.slice(0, 7)
@@ -1025,13 +1037,12 @@
                         })
                         this.tableData4Year = list
                         this.errList = data.errList
-                        this.centerTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[4].childNodes[0].childNodes[1].childNodes
-                        this.leftTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[10].childNodes[2].childNodes[0].childNodes[1].childNodes
-                        this.rightTable = this.$refs.tableDisp.$el.childNodes[0].childNodes[12].childNodes[2].childNodes[0].childNodes[1].childNodes
-                        //致御上限获取
+
+                        //制御上限获取
                         this.limitInfo.dailymaxworktime=e.dailymaxworktime
                         this.limitInfo.weeklymaxworktime=e.weeklymaxworktime
-                        this.limitInfo.beginOfWeek=e.beginofweek ? +(e.beginofweek):0;
+                        this.limitInfo.beginOfWeek=e.beginofweek ? +(e.beginofweek):0
+                        console.log(this.limitInfo)
                     } catch (error) {
                         return
                     } finally {
@@ -1078,37 +1089,30 @@
                 if(!this.limitInfo.beginOfWeek){
                     this.limitInfo.beginOfWeek = 0
                 }
-                //每月第二行时 第一列时 计算周几并且合并到周日（周一为周开始日的情况下）
-                if (rowIndex % 2 === 1 && columnIndex === 1) {
+                //每月第二行时 第一列时 计算周几并且合并
+                if (rowIndex % 2 === 1 && column.title === '1日') {
                     if((7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())>7){
                         return [1, (this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
                     }else{
                         return [1, (7+this.limitInfo.beginOfWeek - new Date(row.month+'/01').getDay())];
                     }
-                    // 9为周日开始 8为周一开始 类推
-                } else if (rowIndex % 2 === 1 && columnIndex > 1 && columnIndex < (9 - new Date(row.month+'/01').getDay())) {
-                    return [0, 0];
-                }
-
-                //每月第二行时 非第一列 合并（周一为周开始日的情况下）
-                // 8为周日开始 7为周一开始 类推
-                if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > ( - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 === 1 && columnIndex < 33) {
-                    //最后一个只合并剩余
-                    if ((32- columnIndex) < 7) {
-                        return [1, 32 - columnIndex + 1];
-                    } else {
+                    //每月第二行时 非第一列 合并
+                } else if (rowIndex % 2 === 1  && column.title.indexOf('日') > -1 &&  ((+column.slot)  + (7- 2 * +this.limitInfo.beginOfWeek)  + this.limitInfo.beginOfWeek  + new Date(row.month+'/01').getDay()) % 7 === 1) {
+                    if ( 7 < (32- +column.slot)) {
                         return [1, 7];
+                    } else {
+                        return [1, 32 - (+column.slot)];
                     }
-                } else if (row[columnIndex] && rowIndex % 2 === 1 && columnIndex > (8 - new Date(row.month+'/01').getDay()) && (columnIndex - 8 + new Date(row.month+'/01').getDay()) % 7 != 1 && columnIndex < 33) {
-                    return [0, 0];
-                }
-
-                //每月第一行时 非日期列 合并3格  table存在fixed情况下 3张表同用index 用title作区分
-                if (column.title != '1日' && rowIndex % 2 === 0 && columnIndex < 1) {
+                    //return [1, 7];
+                    //每月第一行时 非日期列 合并2格  table存在fixed情况下 3张表同用index 用title作区分
+                } else if ((column.title === '年月'  || column.title === '月時間') && rowIndex % 2 === 0) {
                     return [2, 1];
-                } else if (column.title != '1日' && rowIndex % 2 === 1) {
-                    return [0, 0];
+                    //其他第二行全部返回[0,0]
+                } else if (rowIndex % 2 === 1){
+                    return [0, 0]
                 }
+                return [1,1]
+
             },
             //时间转换
             handleInputChange(object, index, el) {
@@ -1365,9 +1369,9 @@
 
             //新規パターン画面の表示
             makeNewPattern(e) {
-                // if(e != 'manager'){
-                //     this.patternManager=false
-                // }
+                if(e != 'manager'){
+                    this.patternManager=false
+                }
                 this.patternFlg = true
                 //重制新规pattern
                 this.patternInfo = {
@@ -1396,99 +1400,97 @@
                         },
                     ]
                 }
-                // //获取下拉框数据处理
-                // this.getDropDownTree()
+                //获取下拉框数据处理
+                this.getDropDownTree()
             },
-            //
-            // //下拉框树 点击操作
-            // async handleClickForSection(e){
-            //     console.log(e[0])
-            //     console.log(this.$refs.selectSec)
-            //     this.$refs.selectSec.$el.children[0].children[1].children[0].className = 'ivu-select-selected-value'
-            //     this.$refs.selectSec.$el.children[0].children[1].children[0].innerHTML= e[0].secname
-            //     this.patternInfo.sectionId = e[0].secid
-            //     this.$refs.selectSec.hideMenu()
-            // },
-            //
-            //
-            // async getDropDownTree(refreshDept) {
-            //     this.empDeptLoading = true
-            //     try {
-            //         const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-            //         // 先将数据转为标准格式，再转为可用数据
-            //         if(this.sectionSearchRange.length > 0 ){
-            //             this.patternDropDown.section = this.convertTree(orgList,this.sectionSearchRange)
-            //         }else{
-            //             this.patternDropDown.section = Utils.convertTreeData(orgList)
-            //         }
-            //     } catch (error) {
-            //         return
-            //     } finally {
-            //     }
-            // },
-            //
-            // //组织树结构处理
-            // convertTree(treeData,searchRange) {
-            //     if(!treeData) {
-            //         Vue.prototype.$Message.error({
-            //             background:true,
-            //             closable: true,
-            //             duration: 6.5,
-            //             content: msg || '参照できる組織図が存在しません。'
-            //         });
-            //         return []
-            //     }
-            //     return treeData.map((e, i) => {
-            //         const children =  e.child || e.children
-            //         let checkSec = searchRange.some(j=> {
-            //             return j.SECTIONID === e.data.secid
-            //         })
-            //         if (children) {
-            //             return {
-            //                 ...e.data,
-            //                 title: e.data.label,
-            //                 expand: true,
-            //                 disabled: !checkSec,
-            //                 children: this.convertTree(children,searchRange),
-            //                 render:(h, { root, node, data }) => {
-            //                     return h('span', {
-            //                         style: {
-            //                             color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
-            //                         }
-            //                     },data.title)
-            //                 }
-            //             }
-            //         } else {
-            //             return {
-            //                 ...e.data,
-            //                 disabled: !checkSec,
-            //                 title: e.data.label,
-            //                 render:(h, { root, node, data }) => {
-            //                     return h('span', {
-            //                         style: {
-            //                             color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
-            //                         }
-            //                     },data.title)
-            //                 }
-            //             }
-            //         }
-            //     })
-            // },
-            // deletePattern(e){
-            //     if(!e) return
-            //     this.$Modal.confirm({
-            //         inDrawer: true,
-            //         width: 480,
-            //         title: '注意',
-            //         content: 'このパターンを取消します、よろしいですか？',
-            //         okText: 'OK',
-            //         cancelText: 'キャンセル',
-            //         onOk: async () => {
-            //             await this.http.postForm('sys/tmgliquidationperiod/deletePattern', {patternId:e})
-            //             this.patternManagerBtn()
-            //         }
-            //     })
-            // },
+
+            //下拉框树 点击操作
+            async handleClickForSection(e){
+                this.$refs.selectSec.$el.children[0].children[1].children[0].className = 'ivu-select-selected-value'
+                this.$refs.selectSec.$el.children[0].children[1].children[0].innerHTML= e[0].secname
+                this.patternInfo.sectionId = e[0].secid
+                this.$refs.selectSec.hideMenu()
+            },
+
+
+            async getDropDownTree(refreshDept) {
+                this.empDeptLoading = true
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    if(this.sectionSearchRange.length > 0 ){
+                        this.patternDropDown.section = this.convertTree(orgList,this.sectionSearchRange)
+                    }else{
+                        this.patternDropDown.section = Utils.convertTreeData(orgList)
+                    }
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
+
+            //组织树结构处理
+            convertTree(treeData,searchRange) {
+                if(!treeData) {
+                    Vue.prototype.$Message.error({
+                        background:true,
+                        closable: true,
+                        duration: 6.5,
+                        content: msg || '参照できる組織図が存在しません。'
+                    });
+                    return []
+                }
+                return treeData.map((e, i) => {
+                    const children =  e.child || e.children
+                    let checkSec = searchRange.some(j=> {
+                        return j.SECTIONID === e.data.secid
+                    })
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            expand: true,
+                            disabled: !checkSec,
+                            children: this.convertTree(children,searchRange),
+                            render:(h, { root, node, data }) => {
+                                return h('span', {
+                                    style: {
+                                        color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
+                                    }
+                                },data.title)
+                            }
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            disabled: !checkSec,
+                            title: e.data.label,
+                            render:(h, { root, node, data }) => {
+                                return h('span', {
+                                    style: {
+                                        color: checkSec ? 'var(--grey)':'var(--text-light-grey)'
+                                    }
+                                },data.title)
+                            }
+                        }
+                    }
+                })
+            },
+            deletePattern(e){
+                if(!e) return
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    width: 480,
+                    title: '注意',
+                    content: 'このパターンを取消します、よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        await this.http.postForm('sys/tmgliquidationperiod/deletePattern', {patternId:e})
+                        this.patternManagerBtn()
+                    }
+                })
+            },
 
             recovery(){
                 this.$Modal.confirm({
@@ -1531,8 +1533,13 @@
                 } catch (error) {
                     return
                 } finally {
+                    if (this.patternManager) {
+                        //跳转管理
+                        this.patternManagerBtn()
+                    }else{
                         //重新加载页面
                         this.showMonth(this.editMonth)
+                    }
                 }
             }
 
