@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.dto.NoticeRangeDTO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardFileDO;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,5 +40,6 @@ public class NoticeVO implements Serializable {
 
     private List<Map<String,String>> userRangeList;
     private List<HistBulletinBoardFileDO> attachmentList;
+    private List<NoticeRangeDTO> typeRangeList;
 
 }

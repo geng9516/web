@@ -331,9 +331,13 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (!StrUtil.contains(userRange.getHbgCuserids(),userId)) {
             throw new GlobalException("このアナウンスにアクセスする権限がありません");
         }
+        List<String> rangeTypes = Arrays.asList(userRange.getHbgCrangeTypes().split(","));
+        List<NoticeRangeDTO> rangeTypeList = CollUtil.newArrayList();
+        assembleTypeRangeItems(rangeTypes, rangeTypeList);
 
         NoticeVO noticeVO = new NoticeVO();
         BeanUtil.copyProperties(boardDO,noticeVO);
+        noticeVO.setTypeRangeList(rangeTypeList);
         noticeVO.setUpdateDate(boardDO.getHbDmodifieddate());
         List<HistBulletinBoardFileDO> attachments = histBulletinBoardFileService.listFileById(id);
         noticeVO.setAttachmentList(attachments);
