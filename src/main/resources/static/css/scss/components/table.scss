@@ -30,6 +30,9 @@
       &.disabled td {
         background-color: var(--table-disabled-row)
       }
+      &.text-light-grey td .ivu-table-cell > span {
+        color: var(--text-light-grey)
+      }
       // 表格 hover单行class
       &.select-col:hover td {
         background-color: var(--table-td-hover-bg);

@@ -5,11 +5,13 @@
 </head>
 
 <body
-    th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+    th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
-    <link th:href="${baseUrl + '/static/libs/quill.snow.css?t='+ new java.util.Date().getTime()}" rel="stylesheet">
+    <link th:href="${baseUrl + '/static/libs/quill.snow.css?t='+ now}" rel="stylesheet">
     <style>
         .emoji-poptip .ivu-poptip-body {
             height: 500px;
@@ -46,7 +48,7 @@
                         v-show="!isAdding && editPermission">新規投稿</i-button>
                     <i-button @click="resetDraft" v-show="isAdding">一覧に戻る</i-button>
                     <i-button type="success" ghost icon="md-create" @click="uploadNotice('0')" :loading="editLoading"
-                        v-show="isAdding">一時保存</i-button>
+                        v-show="isAdding && !isEditingNotice">一時保存</i-button>
                     <i-button type="success" icon="md-done-all" @click="uploadNotice('1')" :loading="editLoading"
                         v-show="isAdding">投稿</i-button>
                     <i-button type="error" ghost icon="md-trash" @click="deleteDraft({hbtId:editId})" :loading="editLoading"
@@ -79,16 +81,6 @@
                 </div>
                 <Spin size="large" fix v-if="selectedPeopleloading"></Spin>
             </Alert>
-            <!-- <div class="table-top">
-            <Row :gutter="16">
-              <i-col span="24" class="tr">
-              </i-col>
-            </Row>
-          </div> -->
-            <!-- <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
-          </i-table> -->
             <span v-show="!isAdding">
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
                     <Icon type="logo-buffer"></Icon>
@@ -98,13 +90,18 @@
                     <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
                           :page-size="pageValue.curSize" @on-change="pageChangeNotice" simple/>
                 </div>
-                <i-table border :row-class-name="() => 'select-col'" :columns="columns"
+                <i-table border :row-class-name="(row) => row.hasRead ? 'select-col text-light-grey' : 'select-col'" :columns="columns" no-data-text=""
                     :disabled-hover="true" :data="tableData" :loading="loading">
                     <template slot-scope="{ row }" slot="action">
-                        <div>
-                            <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px"
-                                @click="checkoutNotice(row)">詳細</i-button>
-                        </div>
+                        <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px"
+                        @click="checkoutNotice(row, false)">詳細</i-button>
+                        <i-button v-model="row.enableEdit" type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px"
+                        @click="checkoutNotice(row, true)">編集</i-button>
+                        <i-button v-model="row.enableEdit" type="error" ghost size="small" icon="ios-trash" style="margin-right: 5px"
+                        @click="delNotice(row)">削除</i-button>
+                    </template>
+                    <template slot-scope="{ row }" slot="status">
+                        <p :style="{color: row.hasRead ? 'var(--text-light-grey)' : 'var(--primary-info)' }">{{ row.hasRead ? '既読' : '新着' }}</p>
                     </template>
                 </i-table>
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
@@ -115,8 +112,8 @@
                     <Page :total="pageValueDraft.amount" :current="pageValueDraft.curPage" show-total style="display: inline"
                           :page-size="pageValueDraft.curSize" @on-change="pageChangeDraft" simple/>
                 </div>
-                <i-table border :row-class-name="() => 'select-col'" v-if="editPermission"
-                    :columns="columns" :disabled-hover="true" :data="draftData" :loading="drafLoading">
+                <i-table border :row-class-name="() => 'select-col'" v-if="editPermission" no-data-text=""
+                    :columns="draftColumns" :disabled-hover="true" :data="draftData" :loading="drafLoading">
                     <template slot-scope="{ row }" slot="action">
                         <div>
                             <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="editDraft(row)">編集</i-button>
@@ -124,10 +121,26 @@
                         </div>
                     </template>
                 </i-table>
+                <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
+                    <Icon type="logo-buffer"></Icon>
+                    ごみ箱
+                </div>
+                <div class="tr mb10">
+                    <Page :total="pageValueHistory.amount" :current="pageValueHistory.curPage" show-total style="display: inline"
+                          :page-size="pageValueHistory.curSize" @on-change="pageChangeHistory" simple/>
+                </div>
+                <i-table border :row-class-name="() => 'select-col disabled text-light-grey'" v-if="editPermission" no-data-text=""
+                    :columns="draftColumns" :disabled-hover="true" :data="historyData" :loading="historyLoading">
+                    <template slot-scope="{ row }" slot="action">
+                        <div>
+                            <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="checkoutNotice(row, false)">詳細</i-button>
+                        </div>
+                    </template>
+                </i-table>
             </span>
             <Row :gutter="16" v-show="isAdding">
                 <i-col span="12">
-                    <rich-text ref="richText" :uploadFiles="uploadFiles" @add-files="($event) => uploadFiles.push($event)"></rich-text>
+                    <rich-text ref="richText" :upload-files="uploadFiles"　:disabled-upload="isEditingNotice" @add-files="($event) => uploadFiles.push($event)"></rich-text>
                 </i-col>
                 <i-col span="12">
                     <Row :gutter="10">
@@ -167,7 +180,7 @@
                                             </Icon> {{ item.name }}
                                         </span>
                                         <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
-                                        <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove"
+                                        <i v-show="!isEditingNotice" class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove"
                                             @click="handleDelFile(item)"></i>
                                     </li>
                                 </ul>
@@ -197,7 +210,7 @@
                     <Icon type="logo-buffer"></Icon>
                     内容
                 </div>
-                <div class="tl input-like-span ql-editor" v-html="notice" style="padding: 5px;overflow-y: unset"></div>
+                <div class="tl input-like-span ql-editor" v-html="notice" style="padding: 5px;overflow-y: unset;height: auto;"></div>
                 <div style="clear: both"></div>
                 <div class="titlenorm grey mb10 mt10" style="font-size:15px">
                     <Icon type="logo-buffer"></Icon>
@@ -214,12 +227,12 @@
         <back-top></back-top>
         <a href='' download style="display: none;" ref="downloadBtn"></a>
     </main>
-    <script th:src="${baseUrl + '/static/component/drawer-footer.js?t='+ new java.util.Date().getTime()}"></script>
+    <script th:src="${baseUrl + '/static/component/drawer-footer.js?t='+ now}"></script>
     <div th:replace="layout/head::header"></div>
-    <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ new java.util.Date().getTime()}"></script>
-    <script th:src="${baseUrl + '/static/libs/image-resize.min.js?t='+ new java.util.Date().getTime()}"></script>
-    <script th:src="${baseUrl + '/static/js/emoji.js?t='+ new java.util.Date().getTime()}"></script>
-    <script th:src="${baseUrl + '/static/component/rich-text.js?t='+ new java.util.Date().getTime()}"></script>
+    <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ now}"></script>
+    <script th:src="${baseUrl + '/static/libs/image-resize.min.js?t='+ now}"></script>
+    <script th:src="${baseUrl + '/static/js/emoji.js?t='+ now}"></script>
+    <script th:src="${baseUrl + '/static/component/rich-text.js?t='+ now}"></script>
     <script type="text/babel" th:inline="javascript">
         new Vue({
             el: '.protosettings-warp',
@@ -230,9 +243,11 @@
                     loading: false,
                     drafLoading: false,
                     editLoading: false,
+                    historyLoading: false,
                     noticeLoading: false,
                     isAdding: false,
                     isEditing: false,
+                    isEditingNotice: false,
                     btnLoading: false,
                     editPermission: [[${ session }]].psSession.hasPublishPermission,
                     drawerShow:false,
@@ -262,7 +277,18 @@
                         list: [20, 30, 50, 100],
                         curSize: 20
                     },
+                    pageValueHistory: {
+                        amount: 0,
+                        curPage: 1,
+                        list: [20, 30, 50, 100],
+                        curSize: 20
+                    },
                     opts2: {
+                        order: 'desc',
+                        page: 1,
+                        limit: 50
+                    },
+                    opts3: {
                         order: 'desc',
                         page: 1,
                         limit: 50
@@ -272,19 +298,46 @@
                     },
                     rangeOptions: {
                         disabledDate: date => {
-                            return date.valueOf() < -3600000 || date.valueOf() > 7983759600000
+                            return date.valueOf() < Date.now() - 1000 * 60 * 60 * 24 || date.valueOf() > 7983759600000
                         }
                     },
                     columns: [
-                    {
+                        {
                             title: '掲示期間',
                             key: 'date',
                             align: 'left',
+                            width: 250
                         },
                         {
                             title: '件名',
                             key: 'hbtCtitle',
                             align: 'left',
+                            minWidth: 200,
+                        },
+                        {
+                            title: '状態',
+                            slot: 'status',
+                            align: 'center',
+                            width: 120,
+                        },
+                        {
+                            title: ' ',
+                            slot: 'action',
+                            align: 'center',
+                        }
+                    ],
+                    draftColumns: [
+                        {
+                            title: '掲示期間',
+                            key: 'date',
+                            align: 'left',
+                            width: 250
+                        },
+                        {
+                            title: '件名',
+                            key: 'hbtCtitle',
+                            align: 'left',
+                            minWidth: 200,
                         },
                         {
                             title: ' ',
@@ -294,6 +347,7 @@
                     ],
                     draftData: [],
                     tableData: [],
+                    historyData: [],
                     selfList:[],
                     uploadFiles: [],
                     deleteFiles:[],
@@ -301,8 +355,8 @@
                 }
             },
             created() {
-                this.getSelfList()
                 this.getTableData()
+                this.getHistory()
                 this.getDraftData()
                 this.getSelection()
             },
@@ -338,6 +392,23 @@
                     } catch (error) {
                     } finally {
                         this.loading = false
+                    }
+                },
+                async getHistory() {
+                    try {
+                        this.historyLoading = true
+                        const { data } = await this.http.get('sys/noticeboard/rubbish/list', this.opts3)
+                        this.historyData = data.list.map(e=> {
+                            return {
+                                date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
+                                ...e,
+                                hbtCtitle:e.hbCtitle
+                            }
+                        })
+                        this.pageValueHistory.amount = data.totalCount
+                    } catch (error) {
+                    } finally {
+                        this.historyLoading = false
                     }
                 },
                 async getSelfList() {
@@ -388,19 +459,29 @@
                     this.resetDraft()
                     this.isAdding = true
                 },
-                async checkoutNotice(row) {
+                async checkoutNotice(row, isEdit) {
                     const id = row.hbId
                     try {
-                        this.noticeLoading = true
-                        this.noticeTitle = '詳細'
-                        this.drawerShow = true
+                        if(!isEdit){
+                          this.noticeLoading = true
+                          this.noticeTitle = '詳細'
+                          this.drawerShow = true
+                        }
                         const { data } = await this.http.get(`sys/noticeboard/notice/${id}`)
-                        this.$refs.richText.setHtml(data.hbtCcontents)
                         this.updateValue.hbtCtitle = data.hbCtitle
                         this.updateValue.hbtDdateofannouncement = Utils.formatDate(data.hbDdateofannouncement, 'yyyy/mm/dd')
                         this.updateValue.hbtDdateofexpire = data.hbDdateofexpire === 7983759600000 ? '' : Utils.formatDate(data.hbDdateofexpire, 'yyyy/mm/dd')
-                        this.updateValue.hbtCheaddisp = data.hbtCheaddisp
-                        this.notice = data.hbCcontents
+                        if(!isEdit){
+                            this.notice = data.hbCcontents
+                        } else {
+                            this.isAdding = true
+                            this.isEditingNotice = true
+                            // 这里v-model会自动触发一次 this.getPeopleBySelection()
+                            this.searchRange = data.typeRangeList.map(e => e.typeId)
+                            this.$refs.richText.setHtml(data.hbCcontents)
+                            this.updateValue.hbtCheaddisp = data.hbCheaddisp
+                            this.editId = data.hbId
+                        }
                         this.$nextTick(() => {
                             this.uploadFiles = data.attachmentList.map(e => {
                                 return {
@@ -436,6 +517,24 @@
                             await this.http.post('sys/noticeboard/draft/delete', [row.hbtId])
                             this.resetDraft()
                             this.getDraftData()
+                            this.getTableData()
+                            this.getHistory()
+                            this.$Message.success('削除完了')
+                        }
+                    })
+                },
+                delNotice(row) {
+                    this.$Modal.confirm({
+                        title: '注意',
+                        width: 480,
+                        content: 'この通知を削除します。よろしいですか？',
+                        okText: '削除',
+                        cancelText: '戻る',
+                        onOk: async () => {
+                            await this.http.post(`sys/noticeboard/notice/status?id=${row.hbId}&status='0'`)
+                            this.resetDraft()
+                            this.getTableData()
+                            this.getHistory()
                             this.$Message.success('削除完了')
                         }
                     })
@@ -495,6 +594,7 @@
                 resetDraft() {
                     this.isAdding = false
                     this.isEditing = false
+                    this.isEditingNotice = false
                     this.updateValue = {
                         hbtCheaddisp: '0'
                     }
@@ -542,12 +642,28 @@
                                 if(this.isEditing) {
                                     opts.hbtId = this.editId
                                 }
-                                await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
+
+                                if(this.isEditingNotice) {
+                                    let opts2 = {}
+                                    opts2.hbId = this.editId
+                                    opts2.hbDdateofannouncement = Utils.formatDate(opts.hbtDdateofannouncement, 'yyyy/mm/dd')
+                                    opts2.hbDdateofexpire = opts.hbtDdateofexpire && Utils.formatDate(opts.hbtDdateofexpire, 'yyyy/mm/dd')
+                                    opts2.hbCtitle = opts.hbtCtitle
+                                    opts2.hbCheaddisp = opts.hbtCheaddisp
+                                    opts2.hbCcontents = opts.hbtCcontents
+                                    opts2.empRangeIds = opts.empRangeIds
+                                    opts2.rangeTypes = opts.sendRangeTypes
+                                    await this.http.post('sys/noticeboard/notice/edit', opts2)
+                                } else {
+                                    await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
+                                }
                                 this.$Message.success(hbtCfix ? '一時保存完了' : '投稿完了')
                                 this.drawerShow = false
                                 this.resetDraft()
                                 this.getDraftData()
                                 this.getTableData()
+                                this.getTableData()
+                                this.getHistory()
                             } catch (error) {
                                 console.log(error)
                             } finally {
@@ -562,15 +678,20 @@
                     this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
                 },
                 pageChangeNotice(e) {
-                    this.opts.sPage = e
+                    this.opts2.sPage = e
                     this.pageValueNotice.curPage = e
                     this.getTableData()
                 },
                 pageChangeDraft(e) {
-                    this.opts.sPage = e
+                    this.opts.Page = e
                     this.pageValueDraft.curPage = e
                     this.getDraftData()
                 },
+                pageChangeHistory(e) {
+                    this.opts3.Page = e
+                    this.pageValueHistory.curPage = e
+                    this.getHistoryData()
+                }
             }
         })
     </script>
