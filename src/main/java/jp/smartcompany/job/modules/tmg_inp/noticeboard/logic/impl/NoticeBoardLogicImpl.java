@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg_inp.noticeboard.logic.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -179,6 +180,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     public void editNoticeContent(EditNoticeDTO dto) {
         Long id = dto.getHbId();
         String loginUserId = SecurityUtil.getUserId();
+        Date now = DateUtil.date();
         HistBulletinBoardDO originalNotice = histBulletinBoardService.getById(id);
         if (originalNotice == null) {
             throw new GlobalException("通知は既に存在しません。");
@@ -193,7 +195,19 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         userRangeDO.setHbgCrangeTypes(dto.getRangeTypes());
         userRangeDO.setHbgCuserids(dto.getEmpRangeIds());
         histBulletinBoardUserService.updateById(userRangeDO);
+
+        if (Objects.isNull(dto.getHbDdateofexpire())) {
+            dto.setHbDdateofexpire(SysUtil.getMaxDateObject());
+        }
+        DateTime sDate = DateUtil.date(dto.getHbDdateofannouncement());
+        DateTime eDate = DateUtil.date(dto.getHbDdateofexpire());
+        Date startDate = SysDateUtil.of(sDate.year(), sDate.month()+1, sDate.dayOfMonth());
+        Date endDate = SysDateUtil.of(eDate.year(), eDate.month()+1, eDate.dayOfMonth());
+
         BeanUtil.copyProperties(dto,originalNotice);
+        originalNotice.setHbDmodifieddate(now);
+        originalNotice.setHbDdateofannouncement(startDate);
+        originalNotice.setHbDdateofexpire(endDate);
         histBulletinBoardService.updateById(originalNotice);
     }
 
@@ -213,8 +227,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     @Transactional(rollbackFor = GlobalException.class)
     public void addOrUpdateDraft(DraftNoticeDTO dto) {
         Long hbtId = dto.getHbtId();
-        Date startDate = dto.getHbtDdateofannouncement();
-        Date endDate = dto.getHbtDdateofexpire();
+        DateTime sDate = DateUtil.date(dto.getHbtDdateofannouncement());
+        DateTime eDate = DateUtil.date(dto.getHbtDdateofexpire());
+        Date startDate = SysDateUtil.of(sDate.year(), sDate.month()+1, sDate.dayOfMonth());
+        Date endDate = SysDateUtil.of(eDate.year(), eDate.month()+1, eDate.dayOfMonth());
         if (Objects.isNull(endDate)) {
             endDate = SysUtil.getMaxDateObject();
         }
