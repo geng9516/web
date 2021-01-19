@@ -3,29 +3,33 @@
    author: Dellen Shang
 -->
 <head th:fragment="common_header" xmlns:th="http://www.thymeleaf.org"
-    th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+    th:with="
+      baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
     <title th:text="${title}"></title>
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta th:if="${#httpServletRequest.getAttribute('isIPad') == false}" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>    <meta th:if="${enableSSL}" http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta th:if="${#httpServletRequest.getAttribute('isIPad') == false}" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta th:if="${enableSSL}" http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <th:block th:if="${_csrf!=null}">
         <meta name ="_csrf" th:content="${_csrf.token}"/>
         <meta name ="_csrf_header" th:content="${_csrf.headerName}"/>
     </th:block>
     <!--系统默认资源及公用css文件 Start-->
-    <link rel="icon" type="image/x-icon" th:href="${baseUrl + '/static/favicon.ico?t='+ new java.util.Date().getTime()}">
+    <link rel="icon" type="image/x-icon" th:href="${baseUrl + '/static/favicon.ico?t='+ now}">
     <link rel="stylesheet" th:href="${baseUrl + '/static/css/iview.css' }">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/color.css?t='+ new java.util.Date().getTime()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/reset.css?t='+ new java.util.Date().getTime()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/button.min.css?t='+ new java.util.Date().getTime()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/form.min.css?t='+ new java.util.Date().getTime()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/table.min.css?t='+ new java.util.Date().getTime()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/utils.min.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/color.css?t='+ now}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/reset.css?t='+ now}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/button.min.css?t='+ now}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/form.min.css?t='+ now}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/table.min.css?t='+ now}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/utils.min.css?t='+ now}">
     <!--系统默认资源及公用css文件 End-->
 
     <!--各页面独自引入的CSS Start-->
     <th:block th:if="cssPaths!=null">
-        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath + '?t=' + new java.util.Date().getTime()}">
+        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath + '?t=' + now}">
     </th:block>
     <!--各页面独自引入的CSS End-->
 

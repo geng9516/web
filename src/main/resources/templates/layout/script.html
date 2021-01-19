@@ -2,7 +2,11 @@
    author: Xiao Wenpeng
    author: Dellen Shang
 -->
-<th:block th:fragment="common_script" xmlns:th="http://www.thymeleaf.org" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+<th:block th:fragment="common_script" xmlns:th="http://www.thymeleaf.org"
+          th:with="
+             baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+             now =  ${new java.util.Date().getTime()}
+          ">
   <!--默认资源 Start-->
   <!--支持ES6基本语法-->
   <script th:src="${baseUrl + '/static/libs/browser.min.js'}"></script>
@@ -44,17 +48,17 @@
     // console.log(BASE_URL)
   </script>
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/theme.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/libs/iview.min.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/libs/ja-JP.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/js/theme.js?t='+ now}"></script>
+  <script th:src="${baseUrl + '/static/libs/iview.min.js?t='+ now}"></script>
+  <script th:src="${baseUrl + '/static/libs/ja-JP.js?t='+ now}"></script>
   <script th:src="${baseUrl + '/static/libs/axios-0.19.2.min.js'}"></script>
   <script th:src="${baseUrl + '/static/libs/stringify.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/http.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/js/filter.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/js/utils.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/js/mixins.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/js/http.js?t='+ now}"></script>
+  <script th:src="${baseUrl + '/static/js/filter.js?t='+ now}"></script>
+  <script th:src="${baseUrl + '/static/js/utils.js?t='+ now}"></script>
+  <script th:src="${baseUrl + '/static/js/mixins.js?t='+ now}"></script>
   <!--默认资源 End-->
   <th:block th:if="jsPaths!=null">
-    <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath+ '?t=' + new java.util.Date().getTime()}"></script>
+    <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath+ '?t=' + now}"></script>
   </th:block>
 </th:block>

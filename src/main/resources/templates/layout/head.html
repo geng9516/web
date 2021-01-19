@@ -1,10 +1,14 @@
 <!--
    author: Dellen Shang
 -->
-<div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+<div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org"
+     th:with="
+       baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+       now = ${new java.util.Date().getTime()}
+">
   <svg th:replace="layout/logos::svg_logos"></svg>
   <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/header.min.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/header.min.css?t='+ now}">
     <a :href="baseUrl"><svg class="head-logo">
       <use xlink:href="#logo"></use>
     </svg></a>

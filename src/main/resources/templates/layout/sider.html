@@ -1,5 +1,9 @@
-<nav th:fragment="sider" class="navbar-wrap" xmlns:th="http://www.thymeleaf.org" style="margin-top: 51px;" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/sider.min.css?t='+ new java.util.Date().getTime()}">
+<nav th:fragment="sider" class="navbar-wrap" xmlns:th="http://www.thymeleaf.org" style="margin-top: 51px;"
+     th:with="
+       baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+       now = ${new java.util.Date().getTime()}
+     ">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/sider.min.css?t='+ now}">
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
