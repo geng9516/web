@@ -320,7 +320,7 @@
     white-space: normal;
     padding-top: 8px;
   }
-  div:not(.ivu-tree)  .ivu-tree-children li:before {
+  div:not(.ivu-tree) .ivu-tree-children li:before {
     content:'';
     transition: none;
     display:inline-block;
