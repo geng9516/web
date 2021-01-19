@@ -5,10 +5,12 @@
    th:replace="layout/header::common_header(title='休暇・休業申請',cssPaths='/pages/restApply.min.css,' + '/pages/mobile.min.css')">
 </head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
-   <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
+   <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now">
    </script>
-   <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+   <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now">
    </script>
    <div th:replace="layout/loadingBar::loadingBar"></div>
    <main class="content restApply-warp tc">
@@ -329,7 +331,7 @@
       <div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 999999;" v-if="loading"></div>
    </main>
    <div th:replace="layout/mobileHeader::header"></div>
-   <script th:src="${baseUrl + '/static/compliedjs/restApply.js?t='+ new java.util.Date().getTime()}">
+   <script th:src="${baseUrl + '/static/compliedjs/restApply.js?t='+ now">
    </script>
 </body>
 

@@ -3,7 +3,9 @@
 
 <head th:replace="layout/header::common_header(title='ログイン',cssPaths='/pages/errorPage.min.css')"></head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <svg th:replace="layout/logos::svg_logos"></svg>
 <style>
@@ -195,7 +197,7 @@
         <div class="footer-p">Smart Public WorkManager Ver.1.0.0 Copyright©</br>株式会社日進サイエンティア</div>
     </div>
 </main>
-<script th:src="${baseUrl + '/static/compliedjs/login.js?t='+ new java.util.Date().getTime()}">
+<script th:src="${baseUrl + '/static/compliedjs/login.js?t='+ now">
 </script>
 </body>
 

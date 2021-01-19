@@ -4,7 +4,9 @@
 <head th:replace="layout/header::common_header(title='グループ定義',cssPaths='/pages/content.min.css')">
 </head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <!-- 菜单导航栏 -->
   <div th:replace="layout/sider"></div>

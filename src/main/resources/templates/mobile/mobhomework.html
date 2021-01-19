@@ -3,10 +3,12 @@
 
 <head th:replace="layout/header::common_header(title='在宅勤務登録',cssPaths='/pages/mobile.min.css')"></head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
-<script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
+<script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now">
 </script>
-<script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+<script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now">
 </script>
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <main class="content oconfirm-warp tc" >
@@ -147,7 +149,7 @@
     var LOGIN_EMPOLYEE = [[${ session.psSession.loginEmployee }]]
     var SECTION_NAME = [[${ session.psSession.loginDesignation[0].sectionName }]]
 </script>
-<script th:src="${baseUrl + '/static/compliedjs/mobhomework.js?t='+ new java.util.Date().getTime()}"></script>
+<script th:src="${baseUrl + '/static/compliedjs/mobhomework.js?t='+ now"></script>
 </body>
 
 </html>

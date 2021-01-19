@@ -3,10 +3,12 @@
 
 <head th:replace="layout/header::common_header(title='予定確認',cssPaths='/pages/mobile.min.css')"></head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
-  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ new java.util.Date().getTime()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
+  <script th:src="${baseUrl + '/static/compliedjs/cubeBase.js?t='+ now">
   </script>
-  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ new java.util.Date().getTime()}">
+  <script th:src="${baseUrl + '/static/compliedjs/cube.js?t='+ now">
   </script>
   <style>
     .title-timerange {
@@ -84,6 +86,6 @@
     var LOGIN_EMPOLYEE = [[${ session.psSession.loginEmployee }]]
     var SECTION_NAME = [[${ session.psSession.loginDesignation[0].sectionName }]]
   </script>
-  <script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/compliedjs/scheduleconfirm.js?t='+ now"></script>
 </body>
 </html>

@@ -4,8 +4,10 @@
 <head th:replace="layout/header::common_header(title='アプリケーション設定',cssPaths='/pages/content.min.css')">
 </head>
 
-<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
-  <script th:src="${baseUrl + '/static/libs/dTree.js?t='+ new java.util.Date().getTime()}">
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
+  <script th:src="${baseUrl + '/static/libs/dTree.js?t='+ now">
   </script>
   <style>
     .drag-tree-table {
