@@ -14,8 +14,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.*;
+import jp.smartcompany.job.asynctask.SendMailTask;
 import jp.smartcompany.job.modules.core.enums.MailType;
-import jp.smartcompany.job.modules.core.pojo.bo.SendMailBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastMailInfoDO;
 import jp.smartcompany.job.modules.core.service.IMastMailInfoService;
@@ -53,7 +53,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
 
     private final IEmployMailService employMailService;
     private final IMastMailInfoService mailInfoService;
-    private final MailUtil mailUtil;
+    private final SendMailTask sendMailTask;
     private static final String XLSX = "xlsx";
     private static final String XLS = "xls";
     private static final String CSV = "csv";
@@ -302,7 +302,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
     @Override
     public void testSendMail(TestSendMail sendMail) {
         MastMailInfoDO mastMailInfoDO =mailInfoService.queryMailTemplate(MailType.TEST_SEND);
-        mailUtil.sendTestMail(sendMail.getEmail(),mastMailInfoDO.getMmCtitle(),sendMail.getContent(),mastMailInfoDO.getMmCaddress());
+        sendMailTask.sendTestMail(sendMail.getEmail(),mastMailInfoDO.getMmCtitle(),sendMail.getContent(),mastMailInfoDO.getMmCaddress());
     }
 
     private static File multipartFileToFile(MultipartFile file) throws IOException {

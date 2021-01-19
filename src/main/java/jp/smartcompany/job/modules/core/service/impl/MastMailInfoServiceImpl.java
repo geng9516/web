@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.MailUtil;
+import jp.smartcompany.job.asynctask.SendMailTask;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.mapper.MastMailinfo.MastMailInfoMapper;
@@ -25,7 +25,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, MastMailInfoDO> implements IMastMailInfoService {
 
-    private final MailUtil mailUtil;
+    private final SendMailTask sendMailTask;
     private final IMastCompanyService companyService;
     @Value("${info.siteUrl}")
     private String siteUrl;
@@ -39,7 +39,7 @@ public class MastMailInfoServiceImpl extends ServiceImpl<MastMailInfoMapper, Mas
         String title = mailTemplateInfo.getMmCtitle();
         String content = assembleMailContent(mailType,mailTemplateInfo.getMmCcontent(),sendData.getExtraContent());
 
-        mailUtil.sendMail(mailType,mailTemplateInfo.getMmCaddress(),sendData.getEmpId(),sendData.getStandardDate(),sendData.getToAddress(),title,content);
+        sendMailTask.sendMail(mailType,mailTemplateInfo.getMmCaddress(),sendData.getEmpId(),sendData.getStandardDate(),sendData.getToAddress(),title,content);
     }
 
     @Override

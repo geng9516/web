@@ -1,7 +1,9 @@
-package jp.smartcompany.boot.util;
+package jp.smartcompany.job.asynctask;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgHistMaildataDO;
 import jp.smartcompany.job.modules.core.service.ITmgHistMaildataService;
@@ -22,13 +24,14 @@ import javax.mail.internet.MimeMessage;
 import java.util.*;
 
 /**
- * 发送邮件工具类
+ * 异步任务
+ * 发送邮件
  * @author Xiao Wenpeng
  */
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MailUtil {
+public class SendMailTask {
 
     private JavaMailSender javaMailSender;
     private final TemplateEngine templateEngine;

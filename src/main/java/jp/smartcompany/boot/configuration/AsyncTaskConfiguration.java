@@ -2,7 +2,7 @@ package jp.smartcompany.boot.configuration;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
-import jp.smartcompany.boot.util.MailUtil;
+import jp.smartcompany.job.asynctask.SendMailTask;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.enums.MailType;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AsyncTaskConfiguration implements AsyncConfigurer {
 
-    private final MailUtil mailUtil;
+    private final SendMailTask sendMailTask;
 
     @Override
     public Executor getAsyncExecutor() {
@@ -59,7 +59,7 @@ public class AsyncTaskConfiguration implements AsyncConfigurer {
                         mailType = (MailType)param;
                     }
                 }
-                mailUtil.saveSendMailHistory(from,mailType.getDesc(),empId,standardDate,toAddress,title,content,2);
+                sendMailTask.saveSendMailHistory(from,mailType.getDesc(),empId,standardDate,toAddress,title,content,2);
             } else {
                 Date now = DateUtil.date();
                 ErrorAuditService errorAuditService = SpringUtil.getBean(ErrorAuditService.class);
