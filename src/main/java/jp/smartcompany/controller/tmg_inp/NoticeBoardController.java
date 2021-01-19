@@ -46,6 +46,15 @@ public class NoticeBoardController {
     }
 
     /**
+     * 查看垃圾箱中的公告（过期和被逻辑删除的公告都可通过此接口查看）
+     * http://localhost:6879/sys/noticeboard/rubbish/list
+     */
+    @GetMapping("rubbish/list")
+    public PageUtil getRubbishList(@RequestParam Map<String,Object> params) {
+      return noticeBoardLogic.getRubbishList(params);
+    }
+
+    /**
      * 查询可用于发送的人的范围type
      * @param session
      * @return

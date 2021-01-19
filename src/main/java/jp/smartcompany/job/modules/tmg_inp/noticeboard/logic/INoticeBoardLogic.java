@@ -37,4 +37,7 @@ public interface INoticeBoardLogic {
     PageUtil getRangeNoticeList(Map<String,Object> params);
 
     void editNoticeContent(EditNoticeDTO dto);
+
+    PageUtil getRubbishList(Map<String,Object> params);
+
 }

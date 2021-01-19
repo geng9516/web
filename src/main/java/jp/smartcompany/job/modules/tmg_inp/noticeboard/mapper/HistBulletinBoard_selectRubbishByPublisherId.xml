@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.tmg_inp.noticeboard.mapper.HistBulletinBoardMapper">
+
+    <select id="selectRubbishByPublisherId" resultType="jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO">
+        select
+            hb_id,hb_ddateofannouncement,hb_ddateofexpire,hb_ctitle,hb_cheaddisp
+        from
+            hist_bulletinboard hb
+        where
+            hb.HB_CCUSTOMERID = '01'
+            and hb.HB_CCOMPANYID = '01'
+            and hb.HB_CFIX = '0'
+            order by hb.HB_DMODIFIEDDATE desc,hb.HB_CFIX desc
+    </select>
+
+</mapper>

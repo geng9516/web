@@ -189,6 +189,14 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         histBulletinBoardService.updateById(originalNotice);
     }
 
+    @Override
+    public PageUtil getRubbishList(Map<String,Object> params) {
+        Page<NoticeVO> pageQuery = new PageQuery<NoticeVO>().getPage(params);
+        String loginUserId = SecurityUtil.getUserId();
+        IPage<NoticeVO> page = histBulletinBoardService.listRubbishByPublisherId(pageQuery,loginUserId);
+        return new PageUtil(page);
+    }
+
     /**
      * 保存或修改公告草稿
      * @param dto
