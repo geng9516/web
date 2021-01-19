@@ -140,7 +140,7 @@ const RichText = {
         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="画像" placement="top">
             <button class="ql-image"></button>
         </Tooltip>
-        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer content="アップロード" placement="top">
+        <Tooltip v-show="!disabledUpload" trigger="hover" :theme="toolTipTheme()" transfer content="アップロード" placement="top">
             <button class="ql-upload" style="color: var(--grey);"></button>
         </Tooltip>
     </span>
@@ -190,7 +190,11 @@ style="display: none;">
         uploadFiles: {
             type: Array,
             default: []
-        }
+        },
+        disabledUpload: {
+            type: Boolean,
+            default: false
+        },
     },
     data() {
         return {
@@ -309,14 +313,14 @@ style="display: none;">
             if (this.uploadFiles.length >= 5) {
                 this.$Notice.warning({
                     title: '注意',
-                    desc: '添付可能なファイル数が上限（5個）を超えました。', duration: 6.5
+                    desc: '添付可能なファイル数が上限（5個）を超えました', duration: 6.5
                 })
                 checkPassed = false
             }
             if (files.size / (1024 * 1024) > 20) {
                 this.$Notice.warning({
                     title: '注意',
-                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました。', duration: 6.5
+                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました', duration: 6.5
                 })
                 checkPassed = false
             }
@@ -330,7 +334,7 @@ style="display: none;">
             let checkPassed = true
             if (files.size / (1024 * 1024) > 20) {
                 this.$Notice.warning({
-                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました。', duration: 6.5
+                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました', duration: 6.5
                 })
                 checkPassed = false
             }
