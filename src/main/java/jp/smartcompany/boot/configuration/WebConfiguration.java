@@ -36,6 +36,7 @@ public class WebConfiguration implements WebMvcConfigurer {
                 "/tmg_admin/**",
                 "/tmg_inp/**",
                 "/admin/**",
+                "/personalinformation/**",
                 "/expirePassword",
                 "/changeExpirePassword",
                 "/changePassword",
