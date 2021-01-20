@@ -107,6 +107,7 @@ security:
     - ${info.basePath}tmg_admin/**
     - ${info.basePath}tmg_inp/**
     - ${info.basePath}admin/**
+    - ${info.basePath}personalinformation/**
     - ${info.basePath}tmg_setting/**
     - ${info.basePath}expirePassword
     - ${info.basePath}changeExpirePassword
