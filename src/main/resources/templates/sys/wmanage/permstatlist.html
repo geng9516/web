@@ -835,6 +835,7 @@
                                 content: '条件に一致する職員が見つかりませんでした。'
                             })
                         }
+                        this.listLoading  = false
                     }
                 },
                 async getTableHead() {
@@ -1056,11 +1057,11 @@
                         });
                         return
                     }
-    	            // this.getDispTmgMonthlyList()
-        	        // this.getTableHead()
-                    this.getTableData()
-                    // this.getData(true)
-                    this.getDispTmgMonthlyList()
+                    this.getTableHead()
+                    await this.getDispTmgMonthlyList()
+                    if (this.dispMonthlyList.length > 0) {
+                        await this.getTableData()
+                    }
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)

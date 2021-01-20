@@ -828,6 +828,7 @@
                             content: '条件に一致する職員が見つかりませんでした。'
                         })
                     }
+                    this.listLoading  = false
                 }
             },
             async getTableHead() {
@@ -1015,10 +1016,6 @@
                 if(this.dispMonthlyList.length>0){
                     await this.getTableData()
                 }
-
-                //ツリーを選択するの場合、0で設定する
-                this.query.hidSelectTab = '0'
-                await this.getTableData()
             },
             async getEmpList() {
                 try {
@@ -1031,7 +1028,7 @@
                     this.emplistLoading = false
                 }
             },
-            handleClickEmpLeaf(e) {
+            async handleClickEmpLeaf(e) {
                 this.queryList.hidSelectTab = '1'
                 this.queryList.hidSearchData = this.referListObject.hidSearchData
                 this.queryList.hidSearchItems = this.referListObject.hidSearchItems
@@ -1045,8 +1042,15 @@
                     });
                     return
                 }
-                this.getTableData()
-                this.getDispTmgMonthlyList()
+                //初期化
+                this.tableHead = []
+                this.tableData = []
+
+                this.getTableHead()
+                await this.getDispTmgMonthlyList()
+                if (this.dispMonthlyList.length > 0) {
+                    await this.getTableData()
+                }
             },
             showName(e) {
                 const result = e.match(/^[\s\S]+(?=\()/g)
