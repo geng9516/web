@@ -1,19 +1,11 @@
 package jp.smartcompany.controller.personalinformation;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping("personalinformation")
+@RestController
+@RequestMapping("sys/conditionsearch")
 public class ConditionSearchController {
 
-    @GetMapping("conditionsearch")
-    public String toConditionSearch(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex);
-        return "sys/personalinformation/conditionsearch";
-    }
 
 }
