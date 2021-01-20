@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ErrNtfDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationCheckOvertimeVo;
@@ -121,6 +122,12 @@ public class TmgNotificationServiceImpl extends ServiceImpl<TmgNotificationMappe
         public List<NotificationCheckOvertimeVo> selectNotificationCheckList(ParamNotificationCheckOverhoursListDto params){
                 List<NotificationCheckOvertimeVo> notificationListVoList = baseMapper.selectNotificationCheck(params);
                 return notificationListVoList;
+        }
+
+        @Override
+        public ErrNtfDto getNtfErrMsg(String ntfNo){
+                return baseMapper.getNtfErrMsg(ntfNo);
+
         }
 
 }

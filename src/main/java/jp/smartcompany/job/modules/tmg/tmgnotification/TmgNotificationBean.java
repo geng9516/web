@@ -5,15 +5,19 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ErrJsonDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ErrNtfDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
@@ -645,13 +649,20 @@ public class TmgNotificationBean {
                 // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
                 int deleteErrMsg = deleteErrMsg(param);
                 int deleteNotificationCheck = deleteNotificationnCheck(param);
-
                 permit(ntfNo,psDBBean);
-
                 int insertErrmsg = insertErrMsg(param);
                 String selectErrMsg = selectErrCode(param);
                 if(!selectErrMsg.equals("0") ){
-                    return GlobalResponse.error(selectErrMsg);
+                    //errMSG
+                    ErrNtfDto tnfDto = iTmgNotificationService.getNtfErrMsg(ntfNo);
+                    String ntfDate;
+                    if(tnfDto.getStartDate().equals(tnfDto.getEndDate())){
+                        ntfDate=tnfDto.getStartDate();
+                    }else{
+                        ntfDate=tnfDto.getStartDate() + '-' + tnfDto.getEndDate();
+                    }
+                    ErrJsonDto result = JSONUtil.toBean(selectErrMsg, ErrJsonDto.class);
+                    return GlobalResponse.ok(tnfDto.getEmpName() + ',' +ntfDate + ','+result.getERRTYPE_10().get(0).getERRMSG());
                 }else{
                     int insertTrigger = insertTrigger(param);
                 }
@@ -844,7 +855,16 @@ public class TmgNotificationBean {
             int insertErrmsg = insertErrMsg(param);
             String selectErrMsg = selectErrCode(param);
             if(!selectErrMsg.equals("0")&&!param.getAction().equals(ACT_EDITAPPLY_UDEL) ){
-                return GlobalResponse.error(selectErrMsg);
+
+//                ErrNtfDto tnfDto = iTmgNotificationService.getNtfErrMsg(param.getNtfNo());
+//                String ntfDate;
+//                if(tnfDto.getStartDate().equals(tnfDto.getEndDate())){
+//                    ntfDate=tnfDto.getStartDate();
+//                }else{
+//                    ntfDate=tnfDto.getStartDate() + '-' + tnfDto.getEndDate();
+//                }
+//                ErrJsonDto result = JSONUtil.toBean(selectErrMsg, ErrJsonDto.class);
+                return GlobalResponse.ok(selectErrMsg);
             }else{
                 int insertTrigger = insertTrigger(param);
                 return GlobalResponse.ok();

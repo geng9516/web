@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNotification.TmgNotificationMapper">
+
+    <select id="getNtfErrMsg" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.ErrNtfDto">
+            SELECT
+                TMG_F_GET_ME_NAME(TNTF_CEMPLOYEEID ,sysdate ,0,TNTF_CCUSTOMERID,TNTF_CCOMPANYID) EMP_NAME,
+                TMG_F_GET_MGD(TNTF_CTYPE,sysdate,TNTF_CCUSTOMERID,TNTF_CCOMPANYID,'ja') NTF_NAME,
+                TO_CHAR(TNTF_DBEGIN,'yyyy/MM/dd') START_DATE,
+                TO_CHAR(TNTF_DEND,'yyyy/MM/dd') END_DATE
+            FROM
+                TMG_NOTIFICATION
+            WHERE
+                TNTF_CNTFNO  = #{ntfNo}
+    </select>
+</mapper>
