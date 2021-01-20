@@ -619,7 +619,7 @@
           opts: {
             ntfTypeId: '全て',
             statusFlg: 0,
-            year: 2020,
+            year:'',
             serchEmpId: '全て',
             page: 1
           },
@@ -1042,7 +1042,7 @@
         async confirm() {
           this.$Modal.confirm({
             title: '注意',
-            content: 'この内容で申請します。よろしいですか？',
+            content: 'チェックされた職員の申請情報を承認します。\nよろしいですか？',
             okText: 'OK',
             width: 480,
             cancelText: 'キャンセル',
@@ -1054,11 +1054,18 @@
               this.confirmLoading = true
               try {
                 //let OPTS = { ...this.referListObject, ntfNoList:JSON.stringify(this.$refs.table.getSelection().map(e=>e.tntfCntfNo)) }
-                const { data } = await this.http.postForm('sys/vapply/BulkPermit', {
+                const { msg } = await this.http.postForm('sys/vapply/BulkPermit', {
                   ntfNoList: JSON.stringify(ntfNoList),
                   psSite: this.referListObject.psSite
                 })
-                this.$Message.success('一括承認完了')
+                if (msg.indexOf(',') > -1) {
+                  this.$Notice.warning({
+                    title: '一括承認失敗しました',
+                    desc: msg
+                  })
+                }else{
+                  this.$Message.success('一括承認完了')
+                }
                 this.getTableData(false, true)
               } catch (error) {
               } finally {
@@ -1085,14 +1092,22 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              this.detailDrawShow = false
-              this.loading = true
-              await this.http.uploadFiles('sys/vapply/MakeApply', {
+              const { msg } =  await  this.http.uploadFiles('sys/vapply/MakeApply', {
                 params: JSON.stringify(query),
                 psSite: this.referListObject.psSite
               })
+              if (msg.indexOf('ERR') > -1 ) {
+                this.$Notice.warning({
+                  title: '承認失敗しました',
+                  desc: JSON.parse(msg).ERRTYPE_10[0].ERRMSG
+                })
+              }else{
+                this.detailDrawShow = false
+                this.loading = true
+                this.$Message.success('承認完了')
+                this.getTableData(false, true)
+              }
 
-              this.getTableData(false, true)
 
             }
           })

@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper.TmgNotification;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ErrNtfDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationCheckOverhoursListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationCheckOvertimeVo;
@@ -80,4 +81,6 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
          * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
          */
         List<NotificationCheckOvertimeVo> selectNotificationCheck(@Param("paramNotificationCheckOverhoursList") ParamNotificationCheckOverhoursListDto params);
+
+        ErrNtfDto getNtfErrMsg(@Param("ntfNo") String ntfNo);
 }
