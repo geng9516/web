@@ -33,4 +33,6 @@ public interface IMastGroupapppermissionService extends IService<MastGroupappper
         int deleteOtherSysObj(String systemId, String objectId);
 
         List<String> selectSiteList(Boolean isApprover);
+
+        List<String> getUrlPermFlags(List<String> groupIds, String objectId);
 }

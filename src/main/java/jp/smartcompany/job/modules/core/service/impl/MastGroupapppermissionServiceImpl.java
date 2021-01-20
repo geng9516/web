@@ -66,4 +66,8 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
                 return baseMapper.selectSiteList(isApprover);
         }
 
+        @Override
+        public List<String> getUrlPermFlags(List<String> groupIds, String objectId) {
+                return baseMapper.selectUrlPermFlags(groupIds,objectId);
+        }
 }

@@ -20,6 +20,7 @@ import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
+import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
@@ -41,7 +43,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service("hasUrlPermission")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class HasUrlPermissionImpl implements HasUrlPermission {
 
@@ -53,6 +55,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
     private final AntPathMatcher matcher = new AntPathMatcher();
+    private final IMastGroupapppermissionService mastGroupapppermissionService;
 
     private String[] urlList;
 
@@ -65,15 +68,35 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
     @Override
     public boolean hasPermission(HttpServletRequest request, Authentication authentication) {
         String siteId = request.getParameter("psSite");
-//        String appId = request.getParameter("psAppId");
+        String appId = request.getParameter("psApp");
         HttpSession httpSession = request.getSession(false);
         // 根据psSite和psApp查询出当前登录用户在当前模块可访问的url
         boolean hasPermission = false;
 
         String requestUrl = request.getRequestURI();
 
-
         if (SecurityUtil.isAuthenticated()) {
+            // 直接访问模块页面需要进行启动权限设定的检测，验证其是否有权访问
+            if (StrUtil.isNotBlank(appId)) {
+                List<SimpleGrantedAuthority> authorities = (List<SimpleGrantedAuthority>) authentication.getAuthorities();
+                List<String> groupIds = authorities.stream().map(SimpleGrantedAuthority::toString).collect(Collectors.toList());
+                // 如果登录后却没有任何group则不允许访问
+                if (CollUtil.isEmpty(authorities)) {
+                    return hasPermission;
+                }
+                List<String> grantFlagList = mastGroupapppermissionService.getUrlPermFlags(groupIds,siteId+"_"+appId);
+                if (CollUtil.contains(grantFlagList,"2")) {
+                    return false;
+                } else {
+                    for (String grantFlag : grantFlagList) {
+                        if (StrUtil.equals("1",grantFlag)) {
+                            hasPermission = true;
+                            break;
+                        }
+                    }
+                    return hasPermission;
+                }
+            }
 
             loadUserBasicInfo(request, httpSession);
 

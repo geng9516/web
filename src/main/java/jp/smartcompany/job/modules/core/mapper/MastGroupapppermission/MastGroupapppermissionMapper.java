@@ -70,4 +70,7 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
         int deleteOtherSysObj(@Param("systemId") String systemId,@Param("objectId") String objectId);
 
         List<String> selectSiteList(Boolean isApprover);
+
+        List<String> selectUrlPermFlags(@Param("groupIds") List<String> groupIds,@Param("objectId") String objectId);
+
 }
