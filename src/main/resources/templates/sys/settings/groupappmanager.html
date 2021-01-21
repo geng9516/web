@@ -372,9 +372,7 @@
             OPTS.changeDate = this.opts.date
           }
           const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
-          this.isEditing = false
-          this.getTableData()
-          this.updateValue = []
+          setTimeout(function() {location.href=BASE_URL}, 1000);
         },
         handleCellClick(row, column, data, event) {
           // 点到名字的第一列是也不要弹出操作浮层
