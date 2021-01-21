@@ -946,8 +946,10 @@
             async handleStartMonth(e) {
                 if(e){
                     this.queryList.baseDate = this.dateFormat(e)
-                    this.getHomeWorkInfo()
-                    this.getHomeWorkMonthVO()
+                    this.queryList.txtDYYYYMM = this.dateFormat(e)
+                    await this.getTableHead()
+                    await this.getHomeWorkInfo()
+                    await this.getHomeWorkMonthVO()
                 }
             },
             async handleClickHead(e) {

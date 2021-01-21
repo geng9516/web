@@ -7,6 +7,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgHomeWorkDataDO;
 import jp.smartcompany.job.modules.core.service.ITmgHomeWorkDataService;
 import jp.smartcompany.job.modules.core.service.ITmgHomeWorkService;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminListVO;
 import jp.smartcompany.job.modules.tmg.tmghomework.vo.HomeWorkAdminVO;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -132,33 +135,44 @@ public class TmgHomeWorkBean {
             homeWorkAdminList.setHwhomeworkflg27(homeWorkFlg(homeWorkAdminVO.get(i+26).getHwhomework(),homeWorkAdminVO.get(i+26).getHwtime()));
             homeWorkAdminList.setHwhomeworkflg28(homeWorkFlg(homeWorkAdminVO.get(i+27).getHwhomework(),homeWorkAdminVO.get(i+27).getHwtime()));
             y=28;
-            if (i + 27==homeWorkAdminVO.size()){
-                break;
+
+            if (i + 28==homeWorkAdminVO.size()){
+                i+=y;
+                list.add(homeWorkAdminList);
+                continue;
             }
             if(homeWorkAdminVO.get(i + 27).getEMPID().equals(homeWorkAdminVO.get(i + 28).getEMPID())){
                 y=29;
                 homeWorkAdminList.setHwstatusflg29(homeWorkAdminVO.get(i+28).getHwstatus());
                 homeWorkAdminList.setHwhomeworkflg29(homeWorkFlg(homeWorkAdminVO.get(i+28).getHwhomework(),homeWorkAdminVO.get(i+28).getHwtime()));
-                if (i + 28==homeWorkAdminVO.size()){
-                    break;
-                }
-            }
-
-            if(homeWorkAdminVO.get(i + 28).getEMPID().equals(homeWorkAdminVO.get(i + 29).getEMPID())){
-                y=30;
-                homeWorkAdminList.setHwstatusflg30(homeWorkAdminVO.get(i+29).getHwstatus());
-                homeWorkAdminList.setHwhomeworkflg30(homeWorkFlg(homeWorkAdminVO.get(i+29).getHwhomework(),homeWorkAdminVO.get(i+29).getHwtime()));
                 if (i + 29==homeWorkAdminVO.size()){
                     break;
                 }
+            }else{
+                y=28;
+                i+=y;
+                list.add(homeWorkAdminList);
+                continue;
             }
-            if (i + 30==homeWorkAdminVO.size()){
-                break;
-            }
-            if(homeWorkAdminVO.get(i + 29).getEMPID().equals(homeWorkAdminVO.get(i + 30).getEMPID())){
-                y=31;
-                homeWorkAdminList.setHwstatusflg31(homeWorkAdminVO.get(i+30).getHwstatus());
-                homeWorkAdminList.setHwhomeworkflg31(homeWorkFlg(homeWorkAdminVO.get(i+30).getHwhomework(),homeWorkAdminVO.get(i+30).getHwtime()));
+
+            String[] date = baseDate.split("/");
+            if (!"02".equals(date[1])){
+                if(homeWorkAdminVO.get(i + 28).getEMPID().equals(homeWorkAdminVO.get(i + 29).getEMPID())){
+                    y=30;
+                    homeWorkAdminList.setHwstatusflg30(homeWorkAdminVO.get(i+29).getHwstatus());
+                    homeWorkAdminList.setHwhomeworkflg30(homeWorkFlg(homeWorkAdminVO.get(i+29).getHwhomework(),homeWorkAdminVO.get(i+29).getHwtime()));
+                    if (i + 30==homeWorkAdminVO.size()){
+                        break;
+                    }
+                }
+                if (i + 30==homeWorkAdminVO.size()){
+                    break;
+                }
+                if(homeWorkAdminVO.get(i + 29).getEMPID().equals(homeWorkAdminVO.get(i + 30).getEMPID())){
+                    y=31;
+                    homeWorkAdminList.setHwstatusflg31(homeWorkAdminVO.get(i+30).getHwstatus());
+                    homeWorkAdminList.setHwhomeworkflg31(homeWorkFlg(homeWorkAdminVO.get(i+30).getHwhomework(),homeWorkAdminVO.get(i+30).getHwtime()));
+                }
             }
             list.add(homeWorkAdminList);
             i+=y;
