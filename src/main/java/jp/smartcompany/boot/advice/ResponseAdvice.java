@@ -2,7 +2,6 @@ package jp.smartcompany.boot.advice;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.smartcompany.boot.annotation.IgnoreResponseSerializable;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
@@ -29,8 +28,6 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
-    private final ObjectMapper objectMapper;
-
     @Override
     public boolean supports(MethodParameter methodParameter, Class aClass) {
         return !(
@@ -53,10 +50,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         } else {
             GlobalResponse r= GlobalResponse.ok().put("data", body);
             // 如果返回值为string则要特殊处理
-            if(body instanceof String) {
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                return objectMapper.writeValueAsString(r);
-            } else if (body instanceof LinkedHashMap){
+            if (body instanceof LinkedHashMap){
                 // 如果返回值是500或者404
                 Map<String,Object> errorResult = (Map<String,Object>)body;
                 String statusKey = "status";
