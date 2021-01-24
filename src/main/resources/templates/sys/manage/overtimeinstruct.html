@@ -754,8 +754,10 @@
                     }
                     this.deptName = '検索対象者一覧'
                     console.log(this.query.baseDay)
+                    this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     //ツリー：0、検索：1
                     this.query.hidSelectTab = '1'
+                    this.getTableHead()
                     this.getTableData()
                 },
                 //初期化処理
@@ -818,6 +820,8 @@
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
                     this.query.txtTmgReferListTreeViewRecordDate = e
+                    this.curDate = e
+                    this.query.baseDay = e
                     this.isSearchHistory = true
                     await this.getOrgTree()
                     if(this.treeData.length !== 0) {
