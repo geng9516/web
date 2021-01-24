@@ -106,7 +106,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
         mapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
 
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,false);
-        mapper.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        mapper.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
         mapper.setDateFormat(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss"));
 
         converters.add(new MappingJackson2HttpMessageConverter(mapper));
