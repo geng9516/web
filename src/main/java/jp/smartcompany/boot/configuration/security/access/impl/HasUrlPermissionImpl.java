@@ -26,7 +26,6 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -122,18 +121,10 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         return hasPermission;
     }
 
-    private void loadUserBasicInfo(HttpServletRequest request, HttpSession httpSession) {
+    @Override
+    public List<MastSystemDO> getSystemList() {
         List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
-
-        // 初始化PsSession对象
-        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
-        if (session==null) {
-            session = new PsSession();
-            httpSession.setAttribute(Constant.PS_SESSION, session);
-            session.setLoginCustomer("01");
-        }
-
-        if (systemList==null) {
+        if (CollUtil.isEmpty(systemList)) {
             // 不再读取数据库，默认就只有本系统
             MastSystemDO system = new MastSystemDO();
             system.setMsId(1000000000L);
@@ -145,8 +136,20 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
             system.setMsClanguage("ja");
             system.setMsNtype(1L);
             systemList = CollUtil.newArrayList(system);
-//            systemList =  iMastSystemService.getByLang(language);
             lruCache.put(Constant.SYSTEM_LIST,systemList);
+        }
+        return systemList;
+    }
+
+    private void loadUserBasicInfo(HttpServletRequest request, HttpSession httpSession) {
+        List<MastSystemDO> systemList = getSystemList();
+
+        // 初始化PsSession对象
+        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        if (session==null) {
+            session = new PsSession();
+            httpSession.setAttribute(Constant.PS_SESSION, session);
+            session.setLoginCustomer("01");
         }
 
         MastSystemDO systemDO = systemList.get(0);
@@ -170,19 +173,16 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
 
         executeLoginSequence(systemList, httpSession);
 
-        if (timedCache.get(Constant.getSessionMenuId(httpSession.getId()),false) == null) {
-            loadMenus(systemList, request.getSession(false));
-        }
     }
 
-
     // 加载系统菜单
-    private void loadMenus( List<MastSystemDO> systemList,HttpSession httpSession) {
+    @Override
+    public List<MenuGroupBO> loadSystemMenu(HttpSession httpSession) {
         String systemCode = "01";
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         Map<String,List<LoginGroupBO>> loginGroupList = session.getLoginGroups();
         List<LoginGroupBO> groupList = CollUtil.newArrayList();
-        systemList.forEach(system ->
+        getSystemList().forEach(system ->
                 loginGroupList.forEach((key,value)-> {
                     if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
                         CollUtil.addAllIfNotContains(groupList,value);
@@ -193,6 +193,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,(Boolean)httpSession.getAttribute(Constant.IS_APPROVER));
         timedCache.put(Constant.getSessionMenuId(httpSession.getId()),menuGroupList);
+        return menuGroupList;
     }
 
     private void executeLoginSequence(List<MastSystemDO> systemList, HttpSession httpSession) {
