@@ -838,12 +838,10 @@
         methods: {
             //初期化処理
             async getInit() {
-                console.log([[${ session }]])
                 let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 if (Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
-                console.log(this.referListObject)
                 await this.getOrgTree()
                 //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 if (targetPermSection) {
@@ -865,6 +863,9 @@
                     this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
                 }
                 //一覧画面取得
+                if(this.selectedDeptViewType === 'all'){
+                    this.deptName = '全て表示中'
+                }
                 this.getEmplist()
                 this.getTableData(true)
             },
@@ -978,10 +979,8 @@
                     this.treeData = []
                     this.referListObject.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
                     if (!forAgencyApply) {
-                        console.log(1)
                         this.getTableData(false, true)
                     } else {
-                        console.log(2)
                         this.getEmplist()
                     }
                     return
