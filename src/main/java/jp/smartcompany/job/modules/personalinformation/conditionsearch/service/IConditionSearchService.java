@@ -2,12 +2,58 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.TableOptionDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.*;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IConditionSearchService extends IService<MastDatadictionaryDO> {
 
+    /** QSECTION */
+    String MASTER_QSECTION = "QSECTION";
+
+    /** QPOST */
+    String MASTER_QPOST = "QPOST";
+
+    /** 社員情報 */
+    String MASTER_EMP = "1";
+
+    /** 社員情報以外 */
+    String MASTER_NOEMP = "0";
+
+    /**
+     * 社員情報
+     */
+    int EMPLOY = 1;
+    /**
+     * 所属情報
+     */
+    int SECTION =2;
+    /**
+     * 役職情報
+     */
+    int POST = 3;
+    /**
+     * マスタ情報
+     */
+    int GENERIC = 4;
+    /**
+     * 手入力情報
+     */
+    int INPUT = 5;
+
+    List<CompanyDTO> selectCompanyList(List<String> companyIds);
+
     List<TableOptionDTO> selectTable();
+
+    List<ColumnOptionDTO> selectColumns(String tableName);
+
+    List<ConditionSelectDTO> selectDefaultSelectConditions(Long settingId);
+
+    List<ConditionWhereDTO> selectDefaultWhereConditions(Long settingId);
+
+    ConditionQueryDTO selectQueryWhereConditions(Long settingId, Date searchDate);
+
+    List<OrderConditionDTO> selectOrderConditions(Long settingId);
 
 }
