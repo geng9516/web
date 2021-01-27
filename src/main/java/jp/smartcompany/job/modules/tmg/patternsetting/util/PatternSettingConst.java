@@ -253,6 +253,11 @@ public class PatternSettingConst {
     /**
      * リソースバンドルキー
      */
+    public static final String ERROR_CSV_CUSTOMERID_CC = "ERROR_CSV_CUSTOMERID_CC";
+
+    /**
+     * リソースバンドルキー
+     */
     public static final String ERROR_CSV_COMPANYID = "ERROR_CSV_COMPANYID";
 
     /**
@@ -264,6 +269,11 @@ public class PatternSettingConst {
      * リソースバンドルキー
      */
     public static final String ERROR_CSV_COMPANYID_BYTE = "ERROR_CSV_COMPANYID_BYTE";
+
+    /**
+     * リソースバンドルキー
+     */
+    public static final String ERROR_CSV_COMPANYID_CC = "ERROR_CSV_COMPANYID_CC";
 
     /**
      * リソースバンドルキー

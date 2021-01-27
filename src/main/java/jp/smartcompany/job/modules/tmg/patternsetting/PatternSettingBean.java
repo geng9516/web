@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.tmg.patternsetting;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -27,10 +30,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -43,6 +49,7 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PatternSettingBean {
 
+    private final DataSource dataSource;
     private final Logger logger = LoggerFactory.getLogger(PatternSettingBean.class);
     private PsDBBean psDBBean;
     private TmgReferList referList;
@@ -364,7 +371,7 @@ public class PatternSettingBean {
      *
      * @param pstParam
      */
-    private void insertPatternCsv(PatternSettingParam pstParam) {
+    private void insertPatternCsv(PatternSettingParam pstParam, PsDBBean psDBBean) {
         if (null != pstParam) {
             TmgPatternInsertDTO tmgPatternInsertDTO = new TmgPatternInsertDTO();
             //01
@@ -393,6 +400,9 @@ public class PatternSettingBean {
             tmgPatternInsertDTO.setMaxDate(PatternSettingConst.SQL_MAX_DATE);
             //登録ユーザー
             tmgPatternInsertDTO.setEmployeeId(pstParam.getModifierUserId());
+            if (tmgPatternInsertDTO.getEmployeeId() == null || "".equals(tmgPatternInsertDTO.getEmployeeId())) {
+                tmgPatternInsertDTO.setEmployeeId(psDBBean.getEmployeeCode());
+            }
             if (StrUtil.isBlank(pstParam.getNextPatternId())) {
                 /**
                  * 翌日勤務パターン
@@ -576,6 +586,54 @@ public class PatternSettingBean {
     }
 
     /**
+     * 勤務パターン 顧客ｺｰﾄ（取り込み）
+     *
+     * @param ccustomerid
+     * @return
+     */
+    private boolean ccustomeridFlgCsv(String ccustomerid) {
+
+        String sql ="select MAC_CCUSTOMERID_CK_FK " + " from MAST_COMPANY";
+        try (Connection conn = dataSource.getConnection()) {
+            List<Entity> entity = SqlExecutor.query(conn,sql,new EntityListHandler());
+            for (Entity ent : entity ) {
+                String ccid = (String)ent.get("MAC_CCUSTOMERID_CK_FK");
+                if (ccid.equals(ccustomerid)){
+                    return true;
+                }
+            }
+                return false;
+            } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 勤務パターン 法人ｺｰﾄ（取り込み）
+     *
+     * @param ccustomerid
+     * @return
+     */
+    private boolean ccompanyidFlgCsv(String ccustomerid) {
+
+        String sql ="select MAC_CCOMPANYID_CK " + " from MAST_COMPANY";
+        try (Connection conn = dataSource.getConnection()) {
+            List<Entity> entity = SqlExecutor.query(conn,sql,new EntityListHandler());
+            for (Entity ent : entity ) {
+                String ccid = (String)ent.get("MAC_CCOMPANYID_CK");
+                if (ccid.equals(ccustomerid)){
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * 勤務パターン更新またはインサート
      */
     @Transactional(rollbackFor = GlobalException.class)
@@ -665,7 +723,7 @@ public class PatternSettingBean {
      * @param file
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public PatternSettingParam modifiCSVDwnload(MultipartFile file) {
+    public PatternSettingParam modifiCSVDwnload(MultipartFile file, PsDBBean psDBBean) {
 
         PatternSettingParam patternSettingParam = new PatternSettingParam();
         //実行プログラム
@@ -915,6 +973,10 @@ public class PatternSettingBean {
                             // バイト数
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CUSTOMERID_BYTE));
                         }
+                        else if (!ccustomeridFlgCsv(sColumn)) {
+                            // バイト数
+                            lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CUSTOMERID_CC));
+                        }
                         logger.warn("-------------->customerid:" + sColumn);
                         // 項目をセット
                         pstParam.setCustomerId(sColumn);
@@ -932,6 +994,10 @@ public class PatternSettingBean {
                         } else if (sColumn.length() > PatternSettingConst.MAX_BYTE_COMPANYID) {
                             // バイト数
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_COMPANYID_BYTE));
+                        }
+                        else if (!ccompanyidFlgCsv(sColumn)) {
+                            // バイト数
+                            lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_COMPANYID_CC));
                         }
                         //logger.warn("-------------->companyid:" + sColumn);
                         // 項目をセット
@@ -1237,7 +1303,7 @@ public class PatternSettingBean {
                 }
 
                 // CSVデータを登録する（パターン設定）
-                this.insertPatternCsv(pstParam);
+                this.insertPatternCsv(pstParam, psDBBean);
 
                 // CSVデータを登録する（休憩情報）
                 for (int j = 0; j < lBrakeTimeList.size(); j++) {
@@ -1279,7 +1345,7 @@ public class PatternSettingBean {
      * @param file
      * @return 結果対象
      */
-    public ModifiCSVVO uploadCSV(MultipartFile file) {
+    public ModifiCSVVO uploadCSV(MultipartFile file, PsDBBean psDBBean) {
 
         if (null == file) {
             logger.warn("アブロード対象が空です");
@@ -1287,7 +1353,7 @@ public class PatternSettingBean {
         }
         ModifiCSVVO modifiCSVVO = new ModifiCSVVO();
 
-        PatternSettingParam patternSettingParam = this.modifiCSVDwnload(file);
+        PatternSettingParam patternSettingParam = this.modifiCSVDwnload(file, psDBBean);
         //部署
         modifiCSVVO.setSSectionId(patternSettingParam.getSectionId());
         //グループ

@@ -179,7 +179,7 @@ public class PatternSettingController {
                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        return patternSettingBean.uploadCSV(file);
+        return patternSettingBean.uploadCSV(file, psDBBean);
     }
 
     /**
