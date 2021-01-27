@@ -5,5 +5,165 @@
 </head>
 
 <body>
-自由条件検索
+    <div th:replace="layout/loadingBar::loadingBar"></div>
+    <!-- 菜单导航栏 -->
+    <div th:replace="layout/sider"></div>
+    <main class="content protosettings-warp" ref="layout">
+        <div class="content_head">
+          <div class="header">
+            <div class="title1">
+              <h1>
+                <Icon type="i-emeer colored"></Icon>
+                {{ `自由条件検索` }}
+              </h1>
+            </div>
+            <div class="btnbox">
+              <span style="flex:1"></span>
+              <i-button type="primary" icon="ios-search" @click="update" :loading="editLoading">検索</i-button>
+              <i-button type="primary" ghost icon="md-download" @click="update" :loading="editLoading">CSV ダウンロード</i-button>
+              <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
+            </div>
+          </div>
+        </div>
+        <div class="content_body">
+            <div class="titlenorm mb10" style="font-size:15px">
+                <Icon type="logo-buffer"></Icon>
+                条件設定
+            </div>
+            <span style="position: absolute; right: 27px;">
+                <span style="font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
+                <i-button class="mr5" type="primary" ghost icon="md-cloud-download" @click="update" :loading="editLoading">読込</i-button>
+                <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存</i-button>
+                <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
+            </span>
+            <Tabs type="card" :animated="false" class="mt20">
+                <tab-pane label="表示項目選択">
+                    <Row>
+                        <i-col span="8">
+                            <div class="ivu-transfer-list" style="width: 250px; height: 300px;">
+                                <div class="ivu-transfer-list-header">
+                                    <span class="ivu-transfer-list-header-title">表示項目を選択してください</span>
+                                </div>
+                                <div class="ivu-transfer-list-body">
+                                    <ul class="ivu-transfer-list-content">
+                                        <li class="ivu-transfer-list-content-item">
+                                            <label class="ivu-checkbox-wrapper ivu-checkbox-default">
+                                                <span class="ivu-checkbox"><span class="ivu-checkbox-inner"></span> <input
+                                                    type="checkbox" class="ivu-checkbox-input"></span>
+                                        </label> <span>Content 1</span></li>
+                                        <li class="ivu-transfer-list-content-not-found">列表为空</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </i-col>
+                        <i-col span="16">
+                        </i-col>
+                    </Row>
+                </tab-pane>
+                <tab-pane label="条件項目選択">标签二的内容</tab-pane>
+                <tab-pane label="ソート項目選択">标签三的内容</tab-pane>
+            </Tabs>
+          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+            :loading="loading" ref="table">
+          </i-table>
+        </div>
+        <back-top></back-top>
+      </main>
+    <div th:replace="layout/head::header"></div>
+    <script type="text/babel" th:inline="javascript">
+        new Vue({
+          el: '.protosettings-warp',
+          data() {
+            return {
+              isShow: false,
+              loading: true,
+              editLoading: false,
+              btnLoading: false,
+              defaultOption: false,
+              psSite: Utils.getUrlParam(location.href, 'psSite'),
+              psApp: Utils.getUrlParam(location.href, 'psApp'),
+              updateValue: {},
+              columns: [
+              ],
+              opts: {
+                systemId: '01',
+                appId: '0',
+                siteId: '0',
+                companyId: '0',
+                date: '',
+                groupId: '0',
+                isAll: false,
+              },
+              tableData: [],
+              conditionsList: [],
+              contentScrollTop: 0
+            }
+          },
+          async created() {
+            this.getTableData()
+            window.addEventListener('scroll', this.handleScroll, { passive: true })
+          },
+          beforeDestroy() {
+            window.removeEventListener('scroll', this.handleScroll, { passive: true })
+          },
+          computed: {
+            tableHeadFixed() {
+              if (this.contentScrollTop > 110) return true
+              else return false
+            }
+          },
+          methods: {
+            async getTableData() {
+              const OPTS = { ...this.opts }
+              OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+              OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+              Object.keys(OPTS).forEach(key => {
+                if (OPTS[key] === '0') {
+                  delete OPTS[key]
+                }
+              })
+              this.loading = true
+              try {
+                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
+                this.tableData = data
+              } catch (error) {
+              } finally {
+                this.loading = false
+              }
+            },
+            async update() {
+              this.$Modal.confirm({
+                title: '注意',
+                content: '入力内容を保存します。よろしいですか？',
+                okText: 'OK',
+                cancelText: 'キャンセル',
+                onOk: async () => {
+                  this.loading = true
+                  const update = this.tableData.map((e, i)=> {
+                    return {
+                      ...e,
+                      templateId: e.templateId === 'null' ? null : e.templateId,
+                      permissionType: e.permissionType === 'null' ? null : e.permissionType
+                    }
+                  })
+                  try {
+                    const { data } = await this.http.post('sys/appmanager/update', update)
+                    this.$Message.success('更新完了')
+                    this.getTableData()
+                    this.updateValue = {}
+                  } catch (error) {
+                  } finally {
+                    history.go(0)
+                    this.loading = false
+                  }
+                }
+              })
+            },
+            handleScroll: Throttle(function (e) {
+              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50)
+          }
+        })
+      </script>
 </body>
