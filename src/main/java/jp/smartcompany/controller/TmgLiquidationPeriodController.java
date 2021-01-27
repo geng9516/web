@@ -191,7 +191,7 @@ public class TmgLiquidationPeriodController {
             @RequestParam(value = "empId",required = false) String empId,
             @RequestParam(value = "startDate",required = false) String startDate,
             @RequestParam(value = "endDate",required = false) String endDate,
-            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws InterruptedException {
         return tmgLiquidationPeriodBean.upload(empId,startDate,endDate,psDBBean);
     }
 }

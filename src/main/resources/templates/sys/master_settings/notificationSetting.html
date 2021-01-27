@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='休暇・休憩マスター設定',cssPaths='/pages/content.min.css')">
+</head>
+
+<body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
+<main class="content ntfsettings-warp" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `休暇・休憩マスター設定` }}
+                </h1>
+            </div>
+        </div>
+        <div class="searchwrap">
+            <div class="label">親区分</div><!--NTFGROUP-->
+            <i-select v-model="ntfGroupType" editable filterable style="width: 15%;">
+                <i-option value="1">年次有給休暇</i-option>
+                <i-option value="2">その他</i-option>
+                <i-option value="3">特別休暇：夏季休暇</i-option>
+            </i-select>
+        </div>
+    </div>
+
+    <div class="content_body">
+        <div>
+            <Checkbox-group v-model="tableColumnsChecked" >
+                <Checkbox label="basic">基本設定</Checkbox>
+                <Checkbox label="dispType">表示タイプ設定</Checkbox>
+                <Checkbox label="workType">職種設定</Checkbox>
+                <Checkbox label="others">その他設定</Checkbox>
+            </Checkbox-group>
+            <i-table class="mt10"  border :columns="columns" :data="tableData"  show-header>
+            </i-table>
+        </div>
+    </div>
+    <back-top></back-top>
+</main>
+<div th:replace="layout/head::header"></div>
+<script type="text/babel" th:inline="javascript">
+    new Vue({
+        el: '.ntfsettings-warp',
+        data() {
+            return {
+                ntfGroupType:'1',
+
+                columns:[],
+                tableData:[],
+                tableColumnsChecked:['basic','dispType','workType','others']
+            }
+        },
+        created() {
+
+        },
+        mounted () {
+            this.changeTableColumns();
+        },
+        methods: {
+
+            getTable2Columns () {
+                const table2ColumnList = {
+                    ntfType: {
+                        title: '申請区分',
+                        slot: 'ntfType',
+                        width: 100,
+                        align: 'center',
+                        fixed: 'left'
+                    },
+                };
+
+                let data = [table2ColumnList.name];
+
+                this.tableColumnsChecked.forEach(col => data.push(table2ColumnList[col]));
+
+                return data;
+            },
+            changeTableColumns () {
+                this.tableColumns2 = this.getTable2Columns();
+            },
+            toggleFav (index) {
+                this.tableData2[index].fav = this.tableData2[index].fav === 0 ? 1 : 0;
+            }
+        },
+
+    })
+</script>
+</body>

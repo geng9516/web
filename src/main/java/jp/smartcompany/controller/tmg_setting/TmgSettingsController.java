@@ -43,4 +43,12 @@ public class TmgSettingsController {
         return "sys/master_settings/logviewer";
     }
 
+    /**
+     * 跳转到休暇休憩设定页面
+     */
+    @GetMapping("notificationSetting")
+    public String toNotificationSetting(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/master_settings/notificationSetting";
+    }
 }

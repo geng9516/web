@@ -11,6 +11,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.asynctask.LiquidationTask;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -49,6 +50,7 @@ public class TmgLiquidationPeriodBean {
     private final IMastGenericDetailService iMastGenericDetailService;
     private final IMastOrganisationService iMastOrganisationService;
     private final TmgSearchRangeUtil tmgSearchRangeUtil;
+    private final LiquidationTask liquidationTask;
     //private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     private final  ITmgNotificationService iTmgNotificationService;
@@ -516,9 +518,10 @@ public class TmgLiquidationPeriodBean {
 
 
     //最後登録
-    public GlobalResponse upload(String empId,String startDate, String endDate,PsDBBean psDBBean){
+    public GlobalResponse upload(String empId,String startDate, String endDate,PsDBBean psDBBean) throws InterruptedException {
         //procedure 执行
         iTmgliquidationDailyService.execTDAInsert(empId, startDate, endDate, psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode());
+        liquidationTask.liquidationPolling( psDBBean.getCustID(),psDBBean.getCompCode(), empId, startDate,endDate, psDBBean.getUserCode());
         // procedure 执行时 err发生有无
 //        TmgLiquidationPeriodDO tlpDo= iTmgliquidationPeriodService.getBaseMapper().selectOne(SysUtil.<TmgLiquidationPeriodDO>query()
 //                .eq("TLP_CCUSTOMERID", psDBBean.getCustID())
@@ -548,7 +551,7 @@ public class TmgLiquidationPeriodBean {
     }
 
 
-
+    //下拉框用组织结构
     public List<Map<String,String>> getSectionList(PsDBBean psDBBean){
         List<Map<String,String>> sectionList=new ArrayList<>();
         String sql = getDivTreeSearchRange(psDBBean, ContextUtil.getSession());

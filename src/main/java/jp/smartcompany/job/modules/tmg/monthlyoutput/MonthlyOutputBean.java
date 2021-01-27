@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.asynctask.MonthOutPutTask;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyOutputLogSecDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
@@ -53,6 +54,9 @@ public class MonthlyOutputBean {
     private final ITmgAlertmsgService iTmgAlertmsgService;
     private final CusomCsvUtil csvUtil;
     private final TmgSearchRangeUtil tmgSearchRangeUtil;
+    private final MonthOutPutTask monthOutPutTask;
+
+
     /** 表示中のページ */
     private int _currentPage = 1;
     /** 1ページ内の最大表示件数 */
@@ -204,6 +208,8 @@ public class MonthlyOutputBean {
     public List<SectionAdminMailVo> actionExecuteDispRCalc(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
         List<MastGenericDetailDO> mgdDtoList=iMastGenericDetailService.selectTmgSectionAdmin(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec()
                 ,psDBBean.getLanguage(),baseDate);
+
+
         List<SectionAdminMailVo> Vos=new ArrayList<>();
         for(MastGenericDetailDO Do:mgdDtoList){
             if(!StrUtil.hasEmpty(Do.getMgdCsparechar3())){
@@ -330,7 +336,7 @@ public class MonthlyOutputBean {
      * </p>
      *
      */
-    public synchronized GlobalResponse actionExecuteCALCCCALC(String baseDate, PsDBBean psDBBean, TmgReferList referList) {
+    public synchronized GlobalResponse actionExecuteCALCCCALC(String baseDate, PsDBBean psDBBean, TmgReferList referList) throws InterruptedException {
         String seq =null;
         try {
             seq= iTmgMonthlyOutputLogService.selectSeq();
@@ -365,7 +371,10 @@ public class MonthlyOutputBean {
             return GlobalResponse.error(); // ジョブ番号取得失敗したときの対応
         } else {
             _flgFixedCalc = STAT_CALC_FIXED_SUCCESS; // success
+            monthOutPutTask.MonthOutPutPolling(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),psDBBean.getLanguage(),baseDate,psDBBean.getUserCode());
             return GlobalResponse.ok(seq);
+
+
         }
     }
 
