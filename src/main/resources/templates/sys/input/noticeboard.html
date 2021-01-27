@@ -63,7 +63,7 @@
                         :value="item.typeId">
                     </i-option>
                 </i-select>
-                <span class="label" style="width: 190px;">掲示板に一番上にします</span>
+                <span class="label" style="width: 190px;">先頭に表示</span>
                 <span
                     style="padding-left: 8px;border: 1px solid var(--input-border-grey);line-height: 29px; width: 15%;">
                     <radio-group class="tl" v-model="updateValue.hbtCheaddisp">
@@ -76,7 +76,7 @@
         <div class="content_body">
             <Alert v-show="this.selectedPeopleText.length > 0 && isAdding" class="primary-info tl">
                 <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
-                    <span style="display: inline-block;width: 160px;color: var(--grey);">掲示範囲にいる社員： </span>
+                    <span style="display: inline-block;width: 160px;color: var(--grey);">掲示対象者： </span>
                     <span class="tl width100"> {{ selectedPeopleText }}</span>
                 </div>
                 <Spin size="large" fix v-if="selectedPeopleloading"></Spin>
@@ -179,7 +179,7 @@
                                                 :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
                                             </Icon> {{ item.name }}
                                         </span>
-                                        <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
+                                        <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">削除不可</p>
                                         <i v-show="!isEditingNotice" class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove"
                                             @click="handleDelFile(item)"></i>
                                     </li>
@@ -208,7 +208,7 @@
                 </Row>
                 <div class="titlenorm grey mb10 mt10" style="font-size:15px">
                     <Icon type="logo-buffer"></Icon>
-                    内容
+                    本文
                 </div>
                 <div class="tl input-like-span ql-editor" v-html="notice" style="padding: 5px;overflow-y: unset;height: auto;"></div>
                 <div style="clear: both"></div>
@@ -519,7 +519,7 @@
                             this.getDraftData()
                             this.getTableData()
                             this.getHistory()
-                            this.$Message.success('削除完了')
+                            this.$Message.success('削除しました')
                         }
                     })
                 },
@@ -535,7 +535,7 @@
                             this.resetDraft()
                             this.getTableData()
                             this.getHistory()
-                            this.$Message.success('削除完了')
+                            this.$Message.success('削除しました')
                         }
                     })
                 },
@@ -567,7 +567,7 @@
                 },
                 uploadNotice(hbtCfix) {
                     if (this.selectedPeople.length === 0) {
-                        return this.$Notice.warning({ title: '注意', desc: '掲示範囲を選択してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: '掲示範囲を入力してください', duration: 6.5 })
 
                     }
                     if (!this.updateValue.hbtCtitle) {
@@ -575,16 +575,16 @@
 
                     }
                     if (!this.updateValue.hbtDdateofannouncement) {
-                        return this.$Notice.warning({ title: '注意', desc: '開始時間を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: '掲示開始日を入力してください', duration: 6.5 })
 
                     }
                     if (this.updateValue.hbtDdateofexpire && new Date(this.updateValue.hbtDdateofannouncement) > new Date(this.updateValue.hbtDdateofexpire)) {
-                        return this.$Notice.warning({ title: '注意', desc: '掲示期間(終了時間)は(開始時間)より後の時刻を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: '掲示期間(終了日)は(開始日)より後の日付を入力してください', duration: 6.5 })
                     }
 
                     if (!this.updateValue.hbtDdateofexpire) delete this.updateValue.hbtDdateofexpire
                     if(hbtCfix === '1') {
-                        this.noticeTitle = '掲示確認用'
+                        this.noticeTitle = '掲示内容'
                         this.notice = this.$refs.richText.getHtml()
                         this.drawerShow = true
                     } else {
@@ -657,7 +657,7 @@
                                 } else {
                                     await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
                                 }
-                                this.$Message.success(hbtCfix ? '一時保存完了' : '投稿完了')
+                                this.$Message.success(hbtCfix ? '一時保存しました' : '投稿しました')
                                 this.drawerShow = false
                                 this.resetDraft()
                                 this.getDraftData()
