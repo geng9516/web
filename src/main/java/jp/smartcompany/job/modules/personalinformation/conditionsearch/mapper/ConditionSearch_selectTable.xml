@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
+
+    <select id="selectTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.TableOptionDTO">
+        SELECT
+            PSMASTER.FUNC_GET_TABLE_DESC('01',a.MD_CTABLENAME,'ja') as description,
+            a.MD_CTABLENAME as name
+        FROM (SELECT DISTINCT(MD_CTABLENAME),MD_CCUSTOMERID FROM MAST_DATADICTIONARY WHERE MD_CCUSTOMERID = '01' AND MD_CAVLFORCKSTART = '1') a,
+             MAST_DATADICTBL b
+        WHERE
+            a.MD_CCUSTOMERID = b.MDT_CCUSTOMERID
+            AND a.MD_CTABLENAME = b.MDT_CTABLENAME
+            ORDER BY b.MDT_NTABLESEQ,a.MD_CTABLENAME
+    </select>
+
+</mapper>

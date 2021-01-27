@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.*;
 
-import java.util.Date;
 import java.util.List;
 
 public interface IConditionSearchService extends IService<MastDatadictionaryDO> {
@@ -42,18 +41,14 @@ public interface IConditionSearchService extends IService<MastDatadictionaryDO> 
      */
     int INPUT = 5;
 
-    List<CompanyDTO> selectCompanyList(List<String> companyIds);
-
     List<TableOptionDTO> selectTable();
 
     List<ColumnOptionDTO> selectColumns(String tableName);
 
-    List<ConditionSelectDTO> selectDefaultSelectConditions(Long settingId);
+    List<ConditionWhereDTO> selectWhereConditions(Long settingId);
 
-    List<ConditionWhereDTO> selectDefaultWhereConditions(Long settingId);
+    List<TableQueryDefinitionOptionDTO> selectTableForQueryDefinition();
 
-    ConditionQueryDTO selectQueryWhereConditions(Long settingId, Date searchDate);
-
-    List<OrderConditionDTO> selectOrderConditions(Long settingId);
+    List<ColumnQueryDefinitionOptionDTO> selectColumnForQueryDefinition(String tableName);
 
 }

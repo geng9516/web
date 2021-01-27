@@ -7,10 +7,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class OrderConditionDTO {
+public class TableQueryDefinitionOptionDTO {
 
-    private String columnName;
-    private String columnDescription;
-    private String orderBy;
+    private String name;
+    private String description;
+    private Integer sort;
 
 }

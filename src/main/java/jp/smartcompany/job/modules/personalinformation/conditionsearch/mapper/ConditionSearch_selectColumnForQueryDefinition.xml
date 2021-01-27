@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
+
+    <select id="selectColumnForQueryDefinition" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.ColumnQueryDefinitionOptionDTO">
+        SELECT
+            DISTINCT
+            MD_CCOLUMNNAME AS name,
+            PSMASTER.FUNC_GET_TABLE_DESC('01',MD_CTABLENAME,'ja') || '－' || PSMASTER.FUNC_GET_COLUMN_DESC('01',#{value},MD_CCOLUMNNAME,'ja') AS description,
+            MD_CMASTERTBLNAME AS dialogType,
+            MD_CTYPEOFCOLUMN AS type,
+            MD_NSEQ AS sort
+        FROM
+            MAST_DATADICTIONARY
+        WHERE
+            MD_CCUSTOMERID = '01'
+            AND MD_CTABLENAME = #{value}
+            AND MD_CAVLFORCKSTART   = '1'
+        ORDER BY
+            MD_NSEQ
+    </select>
+
+</mapper>

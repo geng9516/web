@@ -7,9 +7,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class CompanyDTO {
+public class ColumnQueryDefinitionOptionDTO {
 
-    private Long id;
     private String name;
+    private String description;
+    private String dialogType;
+    private String type;
+    private Integer sort;
 
 }
