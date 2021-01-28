@@ -82,7 +82,7 @@
                 <Spin size="large" fix v-if="selectedPeopleloading"></Spin>
             </Alert>
             <span v-show="!isAdding">
-                <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
+                <div class="titlenorm mb10 mt10" style="font-size:15px">
                     <Icon type="logo-buffer"></Icon>
                     通知
                 </div>
@@ -95,9 +95,9 @@
                     <template slot-scope="{ row }" slot="action">
                         <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px"
                         @click="checkoutNotice(row, false)">詳細</i-button>
-                        <i-button v-model="row.enableEdit" type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px"
+                        <i-button v-if="row.enableEdit" v-model="row.enableEdit" type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px"
                         @click="checkoutNotice(row, true)">編集</i-button>
-                        <i-button v-model="row.enableEdit" type="error" ghost size="small" icon="ios-trash" style="margin-right: 5px"
+                        <i-button v-if="row.enableEdit" v-model="row.enableEdit" type="error" ghost size="small" icon="ios-trash" style="margin-right: 5px"
                         @click="delNotice(row)">削除</i-button>
                     </template>
                     <template slot-scope="{ row }" slot="status">
@@ -108,7 +108,7 @@
                     <Icon type="logo-buffer"></Icon>
                     下書
                 </div>
-                <div class="tr mb10">
+                <div class="tr mb10" v-if="editPermission">
                     <Page :total="pageValueDraft.amount" :current="pageValueDraft.curPage" show-total style="display: inline"
                           :page-size="pageValueDraft.curSize" @on-change="pageChangeDraft" simple/>
                 </div>
@@ -125,7 +125,7 @@
                     <Icon type="logo-buffer"></Icon>
                     ごみ箱
                 </div>
-                <div class="tr mb10">
+                <div class="tr mb10" v-if="editPermission">
                     <Page :total="pageValueHistory.amount" :current="pageValueHistory.curPage" show-total style="display: inline"
                           :page-size="pageValueHistory.curSize" @on-change="pageChangeHistory" simple/>
                 </div>
@@ -358,7 +358,7 @@
                 this.getTableData()
                 this.getHistory()
                 this.getDraftData()
-                this.getSelection()
+                if(this.editPermission) this.getSelection()
             },
             methods: {
                 async getDraftData() {
