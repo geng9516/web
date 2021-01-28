@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -43,10 +44,12 @@ public class EditNoticeDTO {
     /**
      * 可查看此公告的用户id，支持多个，中间用逗号隔开
      */
+    @NotBlank
     private String empRangeIds;
     /**
      * 所选发送范围type，用逗号隔开
      */
+    @NotBlank
     private String rangeTypes;
 
 }

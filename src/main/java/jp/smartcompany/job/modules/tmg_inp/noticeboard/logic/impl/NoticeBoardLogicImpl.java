@@ -180,6 +180,12 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (!StrUtil.equals(loginUserId,originalNotice.getHbCmnuser())) {
             throw new GlobalException("該当する通知の掲示者ではありません。");
         }
+        if (SysDateUtil.isLess(originalNotice.getHbDdateofexpire(),now)) {
+            throw new GlobalException("期限切れの通知は編集できません");
+        }
+        if (StrUtil.equals("1",originalNotice.getHbCfix())) {
+            throw new GlobalException("削除された通知は編集できません");
+        }
         HistBulletinBoardUserDO userRangeDO = histBulletinBoardUserService.getByNoticeId(id);
         if (userRangeDO == null) {
             throw new GlobalException("照会範囲の設定は存在しません。");
