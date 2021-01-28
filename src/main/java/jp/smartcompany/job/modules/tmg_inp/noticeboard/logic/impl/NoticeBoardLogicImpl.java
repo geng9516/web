@@ -224,7 +224,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         Date now = DateUtil.date();
         page.getRecords().forEach(notice -> {
               //0有效 1删除 2过期 3还没到公布时间
-              if (StrUtil.equals(notice.getHbCfix(),"1")){
+              if (StrUtil.equals(notice.getHbCfix(),"0")){
                   notice.setStatus(1);
               } else if (SysDateUtil.isLess(notice.getHbDdateofexpire(),now)) {
                   notice.setStatus(2);
