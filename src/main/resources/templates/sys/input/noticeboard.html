@@ -57,7 +57,7 @@
             </div>
             <div class="searchwrap" v-show="isAdding">
                 <span class="label">掲示範囲</span>
-                <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple :disabled="isEditingNotice"
+                <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple
                     @on-change="getPeopleBySelection">
                     <i-option v-for="(item, index) of rangeList" :key="index" :label="item.typeName"
                         :value="item.typeId">
@@ -128,7 +128,14 @@
                 <i-table border :row-class-name="(row) => row.status === 0 || row.status === 3 ? 'select-col' : 'select-col text-light-grey'" v-if="editPermission" no-data-text=""
                     :columns="historyColumns" :disabled-hover="true" :data="historyData" :loading="historyLoading">
                     <template slot-scope="{ row }" slot="status">
-                        <p :style="{color: row.status === 0 ? 'var(--success-info)' : row.status === 1 ? 'var(--red)' : row.status === 2 ?  'var(--text-light-grey)' : 'var(--blue-or-dark)' }">{{ row.status === 0 ? '公開中' : row.status === 1 ? '削除済' : row.status === 2 ?  '期限ギレ' : '公開日待ち'}}</p>
+                        <p class="tl no-border-radius width100"
+                            :style="{
+                                color: row.status === 0 ? 'var(--success-info)' : row.status === 1 ? 'var(--red)' : row.status === 2 ?  'var(--text-light-grey)' : 'var(--blue-or-dark)',
+                                border:'1px solid',
+                                borderColor: row.status === 0 ? 'var(--success-info)' : row.status === 1 ? 'var(--red)' : row.status === 2 ?  'var(--text-light-grey)' : 'var(--blue-or-dark)',
+                                padding:'2px 5px',
+                                margin:'2px 0'
+                             }">{{ row.status === 0 ? '公開中' : row.status === 1 ? '削除済' : row.status === 2 ? '期限ギレ' :'公開日待ち'}}</p>
                     </template>
                     <template slot-scope="{ row }" slot="action">
                             <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px" @click="checkoutNotice(row, false)">詳細</i-button>
@@ -600,7 +607,7 @@
 
                 },
                 uploadNotice(hbtCfix) {
-                    if (this.selectedPeople.length === 0) {
+                    if (this.searchRange.length === 0) {
                         return this.$Notice.warning({ title: '注意', desc: '掲示範囲を入力してください', duration: 6.5 })
 
                     }
