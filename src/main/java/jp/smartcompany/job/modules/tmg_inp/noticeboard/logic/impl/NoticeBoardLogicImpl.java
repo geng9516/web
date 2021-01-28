@@ -387,9 +387,13 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         }
         // 如果此用户不能查看此公告
         if (!StrUtil.contains(userRange.getHbgCuserids(),userId)) {
-            throw new GlobalException("このアナウンスにアクセスする権限がありません");
+            throw new GlobalException("この照会する権限がありません");
         }
-        List<String> rangeTypes = Arrays.asList(userRange.getHbgCrangeTypes().split(","));
+        String rangeTypesStr = userRange.getHbgCrangeTypes();
+        if (StrUtil.isBlank(rangeTypesStr)){
+            throw new GlobalException("通知照会範囲は設定していません");
+        }
+        List<String> rangeTypes = Arrays.asList(rangeTypesStr.split(","));
         List<NoticeRangeDTO> rangeTypeList = CollUtil.newArrayList();
         assembleTypeRangeItems(rangeTypes, rangeTypeList);
 
