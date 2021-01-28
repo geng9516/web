@@ -228,7 +228,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                   notice.setStatus(1);
               } else if (SysDateUtil.isLess(notice.getHbDdateofexpire(),now)) {
                   notice.setStatus(2);
-              } else if (SysDateUtil.isLess(notice.getHbDdateofannouncement(),now)){
+              } else if (SysDateUtil.isGreater(notice.getHbDdateofannouncement(),now)){
                   notice.setStatus(3);
               } else {
                   notice.setStatus(0);
