@@ -95,10 +95,6 @@
                     <template slot-scope="{ row }" slot="action">
                         <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px"
                         @click="checkoutNotice(row, false)">詳細</i-button>
-                        <i-button v-if="row.enableEdit" v-model="row.enableEdit" type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px"
-                        @click="checkoutNotice(row, true)">編集</i-button>
-                        <i-button v-if="row.enableEdit" v-model="row.enableEdit" type="error" ghost size="small" icon="ios-trash" style="margin-right: 5px"
-                        @click="delNotice(row)">削除</i-button>
                     </template>
                     <template slot-scope="{ row }" slot="status">
                         <p :style="{color: row.hasRead ? 'var(--text-light-grey)' : 'var(--primary-info)' }">{{ row.hasRead ? '既読' : '新着' }}</p>
@@ -123,18 +119,24 @@
                 </i-table>
                 <div class="titlenorm mb10 mt10" style="font-size:15px" v-if="editPermission">
                     <Icon type="logo-buffer"></Icon>
-                    ごみ箱
+                    投稿履歴
                 </div>
                 <div class="tr mb10" v-if="editPermission">
                     <Page :total="pageValueHistory.amount" :current="pageValueHistory.curPage" show-total style="display: inline"
                           :page-size="pageValueHistory.curSize" @on-change="pageChangeHistory" simple/>
                 </div>
-                <i-table border :row-class-name="() => 'select-col disabled text-light-grey'" v-if="editPermission" no-data-text=""
-                    :columns="draftColumns" :disabled-hover="true" :data="historyData" :loading="historyLoading">
+                <i-table border :row-class-name="(row) => row.status === 0 || row.status === 3 ? 'select-col' : 'select-col text-light-grey'" v-if="editPermission" no-data-text=""
+                    :columns="historyColumns" :disabled-hover="true" :data="historyData" :loading="historyLoading">
+                    <template slot-scope="{ row }" slot="status">
+                        <p :style="{color: row.status === 0 ? 'var(--success-info)' : row.status === 1 ? 'var(--red)' : row.status === 2 ?  'var(--text-light-grey)' : 'var(--blue-or-dark)' }">{{ row.status === 0 ? '公開中' : row.status === 1 ? '削除済' : row.status === 2 ?  '期限ギレ' : '公開日待ち'}}</p>
+                    </template>
                     <template slot-scope="{ row }" slot="action">
-                        <div>
                             <i-button type="primary" ghost size="small" icon="ios-eye" style="margin-right: 5px" @click="checkoutNotice(row, false)">詳細</i-button>
-                        </div>
+                            <!-- 如果status为0和3则为可编辑公告 -->
+                            <i-button v-if="row.status === 0 || row.status === 3" v-model="row.enableEdit" type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px"
+                            @click="checkoutNotice(row, true)">編集</i-button>
+                            <i-button v-if="row.status === 0 || row.status === 3" v-model="row.enableEdit" type="error" ghost size="small" icon="ios-trash" style="margin-right: 5px"
+                            @click="delNotice(row)">削除</i-button>
                     </template>
                 </i-table>
             </span>
@@ -315,6 +317,12 @@
                             minWidth: 200,
                         },
                         {
+                            title: '投稿者',
+                            key: 'author',
+                            align: 'left',
+                            width: 250,
+                        },
+                        {
                             title: '状態',
                             slot: 'status',
                             align: 'center',
@@ -324,6 +332,7 @@
                             title: ' ',
                             slot: 'action',
                             align: 'right',
+                            width: 120,
                         }
                     ],
                     draftColumns: [
@@ -338,6 +347,31 @@
                             key: 'hbtCtitle',
                             align: 'left',
                             minWidth: 200,
+                        },
+                        {
+                            title: ' ',
+                            slot: 'action',
+                            align: 'right',
+                        },
+                    ],
+                    historyColumns: [
+                        {
+                            title: '掲示期間',
+                            key: 'date',
+                            align: 'left',
+                            width: 250
+                        },
+                        {
+                            title: '件名',
+                            key: 'hbtCtitle',
+                            align: 'left',
+                            minWidth: 200,
+                        },
+                        {
+                            title: '状態',
+                            slot: 'status',
+                            align: 'center',
+                            width: 120,
                         },
                         {
                             title: ' ',
@@ -367,7 +401,7 @@
                         const { data } = await this.http.get('sys/noticeboard/draft/list', this.opts)
                         this.draftData = data.list.map(e=> {
                             return {
-                                date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
+                                date: `${e.hbtDdateofannouncement.split(' ')[0]} ～ ${e.hbtDdateofexpire.split(' ')[0] === '2222/12/31' ? '' : e.hbtDdateofexpire.split(' ')[0]}`,
                                 ...e
                             }
                         })
@@ -383,7 +417,7 @@
                         const { data } = await this.http.get('sys/noticeboard/notice/list', this.opts2)
                         this.tableData = data.list.map(e=> {
                             return {
-                                date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
+                                date: `${e.hbDdateofannouncement.split(' ')[0]} ～ ${e.hbDdateofexpire.split(' ')[0] === '2222/12/31' ? '' : e.hbDdateofexpire.split(' ')[0]}`,
                                 ...e,
                                 hbtCtitle:e.hbCtitle
                             }
@@ -397,10 +431,10 @@
                 async getHistory() {
                     try {
                         this.historyLoading = true
-                        const { data } = await this.http.get('sys/noticeboard/rubbish/list', this.opts3)
+                        const { data } = await this.http.get('sys/noticeboard/me', this.opts3)
                         this.historyData = data.list.map(e=> {
                             return {
-                                date: `${Utils.formatDate(e.hbtDdateofannouncement, 'yyyy/mm/dd')} ～ ${e.hbtDdateofexpire === 7983759600000 ? '' : Utils.formatDate(e.hbtDdateofexpire, 'yyyy/mm/dd')}`,
+                                date: `${e.hbDdateofannouncement.split(' ')[0]} ～ ${e.hbDdateofexpire.split(' ')[0] === '2222/12/31' ? '' : e.hbDdateofexpire.split(' ')[0]}`,
                                 ...e,
                                 hbtCtitle:e.hbCtitle
                             }
@@ -577,6 +611,9 @@
                     if (!this.updateValue.hbtDdateofannouncement) {
                         return this.$Notice.warning({ title: '注意', desc: '掲示開始日を入力してください', duration: 6.5 })
 
+                    }
+                    if (!this.updateValue.hbtDdateofexpire) {
+                        this.updateValue.hbtDdateofexpire = '2222/12/31'
                     }
                     if (this.updateValue.hbtDdateofexpire && new Date(this.updateValue.hbtDdateofannouncement) > new Date(this.updateValue.hbtDdateofexpire)) {
                         return this.$Notice.warning({ title: '注意', desc: '掲示期間(終了日)は(開始日)より後の日付を入力してください', duration: 6.5 })
