@@ -13,7 +13,7 @@
                 and (
                       HB_CFIX = '0' or HB_DDATEOFEXPIRE <![CDATA[<=]]> trunc(sysdate)
                     )
-                order by HB_DMODIFIEDDATE desc,HB_CFIX desc
+                order by HB_CHEADDISP desc,HB_DMODIFIEDDATE desc
     </select>
 
 </mapper>

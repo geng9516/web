@@ -270,6 +270,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             tempDO.setHbtDdateofexpire(endDate);
             tempDO.setHbtCrangeTypes(dto.getRangeTypes());
             tempDO.setHbtCempRange(dto.getEmpRangeIds());
+            setTopDisplay(top,loginUserId,isDraft);
             // 修改草稿动作
             if (isUpdate) {
                 tempDO.setHbtId(hbtId);
@@ -301,7 +302,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             bulletinBoardDO.setHbCfix(dto.getIsPublish());
             histBulletinBoardService.save(bulletinBoardDO);
             Long articleId = bulletinBoardDO.getHbId();
-
+            setTopDisplay(top,loginUserId,isDraft);
             // 保存可查看此公告的用户idList
             HistBulletinBoardUserDO boardUserDO = new HistBulletinBoardUserDO();
             boardUserDO.setHbgCuserids(dto.getEmpRangeIds());
@@ -320,6 +321,29 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                 // 草稿附件处理完毕后要把草稿删除
                 histBulletinBoardTempService.removeById(hbtId);
             }
+        }
+    }
+
+    private void setTopDisplay(String top, String loginUserId, boolean isDraft) {
+        if (StrUtil.equals(top,"1")) {
+           // 如果要将其置顶，则要根据发布稿件类型（正式还是草稿）来更改其他发布的display字段
+           if (isDraft) {
+               QueryWrapper<HistBulletinBoardTempDO> qw = SysUtil.query();
+               qw.eq("HBT_CMODIFIERUSERID",loginUserId);
+               List<HistBulletinBoardTempDO> tempNoticeList = histBulletinBoardTempService.list(qw);
+               if (CollUtil.isNotEmpty(tempNoticeList)){
+                   tempNoticeList.stream().map(item -> item.setHbtCheaddisp("0"));
+                   histBulletinBoardTempService.updateBatchById(tempNoticeList);
+               }
+           } else {
+               QueryWrapper<HistBulletinBoardDO> qw = SysUtil.query();
+               qw.eq("HB_CMODIFIERUSERID",loginUserId);
+               List<HistBulletinBoardDO> noticeList = histBulletinBoardService.list(qw);
+               if (CollUtil.isNotEmpty(noticeList)){
+                   noticeList.stream().map(item -> item.setHbCheaddisp("0"));
+                   histBulletinBoardService.updateBatchById(noticeList);
+               }
+           }
         }
     }
 
