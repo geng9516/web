@@ -4,7 +4,7 @@
 
     <select id="selectVisibleList" resultType="jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO">
         select
-            hb_id,hb_ddateofannouncement,hb_ddateofexpire,hb_ctitle,hb_cheaddisp,hb_cmnuser,hbrs_status as hasRead,
+            distinct hb_id,hb_ddateofannouncement,hb_ddateofexpire,hb_ctitle,hb_cheaddisp,hb_cmnuser,hbrs_status as hasRead,
             ME_CKANJINAME as author
         from
             hist_bulletinboard hb

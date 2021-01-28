@@ -183,7 +183,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         if (SysDateUtil.isLess(originalNotice.getHbDdateofexpire(),now)) {
             throw new GlobalException("期限切れの通知は編集できません");
         }
-        if (StrUtil.equals("1",originalNotice.getHbCfix())) {
+        if (StrUtil.equals("0",originalNotice.getHbCfix())) {
             throw new GlobalException("削除された通知は編集できません");
         }
         HistBulletinBoardUserDO userRangeDO = histBulletinBoardUserService.getByNoticeId(id);
