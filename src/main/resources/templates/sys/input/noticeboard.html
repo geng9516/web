@@ -57,7 +57,7 @@
             </div>
             <div class="searchwrap" v-show="isAdding">
                 <span class="label">掲示範囲</span>
-                <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple :disabled="isEditingNotice"
+                <i-select v-model="searchRange" class="mr30" style="width: 25%;" multiple
                     @on-change="getPeopleBySelection">
                     <i-option v-for="(item, index) of rangeList" :key="index" :label="item.typeName"
                         :value="item.typeId">
@@ -607,7 +607,7 @@
 
                 },
                 uploadNotice(hbtCfix) {
-                    if (this.selectedPeople.length === 0) {
+                    if (this.searchRange.length === 0) {
                         return this.$Notice.warning({ title: '注意', desc: '掲示範囲を入力してください', duration: 6.5 })
 
                     }
