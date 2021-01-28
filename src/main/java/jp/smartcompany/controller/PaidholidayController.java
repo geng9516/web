@@ -62,8 +62,8 @@ public class PaidholidayController {
      */
     @GetMapping("execUpdate")
     @ResponseBody
-    public void execUpdate(@RequestAttribute("BeanName") PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO) throws Exception {
-         paidHolidayBean.execUpdate(psDBBean, paidHolidayUpdateVO);
+    public void execUpdate(@RequestAttribute("BeanName") PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO, String txtDate) throws Exception {
+         paidHolidayBean.execUpdate(psDBBean, paidHolidayUpdateVO, txtDate);
     }
 
 

@@ -469,6 +469,7 @@
                 this.param.txtTmgReferListTreeViewAdminTargetEmp = tphCemployeeid
 
                 try {
+                    this.tphDyyyymmdd = tphDyyyymmdd
                     this.param.txtDate = tphDyyyymmdd
                     this.param.txtUserCode = tphCemployeeid
                     //年次休暇付与状況取得
@@ -506,6 +507,9 @@
                 this.dataDetail = {...e}
 
                 this.dataDetailBack = e
+                this.tphDyyyymmdd = e.dyyyymmdd
+                console.log("--------------------1------------------------")
+                console.log(e)
                 setTimeout(() => this.paidDetailsLoading = false)
             },
 
@@ -530,6 +534,7 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
+                            this.paramters.txtDate = this.tphDyyyymmdd
                             this.paramters.cemployeeid = this.cemployeeid
                             this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
                             this.paramters.ninvest = this.dataDetail.ninvest
@@ -1492,6 +1497,7 @@
                 contentScrollTop: 0,
                 title: '',
                 name: '',
+                tphDyyyymmdd: '',
                 workertypenm: '',
                 cemployeeid: '',
                 param: {
@@ -1503,6 +1509,7 @@
                     type: 31
                 },
                 paramters: {
+                    txtDate: '',
                     cemployeeid: '',
                     ninvest: '',
                     dyyyymmdd: '',

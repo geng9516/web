@@ -73,7 +73,9 @@ public class PaidholidayBean {
     /**
      * 更新処理をする
      */
-    public void execUpdate(PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO){
+    public void execUpdate(PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO, String txtDate){
+        baseDate = txtDate;
+
         TmgPaidHolidayDto tmgPaidHolidayDto= new TmgPaidHolidayDto();
         tmgPaidHolidayDto.setTphCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayDto.setTphCmodifierprogramid(MOD_PROGRAM_ID);
