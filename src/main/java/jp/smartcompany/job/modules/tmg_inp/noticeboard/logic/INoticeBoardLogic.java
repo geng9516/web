@@ -28,8 +28,6 @@ public interface INoticeBoardLogic {
 
     DraftNoticeVO getDraftNoticeDetail(Long id);
 
-    PageUtil getSelfNoticeList(Map<String,Object> params);
-
     NoticeVO getNoticeDetail(Long id);
 
     void changeNoticeStatus(Long id,String status);
@@ -38,6 +36,6 @@ public interface INoticeBoardLogic {
 
     void editNoticeContent(EditNoticeDTO dto);
 
-    PageUtil getRubbishList(Map<String,Object> params);
+    PageUtil getSelfNoticeList(Map<String,Object> params);
 
 }

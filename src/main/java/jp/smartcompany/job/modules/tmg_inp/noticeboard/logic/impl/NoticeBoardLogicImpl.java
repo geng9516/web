@@ -80,7 +80,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     public PageUtil getRangeNoticeList(Map<String,Object> params) {
         String userId = SecurityUtil.getUserId();
         Page<NoticeVO> pageQuery = new PageQuery<NoticeVO>().getPage(params);
-        IPage<NoticeVO> page = histBulletinBoardTempService.listBulletinBoard(pageQuery,userId);
+        IPage<NoticeVO> page = histBulletinBoardService.selectVisibleList(pageQuery,userId);
         page.getRecords().forEach(notice -> notice.setEnableEdit(StrUtil.equals(notice.getHbCmnuser(),userId)));
         return new PageUtil(page);
     }
@@ -156,14 +156,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
       return new PageUtil(page);
     }
 
-    @Override
-    public PageUtil getSelfNoticeList(Map<String,Object> params) {
-        String loginUserId = SecurityUtil.getUserId();
-        IPage<HistBulletinBoardDO> pageQuery = new PageQuery<HistBulletinBoardDO>().getPage(params);
-        IPage<HistBulletinBoardDO> page = histBulletinBoardService.listBulletinBoardByPublisherId(pageQuery,loginUserId);
-        return new PageUtil(page);
-    }
-
     /**
      * 供前端富文本插件图文混排时上传图片使用
      * @param file 上传图片
@@ -219,10 +211,23 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
     }
 
     @Override
-    public PageUtil getRubbishList(Map<String,Object> params) {
+    public PageUtil getSelfNoticeList(Map<String,Object> params) {
         Page<NoticeVO> pageQuery = new PageQuery<NoticeVO>().getPage(params);
         String loginUserId = SecurityUtil.getUserId();
-        IPage<NoticeVO> page = histBulletinBoardService.listRubbishByPublisherId(pageQuery,loginUserId);
+        IPage<NoticeVO> page = histBulletinBoardService.listByPublisherId(pageQuery,loginUserId);
+        Date now = DateUtil.date();
+        page.getRecords().forEach(notice -> {
+              //0有效 1删除 2过期 3还没到公布时间
+              if (StrUtil.equals(notice.getHbCfix(),"1")){
+                  notice.setStatus(1);
+              } else if (SysDateUtil.isLess(notice.getHbDdateofexpire(),now)) {
+                  notice.setStatus(2);
+              } else if (SysDateUtil.isLess(notice.getHbDdateofannouncement(),now)){
+                  notice.setStatus(3);
+              } else {
+                  notice.setStatus(0);
+              }
+        });
         return new PageUtil(page);
     }
 

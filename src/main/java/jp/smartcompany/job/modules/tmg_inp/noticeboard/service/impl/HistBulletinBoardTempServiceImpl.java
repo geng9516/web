@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.mapper.HistBulletinBoardTempMapper;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.entity.HistBulletinBoardTempDO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.DraftNoticeVO;
-import jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO;
 import jp.smartcompany.job.modules.tmg_inp.noticeboard.service.IHistBulletinBoardTempService;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +14,6 @@ public class HistBulletinBoardTempServiceImpl extends ServiceImpl<HistBulletinBo
     @Override
     public IPage<DraftNoticeVO> listBulletinBoardTempByPublisherId(IPage<DraftNoticeVO> pageQuery,String loginUserId) {
         return baseMapper.selectBulletinBoardTempByPublisherId(pageQuery,loginUserId);
-    }
-
-    @Override
-    public IPage<NoticeVO> listBulletinBoard(IPage<NoticeVO> pageQuery, String userId) {
-        return baseMapper.selectVisibleBulletinBoardList(pageQuery,userId);
     }
 
 }

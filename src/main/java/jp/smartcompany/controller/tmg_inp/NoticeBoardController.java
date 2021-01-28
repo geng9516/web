@@ -45,12 +45,12 @@ public class NoticeBoardController {
     }
 
     /**
-     * 查看垃圾箱中的公告（过期和被逻辑删除的公告都可通过此接口查看）
-     * http://localhost:6879/sys/noticeboard/rubbish/list
+     * 0代表有效公告 1代表自己删除，2代表过期 3代表还没到公布时间
+     * http://localhost:6879/sys/noticeboard/me
      */
-    @GetMapping("rubbish/list")
+    @GetMapping("me")
     public PageUtil getRubbishList(@RequestParam Map<String,Object> params) {
-      return noticeBoardLogic.getRubbishList(params);
+      return noticeBoardLogic.getSelfNoticeList(params);
     }
 
     /**
@@ -165,15 +165,13 @@ public class NoticeBoardController {
         return "下書き操作成功";
     }
 
+    /**
+     * 逻辑删除公告接口
+     */
     @PostMapping("notice/status")
     public String changeNoticeStatus(@RequestParam Long id,@RequestParam(required = false,defaultValue = "1") String status) {
         noticeBoardLogic.changeNoticeStatus(id,status);
         return "照会フラグ変更成功";
-    }
-
-    @GetMapping("list")
-    public PageUtil getSelfNoticeList(@RequestParam Map<String,Object> params) {
-        return noticeBoardLogic.getSelfNoticeList(params);
     }
 
     /**

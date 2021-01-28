@@ -2,17 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.tmg_inp.noticeboard.mapper.HistBulletinBoardMapper">
 
-    <select id="selectRubbishByPublisherId" resultType="jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO">
+    <select id="selectByPublisherId" resultType="jp.smartcompany.job.modules.tmg_inp.noticeboard.pojo.vo.NoticeVO">
             select
-                hb_id,hb_ddateofannouncement,hb_ddateofexpire,hb_ctitle,hb_cheaddisp
+                hb_id,hb_ddateofannouncement,hb_ddateofexpire,hb_ctitle,hb_cheaddisp,hb_cfix,hbrs_status as hasRead
             from
-                hist_bulletinboard
+                hist_bulletinboard hb
+                left join hist_bulletinboard_read_status hbrs on hbrs.HB_ID_FK = hb.HB_ID and hbrs.HBRS_EMP_ID_FK = #{userId}
             where
                 HB_CCUSTOMERID = '01'
                 and HB_CCOMPANYID = '01'
-                and (
-                      HB_CFIX = '0' or HB_DDATEOFEXPIRE <![CDATA[<=]]> trunc(sysdate)
-                    )
+                and HB_CMODIFIERUSERID = #{userId}
                 order by HB_CHEADDISP desc,HB_DMODIFIEDDATE desc
     </select>
 

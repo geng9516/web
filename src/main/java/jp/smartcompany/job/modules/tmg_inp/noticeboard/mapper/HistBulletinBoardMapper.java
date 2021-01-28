@@ -11,8 +11,8 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface HistBulletinBoardMapper extends BaseMapper<HistBulletinBoardDO> {
 
-    IPage<HistBulletinBoardDO>  selectBulletinBoardByPublisherId(IPage<HistBulletinBoardDO> pageQuery,@Param("publisherId") String publisherId);
+    IPage<NoticeVO> selectByPublisherId(Page<NoticeVO> pageQuery,@Param("userId") String loginUserId);
 
-    IPage<NoticeVO> selectRubbishByPublisherId(Page<NoticeVO> pageQuery, String loginUserId);
+    IPage<NoticeVO> selectVisibleList(@Param("page") IPage<NoticeVO> pageQuery,@Param("userId") String userId);
 
 }

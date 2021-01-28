@@ -14,13 +14,13 @@ public class HistBulletinBoardServiceImpl extends ServiceImpl<HistBulletinBoardM
 implements IHistBulletinBoardService {
 
     @Override
-    public IPage<HistBulletinBoardDO> listBulletinBoardByPublisherId(IPage<HistBulletinBoardDO> pageQuery, String loginUserId) {
-        return baseMapper.selectBulletinBoardByPublisherId(pageQuery,loginUserId);
+    public IPage<NoticeVO> listByPublisherId(Page<NoticeVO> pageQuery, String loginUserId) {
+        return baseMapper.selectByPublisherId(pageQuery,loginUserId);
     }
 
     @Override
-    public IPage<NoticeVO> listRubbishByPublisherId(Page<NoticeVO> pageQuery, String loginUserId) {
-        return baseMapper.selectRubbishByPublisherId(pageQuery,loginUserId);
+    public IPage<NoticeVO> selectVisibleList(IPage<NoticeVO> pageQuery,String userId) {
+        return baseMapper.selectVisibleList(pageQuery,userId);
     }
 
 }

@@ -38,6 +38,7 @@ public class NoticeVO implements Serializable {
     private Boolean enableEdit;
     private String hbCmnuser;
     private String author;
+    private Integer status;
 
     private List<Map<String,String>> userRangeList;
     private List<HistBulletinBoardFileDO> attachmentList;
