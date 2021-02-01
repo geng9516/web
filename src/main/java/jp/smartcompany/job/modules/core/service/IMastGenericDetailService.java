@@ -353,4 +353,13 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     List<GenericDetailItemDTO> listItemsByDetailGroupId(String detailGroupId);
 
     String getHolFlg(String kubunid);
+
+    String getMgdSeq();
+
+
+    String getMgdDetailId(String groupId);
+
+    int existMgdMastCode(String mastCode);
+
+    int existMgdDesc(String desc ,String start,String end);
 }

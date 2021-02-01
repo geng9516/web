@@ -616,4 +616,26 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public String getHolFlg(String kubunid){
         return baseMapper.getHolFlg(kubunid);
     }
+
+    @Override
+    public String getMgdSeq() {
+        return baseMapper.getMgdSeq();
+    }
+
+
+    @Override
+    public String getMgdDetailId(String groupId){
+        return baseMapper.getMgdDetailId(groupId);
+
+    }
+
+    @Override
+    public int existMgdMastCode(String mastCode){
+        return baseMapper.existMgdMastCode(mastCode);
+    }
+
+    @Override
+    public int existMgdDesc(String desc ,String start,String end){
+        return baseMapper.existMgdDesc( desc , start, end);
+    }
 }

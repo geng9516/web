@@ -258,5 +258,17 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
 
     @Select("select MGD_CWORKID FROM TMG_V_MGD_HOLFLG WHERE MGD_CHOLFLG = #{value}")
     String getHolFlg(String kubunid);
+
+    @Select("SELECT mast_generic_detail_seq.NEXTVAL FROM dual")
+    String getMgdSeq();
+
+    @Select("SELECT MAX(MGD_CGENERICDETAILID_CK) + 10 FROM SPWM.MAST_GENERIC_DETAIL WHERE MGD_CGENERICGROUPID = #{value}")
+    String getMgdDetailId(String groupId);
+
+    @Select("SELECT count(*) FROM MAST_GENERIC_DETAIL WHERE MGD_CMASTERCODE = #{value}")
+    int existMgdMastCode(String mastCode);
+
+    @Select("SELECT count(*) FROM MAST_GENERIC_DETAIL WHERE MGD_CGENERICDETAILDESC = #{desc} and (#{start}  between MGD_DSTART_CK and   MGD_DEND  or  #{end} between MGD_DSTART_CK and   MGD_DEND)")
+    int existMgdDesc(@Param("desc")String desc, @Param("start")String start, @Param("end")String end);
 }
 

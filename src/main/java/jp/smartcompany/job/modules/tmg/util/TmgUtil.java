@@ -2013,6 +2013,17 @@ public class TmgUtil {
     public static final int COL_TMGSTATUS_IS_FUTURE = 4;
 
 
+
+    /**
+     * custId
+     */
+    public static final String Cs_CUSTID = "01";
+
+
+    /**
+     * compId
+     */
+    public static final String Cs_COMPID = "01";
     /**
      * システム日付を返す
      *
