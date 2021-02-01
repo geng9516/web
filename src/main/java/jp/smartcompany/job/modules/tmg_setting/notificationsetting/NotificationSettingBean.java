@@ -112,6 +112,27 @@ public class NotificationSettingBean {
         });
     }
 
+    //TMG_NTFHOLRESTTYPE
+//    String = "REL_文字1"    代表申請区分
+//    String = "REL_文字2"    申請種類グルーピングコード
+//    String = "REL_文字3"    ファンクションID
+
+//    String = "REL_数字1"     'ソート順
+
+    //TMG_NTFCHECK
+//    String = "REL_文字1"    プログラム名
+//    String = "REL_文字2"    申請種類 ntftype
+//    String = "REL_文字3"    '申請種類グルーピングコード todo
+//    String = "REL_数字1"     '取得上限値
+//    String = "REL_数字2"     '取得単位
+//    String = "REL_数字3"     '予定勤務時間下限値 todo
+
+
+
+
+
+
+
 
     /**共通MGD 内容设置
      * @param mgdDolist
