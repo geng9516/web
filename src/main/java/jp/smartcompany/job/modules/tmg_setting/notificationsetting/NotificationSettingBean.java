@@ -8,6 +8,7 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.TypeChildrenVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.mgdDto;
 import lombok.RequiredArgsConstructor;
@@ -75,8 +77,8 @@ public class NotificationSettingBean {
 
 
     //TMG_APPROVAL_LEVEL
-//      String = "REL_文字2"
-//      String = "APP_文字2"
+//      String = "REL_文字2"   TMG_NTFTYPE|3072
+//      String = "APP_文字2"   TMG_APPROVAL_LEVEL|1
 
 
 
@@ -102,10 +104,10 @@ public class NotificationSettingBean {
         //todo：排序
         mgdDoList.stream().sorted(Comparator.comparing(MastGenericDetailDO::getMgdNsparenum1)).collect(Collectors.toList());
 
-        int index = 0;
-        mgdDoList.stream().forEach(e->{
-            if(existList.get(index).equals(0)){
-                iMastGenericDetailService.getBaseMapper().insert(e);
+        List<MastGenericDetailDO> finalMgdDoList = mgdDoList;
+        Stream.iterate(0, i -> i + 1).limit(mgdDoList.size()).forEach(i -> {
+            if(existList.get(i).equals(0)){
+                iMastGenericDetailService.getBaseMapper().insert(finalMgdDoList.get(i));
             }else{
                 //todo重复
             }
@@ -229,5 +231,87 @@ public class NotificationSettingBean {
         return existList;
     }
 
+
+
+    //显示画面type
+    private TypeChildrenVo num2TypeHandle(String typeId){
+        if (StrUtil.hasBlank(typeId)){
+            return null;
+        }
+        int num = Integer.valueOf(typeId);
+        String viewflg="";
+        for(int i=0;i<14;i++){
+            viewflg  += (num%2);
+            num = num/2;
+        }
+        TypeChildrenVo tc = new TypeChildrenVo();
+        if (viewflg.length()==14){
+            byte[] bytes;
+            bytes=viewflg.getBytes();
+            if (bytes[0]=='1'){ tc.setTransfer(true); }//振替先・元
+            if (bytes[1]=='1'){ tc.setTimeZone(true); }//時間帯
+            if (bytes[2]=='1'){ tc.setWorkTime(true); }//始業・終業
+            if (bytes[3]=='1'){ tc.setSickName(true); }//傷病名
+            if (bytes[4]=='1'){ tc.setSickApply(true); }//労災申請有無
+            if (bytes[5]=='1'){ tc.setPeriod(true); }//起算日
+            if (bytes[6]=='1'){ tc.setAddDate(true); }//加算日数
+            if (bytes[7]=='1'){ tc.setLabel(true); }//勤務時間ラベル
+            if (bytes[8]=='1'){ tc.setRestTime(true); }//休憩時間
+            if (bytes[9]=='1'){ tc.setName(true); }//氏名
+            if (bytes[10]=='1'){ tc.setRelation(true); }//続柄
+            if (bytes[11]=='1'){ tc.setBirthday(true); }//生年月日
+            if (bytes[12]=='1'){ tc.setDaysOfWeek(true); }//曜日
+            if (bytes[13]=='1'){ tc.setTargetNumber(true); }//対象者の人数
+        }
+        return tc;
+    }
+
+    //显示画面type转换
+    private String type2NumHandle(TypeChildrenVo type){
+        double num = 0;
+        if(type.isTransfer()){num = num + Math.pow(2, 0);}
+        if(type.isTimeZone()){num = num + Math.pow(2, 1);}
+        if(type.isWorkTime()){num = num + Math.pow(2, 2);}
+        if(type.isSickName()){num = num + Math.pow(2, 3);}
+        if(type.isSickApply()){num = num + Math.pow(2, 4);}
+        if(type.isPeriod()){num = num + Math.pow(2, 5);}
+        if(type.isAddDate()){num = num + Math.pow(2, 6);}
+        if(type.isLabel()){num = num + Math.pow(2, 7);}
+        if(type.isRestTime()){num = num + Math.pow(2, 8);}
+        if(type.isName()){num = num + Math.pow(2, 9);}
+        if(type.isRelation()){num = num + Math.pow(2, 10);}
+        if(type.isBirthday()){num = num + Math.pow(2, 11);}
+        if(type.isDaysOfWeek()){num = num + Math.pow(2, 12);}
+        if(type.isTargetNumber()){num = num + Math.pow(2, 13);}
+        return  String.valueOf(num);
+    }
+
+
+
+
+    //去空格 全角处理
+    public static String w2f(String src) {
+        if (StrUtil.hasBlank(src)) {
+            return src;
+        }
+        char SBC_CHAR_START = 65281; // 全角！
+        char SBC_CHAR_END = 65374; // 全角～
+        char SBC_SPACE = 12288; // 全角空格 12288
+        char DBC_SPACE = ' '; // 半角空格
+        int CONVERT_STEP = 65248; // 全角半角转换间隔
+
+        StringBuilder buf = new StringBuilder(src.length()+1);
+        char[] ca = src.toCharArray();
+        for (int i = 0; i < src.length(); i++) {
+            if (ca[i] >= SBC_CHAR_START && ca[i] <= SBC_CHAR_END) { // 如果位于全角！到全角～区间内
+                buf.append((char) (ca[i] - CONVERT_STEP));
+            } else if (ca[i] == SBC_SPACE) { // 如果是全角空格
+                buf.append(DBC_SPACE);
+            } else { // 不处理全角空格，全角！到全角～区间外的字符
+                buf.append(ca[i]);
+            }
+        }
+        return buf.toString();
+    }
 
 }
