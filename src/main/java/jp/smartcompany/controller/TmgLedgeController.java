@@ -38,7 +38,7 @@ public class TmgLedgeController {
     }
 
     /**
-     * 帳票出力画面　ini画面用データ取得
+     * 帳票出力画面　ini画面用PDFデータ取得
      *
      * @param psDBBean
      *
@@ -51,4 +51,21 @@ public class TmgLedgeController {
         tmgLedgerBean.execute(request,psDBBean,ledgerParamVO,response);
 
     }
+
+    /**
+     * 帳票出力画面　ini画面用CSVデータ取得
+     *
+     * @param psDBBean
+     *
+     * @return
+     */
+    @GetMapping(value = "csvDownload", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public void csvDownload(HttpServletRequest request, @RequestAttribute("BeanName") PsDBBean psDBBean,
+                            LedgerParamVO ledgerParamVO, HttpServletResponse response) throws Exception {
+
+        tmgLedgerBean.execute(request,psDBBean,ledgerParamVO,response);
+
+    }
+
 }

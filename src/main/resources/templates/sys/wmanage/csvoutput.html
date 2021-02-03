@@ -211,15 +211,15 @@
 
                 <Divider></Divider>
                 <Row>
-                    <i-col span="9" style="margin-left: 29.933333%">
-                        <i-button :loading="pdfDownloadLoading" @click="downLoadByPdf" class="mt10 mr10" ghost
-                            icon="md-download" type="primary" style="width: 450px;"
+                    <i-col style="margin-left: 29.933333%">
+                        <i-button :loading="pdfDownloadLoading" @click="downLoadByPdf" class="mr10" ghost
+                            icon="md-download" type="primary" style="width: 220px;"
                             v-if="curFileTypeInfo.mgdPdfDlflg=='TMG_ONOFF|1'">
                             PDFダウンロード
                         </i-button>
 
-                        <i-button :loading="csvDownloadLoading" @click="downLoadByPdf" class="mt10" ghost
-                            icon="md-download" type="primary" style="width: 450px;"
+                        <i-button :loading="csvDownloadLoading" @click="downLoadByCsv" class="mr10" ghost
+                            icon="md-download" type="primary" style="width: 220px;"
                             v-if="curFileTypeInfo.mgdCsvDlflg=='TMG_ONOFF|1'">
                             CSVダウンロード
                         </i-button>
@@ -465,6 +465,7 @@
                     if (this.errorCheck()) {
                         try {
                             this.pdfDownloadLoading = true
+                            this.ledgerParamVO.txtAction="ACT_LEDGER_PDF_DOWNLOAD"
                             const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO, true)
                             Utils.downloadFile(data, decodeURI(headers.filename, "UTF-8"), 'application/pdf')
                         } catch (e) {
@@ -474,6 +475,25 @@
                         } finally {
                             this.errorInfo = false
                             this.pdfDownloadLoading = false
+                            this.isSearchHistory = false
+                        }
+                    }
+                },
+                 async downLoadByCsv() {
+                    console.log(this.empName)
+                    if (this.errorCheck()) {
+                        try {
+                            this.csvDownloadLoading = true
+                            this.ledgerParamVO.txtAction="ACT_LEDGER_CSV_DOWNLOAD"
+                            const { data, headers } = await this.http.get('sys/tmgLedger/csvDownload', this.ledgerParamVO)
+                            Utils.downloadFile(data, decodeURI(headers.filename, "UTF-8"), 'text/csv')
+                        } catch (e) {
+                            this.csvDownloadLoading = false
+                            this.isSearchHistory = false
+                            return
+                        } finally {
+                            this.errorInfo = false
+                            this.csvDownloadLoading = false
                             this.isSearchHistory = false
                         }
                     }

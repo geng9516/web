@@ -29,6 +29,10 @@ import java.util.*;
 @Slf4j
 public class TmgLedgerBean {
 
+    private final TmgLedgerCsvDlAttendancebkMon csvDlMon;
+
+    private final TmgLedgerCsvDlOvertimeList csvDlList;
+
     /** 帳票出力用ディスクリプタ */
     private static final String BEAN_DESC = "TmgLedger";
     /** 帳票出力パラメータ */
@@ -233,7 +237,7 @@ public class TmgLedgerBean {
             String sDBCustId   = SysUtil.escDBString(param.getCustomerID());
             String sDBCompId   = SysUtil.escDBString(param.getCompanyID());
             String sDBLang     = SysUtil.escDBString(param.getLanguage());
-            String sDBMasterId = SysUtil.escDBString(TmgUtil.Cs_MGD_LEDGER_CSV_DOWNLOAD + "|" + psDBBean.getReqParam(TmgLedgerConst.REQ_TARGET_LEDGER_SHEET));
+            String sDBMasterId = SysUtil.escDBString(TmgUtil.Cs_MGD_LEDGER_CSV_DOWNLOAD + "|" +param.getsLedgerSheetId());
 
             // 0 CSVダウンロード設定　検索
             vQuery.add(buildSQLForCSVDownloadInfo(sDBCustId, sDBCompId, sDBMasterId, sDBLang));
@@ -248,10 +252,20 @@ public class TmgLedgerBean {
             String sFileName  = (String)vecRec.get(1);    // 検索結果の１項目目（ファイル名）を取得
 
             // 選択した帳票のダウンロードクラスのインスタンスを取得。
-            TmgLedgerCsvDl csvDl = (TmgLedgerCsvDl)Class.forName(sClassName).newInstance();
+//            TmgLedgerCsvDl csvDl = (TmgLedgerCsvDl)Class.forName(sClassName).newInstance();
+//            csvDl.setParam(psDBBean, param); // パラメータ情報を設定
+//            csvDl.download(sFileName);   // ＣＳＶファイルをダウンロード
 
-            csvDl.setParam(psDBBean, param); // パラメータ情報を設定
-            csvDl.download(sFileName);   // ＣＳＶファイルをダウンロード
+            switch(param.getsLedgerSheetId()){
+                case "ATTENDANCEBK_MONTHLY":
+                    csvDlMon.setParam(psDBBean, param); // パラメータ情報を設定
+                    csvDlMon.download(sFileName);   // ＣＳＶファイルをダウンロード
+                    break;
+                case  "OVERTIME_LIST":
+                    csvDlList.setParam(psDBBean, param); // パラメータ情報を設定
+                    csvDlList.download(sFileName);   // ＣＳＶファイルをダウンロード
+                    break;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -337,6 +351,20 @@ public class TmgLedgerBean {
         mapParam.put(TmgLedgerConst.SUBREPORT_DIR,           getReportDir());             // サブレポートディレクトリ
 
         return mapParam;
+    }
+
+    /**
+     * 帳票ダウンロード時のパラメータ設定を行う。
+     * @param param 帳票出力パラメータクラス
+     * @return HashMap
+     */
+    private List<List<Object>> getCsvReportParam(Vector param) throws FileNotFoundException {
+
+        HashMap mapParam = new HashMap();
+
+        List<List<Object>> data=new ArrayList<List<Object>>();
+        data=Collections.list(param.elements());
+        return data;
     }
 
     private String getReportDir() {

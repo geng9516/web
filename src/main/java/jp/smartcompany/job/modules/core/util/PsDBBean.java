@@ -5,6 +5,7 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import lombok.*;
 import java.util.*;
+import jp.smartcompany.framework.compatible.business.Version3CompatibleLogic;
 
 /**
  * 直接通过Spring注入即可使用
@@ -419,25 +420,34 @@ public class PsDBBean {
         }
     }
 
-//    public boolean bDownload = false;
-//    public String gsAttachmentType = null;
-//    public void setDownload(boolean bDownload) {
-//        this.bDownload = bDownload;
-//
-//        this.gsAttachmentType = null;
-//    }
-//    public String sDownloadContentType = null;
-//    public void setDownloadContentType(String sDownloadContentType) {
-//        this.sDownloadContentType = sDownloadContentType;
-//    }
-//    public byte[] bytDownload = null;
-//    public void setDownloadStream(byte[] bytDownload) {
-//        this.bytDownload = bytDownload;
-//    }
-//    protected String sDownloadFileName = null;
-//    public void setDownloadFileName(String sDownloadFileName) {
-//        this.sDownloadFileName = sDownloadFileName;
-//    }
+    public boolean bDownload = false;
+    public String gsAttachmentType = null;
+    public void setDownload(boolean bDownload) {
+        this.bDownload = bDownload;
+
+        this.gsAttachmentType = null;
+    }
+    public String sDownloadContentType = null;
+    public void setDownloadContentType(String sDownloadContentType) {
+        this.sDownloadContentType = sDownloadContentType;
+    }
+    public byte[] bytDownload = null;
+    public void setDownloadStream(byte[] bytDownload) {
+        this.bytDownload = bytDownload;
+    }
+    protected String sDownloadFileName = null;
+    public void setDownloadFileName(String sDownloadFileName) {
+        this.sDownloadFileName = sDownloadFileName;
+    }
+
+    public String escDBString(String sString) {
+        return PsUtil.getPsUtil().transStringNullToDB(
+                PsUtil.getPsUtil().escapeQuote(sString));
+    }
+
+    public String toDBDate(String sDate) {
+        return PsUtil.getPsUtil().transDateNullToDB(sDate);
+    }
 
 //    /**
 //     * システムプロパティ情報を取得します<br>
@@ -447,14 +457,14 @@ public class PsDBBean {
 //        return scCacheUtil.getSystemProperty(sSysPropertyKey);
 //    }
 //
-//    /**
-//     * Version3CompatibleLogicの取得
-//     * @return gV3CompatibleLogic Version3CompatibleLogic
-//     */
-//    public Version3CompatibleLogic getV3Logic() {
-//        return SpringUtil.getBean(Version3CompatibleLogic.class);
-//    }
-//
+    /**
+     * Version3CompatibleLogicの取得
+     * @return gV3CompatibleLogic Version3CompatibleLogic
+     */
+    public Version3CompatibleLogic getV3Logic() {
+        return SpringUtil.getBean(Version3CompatibleLogic.class);
+    }
+
 //    public int setInsertValues(Vector vecQuery, String beandesc) {
 //        try {
 //            return getV3Logic().setInsertValues(vecQuery, getUserCode(),
@@ -465,33 +475,32 @@ public class PsDBBean {
 //        return 0;
 //    }
 //
-//    /**
-//     * １つ以上のSELECT文をセキュリティ判定なしで実行します。
-//     * @param vecQuery	   SELECT文のVector
-//     * @param strBeanDesc ログ出力用Bean識別子
-//     * @return PsResult   SQLの実行結果
-//     * @throws Exception  システム例外
-//     */
-//    public PsResult getValuesforMultiquery(Vector vecQuery, String strBeanDesc)
-//            throws Exception {
-//        try {
-//            if (vecQuery != null && strBeanDesc != null) {
-//                return getV3Logic().executeMultiQuery(
-//                        vecQuery, getCustID(),
-//                        getCompCode(), getUserCode(),
-//                        getGroupID(), 	strBeanDesc,
-//                        getSystemCode(), getStrGUID(),
-//                        false);
-//            } else {
-//                throw new Exception(
-//                        SysUtil.getpropertyvalue(
-//                                getLanguage(), "ErrorCode_25"));
-//            }
-//        } catch (Exception e) {
-//            throw e;
-//        }
-//    }
-//
+    /**
+     * １つ以上のSELECT文をセキュリティ判定なしで実行します。
+     * @param vecQuery	   SELECT文のVector
+     * @param strBeanDesc ログ出力用Bean識別子
+     * @return PsResult   SQLの実行結果
+     * @throws Exception  システム例外
+     */
+    public PsResult getValuesforMultiquery(Vector vecQuery, String strBeanDesc)
+            throws Exception {
+        try {
+            if (vecQuery != null && strBeanDesc != null) {
+                return getV3Logic().executeMultiQuery(
+                        vecQuery, getCustID(),
+                        getCompCode(), getUserCode(),
+                        getGroupID(), 	strBeanDesc,
+                        getSystemCode(), getStrGUID(),
+                        false);
+            } else {
+                throw new Exception(PsUtil.getPsUtil().getpropertyvalue(
+                        getLanguage(), "ErrorCode_25"));
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 //    public Object valueAtColumnRow(Vector result,int column,int row ) throws ArrayIndexOutOfBoundsException
 //    {
 //        int vnest = 0;
