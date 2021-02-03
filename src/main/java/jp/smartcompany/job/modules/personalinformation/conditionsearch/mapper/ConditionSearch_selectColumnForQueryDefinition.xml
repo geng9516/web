@@ -3,7 +3,7 @@
 
 <mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
 
-    <select id="selectColumnForQueryDefinition" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.ColumnQueryDefinitionOptionDTO">
+    <select id="selectColumnForQueryDefinition" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO">
         SELECT
             DISTINCT
             MD_CCOLUMNNAME AS name,

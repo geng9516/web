@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.bo;
 
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSelectDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionWhereDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class SqlDTO {
+public class SqlBO {
 
     /**
      * Select句
@@ -30,5 +32,6 @@ public class SqlDTO {
      * order句
      */
     private String orderStatement;
+
 
 }

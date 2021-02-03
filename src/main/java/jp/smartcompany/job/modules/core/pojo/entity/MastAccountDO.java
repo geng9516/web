@@ -20,7 +20,8 @@ import lombok.experimental.Accessors;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("mast_account")
+@KeySequence("MAST_ACCOUNT_SEQ ")
+@TableName("MAST_ACCOUNT")
 public class MastAccountDO implements Serializable {
 
 private static final long serialVersionUID=1L;
@@ -28,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-                @TableId(value = "ma_id", type = IdType.AUTO)
+                @TableId(value = "ma_id")
                 private Long maId;
 
         /**

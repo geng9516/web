@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@
 
 <mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
 
-    <select id="selectTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.TableOptionDTO">
+    <select id="selectTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO">
         SELECT
             PSMASTER.FUNC_GET_TABLE_DESC('01',a.MD_CTABLENAME,'ja') as description,
             a.MD_CTABLENAME as name

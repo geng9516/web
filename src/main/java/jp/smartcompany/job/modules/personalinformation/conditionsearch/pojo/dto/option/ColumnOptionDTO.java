@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto;
+package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option;
 
 import lombok.Getter;
 import lombok.Setter;

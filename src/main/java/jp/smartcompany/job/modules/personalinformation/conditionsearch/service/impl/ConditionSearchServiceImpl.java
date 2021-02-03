@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

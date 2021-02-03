@@ -3,7 +3,7 @@
 
 <mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
 
-    <select id="selectColumnByTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.ColumnOptionDTO">
+    <select id="selectColumnByTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO">
         SELECT
             MD_CTABLENAME as tableName,
             MD_CCOLUMNNAME as columnName,

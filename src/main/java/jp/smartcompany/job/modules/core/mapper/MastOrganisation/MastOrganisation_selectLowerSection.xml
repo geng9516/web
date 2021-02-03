@@ -4,27 +4,29 @@
 
     <select parameterType="map" id="selectLowerSection" resultType="string">
         -- 下位組織情報取得（組織指定）
-        SELECT	ORG_TERGET.MO_CSECTIONID_CK AS moCsectionidCk
-        FROM	MAST_ORGANISATION ORG_TERGET,
-        MAST_ORGANISATION ORG_ROOT
+        SELECT
+               ORG_TERGET.MO_CSECTIONID_CK AS moCsectionidCk
+        FROM
+             MAST_ORGANISATION ORG_TERGET,
+             MAST_ORGANISATION ORG_ROOT
         WHERE
         -- 対象となる組織取得
-        ORG_TERGET.MO_CCUSTOMERID_CK_FK = #{custId}
-        AND		ORG_TERGET.MO_CCOMPANYID_CK_FK = #{compId}
-        AND		ORG_TERGET.MO_CSECTIONID_CK != #{sectionId}
-        AND		ORG_TERGET.MO_CLANGUAGE = 'ja'
-        AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> #{date}
-        AND		ORG_TERGET.MO_DEND >= #{date}
+            ORG_TERGET.MO_CCUSTOMERID_CK_FK = #{custId}
+            AND		ORG_TERGET.MO_CCOMPANYID_CK_FK = #{compId}
+            AND		ORG_TERGET.MO_CSECTIONID_CK != #{sectionId}
+            AND		ORG_TERGET.MO_CLANGUAGE = 'ja'
+            AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> #{date}
+            AND		ORG_TERGET.MO_DEND >= #{date}
         -- 基点となる組織取得
-        AND		ORG_ROOT.MO_CCUSTOMERID_CK_FK = #{custId}
-        AND		ORG_ROOT.MO_CCOMPANYID_CK_FK = #{compId}
-        AND		ORG_ROOT.MO_CSECTIONID_CK = #{sectionId}
-        AND		ORG_ROOT.MO_CLANGUAGE = 'ja'
-        AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> #{date}
-        AND		ORG_ROOT.MO_DEND >= #{date}
-        AND		ORG_TERGET.MO_CLAYEREDSECTIONID LIKE ORG_ROOT.MO_CLAYEREDSECTIONID ||'%'
+            AND		ORG_ROOT.MO_CCUSTOMERID_CK_FK = #{custId}
+            AND		ORG_ROOT.MO_CCOMPANYID_CK_FK = #{compId}
+            AND		ORG_ROOT.MO_CSECTIONID_CK = #{sectionId}
+            AND		ORG_ROOT.MO_CLANGUAGE = 'ja'
+            AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> #{date}
+            AND		ORG_ROOT.MO_DEND >= #{date}
+            AND		ORG_TERGET.MO_CLAYEREDSECTIONID LIKE ORG_ROOT.MO_CLAYEREDSECTIONID ||'%'
         ORDER BY
-        ORG_TERGET.MO_CSECTIONID_CK
+            ORG_TERGET.MO_CSECTIONID_CK
     </select>
 
 </mapper>

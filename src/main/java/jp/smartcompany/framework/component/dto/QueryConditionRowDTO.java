@@ -55,7 +55,7 @@ public class QueryConditionRowDTO  {
     /** クエリ(結合式)  */
     private String joinquery;
     /** 自分のフラグ */
-//    private String myflag;
+    private String myflag;
     /** VERSIONNO */
 //    private Integer versionNo;
     /** 削除フラグ  */

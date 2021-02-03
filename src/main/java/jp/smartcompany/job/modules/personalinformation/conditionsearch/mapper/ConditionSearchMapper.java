@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -72,7 +72,7 @@ public interface ConditionSearchMapper extends BaseMapper<MastDatadictionaryDO> 
             " WHERE HSW_CTABLE = #{table}" +
             "AND HSW_CCOLUMN = #{column}" +
             "AND HSW_NSETTINGID = #{settingId}")
-    List<ConditionWhereOptionDTO> selectWhereOptionsForType(@Param("table") String tableName,@Param("column") String columnName,@Param("settingId") Long settingId);
+    List<ConditionWhereOptionDTO> selectWhereOptionsForType(@Param("table") String tableName, @Param("column") String columnName, @Param("settingId") Long settingId);
 
     @Select("SELECT" +
             " HSW_CVALUE as value," +
