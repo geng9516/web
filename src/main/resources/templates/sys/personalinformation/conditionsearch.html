@@ -32,31 +32,75 @@
             </div>
             <span style="position: absolute; right: 27px;">
                 <span style="font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
-                <i-button class="mr5" type="primary" ghost icon="md-cloud-download" @click="update" :loading="editLoading">読込</i-button>
+                <i-button class="mr5" type="primary" ghost icon="md-cloud-download" @click="()=>  console.log(this.displayCheckboxList)" :loading="editLoading">読込</i-button>
                 <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存</i-button>
                 <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
             </span>
             <Tabs type="card" :animated="false" class="mt20">
                 <tab-pane label="表示項目選択">
-                    <Row>
+                    <Row :gutter="8">
                         <i-col span="8">
-                            <div class="ivu-transfer-list" style="width: 250px; height: 300px;">
+                            <div class="ivu-transfer-list width100" style="height: 500px;">
                                 <div class="ivu-transfer-list-header">
-                                    <span class="ivu-transfer-list-header-title">表示項目を選択してください</span>
+                                    <span class="ivu-transfer-list-header-title">テーブルを選択してください</span>
                                 </div>
                                 <div class="ivu-transfer-list-body">
                                     <ul class="ivu-transfer-list-content">
-                                        <li class="ivu-transfer-list-content-item">
-                                            <label class="ivu-checkbox-wrapper ivu-checkbox-default">
-                                                <span class="ivu-checkbox"><span class="ivu-checkbox-inner"></span> <input
-                                                    type="checkbox" class="ivu-checkbox-input"></span>
-                                        </label> <span>Content 1</span></li>
-                                        <li class="ivu-transfer-list-content-not-found">列表为空</li>
+                                        <li :class="item.name === curSelectedDisplay ? 'ivu-transfer-list-content-item conditionlist-transfer primary-set' : 'ivu-transfer-list-content-item conditionlist-transfer'"
+                                            v-for="item of displayList" :key="item.name"
+                                            @click="searchDisplayList(item.name)">
+                                            {{ item.description }}
+                                        </li>
+                                        <li class="ivu-transfer-list-content-not-found"></li>
                                     </ul>
                                 </div>
                             </div>
                         </i-col>
                         <i-col span="16">
+                          <Row :gutter="8">
+                            <i-col span="11">
+                              <div class="ivu-transfer-list width100" style="height: 500px;">
+                                <div class="ivu-transfer-list-header">
+                                    <span class="ivu-transfer-list-header-title">表示項目を選択してください</span>
+                                </div>
+                                <div class="ivu-transfer-list-body">
+                                    <ul class="ivu-transfer-list-content">
+                                        <li class="ivu-transfer-list-content-item conditionlist-transfer"
+                                            v-for="(item, i) of displayResultList" :key="item.columnName"
+                                            @click="handleClickedDisplayLeaf(i)">
+                                            <Checkbox v-model="displayCheckboxList[i]" :true-value="i"></Checkbox>
+                                            {{ item.columnFieldName }}
+                                        </li>
+                                        <li class="ivu-transfer-list-content-not-found"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            </i-col>
+                            <i-col span="2" class="tc">
+                              <div class="ivu-transfer-operation" style="margin: 0; padding-top: 190px;">
+                                <i-button type="primary" size="small" icon="ios-arrow-forward" ghost @click="addDisplayList">追加</i-button>
+                                <i-button type="primary" size="small" icon="ios-arrow-back" ghost @click="delDisplayList">削除</i-button>
+                              </div>
+                            </i-col>
+                            <i-col span="10">
+                              <div class="ivu-transfer-list width100" style="height: 500px;">
+                                <div class="ivu-transfer-list-header">
+                                    <span class="ivu-transfer-list-header-title">選択された表示項目</span>
+                                </div>
+                                <div class="ivu-transfer-list-body">
+                                    <ul class="ivu-transfer-list-content">
+                                        <li class="ivu-transfer-list-content-item conditionlist-transfer"
+                                            v-for="(item, i) of displayPostList" :key="item.columnName"
+                                            @click="handleClickedSelectedLeaf(i)">
+                                            <Checkbox v-model="displayCheckboxSelectedList[i]" :true-value="i"></Checkbox>
+                                            {{ item.columnFieldName }}
+                                        </li>
+                                        <li class="ivu-transfer-list-content-not-found"></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            </i-col>
+                          </Row>
                         </i-col>
                     </Row>
                 </tab-pane>
@@ -95,13 +139,21 @@
                 groupId: '0',
                 isAll: false,
               },
+              curSelectedDisplay: '',
               tableData: [],
+              displayList:[],
+              displayCheckboxList: [],
+              displayCheckboxSelectedList: [],
+              displayResultList: [],
+              displayPostList: [],
               conditionsList: [],
               contentScrollTop: 0
             }
           },
           async created() {
-            this.getTableData()
+            // this.getTableData()
+            this.getDisplayList()
+            this.getConditionList()
             window.addEventListener('scroll', this.handleScroll, { passive: true })
           },
           beforeDestroy() {
@@ -125,12 +177,71 @@
               })
               this.loading = true
               try {
-                const { data } = await this.http.get('sys/appmanager/applist', OPTS)
+                const { data } = await this.http.get('sys/conditionsearch/applist', OPTS)
                 this.tableData = data
               } catch (error) {
               } finally {
                 this.loading = false
               }
+            },
+            async getDisplayList() {
+                try {
+                const { data } = await this.http.get('sys/conditionsearch/options/tbl')
+                this.displayList = data
+                if(data.length > 0) {
+                    this.searchDisplayList(data[0].name)
+                }
+              } catch (error) {
+              } finally {
+                // this.loading = false
+              }
+            },
+            async getConditionList() {
+                try {
+                const { data } = await this.http.get('sys/conditionsearch/defs/tbl')
+                this.conditionsList = data
+              } catch (error) {
+              } finally {
+                // this.loading = false
+              }
+            },
+            searchDisplayList: Debounce(async function(name){
+                this.curSelectedDisplay = name
+                try {
+                  const { data } = await this.http.get('sys/conditionsearch/options/col',{table: name})
+                  this.displayResultList = data
+              } catch (error) {
+              } finally {
+                // this.loading = false
+              }
+            }),
+            handleClickedDisplayLeaf(i) {
+              if(!this.displayCheckboxList[i] && this.displayCheckboxList[i] !== 0) this.$set(this.displayCheckboxList, i, i)
+              else this.$set(this.displayCheckboxList, i, undefined)
+            },
+            handleClickedSelectedLeaf(i) {
+              if(!this.displayCheckboxSelectedList[i] && this.displayCheckboxSelectedList[i] !== 0) this.$set(this.displayCheckboxSelectedList, i, i)
+              else this.$set(this.displayCheckboxSelectedList, i, undefined)
+            },
+            addDisplayList() {
+              let index = 0
+              this.displayCheckboxList.forEach(e=>{
+                if(e === 0 || e) {
+                  this.displayPostList.push(...this.displayResultList.splice(e - index, 1))
+                  this.$set(this.displayCheckboxList, e, undefined)
+                  index += 1
+                }
+              })
+            },
+            delDisplayList() {
+              let index = 0
+              this.displayCheckboxSelectedList.forEach(e=>{
+                if(e === 0 || e) {
+                  this.displayResultList.push(...this.displayPostList.splice(e - index, 1))
+                  this.$set(this.displayCheckboxSelectedList, e, undefined)
+                  index += 1
+                }
+              })
             },
             async update() {
               this.$Modal.confirm({
