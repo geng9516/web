@@ -77,7 +77,7 @@ public class NotificationSettingBean {
 
 
     //TMG_APPROVAL_LEVEL
-//      String = "REL_文字2"   TMG_NTFTYPE|3072
+//      String = "APP_文字2"   TMG_NTFTYPE|3072
 //      String = "APP_文字2"   TMG_APPROVAL_LEVEL|1
 
 
@@ -87,8 +87,8 @@ public class NotificationSettingBean {
 //    String = "REL_文字2"    消化時間の換算区分
 //    String = "REL_文字3"    '営業日or暦日区分
 //    String = "REL_文字4"    '連続チェック有無（0：無、1：有）
-//    String = "REL_文字5"     年度開始月
-//    String = "REL_数字1"     '同一とみなす起算日の範囲 （null：無、0：有）
+//    String = "REL_数字1"     年度開始月
+//    String = "REL_数字2"     '同一とみなす起算日の範囲 （null：無、0：有）
 //    String = "REL_数字3"     '消化時間に端数がある場合の換算区分
 
 
@@ -118,7 +118,6 @@ public class NotificationSettingBean {
 //    String = "REL_文字1"    代表申請区分
 //    String = "REL_文字2"    申請種類グルーピングコード
 //    String = "REL_文字3"    ファンクションID
-
 //    String = "REL_数字1"     'ソート順
 
     //TMG_NTFCHECK
@@ -286,11 +285,18 @@ public class NotificationSettingBean {
         return  String.valueOf(num);
     }
 
-
+    //获取排序 重新排序用
+    private Long[] getSortList(int num){
+        Long[] sortList = new Long[num];
+        for(int i = 0 ;i < num ; i++ ){
+            sortList[i] = Long.valueOf(i*10);
+        }
+        return sortList;
+    }
 
 
     //去空格 全角处理
-    public static String w2f(String src) {
+    private static String w2f(String src) {
         if (StrUtil.hasBlank(src)) {
             return src;
         }
