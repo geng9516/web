@@ -19,6 +19,7 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
+                <i-button type="primary" icon="md-create" 　@click="appliesPattern()" :loading="bulkApprovalLoading" :disabled="applicationShow" >勤務パターン適用</i-button>
                 <i-button icon="md-create" disabled v-if="!addPatternShow">
                     新規
                 </i-button>
@@ -232,6 +233,32 @@
         <Spin size="large" fix v-if="mergePatternLoading"></Spin>
     </Modal>
     <!-- 勤務パターン追加END -->
+    <!-- 勤務パターン適用START -->
+    <Modal v-model="isAppliesShow" class="tc" title="勤務パターン適用" footer-hide :mask-closable="false" width="1130"　@on-cancel="appliesCancel">
+            <Row :gutter="16" class="mb10">
+              <i-col class="tr" offset="11" span="13">
+                  <i-button  :loading="appliesLoading"  @click="bulkApproval2" class="tr" type="primary">勤務パターン適用</i-button>
+              </i-col>
+            </Row>
+            <Alert class="primary-info tl" v-if="periodDate != ''">※チェックされている職員が更新されます。</Alert>
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="applies_column" :data="sk_list_applies" border
+                     :loading="tableLoading" no-data-text="" :row-class-name="() => 'select-col'" @on-selection-change="tableSelectChange2" ref="selection2">
+                <template slot-scope="{ row }" slot="empname">
+                    <span class="ml5">{{row.empname}}</span>
+                </template>
+                <template slot-scope="{ row, index }" slot="tpa_cpatternname">
+                    <i-select v-model="row.tpaa_cpatternid" class="mr30" @on-change="editlistBack(row)" placeholder="" transfer>
+                        <i-option value="000000000000000000" >{{noPtnAppliseName}}</i-option>
+                        <i-option v-for="(item, index) of tmgPatternList" :key="index" :value="item.tpa_cpatternid" :label="item.tpa_cpatternname" ></i-option>
+                    </i-select>
+                </template>
+                <template slot-scope="{ row }" slot="periodDateStart">
+                    <date-picker class="tl" :value="row.periodDateStart"  @on-change="handleChangeCheckPeriod($event, row)" format="yyyy/MM/dd" transfer type="date"></date-picker>
+                    <span >～</span>
+                </template>
+            </i-table>
+    </Modal>
+    <!-- 勤務パターン適用END -->
     <!-- CSVファイル取込STARD -->
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
         <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select width100" type="drag">
@@ -393,6 +420,50 @@
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     file: null
                 },
+                //勤務パターン適用開始
+                isAppliesShow: false,
+                applicationShow: false,
+                appliesLoading: false,
+                noPtnAppliseName: '',
+                sk_list_applies: [],
+                tmgPsaVO: {
+                    txtAction: 'ACTION_APPLIES_SAVE',
+                    sectionId: '',
+                    groupId: '',
+                    txtExecuteEmpId: '',
+                    txtexecutePatternId: '',
+                    txtexecuteDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                //勤務パターン適用タイトル
+                applies_column: [
+                    {
+                        type: 'selection',
+                        width: 40,
+                        align: 'center'
+                    },
+                    {
+                        title: '氏名',
+                        slot: 'empname',
+                        minWidth: 80,
+                        align: 'left'
+                    },
+                    {
+                        title: '勤務パターン',
+                        minWidth: 100,
+                        slot: 'tpa_cpatternname',
+                        align: 'left'
+                    },
+                    {
+                        title: '期間',
+                        minWidth: 120,
+                        slot: 'periodDateStart',
+                        align: 'left'
+                    }
+
+                ],
+                //勤務パターン適用終了
                 empDeptLoading: false,
                 deptDrawShow: false,
                 empDrawShow: false,
@@ -546,6 +617,7 @@
                         this.treeData = Utils.convertTreeData(groupList)
                     }
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                    this.applicationShow = this.isAfterDate(recordDate,this.periodDate)
                 } catch (error) {
                     return
                 } finally {
@@ -609,6 +681,8 @@
                 this.query_sk.sectionId = e[0].secid
                 this.query_sk.groupId = e[0].groupId
 
+                this.tmgPsaVO.sectionId = e[0].secid
+                this.tmgPsaVO.groupId = e[0].groupId
                 //適用時間を取得する
                 if (!this.periodDate) {
                     await this.getPeriodDate()
@@ -1294,6 +1368,7 @@
                     //パラメータが変更しない場合、リクエストしない
                     const {data} = await this.http.postForm('sys/patternSetting/selectTmgPatternApplies', this.query_sk)
                     this.sk_list = data
+                    this.sk_list_applies = Utils.deepClone(data)
                     this.query_sk_bak = Utils.deepClone(this.query_sk)
                 }
                 this.empTableLoading = false
@@ -1348,6 +1423,9 @@
                         this.query_sk.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                         this.query_sk.groupId = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                         this.query_ykjtPattern.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+
+                        this.tmgPsaVO.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.tmgPsaVO.groupId = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                     } else {
                         //console.log('sectionid',this.treeData[0].secid)
                         //console.log('groupid',this.treeData[0].groupid)
@@ -1370,6 +1448,8 @@
                         this.query_sk.groupId = this.treeData[0].groupid
                         this.query_ykjtPattern.sectionId = this.treeData[0].secid
 
+                        this.tmgPsaVO.sectionId = this.treeData[0].secid
+                        this.tmgPsaVO.groupId = this.treeData[0].groupid
                     }
                 }
 
@@ -1417,7 +1497,147 @@
                     }
                 })
                 return result
-            }
+            },
+            // 編集画面を開く
+            async appliesPattern() {
+                this.isAppliesShow = true
+                // this.mergePatternLoading = true
+                const {data} = await this.http.postForm('sys/patternSetting/selectTmgNoPtnAppliesName', this.query_sk)
+                this.noPtnAppliseName = data
+                this.sk_list_applies.forEach((e,i) => {
+                    let cpattenid = e.tpaa_cpatternid
+                    e.tpaa_cpatternid = '000000000000000000'
+                    e.tpa_cpatternname = '勤務パターンを適用しない'
+                    e._index = i
+                    this.tmgPatternList.forEach(b => {
+                        if (cpattenid === b.tpa_cpatternid) {
+                            e.tpaa_cpatternid = b.tpa_cpatternid
+                            e.tpa_cpatternname = b.tpa_cpatternname
+                            return
+                        }
+                    })
+                })
+                // this.mergePatternLoading = false
+            },
+            isAfterDate( sKijunDate, sTargetDate ) {
+                console.log("isAfterDate")
+                console.log(sKijunDate)
+                console.log(sTargetDate)
+                console.log(this.convertDateToNumber( sKijunDate ))
+                console.log(this.convertDateToNumber( sTargetDate ))
+                if( this.convertDateToNumber( sTargetDate ) > this.convertDateToNumber( sKijunDate ) ){
+                        return true;
+                    }else{
+                        return false;
+                 }
+            },
+            convertDateToNumber( sDate ) {
+                var sYear;
+                var sMonth;
+                var sDay;
+                sYear = sDate.substring( 0, sDate.indexOf("/") );
+                sMonth = sDate.substring( sDate.indexOf("/") + 1, sDate.lastIndexOf("/") );
+                if( sMonth.length == 1 ){sMonth = "0" + sMonth;}
+                  sDay = sDate.substring( sDate.lastIndexOf("/") + 1, sDate.length );
+                if( sDay.length == 1 ){sDay = "0" + sDay;}
+                  return eval( sYear + sMonth + sDay );
+            },
+            editlistBack(index) {
+                console.log("editlistBack(index)")
+                console.log(index)
+               },
+            handleChangeCheckPeriod(e, row) {
+                row.periodDateStart = e
+            },
+            async bulkApproval2(e) {
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: '設定済みの予定データを適用パターンで上書きします。\nよろしいですか？',
+                        width: 480,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            // 勤務パターン適用Loading
+                            this.appliesLoading = true
+                            if (!this.selectionIndexList || this.selectionIndexList.length === 0){
+                                this.$Message.warning({
+                                    background: true,
+                                    closable: true,
+                                    duration: 6,
+                                    content: '勤務パターン設定の対象者が選択されていません。'
+                                });
+                                // 勤務パターン適用Loading
+                                this.appliesLoading = false
+                                return
+                            }
+                            let _selection = []
+                            this.selectionIndexList.forEach(e=>{
+                                _selection = _selection.concat(this.$refs.selection2.rebuildData[e])
+                            })
+                            let empIds2 = []
+                            let patternIds2 = []
+                            let dates2 = []
+                            for (var i=0;i < _selection.length;i++){
+                                if (_selection[i].periodDateStart.split("/").join("") - this.periodDate.split("/").join("") < 0) {
+                                    this.$Message.error({
+                                        background: true,
+                                        closable: true,
+                                        duration: 6,
+                                        content: '期間には'+this.periodDate+'以降の日付を入力してください。'
+                                    });
+                                    return
+                                }
+                                empIds2.push(_selection[i].empid)
+                                patternIds2.push(_selection[i].tpaa_cpatternid)
+                                dates2.push(_selection[i].periodDateStart)
+                            }
+                            this.tmgPsaVO.txtExecuteEmpId = empIds2.join(',')
+                            this.tmgPsaVO.txtexecutePatternId = patternIds2.join(',')
+                            this.tmgPsaVO.txtexecuteDate = dates2.join(',')
+
+                            const { data } = await this.http.post('sys/patternSetting/modifiAppliesRegister', this.tmgPsaVO)
+
+                            // 勤務パターン適用Loading
+                            this.appliesLoading = false
+                            //勤務パターン適用画面を閉じる
+                            this.isAppliesShow = false
+                            //リストの取得
+                            await this.getTmgPatternList()
+                            //部署職員リスト
+                            await this.selectTmgPatternApplies()
+
+                            this.$Message.success({
+                                background: true,
+                                closable: true,
+                                duration: 6,
+                                content: '勤務パターン適用されました。'
+                            });
+                        },
+                        onCancel: () => {
+                            //選択した職員リストをクリアする
+                            this.handleSelectAll2(false)
+                            // 勤務パターン適用Loading
+                            this.appliesLoading = false
+                        }
+                    })
+
+            },
+            handleSelectAll2(status) {
+                this.$refs.selection2.selectAll(status)
+            },
+            //選択した行の状態が変わる場合、トリガーされる
+            tableSelectChange2(selection) {
+                console.log("tableSelectChange2")
+                // console.log(this.$refs.selection2.rebuildData[row._index])
+                this.selectionIndexList = selection.map(e => e._index)
+            },
+            //Modal取消のreCall
+            appliesCancel() {
+                //選択した職員リストをクリアする
+                this.handleSelectAll2(false)
+                // 勤務パターン適用Loading
+                this.appliesLoading = false
+            },
         }
     })
 </script>

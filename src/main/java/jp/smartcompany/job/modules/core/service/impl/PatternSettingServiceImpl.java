@@ -150,4 +150,46 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
         return baseMapper.checkPatternId(params);
     }
 
+    @Override
+    public String selectTmgNoPtnAppliesName(String baseDate,String compCode,String custId,String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("language", language);
+        return baseMapper.selectTmgNoPtnAppliesName(params);
+    }
+
+    @Override
+    public int insertTrigger(String custId,String compCode,String employeeId,String sAction) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("sAction", sAction);
+        return baseMapper.insertTrigger(params);
+    }
+
+    @Override
+    public int insertTmgPatternAppliesCheck(String custId,String compCode,String employeeId,String executeDate,String executeEmpId,String patternId,String sectionId,String groupId,String sAction) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("executeDate", executeDate);
+        params.put("executeEmpId", executeEmpId);
+        params.put("patternId", patternId);
+        params.put("sectionId", sectionId);
+        params.put("groupId", groupId);
+        params.put("sAction", sAction);
+        return baseMapper.insertTmgPatternAppliesCheck(params);
+    }
+    @Override
+    public int deleteTmgPatternAppliesCheck(String custId,String compCode,String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        return baseMapper.deleteTmgPatternAppliesCheck(params);
+    }
 }

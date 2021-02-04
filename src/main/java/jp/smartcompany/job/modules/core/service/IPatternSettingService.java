@@ -155,6 +155,45 @@ public interface IPatternSettingService extends IService<TmgPatternDO> {
      */
     String checkPatternId(String compCode, String patternId);
 
-    
+    /**
+     * 文言：勤務パターンを適用しない区分を取得する
+     *
+     * @param baseDate
+     * @param compCode
+     * @param language
+     * @return
+     */
+    String selectTmgNoPtnAppliesName(String baseDate,String compCode,String custId,String language);
 
+    /**
+     * 勤務パターン適用のトリガー
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param sAction
+     * @return
+     */
+    int insertTrigger(String custId,String compCode,String employeeId,String sAction);
+
+    /**
+     * 勤務パターン適用チェックのインサート
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param sAction
+     * @return
+     */
+    int insertTmgPatternAppliesCheck(String custId,String compCode,String employeeId,String executeDate,String executeEmpId,String patternId,String sectionId,String groupId,String sAction);
+
+    /**
+     * DELETE TMG_PATTERN_APPLIES_CHECK
+     *
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     */
+    int deleteTmgPatternAppliesCheck(String custId, String compCode, String employeeId);
 }

@@ -24,6 +24,7 @@
         ,tmg_f_get_pattern_default(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) .cpatternname as tpa_cpatternname
         ,tmg_get_worktypeid(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) as cworktypeid
         ,tmg_f_get_mgd(tmg_get_worktypeid(t0.cust, t0.comp, t0.empid,to_date(#{baseDate}, 'yyyy/mm/dd')), to_date(#{baseDate},'yyyy/mm/dd'), t0.cust, t0.comp, #{language}) as cworktypename
+        ,#{baseDate} as periodDateStart
         ,(select decode(count(1), 0, 0, 1)
         from tmg_personal_pattern
         where tppa_ccustomerid = t0.cust

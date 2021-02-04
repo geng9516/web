@@ -124,4 +124,34 @@ public interface PatternSettingMapper extends BaseMapper<TmgPatternDO> {
      */
     String checkPatternId(HashMap<String, Object> params);
 
+    /**
+     * 文言：勤務パターンを適用しないを取得する
+     *
+     * @param params
+     * @return
+     */
+    String selectTmgNoPtnAppliesName(HashMap<String, Object> params);
+
+    /**
+     * 勤務パターン適用のトリガー
+     *
+     * @param params
+     * @return
+     */
+    int insertTrigger(HashMap<String, Object> params);
+
+    /**
+     * 勤務パターン適用項目チェックのインサート
+     *
+     * @param params
+     * @return
+     */
+    int insertTmgPatternAppliesCheck(HashMap<String, Object> params);
+
+    /**
+     * DELETE TMG_PATTERN_APPLIES_CHECK
+     *
+     * @param params
+     */
+    int deleteTmgPatternAppliesCheck(HashMap<String, Object> params);
 }

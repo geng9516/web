@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+    <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
+    <insert id="insertTrigger" parameterType="java.util.HashMap">
+        insert into tmg_trigger
+        (ttr_ccustomerid , ttr_ccompanyid , ttr_cemployeeid ,
+        ttr_dstartdate , ttr_denddate , ttr_cmodifieruserid ,
+        ttr_dmodifieddate , ttr_cmodifierprogramid , ttr_cprogramid ,
+        ttr_cparameter1,ttr_dparameter1)
+        values
+        (#{custId} , #{compCode} , #{employeeId},
+        to_date('1900/01/01', 'yyyy/mm/dd'),  <!--データ開始日-->
+        to_date('2222/12/31', 'yyyy/mm/dd'),  <!--データ終了日-->
+        #{employeeId} ,
+        sysdate ,
+        #{sAction} ,
+        #{sAction},
+        sysdate,
+        add_months(trunc(sysdate, 'mm'), 2))
+    </insert>
+
+    <insert id="insertTmgPatternAppliesCheck" parameterType="java.util.HashMap">
+        insert into tmg_pattern_applies_check
+        (tpaa_ccustomerid , tpaa_ccompanyid , tpaa_dstartdate ,tpaa_denddate ,
+        tpaa_cemployeeid , tpaa_csectionid ,
+        tpaa_cgroupid , tpaa_cpatternid , tpaa_cmodifieruserid ,
+        tpaa_dmodifieddate,tpaa_cmodifierprogramid)
+        values
+        (#{custId} , #{compCode} ,
+        to_date(#{executeDate}, 'yyyy/mm/dd'),  <!--データ開始日-->
+        to_date('2222/12/31', 'yyyy/mm/dd'),  <!--データ終了日-->
+        #{executeEmpId},
+        #{sectionId},
+        #{groupId},
+        #{patternId},
+        #{employeeId} ,
+        sysdate ,
+        #{sAction})
+    </insert>
+
+    <delete id="deleteTmgPatternAppliesCheck" parameterType="java.util.HashMap">
+        delete from tmg_pattern_applies_check
+        where tpaa_ccustomerid = #{custId}
+        and tpaa_ccompanyid = #{compCode}
+        and tpaa_cmodifieruserid = #{employeeId}
+    </delete>
+</mapper>

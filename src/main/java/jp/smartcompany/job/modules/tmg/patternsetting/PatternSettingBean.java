@@ -10,14 +10,18 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.CSVTokenizer;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
+import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 import jp.smartcompany.job.modules.tmg.patternsetting.util.BufferedCSVReader;
 import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingConst;
 import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingUtil;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.PatternSettingParam;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternSettingAppliesVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.ModifiCSVVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -61,6 +65,10 @@ public class PatternSettingBean {
     private final String dutyOpenKey = "NOPEN";
     private final String dutyCloseKey = "NCLOSE";
 
+    /**
+     * ITmgTriggerService
+     */
+    private final ITmgTriggerService iTmgTriggerService;
 
     /**
      * パラメータを初期化する
@@ -1410,5 +1418,99 @@ public class PatternSettingBean {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
+     *
+     * @param baseDate --> 基準日指定 画面から
+     * @return
+     */
+    public String selectTmgNoPtnAppliesName(String baseDate) {
+        if (null == baseDate || "".equals(baseDate)) {
+            logger.warn("基準時間が空です。");
+            return null;
+        }
+        return iPatternSettingService.selectTmgNoPtnAppliesName(baseDate,psDBBean.getCompCode(),psDBBean.getCustID(),psDBBean.getLanguage());
+    }
+
+    /**
+     * 該当者毎に設定されている勤務パターンの情報を取得する（部署職員リスト）
+     *
+     * @param  --> 基準日指定 画面から
+     * @return
+     */
+    public String modifiAppliesRegister(PsDBBean psDBBean, TmgPatternSettingAppliesVO tmgPsaVO) {
+        String action = beanDesc + "_" + tmgPsaVO.getTxtAction();
+        String[] executeEmpIds = tmgPsaVO.getTxtExecuteEmpId().split(",");
+        String[] executeDates = tmgPsaVO.getTxtexecuteDate().split(",");
+        String[] patternIds = tmgPsaVO.getTxtexecutePatternId().split(",");
+        String executeEmpId = "";
+        String executeDate = "";
+        String patternId = "";
+
+        String groupId = tmgPsaVO.getGroupId();
+        String sectionId = tmgPsaVO.getSectionId();
+
+        if (PatternSettingUtil.isEmpty(groupId)) {
+            groupId = tmgPsaVO.getSectionId() + "|000000";
+        }
+
+        // エラーチェック削除
+        this.buildSQLForDeleteAppliesCheck(action, psDBBean);
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action, psDBBean);
+
+        // エラーチェック追加
+        // チェックされている職員のみ更新処理を行う
+        for (int i = 0; i < executeEmpIds.length; i++) {
+             executeEmpId = executeEmpIds[i];
+             executeDate= executeDates[i];
+             patternId= patternIds[i];
+            this.buildSQLForInsertTmgPatternApplies(executeEmpId,executeDate,patternId,action, psDBBean.getEmployeeCode(),tmgPsaVO.getSectionId(), groupId);
+        }
+
+        // トリガー追加
+        this.buildSQLForInsertTmgTrigger(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getEmployeeCode(),action);
+        // エラーチェック削除
+        this.buildSQLForDeleteAppliesCheck(action, psDBBean);
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action, psDBBean);
+
+        return null;
+    }
+
+
+    /**
+     * トリガー削除
+     */
+    private int buildSQLForDeleteTrigger(String action, PsDBBean psDBBean) {
+        int result = iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID", action));
+        return result;
+    }
+
+    /**
+     * エラーチェック削除
+     */
+    private int buildSQLForDeleteAppliesCheck(String action, PsDBBean psDBBean) {
+        return iPatternSettingService.deleteTmgPatternAppliesCheck(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getEmployeeCode());
+    }
+
+    /**
+     * INSERT TMG_PATTERN_APPLIES_CHECK
+     */
+    private int buildSQLForInsertTmgPatternApplies(String executeEmpId,String executeDate,String patternId,
+                                                   String action, String employeeId,String sectionId, String groupId) {
+        return iPatternSettingService.insertTmgPatternAppliesCheck(psDBBean.getCustID(),psDBBean.getCompCode(),employeeId,executeDate,executeEmpId,patternId,sectionId,groupId,action);
+    }
+
+    /**
+     * トリガー用テーブルへInsertする
+     */
+    private int buildSQLForInsertTmgTrigger(String custId,String compCode,String employeeId,String sAction) {
+        return iPatternSettingService.insertTrigger(custId,compCode,employeeId,sAction);
     }
 }

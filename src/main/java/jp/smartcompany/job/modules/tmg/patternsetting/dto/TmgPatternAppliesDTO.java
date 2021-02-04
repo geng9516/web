@@ -23,5 +23,6 @@ public class TmgPatternAppliesDTO {
     private String tpa_cpatternname;
     private String cworktypeid;
     private String cworktypename;
+    private String periodDateStart;
 
 }

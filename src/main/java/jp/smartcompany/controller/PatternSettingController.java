@@ -9,7 +9,9 @@ import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternMergeDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.ModifiCSVVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.PeriodDateVO;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternSettingAppliesVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
+import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.UpdateAcquired5DaysVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -214,6 +216,47 @@ public class PatternSettingController {
         boolean isExists = patternSettingBean.selectEditPatternExist(patternId);
         //TRUE の場合、存在しました　　FALSEの場合、未存在
         return isExists;
+    }
+
+    /**
+     * 勤務パターンを適用しない区分を取得する
+     * http://localhost:6879/sys/patternSetting/selectTmgNoPtnAppliesName?baseDate=2020/06/15
+     *
+     * @param baseDate
+     */
+    @PostMapping("selectTmgNoPtnAppliesName")
+    public String selectTmgNoPtnAppliseName(@RequestParam("baseDate") String baseDate,
+                                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(baseDate, psDBBean);
+        return patternSettingBean.selectTmgNoPtnAppliesName(baseDate);
+
+    }
+
+    /**
+     * 勤務パターン設定の適用画面初期表示
+     * http://localhost:6879/sys/patternSetting/selectTmgNoPtnAppliesName?baseDate=2020/06/15
+     *
+     * @param baseDate
+     */
+    @PostMapping("modifiApplies")
+    public String modifiApplies(@RequestParam("baseDate") String baseDate,
+                                            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(baseDate, psDBBean);
+        return patternSettingBean.selectTmgNoPtnAppliesName(baseDate);
+    }
+
+    /**
+     * 勤務パターン設定の適用登録
+     * http://localhost:6879/sys/patternSetting/selectTmgNoPtnAppliesName?baseDate=2020/06/15
+     *
+     * @param baseDate
+     */
+    @PostMapping(value = "modifiAppliesRegister", produces = "application/json;charset=UTF-8")
+    public void modifiAppliesRegister(@RequestAttribute("BeanName") PsDBBean psDBBean,@RequestBody TmgPatternSettingAppliesVO tmgPsaVO) throws Exception {
+
+        patternSettingBean.modifiAppliesRegister(psDBBean,tmgPsaVO);
     }
 
 }

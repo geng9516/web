@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSetting.PatternSettingMapper">
+    <!-- 文言：勤務パターンを適用しない区分を取得する -->
+    <select id="selectTmgNoPtnAppliesName" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select nvl(mgd_cnoptnappliesnm, ' ')
+        from tmg_v_mgd_no_ptn_applies
+        where mgd_ccustomerid = #{compCode}
+          and mgd_ccompanyid_ck_fk = #{custId}
+          and to_date(#{baseDate}, 'yyyy/mm/dd') between mgd_dstart_ck and mgd_dend and
+            mgd_clanguage_ck = #{language}
+    </select>
+</mapper>
