@@ -372,6 +372,8 @@ public class TmgTimePunchBean {
         String employeeId = psDBBean.getUserCode();
         //予定データ
         ScheduleInfoDTO scheduleInfoDTO = iTmgTimepunchService.selectScheduleInfo(custId, compCode, employeeId, targetDate);
+
+        if(scheduleInfoDTO!=null){
         //職員番号
         scheduleInfoDTO.setTda_cemployeeid(employeeId);
         //休憩時間json str
@@ -381,8 +383,10 @@ public class TmgTimePunchBean {
             //チェック
             scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
         } else {
-            log.warn("職員の休憩時間は取得してない");
-        }
+            log.info("職員："+employeeId+"の"+targetDate+"の休憩時間が存在していない");
+        }} else{
+                log.info("職員："+employeeId+"の"+targetDate+"の休憩時間が存在していない");
+            }
         // lruCache.put(CACHE_SCHEDULEINFO, scheduleInfoDTO);
         // logger.info("[予定時間] Cache までロードする");
         return scheduleInfoDTO;
