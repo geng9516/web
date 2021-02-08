@@ -631,11 +631,12 @@
                     })
 
                     for (var i=0;i < b.length;i++){
-                        console.log("b[i].taKijyunbi5")
-                        console.log(b[i].taKijyunbi5)
-                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 == null &&　b[i].tpfNmustdaysFix14 == null){
-                            b[i].basedDay = "-"
-                            b[i].checkPeriod = "-"
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 === null &&　b[i].tpfNmustdaysFix14 === null){
+                            //修正基準日、修正チェック期間のうちに、いずれかが修正する場合、基準日とチェック期間が表示される。
+                            if(b[i].editBasedDay === null &&　b[i].editCheckPeriod === null){
+                                b[i].basedDay = "-"
+                                b[i].checkPeriod = "-"
+                            }
                             b[i].takenDays = "-"
                             b[i].mustDays = "-"
                             b[i].lackDays = "-"
@@ -644,9 +645,6 @@
                     }
                     this.paidData = b
                     this.paidData[0].isChecked = true
-
-                    console.log("this.paidData")
-                    console.log(this.paidData)
                     this.takenDaysDataLoading = false
                 }
 
@@ -733,27 +731,18 @@
 
                     for (var i=0;i < b.length;i++){
                         b[i].season.push("詳細")
-                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 == null &&　b[i].tpfNmustdaysFix14 == null){
-                            console.log("test_tart")
-                            console.log(b[i].cemployeeid0)
-                            console.log(b[i].taFuyodays4)
-                            console.log(b[i].tpfDpaidHolidayFix11)
-                            console.log(b[i].tpfDkikanbiFix12)
-                            console.log(b[i].tpfNusedaysAjdust13)
-                            console.log(b[i].tpfNmustdaysFix14)
-                            console.log("test_end")
-
-                            b[i].basedDay = ["-"]
-                            b[i].checkPeriod = ["-"]
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 === null &&　b[i].tpfNmustdaysFix14 === null){
+                            //修正基準日、修正チェック期間のうちに、いずれかが修正する場合、基準日とチェック期間が表示される。
+                            if(b[i].editBasedDay === null &&　b[i].editCheckPeriod === null){
+                                b[i].basedDay = ["-"]
+                                b[i].checkPeriod = ["-"]
+                            }
                             b[i].takenDays = ["-"]
                             b[i].mustDays = ["-"]
                             b[i].lackDays = ["-"]
                             b[i].season = ["-"]
                         }
                     }
-
-                    console.log("this.b = b")
-                    console.log(b)
 
                     let a=[]
                     for (var i=0;i < b.length;i++){
