@@ -646,7 +646,7 @@
                     for (var i=0;i < b.length;i++){
                         if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 === null &&　b[i].tpfNmustdaysFix14 === null){
                             //修正基準日、修正チェック期間のうちに、いずれかが修正する場合、基準日とチェック期間が表示される。
-                            if(b[i].editBasedDay === null &&　b[i].editCheckPeriod === null){
+                            if(b[i].tpfDpaidHolidayFix11 === null &&　b[i].tpfDkikanbiFix12 === null){
                                 b[i].basedDay = "-"
                                 b[i].checkPeriod = "-"
                             }
@@ -759,7 +759,7 @@
                         b[i].season.push("詳細")
                         if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 === null &&　b[i].tpfNmustdaysFix14 === null){
                             //修正基準日、修正チェック期間のうちに、いずれかが修正する場合、基準日とチェック期間が表示される。
-                            if(b[i].editBasedDay === null &&　b[i].editCheckPeriod === null){
+                            if(b[i].tpfDpaidHolidayFix11 === null &&　b[i].tpfDkikanbiFix12 === null){
                                 b[i].basedDay = ["-"]
                                 b[i].checkPeriod = ["-"]
                             }
