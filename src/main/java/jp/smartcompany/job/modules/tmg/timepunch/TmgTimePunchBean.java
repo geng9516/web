@@ -383,9 +383,9 @@ public class TmgTimePunchBean {
             //チェック
             scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
         } else {
-            log.info("職員："+employeeId+"の"+targetDate+"の休憩時間が存在していない");
+            log.info("職員："+employeeId+"の"+targetDate+"の勤務予定が存在していない");
         }} else{
-                log.info("職員："+employeeId+"の"+targetDate+"の休憩時間が存在していない");
+                log.info("職員："+employeeId+"の"+targetDate+"の勤務予定が存在していない");
             }
         // lruCache.put(CACHE_SCHEDULEINFO, scheduleInfoDTO);
         // logger.info("[予定時間] Cache までロードする");
