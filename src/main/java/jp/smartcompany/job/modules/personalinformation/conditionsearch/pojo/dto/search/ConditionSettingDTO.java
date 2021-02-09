@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import lombok.Getter;
@@ -15,10 +14,22 @@ import java.util.List;
 @ToString
 public class ConditionSettingDTO {
 
+    // ページング条件
+    /** 発生イベント **/
+    private String pagingEvent;
+    /**
+     * ページング条件
+     */
+    private PagerLinkDTO pagerLinkDTO;
+
+    /**
+     * 出力モード： SCREEN 画面 CSV CSV出力 TABLE テーブル
+     */
+    private String mode;
     /**
      * 法人コード
      */
-    private String companyId;
+    private String companyId = "01";
     /**
      * 基準日関連
      */
@@ -56,52 +67,51 @@ public class ConditionSettingDTO {
      */
     private List<ConditionSettingTargetDTO> targetDtoList;
 
-    /**
-     * 連携データ名称
-     */
-    private String dataName;
-    /**
-     * IDカラム
-     */
-    @TableId
-    private Long hseId;
-    /**
-     * 設定ID
-     */
-    private Long hseNsettingid;
-    /**
-     * 顧客コード
-     */
-    private String hseCcustomerid;
-    /**
-     * ユーザID
-     */
-    private String hseCuserid;
-    /**
-     * 設定名称
-     */
-    private String hseCsettingname;
-    /**
-     * 法人コード
-     */
-    private String hseCcompanyidCk;
+//    /**
+//     * 連携データ名称
+//     */
+//    private String dataName;
+//    /**
+//     * IDカラム
+//     */
+//    private Long hseId;
+//    /**
+//     * 設定ID
+//     */
+//    private Long hseNsettingid;
+//    /**
+//     * 顧客コード
+//     */
+//    private String hseCcustomerid;
+//    /**
+//     * ユーザID
+//     */
+//    private String hseCuserid;
+//    /**
+//     * 設定名称
+//     */
+//    private String hseCsettingname;
+//    /**
+//     * 法人コード
+//     */
+//    private String hseCcompanyidCk;
     /**
      * 法人選択区分
      * 1: 全法人共通
      */
     private String hseCcompanyselect;
-    /**
-     * 共有有無
-     */
-    private String hseCpublic;
-    /**
-     * マスタコード表示フラグ
-     */
-    private String hseCmastercodeflg;
-    /**
-     * 備考
-     */
-    private Long hseCcomment;
+//    /**
+//     * 共有有無
+//     */
+//    private String hseCpublic;
+//    /**
+//     * マスタコード表示フラグ
+//     */
+//    private String hseCmastercodeflg;
+//    /**
+//     * 備考
+//     */
+//    private Long hseCcomment;
     /**
      *  連携データID
      */
@@ -110,9 +120,9 @@ public class ConditionSettingDTO {
      *  連携使用有無
      */
     private String hseCusecooperation;
-    /**
-     *  基準日設定使用有無
-     */
-    private String hseCusedate;
+//    /**
+//     *  基準日設定使用有無
+//     */
+//    private String hseCusedate;
 
 }
