@@ -72,6 +72,13 @@
                                 <date-picker :value="editData.end" type="date" class="datepicker-single mb5" placeholder="日付"
                                              format="yyyy/MM/dd" ></date-picker>
                             </section>
+
+                            <section class="tl mt5">
+                                <p class="mb5">申請名</p>
+                                <i-input class="tl" v-model="editData.ntfTypeName">
+                                </i-input>
+                            </section>
+
                             <section class="tl mt5">
                                 <p class="mb5">親区分</p>
                                 <i-select v-model="editData.group" editable filterable clearable
@@ -107,6 +114,61 @@
                                     <i-option value="1">年次有給休暇</i-option>
                                     <i-option value="2">病気休暇（私傷病)</i-option>
                                     <i-option value="3">病気休暇（業務上)</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <checkbox v-model="editData.necessaryFile"></checkbox><h class="mb5 ml10">ファイル必須</h>
+                                <br></br>
+                                <checkbox v-model="editData.necessaryComment"></checkbox><h class="mb5 ml10">事由必須</h>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">種類</p>
+                                <i-select v-model="editData.type"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="1">終日</i-option>
+                                    <i-option value="2">休憩45分</i-option>
+                                    <i-option value="3">半休</i-option>
+                                    <i-option value="4">相対</i-option>
+                                    <i-option value="5">絶対</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">決裁レベル</p>
+                                <i-select v-model="editData.type"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="TMG_APPROVAL_LEVEL|1">レベル1</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|2">レベル2</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|3">レベル3</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|4">レベル4</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|5">レベル5</i-option>
+                                </i-select>
+                            </section>
+
+                            <section class="tl mt5">
+                                <p class="mb5">説明文</p>
+                                <i-input class="tl" v-model="editData.comment" type="textarea">
+                                </i-input>
+                            </section>
+
+                            <section class="tl mt5">
+                                <p class="mb5">申請期間区分</p>
+                                <i-select v-model="editData.rangeType"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">勤怠シートが存在する</i-option>
+                                    <i-option value="1">カレンダーが存在する</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">IMARTスケジュール連携対象有無</p>
+                                <i-select v-model="editData.IMART"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">連携しない</i-option>
+                                    <i-option value="1">連携する</i-option>
+                                    <i-option value="2">振替先を連携する</i-option>
                                 </i-select>
                             </section>
                         </Card>
@@ -191,63 +253,26 @@
                         <Card dis-hover>
                             <div class="titlenorm mb10 mt10" style="font-size:15px">
                                 <Icon type="logo-buffer"></Icon>
-                                その他設定
+                                CHECK設定
                             </div>
-                            <section class="tl mt5">
-                                <checkbox v-model="editData.necessaryFile"></checkbox><h class="mb5 ml10">ファイル必須</h>
-                                <br></br>
-                                <checkbox v-model="editData.necessaryComment"></checkbox><h class="mb5 ml10">事由必須</h>
-                            </section>
-                            <section class="tl mt20">
-                                <p class="mb5">種類</p>
-                                <i-select v-model="editData.type"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="1">終日</i-option>
-                                    <i-option value="2">休憩45分</i-option>
-                                    <i-option value="3">半休</i-option>
-                                    <i-option value="4">相対</i-option>
-                                    <i-option value="5">絶対</i-option>
-                                </i-select>
-                            </section>
-                            <section class="tl mt5">
-                                <p class="mb5">決裁レベル</p>
-                                <i-select v-model="editData.type"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="TMG_APPROVAL_LEVEL|1">レベル1</i-option>
-                                    <i-option value="TMG_APPROVAL_LEVEL|2">レベル2</i-option>
-                                    <i-option value="TMG_APPROVAL_LEVEL|3">レベル3</i-option>
-                                    <i-option value="TMG_APPROVAL_LEVEL|4">レベル4</i-option>
-                                    <i-option value="TMG_APPROVAL_LEVEL|5">レベル5</i-option>
-                                </i-select>
-                            </section>
-
-                            <section class="tl mt5">
-                                <p class="mb5">説明文</p>
-                                <i-input class="tl" v-model="editData.comment" type="textarea">
-                                </i-input>
-                            </section>
-
-                            <section class="tl mt5">
-                                <p class="mb5">申請期間区分</p>
-                                <i-select v-model="editData.rangeType"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">勤怠シートが存在する</i-option>
-                                    <i-option value="1">カレンダーが存在する</i-option>
-                                </i-select>
-                            </section>
-                            <section class="tl mt5">
-                                <p class="mb5">IMARTスケジュール連携対象有無</p>
-                                <i-select v-model="editData.IMART"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">連携しない</i-option>
-                                    <i-option value="1">連携する</i-option>
-                                    <i-option value="2">振替先を連携する</i-option>
-                                </i-select>
-                            </section>
+                            <span>
+                                <Card class="mb5" v-for="item of editData.checkFunc" style="background: var(--content-bg);">
+                                    <div class="tr card-del-btn cursor" @click.stop="remove(item)">✗</div>
+                                    <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+                                      <span style="display: inline-block;width: 55px;color: var(--text-light-grey);">名称: </span>
+                                      <span class="tl width100"> {{ item.checkname }}</span>
+                                    </div>
+                                    <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+                                      <span style="display: inline-block;width: 150px;color: var(--text-light-grey)">申請種類: </span><i-input v-model="item.checkType"></i-input>
+                                    </div>
+                                    <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+                                      <span style="display: inline-block;width: 150px;color: var(--text-light-grey)">取得上限値: </span><i-input v-model="item.checkLimit"></i-input>
+                                    </div>
+                                    <div class="no-border-radius mb2" style="display: flex; align-items: stretch;">
+                                      <span style="display: inline-block;width: 150px;color: var(--text-light-grey)">取得単位: </span><i-input v-model="item.checkLimitType"></i-input>
+                                    </div>
+                                </Card>
+                            </span>
                         </Card>
                     </i-col>
                 </Row>
@@ -279,6 +304,7 @@
                     site:['入力','承認','管理'],
                     work:'',
                     typeGroup:'',
+                    ntfTypeName:'',
 
 
                     transfer:false,
@@ -310,6 +336,25 @@
                     comment:'',
                     rangeType:'',
                     IMART:'',
+
+                    checkFunc:[
+                        {
+                            checkname:'1',
+                            checkFunc:'1',
+                            checkType:'1',
+                            checkLimit:'1',
+                            checkLimitType:'1'
+                        },
+                        {
+                            checkname:'2',
+                            checkFunc:'2',
+                            checkType:'2',
+                            checkLimit:'2',
+                            checkLimitType:'2'
+                        },
+                    ],
+
+
                 },
                 EditLoading:false,
             }
@@ -528,7 +573,21 @@
 
                 }
                 this.editFlag=true
-            }
+            },
+            remove(item) {
+                this.$Modal.confirm({
+                    title: '注意',
+                    content: '削除します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        try {
+                        } catch (error) {
+                        } finally {
+                        }
+                    }
+                })
+            },
         },
 
     })
