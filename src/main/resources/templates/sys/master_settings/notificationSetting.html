@@ -17,6 +17,13 @@
                     {{ `休暇・休憩マスター設定` }}
                 </h1>
             </div>
+            <div class="btnbox">
+                <span style="flex:1"></span>
+                <i-button type="primary" icon="md-book" @click="" >親区分管理</i-button>
+                <i-button type="primary" icon="ios-book" @click="" >申請種類管理</i-button>
+                <i-button type="primary" icon="ios-add-circle" @click="editDisp()" >新規</i-button>
+                <i-button type="primary" icon="ios-add-circle-outline" @click="editDisp(true)" >コピー新規</i-button>
+              </div>
         </div>
         <div class="searchwrap">
             <div class="label">親区分</div><!--NTFGROUP-->
@@ -30,7 +37,7 @@
 
     <div class="content_body">
         <div>
-            <Checkbox-group v-model="tableColumnsChecked" >
+            <Checkbox-group v-model="tableColumnsChecked" @on-change="changeTableColumns" class="tr">
                 <Checkbox label="basic">基本設定</Checkbox>
                 <Checkbox label="dispType">表示タイプ設定</Checkbox>
                 <Checkbox label="workType">職種設定</Checkbox>
@@ -40,6 +47,218 @@
             </i-table>
         </div>
     </div>
+
+    <Modal title="新規" :styles="{top: '0px'}" fullscreen :mask-closable="false" footer-hide v-model="editFlag">
+        <div class="table-top">
+
+        </div>
+
+        <div style="position: relative;">
+            <template>
+                <Row style="background:#eee;padding:20px">
+                    <i-col span="6">
+                        <Card>
+                            <div class="titlenorm mb10 mt10" style="font-size:15px">
+                                <Icon type="logo-buffer"></Icon>
+                                基本設定
+                            </div>
+                            <section class="tl mt5">
+                                <p class="mb5">開始日</p>
+                                <date-picker :value="editData.begin" type="date" class="datepicker-single mb5" placeholder="日付"
+                                             format="yyyy/MM/dd"  ></date-picker>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">終了日</p>
+                                <date-picker :value="editData.end" type="date" class="datepicker-single mb5" placeholder="日付"
+                                             format="yyyy/MM/dd" ></date-picker>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">親区分</p>
+                                <i-select v-model="editData.group" editable filterable clearable
+                                          class="mb10 no-border-radius">
+<!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="1">年次有給休暇</i-option>
+                                    <i-option value="2">その他</i-option>
+                                    <i-option value="3">特別休暇：夏季休暇</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">可能サイト</p>
+                                <Tag v-for="item in editData.site" :key="item" :name="item" closable @on-close="">{{ item }}</Tag>
+                                <i-button icon="ios-add" type="dashed" size="small" @click="" v-show="editData.site.lenght<3">add</i-button>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">反映先</p>
+                                <i-select v-model="editData.work" editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">特別休暇(有給)</i-option>
+                                    <i-option value="1">特別休暇(時間・有給)</i-option>
+                                    <i-option value="2">特別休暇(無給)</i-option>
+                                    <i-option value="3">特別休暇(時間・無給)</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">申請種類</p>
+                                <i-select v-model="editData.typeGroup"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">&nbsp</i-option>
+                                    <i-option value="1">年次有給休暇</i-option>
+                                    <i-option value="2">病気休暇（私傷病)</i-option>
+                                    <i-option value="3">病気休暇（業務上)</i-option>
+                                </i-select>
+                            </section>
+                        </Card>
+                    </i-col>
+                    <i-col span="6">
+                        <Card dis-hover>
+                            <div class="titlenorm mb10 mt10" style="font-size:15px">
+                                <Icon type="logo-buffer"></Icon>
+                                表示タイプ設定
+                            </div>
+                            <section class="tl mt5">
+                                <checkbox v-model="editData.transfer"></checkbox><h class="mb5 ml10">振替先・元</h>
+                                <br></br>
+                                <checkbox v-model="editData.timeZone"></checkbox><h class="mb5 ml10">時間帯</h>
+                                <br></br>
+                                <checkbox v-model="editData.workTime"></checkbox><h class="mb5 ml10">始業・終業</h>
+                                <br></br>
+                                <checkbox v-model="editData.sickName"></checkbox><h class="mb5 ml10">傷病名</h>
+                                <br></br>
+                                <checkbox v-model="editData.sickApply"></checkbox><h class="mb5 ml10">労災申請</h>
+                                <br></br>
+                                <checkbox v-model="editData.period"></checkbox><h class="mb5 ml10">起算日</h>
+                                <br></br>
+                                <checkbox v-model="editData.addDate"></checkbox><h class="mb5 ml10">加算日数</h>
+                                <br></br>
+                                <checkbox v-model="editData.label"></checkbox><h class="mb5 ml10">勤務時間ラベル</h>
+                                <br></br>
+                                <checkbox v-model="editData.restTime"></checkbox><h class="mb5 ml10">休憩時間</h>
+                                <br></br>
+                                <checkbox v-model="editData.name"></checkbox><h class="mb5 ml10">氏名</h>
+                                <br></br>
+                                <checkbox v-model="editData.relation"></checkbox><h class="mb5 ml10">続柄</h>
+                                <br></br>
+                                <checkbox v-model="editData.birthday"></checkbox><h class="mb5 ml10">生年月日</h>
+                                <br></br>
+                                <checkbox v-model="editData.daysOfWeek"></checkbox><h class="mb5 ml10">曜日</h>
+                                <br></br>
+                                <checkbox v-model="editData.targetNumber"></checkbox><h class="mb5 ml10">対象人数</h>
+                            </section>
+                        </Card>
+                    </i-col>
+                    <i-col span="6">
+                        <Card dis-hover>
+                            <div class="titlenorm mb10 mt10" style="font-size:15px">
+                                <Icon type="logo-buffer"></Icon>
+                                職種設定
+                            </div>
+                            <section class="tl mt20">
+                                <p class="mb5">職種</p>
+                                <Tag v-for="item in editData.workType" :key="item" :name="item" closable @on-close="">{{ item }}</Tag>
+                                <i-button icon="ios-add" type="dashed" size="small" @click="">add</i-button>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">上限値</p>
+                                <i-input class="mb15　tl" v-model="editData.limit" >
+                                    <i-select v-model="editData.limitType1" slot="append" style="width: 50px">
+                                        <i-option value="day">日</i-option>
+                                        <i-option value="min">分</i-option>
+                                    </i-select>
+                                </i-input>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">回数</p>
+                                <i-input :max="99" :min="1" class="mb15　tl" v-model="editData.limitNum" >
+                                    <i-select v-model="editData.limitType2" slot="append" style="width: 50px">
+                                        <i-option value="dayCounts">回/日</i-option>
+                                    </i-select>
+                                </i-input>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">期間</p>
+                                <i-input :max="99" :min="1" class="mb15　tl" v-model="editData.limitRange">
+                                    <i-select v-model="editData.limitType2" slot="append" style="width: 50px">
+                                        <i-option value="day">日</i-option>
+                                        <i-option value="week">週</i-option>
+                                    </i-select>
+                                </i-input>
+                            </section>
+                        </Card>
+                    </i-col>
+                    <i-col span="6" >
+                        <Card dis-hover>
+                            <div class="titlenorm mb10 mt10" style="font-size:15px">
+                                <Icon type="logo-buffer"></Icon>
+                                その他設定
+                            </div>
+                            <section class="tl mt5">
+                                <checkbox v-model="editData.necessaryFile"></checkbox><h class="mb5 ml10">ファイル必須</h>
+                                <br></br>
+                                <checkbox v-model="editData.necessaryComment"></checkbox><h class="mb5 ml10">事由必須</h>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">種類</p>
+                                <i-select v-model="editData.type"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="1">終日</i-option>
+                                    <i-option value="2">休憩45分</i-option>
+                                    <i-option value="3">半休</i-option>
+                                    <i-option value="4">相対</i-option>
+                                    <i-option value="5">絶対</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">決裁レベル</p>
+                                <i-select v-model="editData.type"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="TMG_APPROVAL_LEVEL|1">レベル1</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|2">レベル2</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|3">レベル3</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|4">レベル4</i-option>
+                                    <i-option value="TMG_APPROVAL_LEVEL|5">レベル5</i-option>
+                                </i-select>
+                            </section>
+
+                            <section class="tl mt5">
+                                <p class="mb5">説明文</p>
+                                <i-input class="tl" v-model="editData.comment" type="textarea">
+                                </i-input>
+                            </section>
+
+                            <section class="tl mt5">
+                                <p class="mb5">申請期間区分</p>
+                                <i-select v-model="editData.rangeType"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">勤怠シートが存在する</i-option>
+                                    <i-option value="1">カレンダーが存在する</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt5">
+                                <p class="mb5">IMARTスケジュール連携対象有無</p>
+                                <i-select v-model="editData.IMART"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">連携しない</i-option>
+                                    <i-option value="1">連携する</i-option>
+                                    <i-option value="2">振替先を連携する</i-option>
+                                </i-select>
+                            </section>
+                        </Card>
+                    </i-col>
+                </Row>
+            </template>
+
+            <Spin size="large" fix v-if="EditLoading"></Spin>
+        </div>
+    </Modal>
+
+
+
     <back-top></back-top>
 </main>
 <div th:replace="layout/head::header"></div>
@@ -49,10 +268,50 @@
         data() {
             return {
                 ntfGroupType:'1',
-
                 columns:[],
                 tableData:[],
-                tableColumnsChecked:['basic','dispType','workType','others']
+                tableColumnsChecked:['basic','dispType','workType','others'],
+                editFlag:false,
+                editData: {
+                    begin:'',
+                    end:'',
+                    group:'',
+                    site:['入力','承認','管理'],
+                    work:'',
+                    typeGroup:'',
+
+
+                    transfer:false,
+                    timeZone:false,
+                    workTime:false,
+                    sickName:false,
+                    sickApply:false,
+                    period:false,
+                    addDate:false,
+                    label:false,
+                    restTime:false,
+                    name:false,
+                    relation:false,
+                    birthday:false,
+                    daysOfWeek:false,
+                    targetNumber:false,
+
+                    workType:['職種1','職種2','職種3','職種4','職種5','職種6','職種7','職種8','職種9'],
+                    limit:'',
+                    limitType1:'day',
+                    limitNum:'',
+                    limitRange:'',
+                    limitType2:'',
+
+                    type:'',
+                    level:'',
+                    necessaryFile:false,
+                    necessaryComment:false,
+                    comment:'',
+                    rangeType:'',
+                    IMART:'',
+                },
+                EditLoading:false,
             }
         },
         created() {
@@ -62,29 +321,213 @@
             this.changeTableColumns();
         },
         methods: {
-
             getTable2Columns () {
                 const table2ColumnList = {
-                    ntfType: {
+                    ntfType: [{
                         title: '申請区分',
                         slot: 'ntfType',
                         width: 100,
                         align: 'center',
                         fixed: 'left'
-                    },
-                };
-
-                let data = [table2ColumnList.name];
-
-                this.tableColumnsChecked.forEach(col => data.push(table2ColumnList[col]));
-
+                    }],
+                    basic: [
+                        {
+                        title: '開始日',
+                        key: 'start',
+                        width: 100,
+                        sortable: true
+                        },
+                        {
+                        title: '終了日',
+                        key: 'end',
+                        width: 100,
+                        sortable: true
+                        },
+                        {
+                        title: '親区分',
+                        key: 'group',
+                        width: 150,
+                        sortable: true
+                        },
+                        {
+                        title: '可能サイト',
+                        key: 'site',
+                        width: 100
+                        },
+                        {
+                        title: '反映先',
+                        key: 'work',
+                        width: 100,
+                        sortable: true
+                        },
+                        {
+                        title: '申請種類',
+                        key: 'typeGroup',
+                        width: 100,
+                        sortable: true
+                        },
+                    ],
+                    dispType: [
+                        {
+                        title: '振替先・元',
+                        key: 'transfer',
+                        width: 100
+                        },
+                        {
+                        title: '時間帯',
+                        key: 'timeZone',
+                        width: 100
+                        },
+                        {
+                        title: '始業・終業',
+                        key: 'workTime',
+                        width: 100
+                        },
+                        {
+                        title: '傷病名',
+                        key: 'sickName',
+                        width: 100
+                        },
+                        {
+                        title: '労災申請',
+                        key: 'sickApply',
+                        width: 100
+                        },
+                        {
+                        title: '起算日',
+                        key: 'period',
+                        width: 100
+                        },
+                        {
+                        title: '加算日数',
+                        key: 'addDate',
+                        width: 100
+                        },
+                        {
+                        title: '勤務時間ラベル',
+                        key: 'label',
+                        width: 150
+                        },
+                        {
+                        title: '休憩時間',
+                        key: 'restTime',
+                        width: 100
+                        },
+                        {
+                        title: '氏名',
+                        key: 'name',
+                        width: 100
+                        },
+                        {
+                        title: '続柄',
+                        key: 'relation',
+                        width: 100
+                        },
+                        {
+                        title: '生年月日',
+                        key: 'birthday',
+                        width: 100
+                        },
+                        {
+                        title: '曜日',
+                        key: 'daysOfWeek',
+                        width: 100
+                        },
+                        {
+                        title: '対象人数',
+                        key: 'targetNumber',
+                        width: 100
+                        },
+                    ],
+                    workType: [
+                        {
+                        title: '職種',
+                        key: 'workType',
+                        width: 300,
+                        sortable: true
+                        },
+                        {
+                        title: '上限値',
+                        key: 'limit',
+                        width: 100
+                        },
+                        {
+                        title: '単位',
+                        key: 'limitType1',
+                        width: 50
+                        },
+                        {
+                        title: '回数',
+                        key: 'limitNum',
+                        width: 100
+                        },
+                        {
+                        title: '期間',
+                        key: 'limitRange',
+                        width: 100
+                        },
+                        {
+                        title: '単位',
+                        key: 'limitType2',
+                        width: 50
+                        },
+                    ],
+                    others: [
+                        {
+                        title: '種類',
+                        key: 'type',
+                        width: 50
+                        },
+                        {
+                        title: '決裁レベル',
+                        key: 'level',
+                        width: 130,
+                        sortable: true
+                        },
+                        {
+                        title: 'ファイル必須',
+                        key: 'necessaryFile',
+                        width: 130
+                        },
+                        {
+                        title: '事由必須',
+                        key: 'necessaryComment',
+                        width: 100
+                        },
+                        {
+                        title: '説明文',
+                        key: 'comment',
+                        width: 100
+                        },
+                        {
+                        title: '期間区分',
+                        key: 'rangeType',
+                        width: 100
+                        },
+                        {
+                        title: 'IMART',
+                        key: 'imart',
+                        width: 100
+                        },
+                    ],
+                }
+                let data = table2ColumnList.ntfType;
+                this.tableColumnsChecked.forEach(col =>{
+                        table2ColumnList[col].forEach(e=>{
+                            data.push(e)
+                        })
+                });
+                console.log(data)
                 return data;
             },
             changeTableColumns () {
-                this.tableColumns2 = this.getTable2Columns();
+                this.columns = this.getTable2Columns();
             },
-            toggleFav (index) {
-                this.tableData2[index].fav = this.tableData2[index].fav === 0 ? 1 : 0;
+            editDisp(e){
+                if(e){
+
+                }
+                this.editFlag=true
             }
         },
 
