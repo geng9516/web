@@ -94,13 +94,14 @@ public class TmgAcquired5DaysHolidayBean {
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
         // 重複Flg判断
         for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
+
             if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
-                    && (Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>0
+                    && (Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>10
                     || acquired5DaysVOList.get(i+1).getTpfDpaidHolidayFix11() !=null
                     || acquired5DaysVOList.get(i+1).getTpfDkikanbiFix12() !=null
                     || acquired5DaysVOList.get(i+1).getTpfNusedaysAjdust13() !=null
                     || acquired5DaysVOList.get(i+1).getTpfNmustdaysFix14() !=null )
-                    && (Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>0
+                    && (Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>10
                     || acquired5DaysVOList.get(i).getTpfDpaidHolidayFix11() !=null
                     || acquired5DaysVOList.get(i).getTpfDkikanbiFix12() !=null
                     || acquired5DaysVOList.get(i).getTpfNusedaysAjdust13() !=null
@@ -110,6 +111,7 @@ public class TmgAcquired5DaysHolidayBean {
             ){
                 acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
             }
+
         }
         return acquired5DaysVOList;
     }
