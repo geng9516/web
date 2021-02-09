@@ -91,8 +91,8 @@
                             </section>
                             <section class="tl mt5">
                                 <p class="mb5">可能サイト</p>
-                                <Tag v-for="item in editData.site" :key="item" :name="item" closable @on-close="">{{ item }}</Tag>
-                                <i-button icon="ios-add" type="dashed" size="small" @click="" v-show="editData.site.lenght<3">add</i-button>
+                                <Tag v-for="item in editData.site" :key="item.siteId" :name="item.name" closable @on-close="">{{ item.name }}</Tag>
+                                <i-button icon="ios-add" type="dashed" size="small" @click="" v-show="editData.site.length < 3">add</i-button>
                             </section>
                             <section class="tl mt5">
                                 <p class="mb5">反映先</p>
@@ -273,6 +273,7 @@
                                     </div>
                                 </Card>
                             </span>
+                            <i-button icon="ios-add" size="large" style="width:100%;" @click=""></i-button>
                         </Card>
                     </i-col>
                 </Row>
@@ -301,7 +302,7 @@
                     begin:'',
                     end:'',
                     group:'',
-                    site:['入力','承認','管理'],
+                    site:[{name:'入力',siteId:'TMG_INP'},{name:'管理',siteId:'TMG_ADMIN'}],
                     work:'',
                     typeGroup:'',
                     ntfTypeName:'',
