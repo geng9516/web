@@ -21,10 +21,10 @@ const ReTransfer = {
     </Col>
     <Col span="2" class="tc">
       <div class="ivu-transfer-operation" style="margin: 0; padding-top: 190px;">
-        <slot name="top-btn" :left="displayLeaftList" :right="displayRightList"></slot>
+        <slot name="top-btn" :left="displayLeaftList" :right="displayRightList" :rightList="rightList"></slot>
         <Button type="primary" size="small" icon="ios-arrow-forward" ghost @click="addDisplayList" style="margin-bottom: 12px">{{ rightBtnText }}</Button>
         <Button type="primary" size="small" icon="ios-arrow-back" ghost @click="delDisplayList" style="margin-bottom: 12px">{{ leftBtnText }}</Button>
-        <slot name="btm-btn" :left="displayLeaftList" :right="displayRightList"></slot>
+        <slot name="btm-btn" :left="displayLeaftList" :right="displayRightList" rightList="rightList"></slot>
       </div>
     </Col>
     <Col span="10">
@@ -38,7 +38,7 @@ const ReTransfer = {
                     v-for="(item, i) of rightList" :key="item[rightKey]"
                     @click="handleClickedRightLeaf(i)">
                     <Checkbox v-model="displayRightList[i]" :true-value="i"></Checkbox>
-                    {{ item[rightLabel] }}
+                    {{ item[rightShowLabel] }}
                 </li>
                 <li class="ivu-transfer-list-content-not-found"></li>
             </ul>
@@ -89,6 +89,11 @@ const ReTransfer = {
             type: String,
             default: 'columnFieldName'
         },
+        // 用于右边框的显示，避免rightLabel被重复污染
+        rightShowLabel: {
+            type: String,
+            default: 'columnFieldName'
+        },
         leftLabel: {
             type: String,
             default: 'columnFieldName'
@@ -115,7 +120,7 @@ const ReTransfer = {
             this.displayLeaftList.forEach(e => {
                 if (e === 0 || e) {
                     const target = this.leftList.splice(e - index, 1)
-                    this.rightList.push({...target[0], [this.rightLabel]: this.rightBtnFn(target[0][this.rightLabel])})
+                    this.rightList.push({...target[0], [this.rightShowLabel]: this.rightBtnFn(target[0][this.rightLabel])})
                     this.$set(this.displayLeaftList, e, undefined)
                     index += 1
                 }

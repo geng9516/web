@@ -88,12 +88,13 @@
                       <re-transfer
                         :left-list="sortResultList"
                         right-btn-text="降順"
+                        right-show-label="rightLabel"
                         @to-left="($event) => sortResultList.push($event)"
-                        :right-btn-fn="(e) => `${e}(昇)`"
+                        :right-btn-fn="(e) => `${e}(降)`"
                         ref="transfer"
                         >
-                        <template #top-btn="{ left, right}">
-                          <i-button type="primary" size="small" icon="ios-arrow-forward" ghost @click="">昇順</i-button>
+                        <template #top-btn="{ left, rightList}">
+                          <i-button type="primary" size="small" icon="ios-arrow-forward" ghost @click="orderLift(left, rightList)">昇順</i-button>
                         </template>
                       </re-transfer>
                     </i-col>
@@ -229,6 +230,17 @@
               // this.loading = false
             }
           }),
+          orderLift(left, rightList){
+            let index = 0
+            left.forEach(e => {
+                if (e === 0 || e) {
+                    const target = this.sortResultList.splice(e - index, 1)
+                    rightList.push({...target[0], rightLabel: `${target[0].columnFieldName}(昇)`})
+                    this.$set(left, e, undefined)
+                    index += 1
+                }
+            })
+          },
           async update() {
             this.$Modal.confirm({
               title: '注意',
