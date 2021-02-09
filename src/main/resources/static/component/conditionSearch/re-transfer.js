@@ -21,8 +21,10 @@ const ReTransfer = {
     </Col>
     <Col span="2" class="tc">
       <div class="ivu-transfer-operation" style="margin: 0; padding-top: 190px;">
-        <Button type="primary" size="small" icon="ios-arrow-forward" ghost @click="addDisplayList">{{ rightBtnText }}</Button>
-        <Button type="primary" size="small" icon="ios-arrow-back" ghost @click="delDisplayList">{{ leftBtnText }}</Button>
+        <slot name="top-btn" :left="displayLeaftList" :right="displayRightList"></slot>
+        <Button type="primary" size="small" icon="ios-arrow-forward" ghost @click="addDisplayList" style="margin-bottom: 12px">{{ rightBtnText }}</Button>
+        <Button type="primary" size="small" icon="ios-arrow-back" ghost @click="delDisplayList" style="margin-bottom: 12px">{{ leftBtnText }}</Button>
+        <slot name="btm-btn" :left="displayLeaftList" :right="displayRightList"></slot>
       </div>
     </Col>
     <Col span="10">
@@ -62,6 +64,10 @@ const ReTransfer = {
         rightBtnText: {
             type: String,
             default: '追加'
+        },
+        rightBtnFn: {
+            type: Function,
+            default: e => e
         },
         leftBtnText: {
             type: String,
@@ -108,7 +114,8 @@ const ReTransfer = {
             let index = 0
             this.displayLeaftList.forEach(e => {
                 if (e === 0 || e) {
-                    this.rightList.push(...this.leftList.splice(e - index, 1))
+                    const target = this.leftList.splice(e - index, 1)
+                    this.rightList.push({...target[0], [this.rightLabel]: this.rightBtnFn(target[0][this.rightLabel])})
                     this.$set(this.displayLeaftList, e, undefined)
                     index += 1
                 }
