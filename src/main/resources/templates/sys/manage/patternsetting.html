@@ -675,14 +675,13 @@
 
                 //編集画面のグループと部署を設定する
                 this.rawData.tpa_csectionid = e[0].secid
-                this.rawData.tpa_cgroupid = e[0].groupId
+                this.rawData.tpa_cgroupid = e[0].groupid
                 this.query_upload.sectionId = e[0].secid
-                this.query_upload.groupId = e[0].groupId
+                this.query_upload.groupId = e[0].groupid
                 this.query_sk.sectionId = e[0].secid
-                this.query_sk.groupId = e[0].groupId
-
+                this.query_sk.groupId = e[0].groupid
                 this.tmgPsaVO.sectionId = e[0].secid
-                this.tmgPsaVO.groupId = e[0].groupId
+                this.tmgPsaVO.groupId = e[0].groupid
                 //適用時間を取得する
                 if (!this.periodDate) {
                     await this.getPeriodDate()
@@ -1520,11 +1519,11 @@
                 // this.mergePatternLoading = false
             },
             isAfterDate( sKijunDate, sTargetDate ) {
-                console.log("isAfterDate")
-                console.log(sKijunDate)
-                console.log(sTargetDate)
-                console.log(this.convertDateToNumber( sKijunDate ))
-                console.log(this.convertDateToNumber( sTargetDate ))
+                // console.log("isAfterDate")
+                // console.log(sKijunDate)
+                // console.log(sTargetDate)
+                // console.log(this.convertDateToNumber( sKijunDate ))
+                // console.log(this.convertDateToNumber( sTargetDate ))
                 if( this.convertDateToNumber( sTargetDate ) > this.convertDateToNumber( sKijunDate ) ){
                         return true;
                     }else{
@@ -1543,8 +1542,6 @@
                   return eval( sYear + sMonth + sDay );
             },
             editlistBack(index) {
-                console.log("editlistBack(index)")
-                console.log(index)
                },
             handleChangeCheckPeriod(e, row) {
                 row.periodDateStart = e
@@ -1627,8 +1624,6 @@
             },
             //選択した行の状態が変わる場合、トリガーされる
             tableSelectChange2(selection) {
-                console.log("tableSelectChange2")
-                // console.log(this.$refs.selection2.rebuildData[row._index])
                 this.selectionIndexList = selection.map(e => e._index)
             },
             //Modal取消のreCall
