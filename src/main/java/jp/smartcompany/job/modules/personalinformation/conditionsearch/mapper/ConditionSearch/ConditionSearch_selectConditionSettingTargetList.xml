@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearch.ConditionSearchMapper">
+
+    <select id="selectConditionSettingTargetList" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingTargetDTO">
+        SELECT
+            b.MG_CGROUPID_PK as GROUP_ID,
+            PSMASTER.FUNC_GET_GROUP_DESC(
+                b.MG_CSYSTEMID_CK_FK,
+                b.MG_CGROUPID_PK,
+                TRUNC(SYSDATE),
+                'ja'
+            ) as GROUP_NAME,
+            DECODE(NVL(a.HST_CTARGETGROUP,'@'),'@','0','1') as SELECT_FLAG
+        FROM
+            HIST_SEARCH_SETTING_TARGET a,
+            MAST_GROUP b
+        WHERE
+            a.HST_NSETTINGID(+) = #{value}
+            AND b.MG_CSYSTEMID_CK_FK = '01'
+            AND	b.MG_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
+            AND	b.MG_DENDDATE >= TRUNC(SYSDATE)
+            AND	a.HST_CTARGETSYSTEM(+) = b.MG_CSYSTEMID_CK_FK
+            AND a.HST_CTARGETGROUP(+) = b.MG_CGROUPID_PK
+        ORDER BY
+            b.MG_NWEIGHTAGE,b.MG_CGROUPID_PK
+    </select>
+
+</mapper>

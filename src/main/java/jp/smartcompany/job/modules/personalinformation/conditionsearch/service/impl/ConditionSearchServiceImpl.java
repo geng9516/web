@@ -1,15 +1,19 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearch.ConditionSearchMapper;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingTargetDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchSettingDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -127,4 +131,32 @@ implements IConditionSearchService {
 
     /* ================== 条件项目选择 End ================ */
 
+      /*
+       =================================================
+       -------------------  分隔符  --------------------
+       =================================================
+     */
+
+    /* ================== 共有设定 Start ================ */
+
+    /**
+     * 获取选择共有范围时可选的group列表
+     * @param settingId
+     * @return
+     */
+    @Override
+    public Map<String,Object> showAddOrUpdate(Long settingId) {
+        Map<String,Object> result = MapUtil.newHashMap();
+        HistSearchSettingDO settings;
+        long searchSettingId = 1L;
+        if (settingId != null) {
+            searchSettingId = settingId;
+            settings = baseMapper.selectHistSearchSettingBySettingId(settingId);
+            result.put("settings",settings);
+        }
+        List<ConditionSettingTargetDTO> groupOptions = baseMapper.selectConditionSettingTargetList(searchSettingId);
+        result.put("groups",groupOptions);
+        return result;
+    }
+    /* ================== 共有设定 End ================ */
 }

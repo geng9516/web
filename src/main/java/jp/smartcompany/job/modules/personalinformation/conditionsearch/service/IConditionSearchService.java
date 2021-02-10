@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IConditionSearchService extends IService<MastDatadictionaryDO> {
 
@@ -50,5 +51,7 @@ public interface IConditionSearchService extends IService<MastDatadictionaryDO> 
     List<TableQueryDefinitionOptionDTO> selectTableForQueryDefinition();
 
     List<ColumnQueryDefinitionOptionDTO> selectColumnForQueryDefinition(String tableName);
+
+    Map<String,Object> showAddOrUpdate(Long settingId);
 
 }

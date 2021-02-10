@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearchMapper">
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearch.ConditionSearchMapper">
 
     <select id="selectTable" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO">
         SELECT

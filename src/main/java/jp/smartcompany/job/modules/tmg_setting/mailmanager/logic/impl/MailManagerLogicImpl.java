@@ -261,7 +261,7 @@ public class MailManagerLogicImpl implements MailManagerLogic {
         Date now = new Date();
         List<EmployMailDO> insertEmpList = CollUtil.newArrayList();
         List<EmployMailDO> updateEmpList = CollUtil.newArrayList();
-        list.forEach(emp -> {
+        for (UpdateMailDTO emp : list) {
             String email=emp.getEmail();
             String empId = emp.getEmpId();
             QueryWrapper<EmployMailDO> qw = SysUtil.query();
@@ -283,8 +283,10 @@ public class MailManagerLogicImpl implements MailManagerLogic {
                     employMailDO.setTmaUpdatedBy(userId);
                     updateEmpList.add(employMailDO);
                 }
+            } else {
+               throw new GlobalException("メール["+email+"]は他の方が使用されています");
             }
-        });
+        }
         if (CollUtil.isNotEmpty(insertEmpList)){
             employMailService.saveBatch(insertEmpList);
         }

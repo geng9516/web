@@ -67,51 +67,62 @@ public class ConditionSettingDTO {
      */
     private List<ConditionSettingTargetDTO> targetDtoList;
 
-//    /**
-//     * 連携データ名称
-//     */
-//    private String dataName;
-//    /**
-//     * IDカラム
-//     */
-//    private Long hseId;
-//    /**
-//     * 設定ID
-//     */
-//    private Long hseNsettingid;
-//    /**
-//     * 顧客コード
-//     */
-//    private String hseCcustomerid;
-//    /**
-//     * ユーザID
-//     */
-//    private String hseCuserid;
-//    /**
-//     * 設定名称
-//     */
-//    private String hseCsettingname;
-//    /**
-//     * 法人コード
-//     */
-//    private String hseCcompanyidCk;
+    /**
+     * true=利用条件式检索 false=利用条件项目检索
+     */
+    private Boolean useQueryDefinition;
+
+/**
+ * ====================================
+ *  以下为共有修改时需要的参数
+ *  ====================================
+  */
+
+    /**
+     * 連携データ名称
+     */
+    private String dataName;
+    /**
+     * IDカラム
+     */
+    private Long hseId;
+    /**
+     * 設定ID
+     */
+    private Long hseNsettingid;
+    /**
+     * 顧客コード
+     */
+    private String hseCcustomerid;
+    /**
+     * ユーザID
+     */
+    private String hseCuserid;
+    /**
+     * 設定名称
+     */
+    private String hseCsettingname;
+    /**
+     * 法人コード
+     */
+    private String hseCcompanyidCk;
     /**
      * 法人選択区分
      * 1: 全法人共通
      */
     private String hseCcompanyselect;
-//    /**
-//     * 共有有無
-//     */
-//    private String hseCpublic;
-//    /**
-//     * マスタコード表示フラグ
-//     */
-//    private String hseCmastercodeflg;
-//    /**
-//     * 備考
-//     */
-//    private Long hseCcomment;
+    /**
+     * 共有有無
+     */
+    private String hseCpublic;
+    /**
+     * マスタコード表示フラグ
+     */
+    private String hseCmastercodeflg;
+    /**
+     * 備考
+     */
+    private Long hseCcomment;
     /**
      *  連携データID
      */
@@ -120,9 +131,10 @@ public class ConditionSettingDTO {
      *  連携使用有無
      */
     private String hseCusecooperation;
-//    /**
-//     *  基準日設定使用有無
-//     */
-//    private String hseCusedate;
-
+    /**
+     *  基準日設定使用有無
+     */
+    private String hseCusedate;
+    /** 上書フラグ */
+    private Boolean overwrite;
 }

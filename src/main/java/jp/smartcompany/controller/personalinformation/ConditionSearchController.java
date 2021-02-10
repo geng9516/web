@@ -1,11 +1,13 @@
 package jp.smartcompany.controller.personalinformation;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.Map;
 public class ConditionSearchController {
 
     private final IConditionSearchLogic conditionSearchLogic;
+    private final IConditionSearchService conditionSearchService;
 
     /**
      * 获取数据库表名选择列表
@@ -59,6 +62,7 @@ public class ConditionSearchController {
     /**
      * 查询参数说明：
      *  {
+     *     "useQueryDefinition" true=利用条件式检索 false=利用条件项目检索
      *     "useCooperation": false // 検索結果データ読込 复选框
      *     "standardDateType": 1,
      *     "standardDate": "2021/02/08",   // 基準日関連
@@ -90,7 +94,18 @@ public class ConditionSearchController {
                     mswCcolumnid カラムID
                     mswNseq 並び順
                     mswCemployee 社員情報フラグ'
-                    selectValue 選択値
+                    selectValue 選択値 [
+                          {
+                              hswCname 値名称
+                              hswId IDカラム
+                              hswNsettingid 設定ID
+                              hswCtable テーブルID
+                              hswCcolumn カラムID
+                              hswCvalue 値
+                              hswCuse 条件使用有無
+                          }
+                          ...
+                    ]
                     use 使用可否
      *         }
      *         ...
@@ -157,6 +172,16 @@ public class ConditionSearchController {
     @PostMapping("search")
     public Map<String,Object> search(@RequestBody ConditionSettingDTO settingDTO) {
         return conditionSearchLogic.search(settingDTO);
+    }
+
+    @GetMapping("show/addOrUpdate")
+    public Map<String,Object> showEdit(@RequestParam(required = false) Long settingId) {
+        return conditionSearchService.showAddOrUpdate(settingId);
+    }
+
+    @PostMapping("addOrUpdate")
+    public GlobalResponse editSettings(@RequestBody ConditionSettingDTO settingDTO) {
+        return conditionSearchLogic.editSettings(settingDTO);
     }
 
 }

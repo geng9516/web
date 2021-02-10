@@ -519,4 +519,16 @@ public class SysUtil {
     public static String escDBString(String sString) {
         return transStringNullToDB(escapeQuote(sString));
     }
+
+    public static boolean isAnyBlank(String...texts) {
+        boolean isBlank = false;
+        for (String t : texts) {
+            if (StrUtil.isNotBlank(t)){
+                isBlank = true;
+                break;
+            }
+        }
+        return isBlank;
+    }
+
 }

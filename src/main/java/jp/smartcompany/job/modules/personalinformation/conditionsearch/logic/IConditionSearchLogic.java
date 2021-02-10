@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
@@ -29,7 +30,9 @@ public interface IConditionSearchLogic {
     String CHANGE_CURRENT_PAGE = "currentPage";
     /**定数：リンクボタンページ送り数*/
     // 使用されていない
-    static final int MOVE_PAGE_COUNT = 10;
+    int MOVE_PAGE_COUNT = 10;
+    // 他者作成の設定を上書きできるかどうか
+    String PROP_JK_PERMIT_OVERWRITE = "JkPermitOverwrite";
 
     List<TableOptionDTO> getTableOptions();
 
@@ -40,5 +43,7 @@ public interface IConditionSearchLogic {
     List<ColumnQueryDefinitionOptionDTO> getColumnForQueryDefinition(String tableName);
 
     Map<String,Object> search(ConditionSettingDTO settingDTO);
+
+    GlobalResponse editSettings(ConditionSettingDTO settingDTO);
 
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchSetting.HistSearchSettingMapper">
+
+    <select id="selectSettingOwner" resultType="java.lang.String">
+        SELECT
+            HSE_CUSERID
+        FROM
+            HIST_SEARCH_SETTING
+        WHERE
+            HSE_NSETTINGID = #{value}
+    </select>
+
+</mapper>

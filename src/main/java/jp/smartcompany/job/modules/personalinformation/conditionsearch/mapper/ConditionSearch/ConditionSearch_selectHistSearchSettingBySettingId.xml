@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearch.ConditionSearchMapper">
+
+    <select id="selectHistSearchSettingBySettingId" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchSettingDO">
+        SELECT
+            HSE_ID,
+            HSE_NSETTINGID,
+            HSE_CCUSTOMERID,
+            HSE_CSETTINGNAME,
+            HSE_CPUBLIC,
+            HSE_CCOMMENT,
+            HSE_CUSEDATE,
+            HSE_CCOMPANYSELECT,
+            HSE_CCOMPANYID_CK,
+            HSE_CMASTERCODEFLG,
+            HSE_CUSECOOPERATION,
+            HSE_NDATA_ID,
+            (SELECT HSC_CDATANAME FROM HIST_SEARCH_COOP WHERE HSC_NDATA_ID = HSE_NDATA_ID) as DATANAME,
+            VERSIONNO
+        FROM
+            HIST_SEARCH_SETTING
+        WHERE
+            HSE_NSETTINGID = #{value}
+        ORDER BY
+            HSE_ID
+    </select>
+
+</mapper>

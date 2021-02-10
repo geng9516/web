@@ -1,8 +1,10 @@
-package jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper;
+package jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.ConditionSearch;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingTargetDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchSettingDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -99,4 +101,13 @@ public interface ConditionSearchMapper extends BaseMapper<MastDatadictionaryDO> 
             " AND HSW_NSETTINGID = #{settingId}")
     List<ConditionWhereOptionDTO> selectWhereOptionsForInput(@Param("table") String tableName,@Param("column") String columnName,@Param("settingId") Long settingId);
 
+    /**
+     * 設定を取得
+     */
+    HistSearchSettingDO selectHistSearchSettingBySettingId(Long settingId);
+
+    /**
+     * 指定設定番号に対応する共有範囲設定一覧を取得する
+     */
+    List<ConditionSettingTargetDTO>  selectConditionSettingTargetList(Long setting);
 }
