@@ -306,7 +306,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
      * @param settingDto 検索条件
      * @return String
      */
-    public String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO) {
+    private String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO) {
         String psLoginUserId = SecurityUtil.getUserId();
         String psMode = settingDto.getMode();
         int nStart = 0;
@@ -376,7 +376,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
     /**
      * 検索結果の総行数を取得するSQLを組み立てます
      */
-    public int getTotalCount(SqlBO sqlBO) {
+    private int getTotalCount(SqlBO sqlBO) {
         // SQL取得
         String sTotalSql = getTotalCountSql(sqlBO);
         // SQL実行

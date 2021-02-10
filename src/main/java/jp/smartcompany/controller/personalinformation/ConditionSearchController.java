@@ -2,10 +2,7 @@ package jp.smartcompany.controller.personalinformation;
 
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +39,13 @@ public class ConditionSearchController {
     @GetMapping("options/col")
     public List<ColumnOptionDTO> getColumnOptions(@RequestParam String table) { return conditionSearchLogic.getColumnOptions(table); }
 
-
+    /**
+     * 表示するWhere句取得(簡易版)
+     */
+    @GetMapping("options/where")
+    public List<ConditionWhereDTO> getWhereItems() {
+        return conditionSearchService.selectWhereConditions(1L);
+    }
 
 
     /**
@@ -174,14 +177,24 @@ public class ConditionSearchController {
         return conditionSearchLogic.search(settingDTO);
     }
 
+    /**
+     * 获取编辑共有前端显示需要的参数
+     */
     @GetMapping("show/addOrUpdate")
     public Map<String,Object> showEdit(@RequestParam(required = false) Long settingId) {
         return conditionSearchService.showAddOrUpdate(settingId);
     }
 
+    /**
+     * 编辑共有
+     */
     @PostMapping("addOrUpdate")
     public GlobalResponse editSettings(@RequestBody ConditionSettingDTO settingDTO) {
         return conditionSearchLogic.editSettings(settingDTO);
     }
+
+    /**
+     * 自由条件設定読込画面表示処理
+     */
 
 }

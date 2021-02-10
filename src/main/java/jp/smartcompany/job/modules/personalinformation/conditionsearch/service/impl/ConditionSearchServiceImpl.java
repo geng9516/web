@@ -141,8 +141,6 @@ implements IConditionSearchService {
 
     /**
      * 获取选择共有范围时可选的group列表
-     * @param settingId
-     * @return
      */
     @Override
     public Map<String,Object> showAddOrUpdate(Long settingId) {
