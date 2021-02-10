@@ -1058,16 +1058,18 @@
                   ntfNoList: JSON.stringify(ntfNoList),
                   psSite: this.referListObject.psSite
                 })
-                if (msg.indexOf(',') > -1) {
-                  this.$Notice.warning({
-                    title: '一括承認失敗しました',
-                    desc: msg
-                  })
-                }else{
-                  this.$Message.success('一括承認完了')
-                }
+
+                this.$Message.success('一括承認完了')
+
                 this.getTableData(false, true)
               } catch (error) {
+                if(error.config || error.response && error.response.status === 500) return
+                this.errorInfo = true
+                const _error = JSON.parse(error)
+                this.$Notice.warning({
+                  title: '一括承認失敗しました',
+                  desc: _error[Object.keys(_error)[0]][0].ERRMSG
+                })
               } finally {
                 this.confirmLoading = false
               }

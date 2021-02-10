@@ -864,7 +864,7 @@ public class TmgNotificationBean {
 //                    ntfDate=tnfDto.getStartDate() + '-' + tnfDto.getEndDate();
 //                }
 //                ErrJsonDto result = JSONUtil.toBean(selectErrMsg, ErrJsonDto.class);
-                return GlobalResponse.ok(selectErrMsg);
+                return GlobalResponse.error(selectErrMsg);
             }else{
                 int insertTrigger = insertTrigger(param);
                 return GlobalResponse.ok();
