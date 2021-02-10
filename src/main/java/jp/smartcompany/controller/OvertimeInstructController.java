@@ -96,10 +96,10 @@ public class OvertimeInstructController {
      */
     @PostMapping("uploadData")
     @ResponseBody
-    public GlobalResponse updateDaily(@RequestBody String updateDtoList,
+    public GlobalResponse updateDaily(@RequestBody UpdateListDto updateDtoList,
                                       @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        UpdateListDto dtos =JSONUtil.parse(updateDtoList).toBean(UpdateListDto.class);
-        return overtimeInstructBean.actioneExecuteUpdate(dtos.getUpdateDtoList(),psDBBean);
+        //UpdateListDto dtos =JSONUtil.parse(updateDtoList).toBean(UpdateListDto.class);
+        return overtimeInstructBean.actioneExecuteUpdate(updateDtoList.getUpdateDtoList(),psDBBean);
     }
 
 
