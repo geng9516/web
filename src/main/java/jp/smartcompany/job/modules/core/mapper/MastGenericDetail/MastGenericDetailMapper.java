@@ -21,6 +21,8 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -270,5 +272,14 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
 
     @Select("SELECT count(*) FROM MAST_GENERIC_DETAIL WHERE MGD_CGENERICDETAILDESC = #{desc} and (#{start}  between MGD_DSTART_CK and   MGD_DEND  or  #{end} between MGD_DSTART_CK and   MGD_DEND)")
     int existMgdDesc(@Param("desc")String desc, @Param("start")String start, @Param("end")String end);
+
+    @Select("SELECT MGD_CGENERICDETAILDESC group_Name,MGD_CMASTCODE group_Id,MGD_NSPARENUM1 sort " +
+            "FROM MAST_GENERIC_DETAIL " +
+            "WHERE MGD_CGENERICGROUPID = 'TMG_NTFGROUP' " +
+            "AND #{value} BETWEEN MGD_DSTART AND MGD_DEDN ")
+    List<GroupVo> getNTFGroup(String sysdate);
+
+
+    List<NtfDispVo> getNtfTypeDetail(@Param("ntfGroup")String ntfGroup, @Param("sysdate")String sysdate);
 }
 

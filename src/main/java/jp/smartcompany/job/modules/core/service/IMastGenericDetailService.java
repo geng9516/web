@@ -22,6 +22,8 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 
 import java.util.Date;
 import java.util.List;
@@ -362,4 +364,8 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     int existMgdMastCode(String mastCode);
 
     int existMgdDesc(String desc ,String start,String end);
+
+    List<GroupVo> getNTFGroup(String sysdate);
+
+    List<NtfDispVo> getNtfTypeDetail(String ntfGroup, String sysdate);
 }

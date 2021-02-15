@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.mgdDto;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.dto.MgdDto;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.RELVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -96,7 +99,7 @@ public class NotificationSettingBean {
     //TMG_NTFGROUP
 //    String = "REL_数字1"     'ソート順
     //亲区分
-    private void insertNTFGROUP(List<mgdDto> ntfGroupDtoList){
+    private void insertNTFGROUP(List<MgdDto> ntfGroupDtoList){
 
         List<MastGenericDetailDO> mgdDoList =new ArrayList<>();
         List<Integer> existList = checkExist(ntfGroupDtoList);
@@ -140,7 +143,7 @@ public class NotificationSettingBean {
      * @param groupId group类别
      * @return
      */
-    private List<MastGenericDetailDO> setBaseMGD(List<mgdDto> mgdDolist , String groupId){
+    private List<MastGenericDetailDO> setBaseMGD(List<MgdDto> mgdDolist , String groupId){
         List<MastGenericDetailDO> mgdDoList =new ArrayList<>();
 
         PsSession psSession=(PsSession) httpSession.getAttribute(Constant.PS_SESSION);
@@ -148,7 +151,7 @@ public class NotificationSettingBean {
         //详细id list获取
         String[] detailId=getDetailId(groupId,mgdDolist.size());
         int i = 0;
-        for(mgdDto mgdDto:mgdDolist){
+        for(MgdDto mgdDto:mgdDolist){
             Date start;
             Date end;
             //默认时间设置
@@ -222,9 +225,9 @@ public class NotificationSettingBean {
 
 
     //检查有效期与名字重复
-    private List<Integer> checkExist(List<mgdDto> mgdDtoList){
+    private List<Integer> checkExist(List<MgdDto> mgdDtoList){
         List<Integer> existList =new ArrayList<>();
-        for(mgdDto mgdDto :mgdDtoList ){
+        for(MgdDto mgdDto :mgdDtoList ){
             existList.add(iMastGenericDetailService.existMgdDesc(mgdDto.getNtfName(),mgdDto.getStartDate(),mgdDto.getEndDate()));
         }
         return existList;
@@ -319,5 +322,44 @@ public class NotificationSettingBean {
         }
         return buf.toString();
     }
+
+
+    //获取所有主区分
+    private List<GroupVo> getNTFGroup(){
+        return iMastGenericDetailService.getNTFGroup(TmgUtil.getSysdate());
+    }
+
+    //获取主页面所有内容
+    private List<NtfDispVo> getNtfDisp(String ntfGroup,String sysdate){
+        List<NtfDispVo> ntfDispVoList=iMastGenericDetailService.getNtfTypeDetail( ntfGroup, sysdate);
+
+        List<NtfDispVo> ntfDispVos=new ArrayList<>();
+
+        for (NtfDispVo vo:ntfDispVoList) {
+            if(!ntfDispVos.stream().filter(m->m.getNtfTypeId().equals(vo.getNtfTypeId())).findAny().isPresent()){
+                //去重
+                ntfDispVos.add(vo);
+            }else{
+                for(int i=0;i<ntfDispVos.size();i++){
+                    if(ntfDispVos.get(i).getNtfTypeId().equals(vo.getNtfTypeId())){
+                        RELVo relVo=new RELVo();
+                        //RELATION
+
+
+                        ntfDispVos.get(i).getWorkTypeInfo().add(relVo);
+                    }
+                }
+            }
+
+        }
+
+
+
+
+
+
+        return  ntfDispVoList;
+    }
+
 
 }

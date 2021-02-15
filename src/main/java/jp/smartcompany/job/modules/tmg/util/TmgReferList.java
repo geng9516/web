@@ -756,17 +756,17 @@ public class TmgReferList {
         }
 
         // 組織が選択されている場合、職員一覧を初期化
-//        if(StrUtil.isNotBlank(targetSec_admin)){
+        if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
-            // 対象職員の値が存在しない場合、デフォルト値をセットする
-//            if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
-//                if(CollUtil.isNotEmpty(empList.getDataArray())){
-//                    targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
-//                }else{
-//                    targetEmp_admin = null;
-//                }
-//            }
-//        }
+             //対象職員の値が存在しない場合、デフォルト値をセットする
+            if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
+                if(CollUtil.isNotEmpty(empList.getDataArray())){
+                     targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
+                }else{
+                     targetEmp_admin = null;
+                }
+            }
+        }
 
         // 改めてセッションに登録する
         session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);

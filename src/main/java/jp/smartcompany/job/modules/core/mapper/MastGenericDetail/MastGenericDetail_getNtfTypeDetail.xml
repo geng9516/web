@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+    <select id="getNtfTypeDetail"
+            resultType="jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo">
+        select
+            NTFTYPE.MGD_CMASTERCODE         ntf_Type_Id,
+            NTFTYPE.MGD_CGENERICDETAILDESC  ntf_Type,
+            NTFTYPE.MGD_DSTART_CK           start_Date,
+            NTFTYPE.MGD_DEND                end_Date,
+            NTFTYPE.MGD_CSPARECHAR2         time_Type,
+            NTFTYPE.MGD_CSPARECHAR3         necessary_Comment,
+            NTFTYPE.MGD_CSPARECHAR5         site_Id,
+            NTFTYPE.MGD_NSPARENUM1,
+            NTFTYPE.MGD_NSPARENUM2          disp_Type_Id,
+            NTFTYPE.MGD_NSPARENUM3,
+            NTFTYPE.MGD_NSPARENUM4,
+            NTFTYPE.MGD_NSPARENUM5,
+
+            NTFTYPE2.MGD_CSPARECHAR1        ntf_Group_Id,
+            NTFTYPE2.MGD_CSPARECHAR3        comment_D,
+            NTFTYPE2.MGD_CSPARECHAR4        type_Group_Id,
+            NTFTYPE2.MGD_NSPARENUM1 ,
+            NTFTYPE2.MGD_NSPARENUM2         necessaryFile,
+            NTFTYPE2.MGD_NSPARENUM3         time_Type,
+            NTFTYPE2.MGD_NSPARENUM4,
+
+            APP.MGD_CSPARECHAR2 level,
+
+            REL.MGD_CSPARECHAR1  work_Type,
+            REL.MGD_CSPARECHAR3 ,
+            REL.MGD_CSPARECHAR4,
+            REL.MGD_CSPARECHAR5,
+            REL.MGD_NSPARENUM1 ,
+            REL.MGD_NSPARENUM3 ,
+            REL.MGD_NSPARENUM4 ,
+            REL.MGD_NSPARENUM5
+        FROM
+            MAST_GENERIC_DETAIL NTFTYPE
+                left join MAST_GENERIC_DETAIL REL
+                on  REL.MGD_CGENERICGROUPID    = 'TMG_NTF_RELATION'
+                    AND NTFTYPE.MGD_CMASTERCODE=REL.MGD_CSPARECHAR2 ,
+            MAST_GENERIC_DETAIL NTFTYPE2,
+            MAST_GENERIC_DETAIL APP
+        WHERE
+                NTFTYPE.MGD_CGENERICGROUPID = 'TMG_NTFTYPE'
+            AND NTFTYPE2.MGD_CGENERICGROUPID    = 'TMG_NTFTYPE2'
+            AND APP.MGD_CGENERICGROUPID    = 'TMG_NTFAPPROVE_LEVEL'
+            AND  NTFTYPE.MGD_CMASTERCODE=NTFTYPE2.MGD_CSPARECHAR2
+            AND NTFTYPE.MGD_CMASTERCODE=APP.MGD_CSPARECHAR1
+        order by NTFTYPE2.MGD_NSPARENUM1
+    </select>
+</mapper>
