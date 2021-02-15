@@ -1217,7 +1217,9 @@
                             //新規又は編集画面を閉じる
                             this.cancel()
                             //リストの取得
-                            await this.getTmgPatternList()
+                            this.getTmgPatternList()
+                            //適用されている勤務パターンが編集されていれば、部署職員リストの勤務パターンも最新状況を取得する
+                            this.selectTmgPatternApplies()
                             this.$Notice.info({title: this.pageTitleMsg, desc: ""})
                         },
                     onCancel: () => {
@@ -1240,6 +1242,8 @@
                             await this.http.postForm('sys/patternSetting/deletePattern', this.query_delete)
                             //リストの取得
                             await this.getTmgPatternList()
+                            //適用されている勤務パターンが削除されていれば、部署職員リストの勤務パターンも最新状況を取得する
+                            this.selectTmgPatternApplies()
                             this.$Message.success({content: '「' + row.tpa_cpatternname + '」を削除しました'})
                         },
                         onCancel: () => {
@@ -1517,11 +1521,6 @@
                 // this.mergePatternLoading = false
             },
             isAfterDate( sKijunDate, sTargetDate ) {
-                console.log("isAfterDate")
-                console.log(sKijunDate)
-                console.log(sTargetDate)
-                console.log(this.convertDateToNumber( sKijunDate ))
-                console.log(this.convertDateToNumber( sTargetDate ))
                 if( this.convertDateToNumber( sTargetDate ) > this.convertDateToNumber( sKijunDate ) ){
                     return true;
                 }else{
@@ -1540,8 +1539,6 @@
                 return eval( sYear + sMonth + sDay );
             },
             editlistBack(index) {
-                console.log("editlistBack(index)")
-                console.log(index)
             },
             handleChangeCheckPeriod(e, row) {
                 row.periodDateStart = e
@@ -1602,7 +1599,8 @@
                         await this.getTmgPatternList()
                         //部署職員リスト
                         await this.selectTmgPatternApplies()
-
+                        //勤務パターン適用対象リストの初期化
+                        this.selectionIndexList = []
                         this.$Message.success({
                             background: true,
                             closable: true,
@@ -1624,7 +1622,6 @@
             },
             //選択した行の状態が変わる場合、トリガーされる
             tableSelectChange2(selection) {
-                console.log("tableSelectChange2")
                 // console.log(this.$refs.selection2.rebuildData[row._index])
                 this.selectionIndexList = selection.map(e => e._index)
             },

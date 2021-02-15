@@ -1215,7 +1215,9 @@
                         //新規又は編集画面を閉じる
                         this.cancel()
                         //リストの取得
-                        await this.getTmgPatternList()
+                        this.getTmgPatternList()
+                        //適用されている勤務パターンが編集されていれば、部署職員リストの勤務パターンも最新状況を取得する
+                        this.selectTmgPatternApplies()
                         this.$Notice.info({title: this.pageTitleMsg, desc: ""})
                     },
                     onCancel: () => {
@@ -1237,7 +1239,9 @@
                         onOk: async () => {
                             await this.http.postForm('sys/patternSetting/deletePattern', this.query_delete)
                             //リストの取得
-                            await this.getTmgPatternList()
+                            this.getTmgPatternList()
+                            //適用されている勤務パターンが削除されていれば、部署職員リストの勤務パターンも最新状況を取得する
+                            this.selectTmgPatternApplies()
                             this.$Message.success({content: '「' + row.tpa_cpatternname + '」を削除しました'})
                         },
                         onCancel: () => {
@@ -1602,7 +1606,8 @@
                             await this.getTmgPatternList()
                             //部署職員リスト
                             await this.selectTmgPatternApplies()
-
+                            //勤務パターン適用対象リストの初期化
+                            this.selectionIndexList = []
                             this.$Message.success({
                                 background: true,
                                 closable: true,
