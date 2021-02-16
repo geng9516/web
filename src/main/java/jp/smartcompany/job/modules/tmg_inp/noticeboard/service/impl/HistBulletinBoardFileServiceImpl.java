@@ -21,4 +21,11 @@ implements IHistBulletinBoardFileService {
         return list(qw);
     }
 
+    @Override
+    public List<HistBulletinBoardFileDO> listFileByIds(List<Long> boardIdList) {
+        QueryWrapper<HistBulletinBoardFileDO> qw = SysUtil.query();
+        qw.in("HB_ID_FK",boardIdList);
+        return list(qw);
+    }
+
 }

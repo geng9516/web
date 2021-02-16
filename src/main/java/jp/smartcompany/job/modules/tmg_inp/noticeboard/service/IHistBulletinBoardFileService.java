@@ -9,4 +9,5 @@ public interface IHistBulletinBoardFileService extends IService<HistBulletinBoar
 
     List<HistBulletinBoardFileDO> listFileById(Long boardId);
 
+    List<HistBulletinBoardFileDO> listFileByIds(List<Long> boardIdList);
 }
