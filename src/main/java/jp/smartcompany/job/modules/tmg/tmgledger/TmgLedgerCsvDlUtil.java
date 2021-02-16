@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.io.PrintWriter;
+import jp.smartcompany.boot.util.SysUtil;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,7 +47,7 @@ public class TmgLedgerCsvDlUtil {
 	private final HttpServletResponse response;
 
 	/** プロパティファイルパス */
-	public static final String PATH_PROPERTIES       = "ps.c01.tmg.TmgLedger.TmgLedger";
+	public static final String PATH_PROPERTIES       = "jp.smartcompany.job.modules.tmg.tmgledger.TmgLedgerCsvDlUtil";
 	/** ダウンロードコンテンツタイプ */
 	public static final String DOWNLOAD_CONTENT_TYPE = "application/octetstream;charset=Shift_JIS";
 	/** OS改行文字 */
@@ -119,7 +120,7 @@ public class TmgLedgerCsvDlUtil {
 	 */
 	public String getPropMsg(String psPropKey, String sLang) {
 
-		return  PsUtil.getPsUtil().getpropertyvalue(sLang, psPropKey, this.PATH_PROPERTIES);
+		return  SysUtil.getpropertyvalue(sLang, psPropKey, this.PATH_PROPERTIES);
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class TmgLedgerCsvDlUtil {
 	 */
 	public String getEscDBPropMsg(String psPropKey, String sLang) {
 
-		return  escDBString(PsUtil.getPsUtil().getpropertyvalue(sLang, psPropKey, this.PATH_PROPERTIES));
+		return  escDBString(SysUtil.getpropertyvalue(sLang, psPropKey, this.PATH_PROPERTIES));
 	}
 
 	/**
