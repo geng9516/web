@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.Version;
 import lombok.EqualsAndHashCode;
@@ -24,6 +25,7 @@ public class HistSearchOrderDO implements Serializable {
     /**
      *　IDカラム
      */
+    @TableId
     private Long hsoId;
     /**
      * 設定ID
