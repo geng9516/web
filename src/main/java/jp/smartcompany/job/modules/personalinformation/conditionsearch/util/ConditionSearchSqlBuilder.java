@@ -272,8 +272,9 @@ public class ConditionSearchSqlBuilder {
                     ).append(",");
         }
         // 末尾の,を取り除く
-        selectSql.substring(0, selectSql.length() -1);
-        sqlBO.setSelectStatement(selectSql.toString());
+        int lastCommaIndex = selectSql.lastIndexOf(",");
+        String selectStatement = selectSql.substring(0,lastCommaIndex);
+        sqlBO.setSelectStatement(selectStatement);
 
         // WHERE句（検索対象範囲）の組立
         String searchRangeWhere = getSearchRangeWhere();
@@ -287,15 +288,20 @@ public class ConditionSearchSqlBuilder {
                 // WHERE句（絞込条件）の組立(定義式)
                 conditionWhere = createQueryCondition(companyId,whereQueryDtoList);
             }
-        sqlBO.setWhereConditionStatement(conditionWhere+searchRangeWhere+searchCoopWhere);
-
-        StringBuilder orderSql = new StringBuilder();
-        for (ConditionOrderDTO conditionOrderDTO : orderDtoList) {
-            orderSql.append(getOrderSql(conditionOrderDTO)).append(",");
+        if (StrUtil.isNotBlank(conditionWhere)) {
+            sqlBO.setWhereConditionStatement(conditionWhere + searchRangeWhere + searchCoopWhere);
+        } else {
+            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
         }
-        // 末尾の,を取り除く
-        orderSql.substring(0, orderSql.length() -1);
-        sqlBO.setOrderStatement(orderSql.toString());
+        if (CollUtil.isNotEmpty(orderDtoList)) {
+            StringBuilder orderSql = new StringBuilder();
+            for (ConditionOrderDTO conditionOrderDTO : orderDtoList) {
+                orderSql.append(getOrderSql(conditionOrderDTO)).append(",");
+            }
+            // 末尾の,を取り除く
+            orderSql.substring(0, orderSql.length() - 1);
+            sqlBO.setOrderStatement(orderSql.toString());
+        }
 
         // メインテーブルの追加
         fromMap.put(TABLE_MAIN,TABLE_MAST_EMPLOYEES+" M1");

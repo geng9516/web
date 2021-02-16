@@ -1,5 +1,6 @@
 package jp.smartcompany.controller.personalinformation;
 
+import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
@@ -68,7 +69,7 @@ public class ConditionSearchController {
      *  {
      *     "useQueryDefinition" true=利用条件式检索 false=利用条件项目检索
      *     "useCooperation": false // 検索結果データ読込 复选框
-     *     "standardDateType": 1,
+     *     "standardDateType": 1, // 1=指定日付時点のデータを検索する（通常はこちらを使用してください） 0=履歴も全て検索する
      *     "standardDate": "2021/02/08",   // 基準日関連
      *     "showMastCode": true, // マスタ参照項目を表示するときはコードも併せて表示する 复选框
      *     "mode": SCREEN=画面 CSV=CSV出力 TABLE=テーブル

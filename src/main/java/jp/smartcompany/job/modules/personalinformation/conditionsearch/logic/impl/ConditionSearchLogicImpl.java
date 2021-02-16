@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -101,6 +102,8 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         }
         // 検索条件Dtoを解析してSQLを組み立てる
         String sSearchSql = getSearchSql(settingDTO, sqlBO);
+        System.out.println("++===searchSql===+++");
+        System.out.println(sSearchSql);
         // 組み立てたSQLを実行して検索結果を取得する
         Vector <Vector<Object>> vSearchResult = executeSql(sSearchSql);
         // できあがった検索結果をListに変換する
@@ -383,7 +386,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
             sbSql.append(" ORDER BY ").append(orderSql);
         }
         // 末尾の条件
-        if (psMode.equalsIgnoreCase(MODE_SCREEN)) {
+        if (StrUtil.equalsIgnoreCase(psMode,MODE_SCREEN)) {
             sbSql.append(" ) RN ) WHERE ROW_NUM >= ").append(nStart).append(" AND ROW_NUM <= ").append(nEnd);
         }
         return sbSql.toString();
@@ -398,7 +401,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         // SQL実行
         Vector<Vector<Object>> vTotalResult = executeSql(sTotalSql);
         // 総件数を取得する
-        return Integer.parseInt((String) vTotalResult.get(1).get(0));
+        return ((BigDecimal) vTotalResult.get(1).get(0)).intValue();
     }
 
     /**
@@ -433,20 +436,22 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
             }
 
             String sColumnName = null;
-            if (psLanguage.equalsIgnoreCase("ja")) {
-                sColumnName = dataDictionary.getMdCcolumndescja();
-            } else if (psLanguage.equalsIgnoreCase("en")) {
-                sColumnName = dataDictionary.getMdCcolumndescen();
-            } else if (psLanguage.equalsIgnoreCase("ch")) {
-                sColumnName = dataDictionary.getMdCcolumndescch();
-            } else if (psLanguage.equalsIgnoreCase("01")) {
-                sColumnName = dataDictionary.getMdCcolumndesc01();
-            } else if (psLanguage.equalsIgnoreCase("02")) {
-                sColumnName = dataDictionary.getMdCcolumndesc02();
-            }
-            // カラム名称が設定されていないときはカラムIDを返す
-            if (sColumnName == null) {
-                sColumnName = dataDictionary.getMdCcolumnname();
+            if (dataDictionary!=null) {
+                if (StrUtil.equalsIgnoreCase(psLanguage,"ja")) {
+                    sColumnName = dataDictionary.getMdCcolumndescja();
+                } else if (StrUtil.equalsIgnoreCase(psLanguage,"en")) {
+                    sColumnName = dataDictionary.getMdCcolumndescen();
+                } else if (StrUtil.equalsIgnoreCase(psLanguage,"ch")) {
+                    sColumnName = dataDictionary.getMdCcolumndescch();
+                } else if (StrUtil.equalsIgnoreCase(psLanguage,"01")) {
+                    sColumnName = dataDictionary.getMdCcolumndesc01();
+                } else if (StrUtil.equalsIgnoreCase(psLanguage,"02")) {
+                    sColumnName = dataDictionary.getMdCcolumndesc02();
+                }
+                // カラム名称が設定されていないときはカラムIDを返す
+                if (sColumnName == null) {
+                    sColumnName = dataDictionary.getMdCcolumnname();
+                }
             }
             lstColumnName.add(sColumnName);
         }

@@ -82,6 +82,7 @@ security:
     - /McSrvs06
     - /McSrvs07
     - /McSrvs08
+    - /sys/**
   # 不需要拦截的url
   whiteList:
     - /error
