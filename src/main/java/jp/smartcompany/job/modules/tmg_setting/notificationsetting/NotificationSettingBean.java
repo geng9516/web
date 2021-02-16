@@ -22,6 +22,7 @@ import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.dto.MgdD
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.RELVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -227,7 +228,7 @@ public class NotificationSettingBean {
     //检查有效期与名字重复
     private List<Integer> checkExist(List<MgdDto> mgdDtoList){
         List<Integer> existList =new ArrayList<>();
-        for(MgdDto mgdDto :mgdDtoList ){
+        for(MgdDto mgdDto:mgdDtoList ){
             existList.add(iMastGenericDetailService.existMgdDesc(mgdDto.getNtfName(),mgdDto.getStartDate(),mgdDto.getEndDate()));
         }
         return existList;
@@ -243,7 +244,7 @@ public class NotificationSettingBean {
         int num = Integer.valueOf(typeId);
         String viewflg="";
         for(int i=0;i<14;i++){
-            viewflg  += (num%2);
+            viewflg += (num%2);
             num = num/2;
         }
         TypeChildrenVo tc = new TypeChildrenVo();
@@ -325,12 +326,28 @@ public class NotificationSettingBean {
 
 
     //获取所有主区分
-    private List<GroupVo> getNTFGroup(){
-        return iMastGenericDetailService.getNTFGroup(TmgUtil.getSysdate());
+    public List<GroupVo> getNTFGroup(String sysdate){
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
+        return iMastGenericDetailService.getNTFGroup(sysdate);
     }
+
+    //申請種類グルーピングコード
+    public List<TypeGroupVo> getNTFTypeGroup(String sysdate){
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
+        return iMastGenericDetailService.getNTFTypeGroup(sysdate);
+    }
+
+
 
     //获取主页面所有内容
     private List<NtfDispVo> getNtfDisp(String ntfGroup,String sysdate){
+        //TMG_APPROVAL_LEVEL
+        //TMG_NTFTYPE2
+        //TMG_NTFTYPE
         List<NtfDispVo> ntfDispVoList=iMastGenericDetailService.getNtfTypeDetail( ntfGroup, sysdate);
 
         List<NtfDispVo> ntfDispVos=new ArrayList<>();
@@ -342,23 +359,21 @@ public class NotificationSettingBean {
             }else{
                 for(int i=0;i<ntfDispVos.size();i++){
                     if(ntfDispVos.get(i).getNtfTypeId().equals(vo.getNtfTypeId())){
-                        RELVo relVo=new RELVo();
-                        //RELATION
-
-
-                        ntfDispVos.get(i).getWorkTypeInfo().add(relVo);
+                        //当前职种是否适用
+                        if(vo.getLimitCheck().equals("1")){
+                            RELVo relVo=new RELVo();
+                            //RELATION
+                            relVo.setWorkType(vo.getWorkType());
+                            relVo.setLimitRange(vo.getLimitRange());
+                            relVo.setLimitNum(vo.getLimitNum());
+                            relVo.setLimitCount(vo.getLimitCount());
+                            ntfDispVos.get(i).getWorkTypeInfo().add(relVo);
+                        }
                     }
                 }
             }
-
         }
-
-
-
-
-
-
-        return  ntfDispVoList;
+        return  ntfDispVos;
     }
 
 

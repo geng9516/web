@@ -31,6 +31,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -649,5 +650,11 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public List<NtfDispVo> getNtfTypeDetail(String ntfGroup, String sysdate){
         return baseMapper.getNtfTypeDetail(ntfGroup,sysdate);
+    }
+
+
+    @Override
+    public List<TypeGroupVo> getNTFTypeGroup(String sysdate){
+        return baseMapper.getNTFTypeGroup(sysdate);
     }
 }

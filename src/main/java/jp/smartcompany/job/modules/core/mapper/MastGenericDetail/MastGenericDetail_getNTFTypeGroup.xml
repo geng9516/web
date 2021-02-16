@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetail.MastGenericDetailMapper">
+
+
+    <select id="getNTFTypeGroup"
+            resultType="jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo">
+        SELECT
+               MGD_CMASTERCODE TYPE_GROUP_ID,
+               MGD_CGENERICDETAILDESC TYPE_GROUP_NAME,
+               MGD_CSPARECHAR1  AVG_SECTION,
+               MGD_CSPARECHAR2  DIGESTION_SECTION,
+               MGD_CSPARECHAR3  WORK_DAY,
+               MGD_CSPARECHAR4  CONTI_CHECK,
+               MGD_NSPARENUM1   YEAR_BEGIN_MONTH,
+               MGD_NSPARENUM2   START_DATE_RANGE,
+               MGD_NSPARENUM3   HASUU_SECTION
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE MGD_CGENERICGROUPID = 'TMG_NTFTYPEGROUP'
+        AND #{sysdate} BETWEEN MGD_DSTART_CK AND MGD_DEND
+    </select>
+</mapper>

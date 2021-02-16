@@ -8,7 +8,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class GroupVo {
-    private String groupName;
-    private String groupId;
+    private String name;
+    private String id;
     private String sort;
 }

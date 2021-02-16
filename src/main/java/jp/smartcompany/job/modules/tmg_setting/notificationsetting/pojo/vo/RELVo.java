@@ -9,11 +9,8 @@ import lombok.ToString;
 @ToString
 public class RELVo {
     private String workType;//職種
-
-    private String limit;//上限値
-    private String limitType1;//単位
-    private String limitNum;//回数
-    private String limitRange;//期間
-    private String limitType2;//単位
-
+    //private String limitCheck;//使用有無
+    private String limitNum;//取得上限値
+    private String limitCount;//取得可能回数
+    private String limitRange; //取得可能期
 }

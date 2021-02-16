@@ -5,11 +5,16 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
+import jp.smartcompany.job.modules.tmg_setting.genericmanager.pojo.vo.CategoryGenericDetailVO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.logic.MailManagerLogic;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDTO;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.NotificationSettingBean;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,5 +29,10 @@ import java.util.Map;
 @RequestMapping("sys/notificationSetting")
 public class NotificationSettingController {
 
+    private final NotificationSettingBean notificationSettingBean;
 
+    @GetMapping("groupManager")
+    public List<GroupVo> getNTFGroup(@RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.getNTFGroup(sysdate);
+    }
 }
