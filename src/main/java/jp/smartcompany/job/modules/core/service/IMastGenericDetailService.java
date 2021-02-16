@@ -24,6 +24,7 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
 
 import java.util.Date;
 import java.util.List;
@@ -368,4 +369,6 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     List<GroupVo> getNTFGroup(String sysdate);
 
     List<NtfDispVo> getNtfTypeDetail(String ntfGroup, String sysdate);
+
+    List<TypeGroupVo> getNTFTypeGroup(String sysdate);
 }
