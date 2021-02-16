@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchSetting.HistSearchSettingMapper">
+
+    <select id="selectCommonList" parameterType="map" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO">
+        SELECT
+            HSE_ID,
+            HSE_NSETTINGID,
+            HSE_CSETTINGNAME,
+            HSE_CCOMPANYSELECT,
+            HSE_CPUBLIC,
+            HSE_CCOMMENT
+        FROM
+            HIST_SEARCH_SETTING
+        WHERE
+            HSE_CUSERID = #{userId}
+          AND HSE_CCUSTOMERID =#{custId}
+          AND HSE_CCOMPANYID_CK IN ('01')
+        UNION
+        SELECT
+            HSE_ID,
+            HSE_NSETTINGID,
+            HSE_CSETTINGNAME,
+            HSE_CCOMPANYSELECT,
+            HSE_CPUBLIC,
+            HSE_CCOMMENT
+        FROM
+            HIST_SEARCH_SETTING
+        WHERE
+            HSE_CPUBLIC = '1'
+          AND HSE_CCOMPANYID_CK IN ('01')
+          AND NOT EXISTS (
+                SELECT
+                    1
+                FROM
+                    HIST_SEARCH_SETTING_TARGET
+                WHERE
+                    HSE_NSETTINGID = HST_NSETTINGID
+            )
+        UNION
+        SELECT
+            HSE_ID,
+            HSE_NSETTINGID,
+            HSE_CSETTINGNAME,
+            HSE_CCOMPANYSELECT,
+            HSE_CPUBLIC,
+            HSE_CCOMMENT
+        FROM
+            HIST_SEARCH_SETTING,
+            HIST_SEARCH_SETTING_TARGET
+        WHERE
+            HSE_CPUBLIC = '1'
+          AND HSE_CCOMPANYID_CK IN ('01')
+          AND	HSE_NSETTINGID = HST_NSETTINGID
+          <if test="groupIds neq null and groupIds.size() gt 0">
+            AND HST_CTARGETGROUP IN
+            <foreach collection="groupIds" index="index" item="groupId" separator="," open="(" close=")">
+                #{groupId}
+            </foreach>
+          </if>
+        ORDER BY
+            HSE_CPUBLIC DESC,HSE_CSETTINGNAME
+    </select>
+
+</mapper>

@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.im
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
@@ -13,6 +14,8 @@ import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
+import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
@@ -23,21 +26,21 @@ import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.util.ConditionSearchSqlBuilder;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +53,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
     private final IHistSearchWhereService histSearchWhereService;
     private final IHistSearchOrderService histSearchOrderService;
     private final IHistSearchSettingTargetService histSearchSettingTargetService;
+    private final PsSearchCompanyUtil searchCompanyUtil;
 
     private final ConditionSearchSqlBuilder sqlBuilder;
     private final DbControllerLogic dbControllerLogic;
@@ -298,6 +302,18 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
             }
         }
         return GlobalResponse.ok("設定を保存しました。");
+    }
+
+    @Override
+    public List<CommonConditionVO> getConditionVoList() {
+        List<String> companyList = searchCompanyUtil.getCompList(DateUtil.date());
+        String loginUserId = SecurityUtil.getUserId();
+        // 属するグループを取得
+        Map<String, List<LoginGroupBO>> hmGroups = SecurityUtil.getLoginUser().getLoginGroups();
+        // 自由条件検索のシステムコードを取得
+        List<LoginGroupBO> loginGroups = hmGroups.get("01");
+        List<String> groupIds = loginGroups.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+        return histSearchSettingService.selectList("01",loginUserId,companyList,groupIds);
     }
 
     /**

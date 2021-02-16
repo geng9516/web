@@ -4,6 +4,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -177,6 +178,15 @@ public class ConditionSearchController {
         return conditionSearchLogic.search(settingDTO);
     }
 
+
+    /**
+     *
+     * ======================
+     *      编辑共有相关接口
+     * ======================
+     *
+     */
+
     /**
      * 获取编辑共有前端显示需要的参数
      */
@@ -196,5 +206,10 @@ public class ConditionSearchController {
     /**
      * 自由条件設定読込画面表示処理
      */
+    @GetMapping("show/read")
+    public List<CommonConditionVO> getConditionVoList() {
+        return conditionSearchLogic.getConditionVoList();
+    }
+
 
 }

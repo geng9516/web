@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
 
 import java.util.List;
 import java.util.Map;
@@ -45,5 +46,7 @@ public interface IConditionSearchLogic {
     Map<String,Object> search(ConditionSettingDTO settingDTO);
 
     GlobalResponse editSettings(ConditionSettingDTO settingDTO);
+
+    List<CommonConditionVO> getConditionVoList();
 
 }
