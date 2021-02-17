@@ -180,37 +180,4 @@ public class ConditionSearchController {
     }
 
 
-    /**
-     *
-     * ======================
-     *      编辑共有相关接口
-     * ======================
-     *
-     */
-
-    /**
-     * 获取编辑共有前端显示需要的参数
-     */
-    @GetMapping("show/addOrUpdate")
-    public Map<String,Object> showEdit(@RequestParam(required = false) Long settingId) {
-        return conditionSearchService.showAddOrUpdate(settingId);
-    }
-
-    /**
-     * 编辑共有
-     */
-    @PostMapping("addOrUpdate")
-    public GlobalResponse editSettings(@RequestBody ConditionSettingDTO settingDTO) {
-        return conditionSearchLogic.editSettings(settingDTO);
-    }
-
-    /**
-     * 自由条件設定読込画面表示処理
-     */
-    @GetMapping("show/read")
-    public List<CommonConditionVO> getConditionVoList() {
-        return conditionSearchLogic.getConditionVoList();
-    }
-
-
 }

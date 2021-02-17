@@ -181,10 +181,10 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
             throw new GlobalException("該当する通知の掲示者ではありません。");
         }
         if (SysDateUtil.isLess(originalNotice.getHbDdateofexpire(),now)) {
-            throw new GlobalException("期限切れの通知は編集できません");
+            throw new GlobalException("期限切れの通知は編集できません。");
         }
         if (StrUtil.equals("0",originalNotice.getHbCfix())) {
-            throw new GlobalException("削除された通知は編集できません");
+            throw new GlobalException("削除された通知は編集できません。");
         }
         HistBulletinBoardUserDO userRangeDO = histBulletinBoardUserService.getByNoticeId(id);
         if (userRangeDO == null) {
@@ -249,9 +249,6 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
         DateTime eDate = DateUtil.date(dto.getHbtDdateofexpire());
         Date startDate = SysDateUtil.of(sDate.year(), sDate.month()+1, sDate.dayOfMonth());
         Date endDate = SysDateUtil.of(eDate.year(), eDate.month()+1, eDate.dayOfMonth());
-        if (Objects.isNull(endDate)) {
-            endDate = SysUtil.getMaxDateObject();
-        }
         String loginUserId = SecurityUtil.getUserId();
         SmartUserDetails loginUser = SecurityUtil.getLoginUser();
         String loginEmpName = loginUser.getMeCemployeename();
@@ -343,7 +340,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                qw.eq("HBT_CMODIFIERUSERID",loginUserId);
                List<HistBulletinBoardTempDO> tempNoticeList = histBulletinBoardTempService.list(qw);
                if (CollUtil.isNotEmpty(tempNoticeList)){
-                   tempNoticeList.stream().map(item -> item.setHbtCheaddisp("0"));
+                   tempNoticeList.forEach(item -> item.setHbtCheaddisp("0"));
                    histBulletinBoardTempService.updateBatchById(tempNoticeList);
                }
            } else {
@@ -351,7 +348,7 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                qw.eq("HB_CMODIFIERUSERID",loginUserId);
                List<HistBulletinBoardDO> noticeList = histBulletinBoardService.list(qw);
                if (CollUtil.isNotEmpty(noticeList)){
-                   noticeList.stream().map(item -> item.setHbCheaddisp("0"));
+                   noticeList.forEach(item -> item.setHbCheaddisp("0"));
                    histBulletinBoardService.updateBatchById(noticeList);
                }
            }
@@ -593,10 +590,12 @@ public class NoticeBoardLogicImpl implements INoticeBoardLogic {
                 fileDO.setHbtfFileUrl(item.getFileUrl());
                 fileDO.setHbtfFilename(item.getFilename());
                 fileDO.setHbtfFileRealPath(item.getRealPath());
+                fileDO.setHbtfValid(true);
                 uploadBoardTempFileList.add(fileDO);
             } else {
                 HistBulletinBoardFileDO fileDO = new HistBulletinBoardFileDO();
                 fileDO.setHbIdFk(articleId);
+                fileDO.setHbfValid(true);
                 fileDO.setHbfFileUrl(item.getFileUrl());
                 fileDO.setHbfFileName(item.getFilename());
                 fileDO.setHbfFileRealPath(item.getRealPath());
