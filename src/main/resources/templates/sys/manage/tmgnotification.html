@@ -1154,6 +1154,7 @@
                 this.restInfoLoading = true
                 this.referListObject.txtTmgReferListTreeViewPermTargetEmp=id
                 let OPTS = {...this.referListObject}
+                OPTS.txtTmgReferListTreeViewAdminTargetEmp = id
                 try {
                     const {data} = await this.http.get('sys/vapply/RestYearList', OPTS)
                     this.restInfoList = data
@@ -1265,7 +1266,6 @@
             },
             confirmByPerson() {
                 let query = {...this.referListObject}
-
                 query.action = "ACT_EditPerm_UPermit"
                 // 将详细的数据变成申请的数据
                 query = this.changeData(query)
