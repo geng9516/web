@@ -798,7 +798,8 @@ public class TmgNotificationBean {
         }
 
         //決裁レベル返却
-        param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
+        param.setFinalApprovalLevel(hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),param.getDetailLevel(),param.getSiteId()));
+        param.setApprovelLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
         String path = psDBBeanUtil.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
         if (deleteFiles!=null&&param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
@@ -1274,7 +1275,7 @@ public class TmgNotificationBean {
             tncDo.setTntfCstatusflg(STATUS_WAIT);
         } else {// 代理申請
             // 決裁レベル判定用
-            bLevelCheckFlg = hasCheckApprovelLevel(param.getFinalApprovalLevel(), param.getApprovalLevel(), param.getSiteId());
+            bLevelCheckFlg = param.isFinalApprovalLevel();
             // 承認済判定 管理サイトからの承認は即承認済に
             if (bLevelCheckFlg) {
                 tncDo.setTntfCstatusflg(STATUS_PERM); // 承認済
@@ -1491,7 +1492,7 @@ public class TmgNotificationBean {
             tncDo.setTntfCstatusflg(STATUS_WAIT);//承認待ち
         } else {
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
+            if (param.isFinalApprovalLevel()) {
                 tncDo.setTntfCstatusflg(STATUS_PERM);
             } else {
                 tncDo.setTntfCstatusflg(STATUS_WAIT); //承認待ち
@@ -1596,7 +1597,7 @@ public class TmgNotificationBean {
 
 
         // レベル判定
-        if (Boolean.valueOf(param.getFinalApprovalLevel())) {
+        if (param.isFinalApprovalLevel()) {
             tncDo.setTntfCapprovalLevel(null);
         } else {
             // 承認・管理からの再申請に対応する為
@@ -1717,8 +1718,7 @@ public class TmgNotificationBean {
             tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
         } else {
             // レベル判定
-            if (hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),param.getTargetUser(),
-                    param.getApprovalLevel(),param.getSiteId())) {
+            if (param.isFinalApprovalLevel()) {
                 tncDo.setTntfCstatusflg(STATUS_PERM);
             } else {
                 tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
@@ -1788,7 +1788,7 @@ public class TmgNotificationBean {
 
         if (param.getAction().equals(ACT_EDITPERM_UPERMIT)) {   // 承認
             // レベル判定
-            if (Boolean.valueOf(hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),tnDo.getTntfCemployeeid(),param.getFinalApprovalLevel(),param.getSiteId()))) {
+            if (param.isFinalApprovalLevel()) {
                 tncDo.setTntfCapprovalLevel(null);
             } else {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(param,0));
@@ -2059,7 +2059,7 @@ public class TmgNotificationBean {
      */
     private String getApprovelLevel(ParamNotificationListDto param, int piMode) {
 
-        return iMastGenericDetailService.selectApprovelLevel(param.getCustId(), param.getCompId(), param.getLang(), param.getToday(), param.getApprovalLevel(), piMode);
+        return iMastGenericDetailService.selectApprovelLevel(param.getCustId(), param.getCompId(), param.getLang(), param.getToday(), param.getApprovelLevel(), piMode);
 
     }
 

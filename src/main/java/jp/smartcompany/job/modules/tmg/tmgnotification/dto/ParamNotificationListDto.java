@@ -93,11 +93,13 @@ public class ParamNotificationListDto {
     /**
      * 決裁レベル判定用　最終レベル（代理申請用）
      */
-    private String finalApprovalLevel;
+    private boolean finalApprovalLevel;
     /**
      * 決裁レベル判定用　当前レベル（代理申請用）
      */
-    private String approvalLevel;
+    private String approvelLevel;
+
+    private String detailLevel;
 
     /**
      * 開始日/出勤にする休日
