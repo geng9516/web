@@ -227,7 +227,7 @@
                 </div>
                 <span class="input-like-span tl" style="padding:10px">
                     <div v-for="(item,i) of uploadFiles" :key="item.hbtfId">
-                        <span class="link-like" @click="openFile(item)" :style="{color: 'var(--primary-info)', cursor: item.isDefault ? 'pointer' : 'default', 'border-bottom-color': 'var(--primary-info)'}">{{ item.name }}</span>
+                        <span class="link-like" @click="openFile(item)" :style="{color: item.hbfValid ? 'var(--primary-info)' : 'var(--text-light-grey)', cursor: item.isDefault && item.hbfValid  ? 'pointer' : 'default', 'border-bottom-color': item.hbfValid ? 'var(--primary-info)' : 'var(--text-light-grey)'}">{{ item.name }}</span>
                     </div>
                 </span>
                 <Spin size="large" fix v-if="noticeLoading"></Spin>
@@ -487,6 +487,7 @@
                                     url: `${BASE_URL}${e.hbtfFileUrl}`,
                                     type: e.hbtfFilename.split('.')[1],
                                     hbtfId: e.hbtfId,
+                                    hbfValid: e.hbfValid || e.hbtfValid,
                                     isDefault: true
                                 }
                             })
@@ -530,6 +531,7 @@
                                     url: `${BASE_URL}${e.hbfFileUrl}`,
                                     type: e.hbfFileName.split('.')[1],
                                     hbtfId: e.hbfId,
+                                    hbfValid: e.hbfValid || e.hbtfValid,
                                     isDefault: true
                                 }
                             })
@@ -540,8 +542,7 @@
                     }
                 },
                 openFile(item) {
-                    if(item.url) {
-                        console.log(this.$refs.downloadBtn)
+                    if(item.url && item.hbfValid) {
                         this.$refs.downloadBtn.href= item.url
                         this.$refs.downloadBtn.click()
                         // window.open(item.url, '_blank')
