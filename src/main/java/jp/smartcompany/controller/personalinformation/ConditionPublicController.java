@@ -31,6 +31,35 @@ public class ConditionPublicController {
 
     /**
      * 编辑共有
+     * 参数示例（新增动作）：
+     * 搜索条件让某些group共有：
+     * {
+     *    hseCpublic 共有有無 1=共有 0=不共有
+     *    hseCcomment 備考
+     *    hseCusecooperation 連携使用有無
+     *    hseCmastercodeflg マスタコード表示フラグ
+     *    hseCcompanyidCk 法人コード，保持为01即可
+     *    hseCcompanyselect 法人選択区分，保持为0即可
+     *    hseCsettingname 設定名称
+     *    orderDtoList: [
+     *      {
+     *         "hsoNseq": 0,
+     *         "hsoCcolumn":"TV2904_CSECTIONID",
+     *         "hsoCcolumId":"TV2904_CSECTIONID DESC",
+     *         "hsoCorder":"1"
+     *      }
+     *    ],
+     *    selectDtoList: [
+     *      {
+     *        hssNseq:'0',
+     *        hssCcolumn:'TV2904_CSECTIONID'
+     *       }
+     *    ],
+     *    targetDtoList: [ 如果是全group共有则不需要传targetDtoList
+     *      {hstCtargetsystem:'01',hstCtargetgroup:'4'},
+     *      {hstCtargetsystem:'01',hstCtargetgroup:'2'}
+     *    ]
+     * }
      */
     @PostMapping("addOrUpdate")
     public GlobalResponse editSettings(@RequestBody ConditionSettingDTO settingDTO) {

@@ -68,26 +68,27 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
             }
             oHssNsettingid = histSearchSettingService.selectSeq();
             settingDTO.setHseNsettingid(oHssNsettingid);
-        } else {
-            Boolean overwrite = settingDTO.getOverwrite();
-            // IDを取得
-            oHssNsettingid = settingDTO.getHseNsettingid();
-            // 作成者取得
-            String owner = histSearchSettingService.selectSettingOwner(oHssNsettingid);
-            // ログインユーザが作者の場合は上書保存確認を返す。
-            if(StrUtil.equalsIgnoreCase(owner,loginUserId)){
-                if(!overwrite) {
-                    return GlobalResponse.error(30004,"現在読み込み中の設定に上書きします。よろしいですか？");
-                }
-            } else if (!StrUtil.equalsIgnoreCase(owner,loginUserId)
-                    && StrUtil.equalsIgnoreCase(sJkPermitOverwrite,"yes")) {
-                if(!overwrite) {
-                    return GlobalResponse.error(30005,"現在他の読み込み中の設定に上書きします。よろしいですか？");
-                }
-            } else {
-                return GlobalResponse.error(30006,"設定名が重複しています。別名を使用してください。");
-            }
         }
+//        else {
+//            Boolean overwrite = settingDTO.getOverwrite();
+//            // IDを取得
+            oHssNsettingid = settingDTO.getHseNsettingid();
+//            // 作成者取得
+//            String owner = histSearchSettingService.selectSettingOwner(oHssNsettingid);
+//            // ログインユーザが作者の場合は上書保存確認を返す。
+//            if(StrUtil.equalsIgnoreCase(owner,loginUserId)){
+//                if(!overwrite) {
+//                    return GlobalResponse.error(30004,"現在読み込み中の設定に上書きします。よろしいですか？");
+//                }
+//            } else if (!StrUtil.equalsIgnoreCase(owner,loginUserId)
+//                    && StrUtil.equalsIgnoreCase(sJkPermitOverwrite,"yes")) {
+//                if(!overwrite) {
+//                    return GlobalResponse.error(30005,"現在他の読み込み中の設定に上書きします。よろしいですか？");
+//                }
+//            } else {
+//                return GlobalResponse.error(30006,"設定名が重複しています。別名を使用してください。");
+//            }
+//        }
         histSearchSettingService.removeById(oHssNsettingid);
 
         HistSearchSettingDO settingDO = new HistSearchSettingDO();
