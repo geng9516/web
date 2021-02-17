@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.NotificationSettingBean;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,11 @@ public class NotificationSettingController {
     @GetMapping("groupManager")
     public List<GroupVo> getNTFGroup(@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getNTFGroup(sysdate);
+    }
+
+
+    @GetMapping("typeGroupManager")
+    public List<TypeGroupVo> getNTFTypeGroup(@RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.getNTFTypeGroup(sysdate);
     }
 }

@@ -351,6 +351,15 @@
                 </dtree>
             </div>
             <div v-else-if="typeId ==='TYPEGROUP'">
+                <div class="table-top">
+                    <div class="btnbox tr">
+                        <span style="flex:1"></span>
+                        <i-button type="primary" icon="md-create" @click="" v-show="">編集</i-button>
+                        <i-button type="primary" icon="md-create" @click="" v-show="">登録</i-button>
+                    </div>
+                </div>
+                <i-table class="mt10"  border :columns="typeGroupColumns" :data="typeGroupTableData"  show-header>
+                </i-table>
 
             </div>
             <Spin size="large" fix v-if="managerLoading"></Spin>
@@ -452,6 +461,13 @@
                 },
                 sortList:[],
                 hasGroupChange:false,
+
+
+
+
+                //申請種類
+                typeGroupColumns:[],
+                typeGroupTableData:[],
             }
         },
         components: {
