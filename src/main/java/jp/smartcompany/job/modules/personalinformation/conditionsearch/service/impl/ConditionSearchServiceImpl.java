@@ -156,5 +156,41 @@ implements IConditionSearchService {
         }
         return baseMapper.selectConditionSettingTargetList(searchSettingId);
     }
+
+    @Override
+    public  String selectSettingOwner(Long settingId) {
+        return baseMapper.selectSettingOwner(settingId);
+    }
+
+    @Override
+    public void deleteSetting(Long settingId) {
+        baseMapper.deleteSetting(settingId);
+    }
+
+    @Override
+    public void deleteSelectSetting(Long settingId) {
+        baseMapper.deleteSelectSetting(settingId);
+    }
+
+    @Override
+    public void deleteWhereSetting(Long settingId) {
+        baseMapper.deleteWhereSetting(settingId);
+    }
+
+    @Override
+    public void deleteDefinitionSetting(Long settingId) {
+        baseMapper.deleteDefinitionSetting(settingId);
+    }
+
+    @Override
+    public void deleteOrderSetting(Long settingId) {
+        baseMapper.deleteOrderSetting(settingId);
+    }
+
+    @Override
+    public void deleteTargetSetting(Long settingId) {
+        baseMapper.deleteTargetSetting(settingId);
+    }
+
     /* ================== 共有设定 End ================ */
 }

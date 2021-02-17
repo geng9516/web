@@ -45,6 +45,10 @@ public class ConditionPublicController {
         return conditionPublicSearchLogic.getConditionVoList();
     }
 
-
+    @GetMapping("delete")
+    public String deleteSettings(@RequestParam Long settingId) {
+        conditionPublicSearchLogic.deleteSettings(settingId);
+        return "削除成功";
+    }
 
 }

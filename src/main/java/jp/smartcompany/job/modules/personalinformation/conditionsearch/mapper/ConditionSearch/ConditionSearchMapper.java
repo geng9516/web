@@ -110,4 +110,19 @@ public interface ConditionSearchMapper extends BaseMapper<MastDatadictionaryDO> 
      * 指定設定番号に対応する共有範囲設定一覧を取得する
      */
     List<ConditionSettingTargetDTO>  selectConditionSettingTargetList(Long setting);
+
+    String selectSettingOwner(Long settingId);
+
+    void deleteSetting(Long settingId);
+
+    void deleteSelectSetting(Long settingId);
+
+    void deleteWhereSetting(Long settingId);
+
+    void deleteDefinitionSetting(Long settingId);
+
+    void deleteOrderSetting(Long settingId);
+
+    void deleteTargetSetting(Long settingId);
+
 }

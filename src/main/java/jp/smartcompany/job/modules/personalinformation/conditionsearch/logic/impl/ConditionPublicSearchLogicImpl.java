@@ -257,4 +257,34 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         return result;
     }
 
+    /**
+     * 設定削除処理
+     */
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void deleteSettings(Long settingId) {
+        // 他者作成の設定を削除できるかどうか
+//        String permitDelete = cacheUtil.getSystemProperty(PROP_JK_PERMIT_DELETE);
+        // 作成者取得
+//        String owner = conditionSearchService.selectSettingOwner(settingId);
+//        String loginUserId = SecurityUtil.getUserId();
+//        if (StrUtil.equalsIgnoreCase(loginUserId,owner)) {
+//            if (!delFlag) {
+//                return "選択された設定を削除します。よろしいですか？";
+//            }
+//        } else if (!StrUtil.equalsIgnoreCase(loginUserId,owner)
+//           && StrUtil.equalsIgnoreCase(permitDelete,"yes")) {
+//            if (!delFlag) {
+//                return ""
+//            }
+//        }
+        conditionSearchService.deleteSetting(settingId);
+        conditionSearchService.deleteSelectSetting(settingId);
+        conditionSearchService.deleteWhereSetting(settingId);
+        conditionSearchService.deleteDefinitionSetting(settingId);
+        conditionSearchService.deleteOrderSetting(settingId);
+        conditionSearchService.deleteTargetSetting(settingId);
+
+    }
+
 }

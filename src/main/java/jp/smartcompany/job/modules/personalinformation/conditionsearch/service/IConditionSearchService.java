@@ -57,5 +57,19 @@ public interface IConditionSearchService extends IService<MastDatadictionaryDO> 
     HistSearchSettingDO selectHistSearchSettingBySettingId(Long settingId);
 
     List<ConditionSettingTargetDTO> selectConditionSettingTargetList(Long settingId);
+    
+    
+    String selectSettingOwner(Long settingId);
 
+    void deleteSetting(Long settingId);
+
+    void deleteSelectSetting(Long settingId);
+
+    void deleteWhereSetting(Long settingId);
+
+    void deleteDefinitionSetting(Long settingId);
+
+    void deleteOrderSetting(Long settingId);
+
+    void deleteTargetSetting(Long settingId);
 }
