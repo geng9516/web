@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingTargetDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchSettingDO;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,8 @@ public interface IConditionSearchService extends IService<MastDatadictionaryDO> 
 
     List<ColumnQueryDefinitionOptionDTO> selectColumnForQueryDefinition(String tableName);
 
-    Map<String,Object> showAddOrUpdate(Long settingId);
+    HistSearchSettingDO selectHistSearchSettingBySettingId(Long settingId);
+
+    List<ConditionSettingTargetDTO> selectConditionSettingTargetList(Long settingId);
 
 }

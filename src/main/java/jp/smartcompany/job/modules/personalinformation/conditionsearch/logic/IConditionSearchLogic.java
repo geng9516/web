@@ -1,12 +1,10 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic;
 
-import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +30,6 @@ public interface IConditionSearchLogic {
     /**定数：リンクボタンページ送り数*/
     // 使用されていない
     int MOVE_PAGE_COUNT = 10;
-    // 他者作成の設定を上書きできるかどうか
-    String PROP_JK_PERMIT_OVERWRITE = "JkPermitOverwrite";
 
     List<TableOptionDTO> getTableOptions();
 
@@ -45,8 +41,5 @@ public interface IConditionSearchLogic {
 
     Map<String,Object> search(ConditionSettingDTO settingDTO);
 
-    GlobalResponse editSettings(ConditionSettingDTO settingDTO);
-
-    List<CommonConditionVO> getConditionVoList();
 
 }

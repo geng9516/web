@@ -139,22 +139,22 @@ implements IConditionSearchService {
 
     /* ================== 共有设定 Start ================ */
 
-    /**
-     * 获取选择共有范围时可选的group列表
-     */
     @Override
-    public Map<String,Object> showAddOrUpdate(Long settingId) {
-        Map<String,Object> result = MapUtil.newHashMap();
-        HistSearchSettingDO settings;
+    public HistSearchSettingDO selectHistSearchSettingBySettingId(Long settingId) {
         long searchSettingId = 1L;
         if (settingId != null) {
             searchSettingId = settingId;
-            settings = baseMapper.selectHistSearchSettingBySettingId(settingId);
-            result.put("settings",settings);
         }
-        List<ConditionSettingTargetDTO> groupOptions = baseMapper.selectConditionSettingTargetList(searchSettingId);
-        result.put("groups",groupOptions);
-        return result;
+        return baseMapper.selectHistSearchSettingBySettingId(searchSettingId);
+    }
+
+    @Override
+    public List<ConditionSettingTargetDTO> selectConditionSettingTargetList(Long settingId) {
+        long searchSettingId = 1L;
+        if (settingId != null) {
+            searchSettingId = settingId;
+        }
+        return baseMapper.selectConditionSettingTargetList(searchSettingId);
     }
     /* ================== 共有设定 End ================ */
 }
