@@ -33,13 +33,26 @@
                 <Icon type="logo-buffer"></Icon>
                 条件設定
             </div>
-            <span style="position: absolute; right: 27px;z-index: 1;">
-                <span style="font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
+            <div style="display: flex;z-index: 1;">
+              <div>
+                <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
                 <i-button class="mr5" type="primary" ghost icon="md-cloud-download" @click="()=>  console.log(this.displayCheckboxList)" :loading="editLoading">読込</i-button>
                 <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存</i-button>
                 <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
-            </span>
-            <Tabs type="card" :animated="false" class="mt20">
+              </div>
+              <div style="flex: 1;"></div>
+                <div>
+                  <span style="font-weight: bold;color: var(--primary-info);">検索結果データ：</span>
+                  <i-select v-model="searchData.histroyDataId" style="width: 400px;" transfer>
+                    <i-option value="0">なし
+                    </i-option>
+                    <i-option v-for="(item, i) of resultHistoryList" :key="i" value="01">{{item}}
+                    </i-option>
+                  </i-select>
+                  <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
+                </div>
+            </div>
+            <Tabs type="card" :animated="false" class="mt5">
                 <tab-pane label="表示項目選択">
                     <Row :gutter="8">
                         <i-col span="8">
@@ -63,8 +76,45 @@
                           <re-transfer :left-list="displayResultList" @to-left="($event) => displayResultList.push($event)" ref="transfer"></re-transfer>
                         </i-col>
                     </Row>
+                    <Checkbox v-model="searchData.showMastCode" class="mt10">マスタ参照項目を表示するときはコードも併せて表示する</Checkbox>
                 </tab-pane>
-                <tab-pane label="条件項目選択">标签二的内容</tab-pane>
+                <tab-pane label="条件項目選択">
+                  <i-select value="01" class="mb5" style="display: block; width: 450px;">
+                    <i-option value="01">{{`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`}}
+                    </i-option>
+                  </i-select>
+                  <radio-group class="tl" v-model="searchData.standardDateType">
+                    <Radio :label="1">指定日付時点のデータを検索する（通常はこちらを使用してください）</Radio>
+                    <date-picker type="date" v-model="searchData.standardDate" :options="startLimit" class="ml5" format="yyyy/MM/dd"
+                     transfer :clearable="false">
+                  </date-picker>
+                    <Radio :label="0" style="display: block;">履歴も全て検索する</Radio>
+                  </radio-group>
+                 <!-- <search-condition
+                 :poptipType="this.$refs.poptip.poptipType"
+                 :curdisplayPanel="this.$refs.poptip.curdisplayPanel"
+                 :operatorType="this.$refs.poptip.operatorType"
+                 :poptipStyle="this.$refs.poptip.poptipStyle"
+                  @close-poptip="() => this.$refs.poptip.cancelpoptip()"
+                  @query-fallback="() => this.$refs.poptip.queryconditionsFallback()"
+                  ref="condition"
+                  ></search-condition> -->
+                  <search-condition
+                  :poptip-type="poptipType"
+                  :curdisplay-panel="curdisplayPanel"
+                  :operator-type="operatorType"
+                  :poptip-style="poptipStyle"
+                  :query-data="queryData"
+                  :clicked-cell="clickedCell"
+                   @close-poptip="() => this.$refs.poptip.cancelpoptip()"
+                   @query-fallback="() => this.$refs.poptip.queryconditionsFallback()"
+                   @change-poptip-type="($event) => this.poptipType = $event"
+                   @set-clickcell="($event) => this.clickedCell = $event"
+                   @set-curdisplay-panel="($event) => this.curdisplayPanel = $event"
+                   @change-operator-type="($event) => this.operatorType = $event"
+                   ref="condition"
+                   ></search-condition>
+                </tab-pane>
                 <tab-pane label="ソート項目選択">
                   <Row :gutter="8">
                     <i-col span="8">
@@ -106,14 +156,30 @@
             :loading="loading" ref="table">
           </i-table>
         </div>
+        <!-- <pop-select
+        :queryData="this.$refs.condition.queryData"
+        :clickedCell="this.$refs.condition.clickedCell"
+        ref="poptip"
+        ></pop-select> -->
+        <pop-select
+        :poptip-type="poptipType"
+        :curdisplay-panel="curdisplayPanel"
+        :operator-type="operatorType"
+        :poptip-style="poptipStyle"
+        :query-data="queryData"
+        :clicked-cell="clickedCell"
+        ref="poptip"
+        ></pop-select>
         <back-top></back-top>
       </main>
     <div th:replace="layout/head::header"></div>
     <script th:src="${baseUrl + '/static/component/conditionSearch/re-transfer.js?t='+ now}"></script>
+    <script th:src="${baseUrl + '/static/component/conditionSearch/pop-select.js?t='+ now}"></script>
+    <script th:src="${baseUrl + '/static/component/conditionSearch/search-condition.js?t='+ now}"></script>
     <script type="text/babel" th:inline="javascript">
       new Vue({
         el: '.protosettings-warp',
-        components: { ReTransfer },
+        components: { ReTransfer, SearchCondition, PopSelect },
         data() {
           return {
             isShow: false,
@@ -142,14 +208,31 @@
             displayListForSort: [],
             displayResultList: [],
             sortResultList: [],
-            conditionsList: [],
-            contentScrollTop: 0
+            contentScrollTop: 0,
+          legalPersonList: [{macCcompanyidCk:'',macCcompanyname:''}],
+          searchData:{standardDateType:1, standardDate: new Date(),histroyDataId:'0',showMastCode:false},
+          resultHistoryList: [],
+          // 分离条件表格和气泡组件抽出共有属性
+          poptipType: 'displayvalue',
+          curdisplayPanel: '',
+          operatorType: false,
+          poptipStyle: {
+                display: 'none',
+                position: 'absolute',
+                'will-change': 'top, left',
+                'z-index': '1001',
+                left: '0',
+                top: '0'
+            },
+            queryData: [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }],
+            clickedCell: { where: '', which: '' },
           }
         },
         async created() {
           // this.getTableData()
+          this.getLegalPersonList()
+          this.getResultHistoryList()
           this.getDisplayList()
-          this.getConditionList()
           window.addEventListener('scroll', this.handleScroll, { passive: true })
         },
         beforeDestroy() {
@@ -188,15 +271,6 @@
               if (data.length > 0) {
                 this.searchDisplayList(data[0].name, 'init')
               }
-            } catch (error) {
-            } finally {
-              // this.loading = false
-            }
-          },
-          async getConditionList() {
-            try {
-              const { data } = await this.http.get('sys/conditionsearch/defs/tbl')
-              this.conditionsList = data
             } catch (error) {
             } finally {
               // this.loading = false
@@ -241,6 +315,15 @@
                 }
             })
           },
+          async getLegalPersonList() {
+          const { data } = await this.http.get(`sys/groupappmanager/companies?psSite=${this.psSite}&psApp=${this.psApp}`)
+          this.legalPersonList = data
+          this.opts.companyId = data[0] && data[0].macCcompanyidCk
+        },
+        getResultHistoryList: Debounce(async function() {
+          const { data } = await this.http.get('sys/conditionsearch/show/read')
+          this.resultHistoryList = data
+        }),
           async update() {
             this.$Modal.confirm({
               title: '注意',
