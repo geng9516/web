@@ -68,7 +68,8 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
         String[] uploadFilePaths = {
                 "file:" + cacheUtil.getSystemProperty("TMG_NOTICE_BOARD_UPLOAD_PATH") + "\\",
-                "file:" + cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH") + "\\"
+                "file:" + cacheUtil.getSystemProperty("TMG_RICH_TEXT_NOTICE_BOARD_UPLOAD_PATH") + "\\",
+                "file:" + cacheUtil.getSystemProperty("CSVFilePath")+"\\"
         };
         registry.addResourceHandler("/upload/**").addResourceLocations(
                 uploadFilePaths

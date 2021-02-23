@@ -92,8 +92,6 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         }
         // 検索条件Dtoを解析してSQLを組み立てる
         String sSearchSql = getSearchSql(settingDTO, sqlBO);
-        System.out.println("++===searchSql===+++");
-        System.out.println(sSearchSql);
         // 組み立てたSQLを実行して検索結果を取得する
         Vector <Vector<Object>> vSearchResult = executeSql(sSearchSql);
         // できあがった検索結果をListに変換する

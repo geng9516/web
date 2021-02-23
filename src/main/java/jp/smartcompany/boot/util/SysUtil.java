@@ -1,6 +1,7 @@
 package jp.smartcompany.boot.util;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
@@ -531,4 +532,11 @@ public class SysUtil {
         return isBlank;
     }
 
+    public static String getCryptPhotoName(String userId) {
+        // 定数
+        final String MD5_ADD_STRING = "P@S"; // MD5で変換する際に社員番号に付加する文字
+        // 社員番号＋固定文字をMD5により変換した結果
+        String sDigest = DigestUtil.md5Hex(userId + MD5_ADD_STRING);
+        return userId + "_" + sDigest;
+    }
 }
