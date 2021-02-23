@@ -75,6 +75,9 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         String requestUrl = request.getRequestURI();
 
         if (SecurityUtil.isAuthenticated()) {
+
+            loadUserBasicInfo(httpSession);
+
             // 直接访问模块页面需要进行启动权限设定的检测，验证其是否有权访问
             if (StrUtil.isNotBlank(appId)) {
                 List<SimpleGrantedAuthority> authorities = (List<SimpleGrantedAuthority>) authentication.getAuthorities();
@@ -83,12 +86,12 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
                 if (CollUtil.isEmpty(authorities)) {
                     return hasPermission;
                 }
-                List<String> grantFlagList = mastGroupapppermissionService.getUrlPermFlags(groupIds,siteId+"_"+appId);
-                if (CollUtil.contains(grantFlagList,"2")) {
+                List<String> grantFlagList = mastGroupapppermissionService.getUrlPermFlags(groupIds, siteId + "_" + appId);
+                if (CollUtil.contains(grantFlagList, "2")) {
                     return false;
                 } else {
                     for (String grantFlag : grantFlagList) {
-                        if (StrUtil.equals("1",grantFlag)) {
+                        if (StrUtil.equals("1", grantFlag)) {
                             hasPermission = true;
                             break;
                         }
@@ -96,8 +99,6 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
                     return hasPermission;
                 }
             }
-
-            loadUserBasicInfo(request, httpSession);
 
             for (String urlPattern : urlList) {
                 boolean matchResult = matcher.match(urlPattern,requestUrl);
@@ -141,7 +142,7 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         return systemList;
     }
 
-    private void loadUserBasicInfo(HttpServletRequest request, HttpSession httpSession) {
+    private void loadUserBasicInfo(HttpSession httpSession) {
         List<MastSystemDO> systemList = getSystemList();
 
         // 初始化PsSession对象
@@ -181,16 +182,25 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         String systemCode = "01";
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         Map<String,List<LoginGroupBO>> loginGroupList = session.getLoginGroups();
+        if (CollUtil.isEmpty(loginGroupList)) {
+            groupBusiness.getGroupList("ja",getSystemList(),httpSession);
+            session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+            loginGroupList = session.getLoginGroups();
+        }
         List<LoginGroupBO> groupList = CollUtil.newArrayList();
-        getSystemList().forEach(system ->
-                loginGroupList.forEach((key,value)-> {
-                    if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
-                        CollUtil.addAllIfNotContains(groupList,value);
-                    }
-                })
-        );
+        for (MastSystemDO system : getSystemList()) {
+            loginGroupList.forEach((key, value) -> {
+                if (StrUtil.equals(system.getMsCsystemidPk(), key)) {
+                    CollUtil.addAllIfNotContains(groupList, value);
+                }
+            });
+        }
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+        System.out.println(session.getLanguage());
+        System.out.println("++------------------");
+        System.out.println(groupCodes);
+        System.out.println(httpSession.getAttribute(Constant.IS_APPROVER));
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,(Boolean)httpSession.getAttribute(Constant.IS_APPROVER));
         timedCache.put(Constant.getSessionMenuId(httpSession.getId()),menuGroupList);
         return menuGroupList;
