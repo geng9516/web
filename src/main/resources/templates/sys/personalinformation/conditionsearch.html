@@ -4,212 +4,211 @@
 <head th:replace="layout/header::common_header(title='自由条件検索',cssPaths='/pages/content.min.css')">
 </head>
 
-<body
-    th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
       now = ${new java.util.Date().getTime()
     }">
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <main class="content protosettings-warp" ref="layout">
-        <div class="content_head">
-          <div class="header">
-            <div class="title1">
-              <h1>
-                <Icon type="i-emeer colored"></Icon>
-                {{ `自由条件検索` }}
-              </h1>
-            </div>
-            <div class="btnbox">
-              <span style="flex:1"></span>
-              <i-button type="primary" icon="ios-search" @click="freeSearch('CSV')" :loading="editLoading">検索</i-button>
-              <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード</i-button>
-              <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content protosettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `自由条件検索` }}
+          </h1>
+        </div>
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          <i-button type="primary" icon="ios-search" @click="freeSearch('CSV')" :loading="editLoading">検索</i-button>
+          <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード
+          </i-button>
+          <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
+        </div>
+      </div>
+    </div>
+    <div class="content_body">
+      <div class="titlenorm mb10" style="font-size:15px">
+        <Icon type="logo-buffer"></Icon>
+        条件設定
+      </div>
+      <div style="display: flex;z-index: 1;">
+        <div>
+          <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-download"
+            @click="()=>  console.log(this.displayCheckboxList)" :loading="editLoading">読込</i-button>
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存
+          </i-button>
+          <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
+        </div>
+        <div style="flex: 1;"></div>
+        <div>
+          <span style="font-weight: bold;color: var(--primary-info);">検索結果データ：</span>
+          <i-select v-model="searchData.histroyDataId" style="width: 400px;" transfer>
+            <i-option value="0">なし
+            </i-option>
+            <i-option v-for="(item, i) of resultHistoryList" :key="i" value="01">{{item}}
+            </i-option>
+          </i-select>
+          <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
+        </div>
+      </div>
+      <Tabs type="card" :animated="false" class="mt5">
+        <tab-pane label="表示項目選択">
+          <Row :gutter="8">
+            <i-col span="8">
+              <div class="ivu-transfer-list width100" style="height: 500px;">
+                <div class="ivu-transfer-list-header">
+                  <span class="ivu-transfer-list-header-title">テーブルを選択してください</span>
+                </div>
+                <div class="ivu-transfer-list-body">
+                  <ul class="ivu-transfer-list-content">
+                    <li
+                      :class="item.name === curSelectedDisplay ? 'ivu-transfer-list-content-item conditionlist-transfer primary-set' : 'ivu-transfer-list-content-item conditionlist-transfer'"
+                      v-for="item of displayList" :key="item.name" @click="searchDisplayList(item.name)">
+                      {{ item.description }}
+                    </li>
+                    <li class="ivu-transfer-list-content-not-found"></li>
+                  </ul>
+                </div>
+              </div>
+            </i-col>
+            <i-col span="16">
+              <re-transfer :left-list="displayResultList" @to-left="($event) => displayResultList.push($event)"
+                ref="transfer"></re-transfer>
+            </i-col>
+          </Row>
+          <Checkbox v-model="searchData.showMastCode" class="mt10">マスタ参照項目を表示するときはコードも併せて表示する</Checkbox>
+        </tab-pane>
+        <tab-pane label="条件項目選択">
+          <i-select value="01" class="mb5" style="display: block; width: 450px;">
+            <i-option value="01">{{`【${this.legalPersonList[0].macCcompanyidCk}】
+              ${this.legalPersonList[0].macCcompanyname}`}}
+            </i-option>
+          </i-select>
+          <radio-group class="tl" v-model="searchData.standardDateType">
+            <Radio :label="1">指定日付時点のデータを検索する（通常はこちらを使用してください）</Radio>
+            <date-picker type="date" v-model="searchData.standardDate" :options="startLimit" class="ml5"
+              format="yyyy/MM/dd" transfer :clearable="false">
+            </date-picker>
+            <Radio :label="0" style="display: block;">履歴も全て検索する</Radio>
+          </radio-group>
+          <div style="display: flex;" class="mb5">
+            <i-button type="primary" size="small" ghost @click="isByConditionMethod = !isByConditionMethod"
+              class="mt10">{{ isByConditionMethod ? '条件を項目選択で指定する ->' : '条件を条件式で指定する ->'}}
+            </i-button>
+            <div style="flex: 1;"></div>
+            <div v-show="isByConditionMethod">
+              <i-button type="error" icon="md-trash" ghost @click="conditionDeleteAll">全行を削除
+              </i-button>
+              <i-button type="success" icon="md-add" ghost @click="conditionAddTop">1行追加
+              </i-button>
             </div>
           </div>
-        </div>
-        <div class="content_body">
-            <div class="titlenorm mb10" style="font-size:15px">
-                <Icon type="logo-buffer"></Icon>
-                条件設定
-            </div>
-            <div style="display: flex;z-index: 1;">
-              <div>
-                <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
-                <i-button class="mr5" type="primary" ghost icon="md-cloud-download" @click="()=>  console.log(this.displayCheckboxList)" :loading="editLoading">読込</i-button>
-                <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存</i-button>
-                <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
-              </div>
-              <div style="flex: 1;"></div>
-                <div>
-                  <span style="font-weight: bold;color: var(--primary-info);">検索結果データ：</span>
-                  <i-select v-model="searchData.histroyDataId" style="width: 400px;" transfer>
-                    <i-option value="0">なし
-                    </i-option>
-                    <i-option v-for="(item, i) of resultHistoryList" :key="i" value="01">{{item}}
-                    </i-option>
-                  </i-select>
-                  <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
+          <i-table v-show="isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'"
+            :columns="queryColumns" @on-cell-click="handleCellClickForAction" :disabled-hover="true" :data="queryData"
+            no-data-text="" ref="table">
+            <template slot-scope="{ row }" slot="andor">{{ queryData[row._index].andor || '　' }}</template>
+
+            <template slot-scope="{ row }" slot="openedparenthsis">{{ queryData[row._index].openedparenthsis || '　'
+              }}</template>
+
+            <template slot-scope="{ row }" slot="columnname">{{ queryData[row._index].description || '　' }}</template>
+
+            <template slot-scope="{ row }" slot="operator">{{ queryData[row._index].operator || '　' }}</template>
+
+            <template slot-scope="{ row }" slot="displayvalue">{{ queryData[row._index].displayvalue || '　'
+              }}</template>
+
+            <template slot-scope="{ row }" slot="closedparenthsis">{{ queryData[row._index].closedparenthsis || '　'
+              }}</template>
+            <template slot-scope="{ row }" slot="action">
+              <Poptip v-model="lightDelBtnVisible3[row._index]" placement="left" transfer>
+                <div class="operateBtn" slot="content">
+                  <a @click="cancelconditionDelete(row._index)">いいえ</a>
+                  <a @click="conditionDelete(row, row._index)">はい</a>
                 </div>
-            </div>
-            <Tabs type="card" :animated="false" class="mt5">
-                <tab-pane label="表示項目選択">
-                    <Row :gutter="8">
-                        <i-col span="8">
-                            <div class="ivu-transfer-list width100" style="height: 500px;">
-                                <div class="ivu-transfer-list-header">
-                                    <span class="ivu-transfer-list-header-title">テーブルを選択してください</span>
-                                </div>
-                                <div class="ivu-transfer-list-body">
-                                    <ul class="ivu-transfer-list-content">
-                                        <li :class="item.name === curSelectedDisplay ? 'ivu-transfer-list-content-item conditionlist-transfer primary-set' : 'ivu-transfer-list-content-item conditionlist-transfer'"
-                                            v-for="item of displayList" :key="item.name"
-                                            @click="searchDisplayList(item.name)">
-                                            {{ item.description }}
-                                        </li>
-                                        <li class="ivu-transfer-list-content-not-found"></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </i-col>
-                        <i-col span="16">
-                          <re-transfer :left-list="displayResultList" @to-left="($event) => displayResultList.push($event)" ref="transfer"></re-transfer>
-                        </i-col>
-                    </Row>
-                    <Checkbox v-model="searchData.showMastCode" class="mt10">マスタ参照項目を表示するときはコードも併せて表示する</Checkbox>
-                </tab-pane>
-                <tab-pane label="条件項目選択">
-                  <i-select value="01" class="mb5" style="display: block; width: 450px;">
-                    <i-option value="01">{{`【${this.legalPersonList[0].macCcompanyidCk}】 ${this.legalPersonList[0].macCcompanyname}`}}
-                    </i-option>
-                  </i-select>
-                  <radio-group class="tl" v-model="searchData.standardDateType">
-                    <Radio :label="1">指定日付時点のデータを検索する（通常はこちらを使用してください）</Radio>
-                    <date-picker type="date" v-model="searchData.standardDate" :options="startLimit" class="ml5" format="yyyy/MM/dd"
-                     transfer :clearable="false">
-                  </date-picker>
-                    <Radio :label="0" style="display: block;">履歴も全て検索する</Radio>
-                  </radio-group>
-                  <div style="display: flex;" class="mb5">
-                    <i-button type="primary" size="small" ghost @click="isByConditionMethod = !isByConditionMethod" class="mt10">{{ isByConditionMethod ? '条件を項目選択で指定する ->' : '条件を条件式で指定する ->'}}
-                    </i-button>
-                    <div style="flex: 1;"></div>
-                      <div v-show="isByConditionMethod">
-                        <i-button type="error" icon="md-trash" ghost @click="conditionDeleteAll">全行を削除
-                        </i-button>
-                        <i-button type="success" icon="md-add" ghost @click="conditionAddTop">1行追加
-                        </i-button>
-                      </div>
-                  </div>
-                  <i-table v-show="isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'" :columns="queryColumns"
-                    @on-cell-click="handleCellClickForAction" :disabled-hover="true" :data="queryData" no-data-text=""
-                    ref="table">
-                    <template slot-scope="{ row }" slot="andor">{{ queryData[row._index].andor || '　'  }}</template>
-
-                    <template slot-scope="{ row }"
-                      slot="openedparenthsis">{{ queryData[row._index].openedparenthsis || '　' }}</template>
-
-                    <template slot-scope="{ row }"
-                      slot="columnname">{{ queryData[row._index].description || '　' }}</template>
-
-                    <template slot-scope="{ row }" slot="operator">{{ queryData[row._index].operator || '　' }}</template>
-
-                    <template slot-scope="{ row }"
-                      slot="displayvalue">{{ queryData[row._index].displayvalue || '　' }}</template>
-
-                    <template slot-scope="{ row }"
-                      slot="closedparenthsis">{{ queryData[row._index].closedparenthsis || '　' }}</template>
-                    <template slot-scope="{ row }" slot="action">
-                      <Poptip v-model="lightDelBtnVisible3[row._index]" placement="left" transfer>
-                        <div class="operateBtn" slot="content">
-                          <a @click="cancelconditionDelete(row._index)">いいえ</a>
-                          <a @click="conditionDelete(row, row._index)">はい</a>
-                        </div>
-                        <i-button type="error" ghost size="small" style="width: 83px;text-align: left;">削除
-                        </i-button>
-                      </Poptip>
-                      <i-button type="success" class="mt5" ghost icon="md-arrow-down" size="small"
-                        @click="conditionAdd(row._index)" long>1行追加
-                      </i-button>
-                    </template>
-                  </i-table>
-                  <i-table v-show="!isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'" :columns="queryColumns2"
-                    :disabled-hover="true" :data="queryData2" no-data-text=""　ref="table">
-                    <template slot-scope="{ row }"slot="use">
-                      <Checkbox v-model="queryData2[row._index].use"></Checkbox>
-                    </template>
-
-                    <template slot-scope="{ row }" slot="columnname">
-                      <i-button type="primary" class="mt5 tl" ghost size="small"
-                        @click="handleClickQueryWhere(row)" long>{{ row.columnDescription }}
-                      </i-button>
-                    </template>
-                    <template slot-scope="{ row }" slot="displayvalue">
-                      <span v-if="queryData2[row._index].selectValue">{{ queryData2[row._index].selectValue.map(e=> e.name).join() }}</span>
-                      <span v-if="queryData2[row._index].postFlag">
-                        <radio-group class="tl" v-model="queryData2[row._index].postCode">
-                          <Radio label="1">本務</Radio>
-                          <Radio label="0">兼務</Radio>
-                        </radio-group>
-                      </span>
-                      <span v-if="queryData2[row._index].inWorkFlag">
-                        <radio-group class="tl" v-model="queryData2[row._index].atWorkCode">
-                          <Radio label="1">在職</Radio>
-                          <Radio label="0">退職</Radio>
-                        </radio-group>
-                      </span>
-                    </template>
-                    <template slot-scope="{ row }" slot="action">
-                      <i-button type="primary" class="mt5" ghost size="small"
-                        @click="handleCleanQueryWhere(row)" long>クリア
-                      </i-button>
-                    </template>
-                  </i-table>
-                </tab-pane>
-                <tab-pane label="ソート項目選択">
-                  <Row :gutter="8">
-                    <i-col span="8">
-                        <div class="ivu-transfer-list width100" style="height: 500px;">
-                            <div class="ivu-transfer-list-header">
-                                <span class="ivu-transfer-list-header-title">テーブルを選択してください</span>
-                            </div>
-                            <div class="ivu-transfer-list-body">
-                                <ul class="ivu-transfer-list-content">
-                                    <li :class="item.name === curSelectedSort ? 'ivu-transfer-list-content-item conditionlist-transfer primary-set' : 'ivu-transfer-list-content-item conditionlist-transfer'"
-                                        v-for="item of displayListForSort" :key="item.name"
-                                        @click="searchDisplayList(item.name, 'sort')">
-                                        {{ item.description }}
-                                    </li>
-                                    <li class="ivu-transfer-list-content-not-found"></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </i-col>
-                    <i-col span="16">
-                      <re-transfer
-                        :left-list="sortResultList"
-                        right-btn-text="降順"
-                        right-show-label="rightLabel"
-                        @to-left="($event) => sortResultList.push($event)"
-                        :right-btn-fn="(e) => `${e}(降)`"
-                        ref="transfer2"
-                        >
-                        <template #top-btn="{ left, rightList}">
-                          <i-button type="primary" size="small" icon="ios-arrow-forward" ghost @click="orderLift(left, rightList)">昇順</i-button>
-                        </template>
-                      </re-transfer>
-                    </i-col>
-                </Row>
-                </tab-pane>
-            </Tabs>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table">
+                <i-button type="error" ghost size="small" style="width: 83px;text-align: left;">削除
+                </i-button>
+              </Poptip>
+              <i-button type="success" class="mt5" ghost icon="md-arrow-down" size="small"
+                @click="conditionAdd(row._index)" long>1行追加
+              </i-button>
+            </template>
           </i-table>
-        </div>
-              <!--  条件式による定義 选择group和 役職 start-->
-      <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択" :mask-closable="false"
-      v-model="showGroupOrPositionDrawer">
+          <i-table v-show="!isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'"
+            :columns="queryColumns2" :disabled-hover="true" :data="queryData2" no-data-text="" 　ref="table">
+            <template slot-scope="{ row }" slot="use">
+              <Checkbox v-model="queryData2[row._index].use"></Checkbox>
+            </template>
+
+            <template slot-scope="{ row }" slot="columnname">
+              <i-button type="primary" class="mt5 tl" ghost size="small" @click="handleClickQueryWhere(row)" long>{{
+                row.columnDescription }}
+              </i-button>
+            </template>
+            <template slot-scope="{ row }" slot="displayvalue">
+              <span v-if="queryData2[row._index].selectValue">{{ queryData2[row._index].selectValue.map(e=>
+                e.name).join() }}</span>
+              <span v-if="queryData2[row._index].postFlag">
+                <radio-group class="tl" v-model="queryData2[row._index].postCode">
+                  <Radio label="1">本務</Radio>
+                  <Radio label="0">兼務</Radio>
+                </radio-group>
+              </span>
+              <span v-if="queryData2[row._index].inWorkFlag">
+                <radio-group class="tl" v-model="queryData2[row._index].atWorkCode">
+                  <Radio label="1">在職</Radio>
+                  <Radio label="0">退職</Radio>
+                </radio-group>
+              </span>
+            </template>
+            <template slot-scope="{ row }" slot="action">
+              <i-button type="primary" class="mt5" ghost size="small" @click="handleCleanQueryWhere(row)" long>クリア
+              </i-button>
+            </template>
+          </i-table>
+        </tab-pane>
+        <tab-pane label="ソート項目選択">
+          <Row :gutter="8">
+            <i-col span="8">
+              <div class="ivu-transfer-list width100" style="height: 500px;">
+                <div class="ivu-transfer-list-header">
+                  <span class="ivu-transfer-list-header-title">テーブルを選択してください</span>
+                </div>
+                <div class="ivu-transfer-list-body">
+                  <ul class="ivu-transfer-list-content">
+                    <li
+                      :class="item.name === curSelectedSort ? 'ivu-transfer-list-content-item conditionlist-transfer primary-set' : 'ivu-transfer-list-content-item conditionlist-transfer'"
+                      v-for="item of displayListForSort" :key="item.name" @click="searchDisplayList(item.name, 'sort')">
+                      {{ item.description }}
+                    </li>
+                    <li class="ivu-transfer-list-content-not-found"></li>
+                  </ul>
+                </div>
+              </div>
+            </i-col>
+            <i-col span="16">
+              <re-transfer :left-list="sortResultList" right-btn-text="降順" right-show-label="rightLabel"
+                @to-left="($event) => sortResultList.push($event)" :right-btn-fn="(e) => `${e}(降)`" ref="transfer2">
+                <template #top-btn="{ left, rightList}">
+                  <i-button type="primary" size="small" icon="ios-arrow-forward" ghost
+                    @click="orderLift(left, rightList)">昇順</i-button>
+                </template>
+              </re-transfer>
+            </i-col>
+          </Row>
+        </tab-pane>
+      </Tabs>
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+        :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+        :loading="loading" ref="table">
+      </i-table>
+    </div>
+    <!--  条件式による定義 选择group和 役職 start-->
+    <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
+      :mask-closable="false" v-model="showGroupOrPositionDrawer">
       <span v-show="curdisplayPanel === 'QPOST'">
         <div class="titlenorm mb5">
           <Icon type="logo-buffer"></Icon>
@@ -222,8 +221,8 @@
         <div class="tr mb5" v-if="selectTreeType === 'post'">
           <i-button type="primary" ghost @click="addPostTree">決定</i-button>
         </div>
-        <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="positonColumns"
-          :disabled-hover="true" :data="positonData" no-data-text="" ref="postTable">
+        <i-table class="mb5" border :row-class-name="()=>'select-col'" :columns="positonColumns" :disabled-hover="true"
+          :data="positonData" no-data-text="" ref="postTable">
           <template slot-scope="{ row }" slot="mapCpostidCk">
             <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="uptdatePositonValue(row)"
               v-if="selectTreeType !== 'post'">{{ row.mapCpostidCk }}</span>
@@ -261,7 +260,10 @@
             </i-col>
           </Row>
           <!-- 所属选择树 -->
-          <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" @on-check-change="handleClickCheckTree" empty-text="所属データなし" :render="renderSearchTree" ref="selectTree" :show-checkbox="curdisplayPanel === 'base'" :check-strictly="curdisplayPanel === 'base'" :check-directly="curdisplayPanel === 'base'"></Tree>
+          <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf"
+            @on-check-change="handleClickCheckTree" empty-text="所属データなし" :render="renderSearchTree" ref="selectTree"
+            :show-checkbox="curdisplayPanel === 'base'" :check-strictly="curdisplayPanel === 'base'"
+            :check-directly="curdisplayPanel === 'base'"></Tree>
         </i-col>
         <i-col :span="curdisplayPanel === 'searchEmp' ? 24 : 16"
           v-show="curdisplayPanel === 'searchEmp' || curdisplayPanel === 'searchDept'">
@@ -276,7 +278,8 @@
               </i-input>
             </i-col>
             <i-col span="6" class="no-border-radius">
-              <i-button long type="primary" icon="md-search" ghost :loading="empSearchLoading" @click="handleSearchEmpt()">
+              <i-button long type="primary" icon="md-search" ghost :loading="empSearchLoading"
+                @click="handleSearchEmpt()">
                 検索
               </i-button>
             </i-col>
@@ -292,169 +295,169 @@
       <Spin size="large" fix v-if="empSearchLoading"></Spin>
     </Drawer>
     <!--  条件式による定義 选择group和 役職 end-->
-        <div class="ivu-pop-popper" :style="poptipStyle" x-placement="right-start">
-          <div class="ivu-poptip-content">
-            <div class="ivu-poptip-arrow"></div>
-            <div class="ivu-poptip-inner">
-              <div class="ivu-poptip-body" style="max-height: 350px; overflow-y: auto;">
-                <div class="ivu-poptip-body-content">
-                  <div class="ivu-poptip-body-content-inner">
-                    <!-- ＡＮＤ/ＯＲ -->
-                    <span v-show="poptipType === 'andor'">
-                      <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>なし</i-button>
-                      <i-button @click="popClickAction('AND')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>AND</i-button>
-                      <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>OR</i-button>
-                    </span>
-    
-                    <!-- （ -->
-                    <span v-show="poptipType === 'openedparenthsis'">
-                      <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>なし</i-button>
-                      <i-button @click="popClickAction('(')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>(</i-button>
-                      <i-button @click="popClickAction('((')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>((</i-button>
-                      <i-button @click="popClickAction('(((')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>(((</i-button>
-                    </span>
-    
-                    <!-- 項目 -->
-                    <span v-show="poptipType === 'columnname'">
-                      <i-button v-for="(item,i) of queryconditionsList" :key="i" type="primary" ghost
-                        @click="handleQueryconditions(item)" style="display:block;" size="small" class="mb5 tl" long>
-                        {{ item.description }}</i-button>
-                    </span>
-    
-                    <!-- 比較 -->
-                    <span v-show="poptipType === 'operator'">
-                      <i-button @click="popClickAction(item.name, item.value)"
-                        v-for="(item,i) of operatorType ? operatorList : operatorList2" type="primary" ghost
-                        style="display:block" size="small" class="mb5" long>{{ item.name }}</i-button>
-                    </span>
-    
-                    <!-- 値 -->
-                    <span v-show="poptipType === 'displayvalue'">
-                      <!-- 为null时 自己输入
+    <div class="ivu-pop-popper" :style="poptipStyle" x-placement="right-start">
+      <div class="ivu-poptip-content">
+        <div class="ivu-poptip-arrow"></div>
+        <div class="ivu-poptip-inner">
+          <div class="ivu-poptip-body" style="max-height: 350px; overflow-y: auto;">
+            <div class="ivu-poptip-body-content">
+              <div class="ivu-poptip-body-content-inner">
+                <!-- ＡＮＤ/ＯＲ -->
+                <span v-show="poptipType === 'andor'">
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction('AND')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>AND</i-button>
+                  <i-button @click="popClickAction('OR')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>OR</i-button>
+                </span>
+
+                <!-- （ -->
+                <span v-show="poptipType === 'openedparenthsis'">
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction('(')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>(</i-button>
+                  <i-button @click="popClickAction('((')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>((</i-button>
+                  <i-button @click="popClickAction('(((')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>(((</i-button>
+                </span>
+
+                <!-- 項目 -->
+                <span v-show="poptipType === 'columnname'">
+                  <i-button v-for="(item,i) of queryconditionsList" :key="i" type="primary" ghost
+                    @click="handleQueryconditions(item)" style="display:block;" size="small" class="mb5 tl" long>
+                    {{ item.description }}</i-button>
+                </span>
+
+                <!-- 比較 -->
+                <span v-show="poptipType === 'operator'">
+                  <i-button @click="popClickAction(item.name, item.value)"
+                    v-for="(item,i) of operatorType ? operatorList : operatorList2" type="primary" ghost
+                    style="display:block" size="small" class="mb5" long>{{ item.name }}</i-button>
+                </span>
+
+                <!-- 値 -->
+                <span v-show="poptipType === 'displayvalue'">
+                  <!-- 为null时 自己输入
                       QHONKEN  0本務  兼務
                       QSECTION 弹出第二层抽屉选择所属
                       QPOST 役職マスタを選択してください。 弹出第二层抽屉选择役職マスタ
                       QPOSTNUM  役職順位マスタを選択してください。 没有
                       QZAITAI  在職 	退職
                       TMG_MANAGEFLG 管理対象外 管理対象 -->
-                      <i-input class="mb5" v-if="!curdisplayPanel" v-model="updateValue.value"></i-input>
-                      <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue"
-                        style="display:block" size="small" class="mb5" long>決定</i-button>
-                      <span v-show="curdisplayPanel === 'QHONKEN'">
-                        <i-button @click="popClickAction('本務[0]', '0')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>本務[0]</i-button>
-                        <i-button @click="popClickAction('兼務[1]', '1')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>兼務[1]</i-button>
-                      </span>
-    
-                      <span v-show="curdisplayPanel === 'QZAITAI'">
-                        <i-button @click="popClickAction('在職[0]', '0')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>在職[0]</i-button>
-                        <i-button @click="popClickAction('退職[1]', '1')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>退職[1]</i-button>
-                      </span>
+                  <i-input class="mb5" v-if="!curdisplayPanel" v-model="updateValue.value"></i-input>
+                  <i-button v-show="!curdisplayPanel" type="primary" ghost @click="updateInputValue"
+                    style="display:block" size="small" class="mb5" long>決定</i-button>
+                  <span v-show="curdisplayPanel === 'QHONKEN'">
+                    <i-button @click="popClickAction('本務[0]', '0')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>本務[0]</i-button>
+                    <i-button @click="popClickAction('兼務[1]', '1')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>兼務[1]</i-button>
+                  </span>
 
-                      <span v-show="curdisplayPanel === 'TMG_MANAGEFLG'">
-                        <i-button @click="popClickAction('管理対象外[0]', '0')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>管理対象外[0]</i-button>
-                        <i-button @click="popClickAction('管理対象[1]', '1')" type="primary" ghost style="display:block"
-                          size="small" class="mb5" long>管理対象[1]</i-button>
-                      </span>
-                    </span>
+                  <span v-show="curdisplayPanel === 'QZAITAI'">
+                    <i-button @click="popClickAction('在職[0]', '0')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>在職[0]</i-button>
+                    <i-button @click="popClickAction('退職[1]', '1')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>退職[1]</i-button>
+                  </span>
 
-                    <!-- ） -->
-                    <span v-show="poptipType === 'closedparenthsis'">
-                      <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>なし</i-button>
-                      <i-button @click="popClickAction(')')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>)</i-button>
-                      <i-button @click="popClickAction('))')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>))</i-button>
-                      <i-button @click="popClickAction(')))')" type="primary" ghost style="display:block" size="small"
-                        class="mb5" long>)))</i-button>
-                    </span>
-                    <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="cancelpoptip"
-                      style="display:block" size="small" class="mb5" long>キャンセル</i-button>
-                    <i-button v-show="hasSearchedQueryconditions && poptipType === 'columnname'"
-                      @click="queryconditionsFallback" style="display:block" size="small" class="mb5" long>戻る</i-button>
+                  <span v-show="curdisplayPanel === 'TMG_MANAGEFLG'">
+                    <i-button @click="popClickAction('管理対象外[0]', '0')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>管理対象外[0]</i-button>
+                    <i-button @click="popClickAction('管理対象[1]', '1')" type="primary" ghost style="display:block"
+                      size="small" class="mb5" long>管理対象[1]</i-button>
+                  </span>
+                </span>
 
-                    <Spin size="large" fix v-if="queryconditionsLoading"></Spin>
-                  </div>
-                </div>
+                <!-- ） -->
+                <span v-show="poptipType === 'closedparenthsis'">
+                  <i-button @click="popClickAction('なし')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>なし</i-button>
+                  <i-button @click="popClickAction(')')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>)</i-button>
+                  <i-button @click="popClickAction('))')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>))</i-button>
+                  <i-button @click="popClickAction(')))')" type="primary" ghost style="display:block" size="small"
+                    class="mb5" long>)))</i-button>
+                </span>
+                <i-button v-show="!hasSearchedQueryconditions || poptipType !== 'columnname'" @click="cancelpoptip"
+                  style="display:block" size="small" class="mb5" long>キャンセル</i-button>
+                <i-button v-show="hasSearchedQueryconditions && poptipType === 'columnname'"
+                  @click="queryconditionsFallback" style="display:block" size="small" class="mb5" long>戻る</i-button>
+
+                <Spin size="large" fix v-if="queryconditionsLoading"></Spin>
               </div>
             </div>
           </div>
         </div>
-        <back-top></back-top>
-      </main>
-    <div th:replace="layout/head::header"></div>
-    <script th:src="${baseUrl + '/static/component/conditionSearch/re-transfer.js?t='+ now}"></script>
-    <script>
-      var operatorList = [
-        { name: '＝', value: '=' },
-        { name: '≠', value: '<>' },
-        { name: '≧', value: '>=' },
-        { name: '≦', value: '<=' },
-        { name: '＞', value: '>' },
-        { name: '＜', value: '<' },
-        { name: '空白のみ', value: 'ISNULL' },
-        { name: '空白以外', value: 'ISNOTNULL' },
-        { name: '次が含まれる', value: 'CONTAINS' },
-        { name: '次で始まる', value: 'STARTS_WITH' },
-        { name: '次で終わる', value: 'ENDS_WITH' },
-      ]
-      var operatorList2 = [
-        { name: '＝', value: '=' },
-        { name: '≠', value: '<>' },
-        { name: '≧', value: '>=' },
-        { name: '≦', value: '<=' },
-        { name: '＞', value: '>' },
-        { name: '＜', value: '<' },
-        { name: '空白のみ', value: 'ISNULL' },
-        { name: '空白以外', value: 'ISNOTNULL' },
-      ]
-    </script>
-    <script type="text/babel" th:inline="javascript">
-      new Vue({
-        el: '.protosettings-warp',
-        components: { ReTransfer },
-        data() {
-          return {
-            isShow: false,
-            loading: true,
-            editLoading: false,
-            btnLoading: false,
-            defaultOption: false,
-            psSite: Utils.getUrlParam(location.href, 'psSite'),
-            psApp: Utils.getUrlParam(location.href, 'psApp'),
-            updateValue: {},
-            columns: [
-            ],
-            opts: {
-              systemId: '01',
-              appId: '0',
-              siteId: '0',
-              companyId: '0',
-              date: '',
-              groupId: '0',
-              isAll: false,
-            },
-            curSelectedDisplay: '',
-            curSelectedSort: '',
-            tableData: [],
-            displayList: [],
-            displayListForSort: [],
-            displayResultList: [],
-            sortResultList: [],
-            contentScrollTop: 0,
-            queryColumns: [
+      </div>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script th:src="${baseUrl + '/static/component/conditionSearch/re-transfer.js?t='+ now}"></script>
+  <script>
+    var operatorList = [
+      { name: '＝', value: '=' },
+      { name: '≠', value: '<>' },
+      { name: '≧', value: '>=' },
+      { name: '≦', value: '<=' },
+      { name: '＞', value: '>' },
+      { name: '＜', value: '<' },
+      { name: '空白のみ', value: 'ISNULL' },
+      { name: '空白以外', value: 'ISNOTNULL' },
+      { name: '次が含まれる', value: 'CONTAINS' },
+      { name: '次で始まる', value: 'STARTS_WITH' },
+      { name: '次で終わる', value: 'ENDS_WITH' },
+    ]
+    var operatorList2 = [
+      { name: '＝', value: '=' },
+      { name: '≠', value: '<>' },
+      { name: '≧', value: '>=' },
+      { name: '≦', value: '<=' },
+      { name: '＞', value: '>' },
+      { name: '＜', value: '<' },
+      { name: '空白のみ', value: 'ISNULL' },
+      { name: '空白以外', value: 'ISNOTNULL' },
+    ]
+  </script>
+  <script type="text/babel" th:inline="javascript">
+    new Vue({
+      el: '.protosettings-warp',
+      components: { ReTransfer },
+      data() {
+        return {
+          isShow: false,
+          loading: true,
+          editLoading: false,
+          btnLoading: false,
+          defaultOption: false,
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
+          updateValue: {},
+          columns: [
+          ],
+          opts: {
+            systemId: '01',
+            appId: '0',
+            siteId: '0',
+            companyId: '0',
+            date: '',
+            groupId: '0',
+            isAll: false,
+          },
+          curSelectedDisplay: '',
+          curSelectedSort: '',
+          tableData: [],
+          displayList: [],
+          displayListForSort: [],
+          displayResultList: [],
+          sortResultList: [],
+          contentScrollTop: 0,
+          queryColumns: [
             {
               title: 'ＡＮＤ/ＯＲ',
               slot: 'andor',
@@ -516,7 +519,7 @@
               slot: 'action',
             },
           ],
-          queryData2:[],
+          queryData2: [],
           curdisplayPanel: '',
           queryData: [{ isAdd: true, addIndex: Date.now(), andor: '', openedparenthsis: '', columnname: '', operator: '', displayvalue: '', closedparenthsis: '', delete: false }],
           lightDelBtnVisible3: [],
@@ -573,106 +576,106 @@
           selectTreeType: '',
           searchDept: '',
           searchEmpt: '',
-          treeData:[],
+          treeData: [],
           searchEmpData: [],
-          legalPersonList: [{macCcompanyidCk:'',macCcompanyname:''}],
+          legalPersonList: [{ macCcompanyidCk: '', macCcompanyname: '' }],
           empSearchLoading: false,
           operatorType: false,
           isByConditionMethod: true,
-          searchData:{standardDateType:1, standardDate: new Date(),histroyDataId:'0',showMastCode:false},
+          searchData: { standardDateType: 1, standardDate: new Date(), histroyDataId: '0', showMastCode: false },
           resultHistoryList: [],
+        }
+      },
+      async created() {
+        // this.getTableData()
+        this.getQueryWhereList()
+        this.getLegalPersonList()
+        this.getResultHistoryList()
+        this.getDisplayList()
+        this.getqueryconditions()
+        window.addEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      beforeDestroy() {
+        window.removeEventListener('scroll', this.handleScroll, { passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 110) return true
+          else return false
+        }
+      },
+      methods: {
+        async getTableData() {
+          const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
+          Object.keys(OPTS).forEach(key => {
+            if (OPTS[key] === '0') {
+              delete OPTS[key]
+            }
+          })
+          this.loading = true
+          try {
+            const { data } = await this.http.get('sys/conditionsearch/applist', OPTS)
+            this.tableData = data
+          } catch (error) {
+          } finally {
+            this.loading = false
           }
         },
-        async created() {
-          // this.getTableData()
-          this.getQueryWhereList()
-          this.getLegalPersonList()
-          this.getResultHistoryList()
-          this.getDisplayList()
-          this.getqueryconditions()
-          window.addEventListener('scroll', this.handleScroll, { passive: true })
-        },
-        beforeDestroy() {
-          window.removeEventListener('scroll', this.handleScroll, { passive: true })
-        },
-        computed: {
-          tableHeadFixed() {
-            if (this.contentScrollTop > 110) return true
-            else return false
+        async getDisplayList() {
+          try {
+            const { data } = await this.http.get('sys/conditionsearch/options/tbl')
+            this.displayList = data
+            this.displayListForSort = Utils.deepClone(data)
+            if (data.length > 0) {
+              this.searchDisplayList(data[0].name, 'init')
+            }
+          } catch (error) {
+          } finally {
+            // this.loading = false
           }
         },
-        methods: {
-          async getTableData() {
-            const OPTS = { ...this.opts }
-            OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
-            OPTS.psApp = Utils.getUrlParam(location.href, 'psApp')
-            Object.keys(OPTS).forEach(key => {
-              if (OPTS[key] === '0') {
-                delete OPTS[key]
-              }
-            })
-            this.loading = true
-            try {
-              const { data } = await this.http.get('sys/conditionsearch/applist', OPTS)
-              this.tableData = data
-            } catch (error) {
-            } finally {
-              this.loading = false
-            }
-          },
-          async getDisplayList() {
-            try {
-              const { data } = await this.http.get('sys/conditionsearch/options/tbl')
-              this.displayList = data
-              this.displayListForSort = Utils.deepClone(data)
-              if (data.length > 0) {
-                this.searchDisplayList(data[0].name, 'init')
-              }
-            } catch (error) {
-            } finally {
-              // this.loading = false
-            }
-          },
-          searchDisplayList: Debounce(async function (name, type) {
+        searchDisplayList: Debounce(async function (name, type) {
+          if (type === 'init') {
+            this.curSelectedSort = name
+            this.curSelectedDisplay = name
+          } else if (type === 'sort') {
+            this.curSelectedSort = name
+          } else {
+            this.curSelectedDisplay = name
+          }
+          try {
+            const { data } = await this.http.get('sys/conditionsearch/options/col', { table: name })
+            // 新获取表示項目时，应该排除已经选择的项目
+            const rightListIds = this.$refs.transfer.rightList.map(e => e.columnName)
             if (type === 'init') {
-              this.curSelectedSort = name
-              this.curSelectedDisplay = name
+              this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
+              this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else if (type === 'sort') {
-              this.curSelectedSort = name
+              this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else {
-              this.curSelectedDisplay = name
+              this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             }
-            try {
-              const { data } = await this.http.get('sys/conditionsearch/options/col', { table: name })
-              // 新获取表示項目时，应该排除已经选择的项目
-              const rightListIds = this.$refs.transfer.rightList.map(e => e.columnName)
-              if (type === 'init') {
-                this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
-                this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
-              } else if (type === 'sort') {
-                this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
-              } else {
-                this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
-              }
-              if (type === 'sort') this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
-              else this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
-            } catch (error) {
-            } finally {
-              // this.loading = false
+            if (type === 'sort') this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
+            else this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
+          } catch (error) {
+          } finally {
+            // this.loading = false
+          }
+        }),
+        orderLift(left, rightList) {
+          let index = 0
+          left.forEach(e => {
+            if (e === 0 || e) {
+              const target = this.sortResultList.splice(e - index, 1)
+              rightList.push({ ...target[0], rightLabel: `${target[0].columnFieldName}(昇)` })
+              this.$set(left, e, undefined)
+              index += 1
             }
-          }),
-          orderLift(left, rightList){
-            let index = 0
-            left.forEach(e => {
-                if (e === 0 || e) {
-                    const target = this.sortResultList.splice(e - index, 1)
-                    rightList.push({...target[0], rightLabel: `${target[0].columnFieldName}(昇)`})
-                    this.$set(left, e, undefined)
-                    index += 1
-                }
-            })
-          },
-          async getLegalPersonList() {
+          })
+        },
+        async getLegalPersonList() {
           const { data } = await this.http.get(`sys/groupappmanager/companies?psSite=${this.psSite}&psApp=${this.psApp}`)
           this.legalPersonList = data
           this.opts.companyId = data[0] && data[0].macCcompanyidCk
@@ -681,22 +684,22 @@
           const { data } = await this.http.get('sys/conditionsearch/options/where')
           this.queryData2 = data
         },
-        getResultHistoryList: Debounce(async function() {
+        getResultHistoryList: Debounce(async function () {
           const { data } = await this.http.get('sys/conditionsearch/show/read')
           this.resultHistoryList = data
         }),
-          async getqueryconditions() {
+        async getqueryconditions() {
           const { data } = await this.http.get('sys/conditionsearch/defs/tbl')
           this.queryconditionsList = data
           this.queryconditionsList_bak = [...data]
         },
         queryconditionsFallback() {
-          if(this.hasSearchedQueryconditions) {
+          if (this.hasSearchedQueryconditions) {
             this.queryconditionsList = this.queryconditionsList_bak
             this.hasSearchedQueryconditions = false
           }
         },
-          conditionDeleteAll() {
+        conditionDeleteAll() {
           this.$Modal.confirm({
             inDrawer: true,
             title: '全行を削除します。よろしいですか？',
@@ -781,9 +784,9 @@
           this.poptipStyle.display = 'none'
           this.updateValue.value = ''
         },
-                // 点击項目
+        // 点击項目
         async handleQueryconditions(e) {
-          
+
           if (this.hasSearchedQueryconditions) {
             this.$set(this.queryData[this.clickedCell.where], 'description', e.description)
             console.log('shie')
@@ -817,8 +820,8 @@
             this.queryconditionsLoading = false
           }
         },
-                // 点击改变表格的值
-                popClickAction(e, value2) {
+        // 点击改变表格的值
+        popClickAction(e, value2) {
           if (e === 'なし') {
             this.queryData[this.clickedCell.where][this.clickedCell.which] = ''
             if (this.clickedCell.which === 'openedparenthsis') this.queryData[this.clickedCell.where].closedparenthsis = ''
@@ -844,8 +847,8 @@
           }
           this.poptipStyle.display = 'none'
         },
-                // 可以传入一个selectedItemArray, 来回显已被选择的值
-                convertTreeData(treeData, selectedItemArray, selectedItemkeyName) {
+        // 可以传入一个selectedItemArray, 来回显已被选择的值
+        convertTreeData(treeData, selectedItemArray, selectedItemkeyName) {
           if (!treeData) {
             this.$Message.error({
               background: true,
@@ -939,22 +942,22 @@
         },
         handleClickCheckTree(e, current) {
           if (!e[0]) return
-                              // 如果有子节点，则遍历影响
-                              if (current.children && current.children.length > 0) {
-                        this.treeCheckHack(current.children, current.checked)
-                    }
+          // 如果有子节点，则遍历影响
+          if (current.children && current.children.length > 0) {
+            this.treeCheckHack(current.children, current.checked)
+          }
         },
-                        // 使得check-strictly的情况下， 勾选/取消 checkbox父也会遍历全部子集
-                        treeCheckHack(treeNode, checked) {
-                    let _this = this
-                    treeNode.forEach((e, i) => {
-                        _this.$set(e, 'checked', checked)
-                        if (e.children && e.children.length > 0) {
-                            _this.treeCheckHack(e.children, checked);
+        // 使得check-strictly的情况下， 勾选/取消 checkbox父也会遍历全部子集
+        treeCheckHack(treeNode, checked) {
+          let _this = this
+          treeNode.forEach((e, i) => {
+            _this.$set(e, 'checked', checked)
+            if (e.children && e.children.length > 0) {
+              _this.treeCheckHack(e.children, checked);
 
-                        }
-                    })
-                },
+            }
+          })
+        },
         uptdatePositonValue(e) {
           //mapCpostname  mapCpostidCk
           if (this.selectTreeType === 'post') {
@@ -973,41 +976,41 @@
             where: row._index,
             which: 'displayvalue'
           }
-          if(row.dialogFlag === 'QZAITAI') {
+          if (row.dialogFlag === 'QZAITAI') {
             // 在職 退職
-            this.$set(this.queryData2[this.clickedCell.where], 'postFlag',true)
-            this.$set(this.queryData2[this.clickedCell.where], 'postCode','1')
+            this.$set(this.queryData2[this.clickedCell.where], 'postFlag', true)
+            this.$set(this.queryData2[this.clickedCell.where], 'postCode', '1')
           }
-          if(row.dialogFlag === 'QHONKEN') {
+          if (row.dialogFlag === 'QHONKEN') {
             // 本務 兼務
-            this.$set(this.queryData2[this.clickedCell.where], 'inWorkFlag',true)
-            this.$set(this.queryData2[this.clickedCell.where], 'atWorkCode','1')
+            this.$set(this.queryData2[this.clickedCell.where], 'inWorkFlag', true)
+            this.$set(this.queryData2[this.clickedCell.where], 'atWorkCode', '1')
           }
-          if(row.dialogFlag === 'QPOST') {
+          if (row.dialogFlag === 'QPOST') {
             // 役職マスタ
             this.openPostTree()
           }
-          if(row.dialogFlag === 'QSECTION') {
+          if (row.dialogFlag === 'QSECTION') {
             // 弹出第二层抽屉选择所属
             this.openSectionTree()
           }
-          if(!row.dialogFlag) {
+          if (!row.dialogFlag) {
             // 搜职员
             this.openEmpTree()
           }
         },
         handleCleanQueryWhere(row) {
-          if(row.dialogFlag === 'QZAITAI') {
+          if (row.dialogFlag === 'QZAITAI') {
             // 在職 退職
-            this.$set(this.queryData2[row._index], 'postFlag',false)
-            this.$set(this.queryData2[row._index], 'postCode','')
+            this.$set(this.queryData2[row._index], 'postFlag', false)
+            this.$set(this.queryData2[row._index], 'postCode', '')
           }
-          if(row.dialogFlag === 'QHONKEN') {
+          if (row.dialogFlag === 'QHONKEN') {
             // 本務 兼務
-            this.$set(this.queryData2[row._index], 'inWorkFlag',false)
-            this.$set(this.queryData2[row._index], 'atWorkCode','')
+            this.$set(this.queryData2[row._index], 'inWorkFlag', false)
+            this.$set(this.queryData2[row._index], 'atWorkCode', '')
           }
-          if(row.dialogFlag === 'QPOST' || row.dialogFlag === 'QSECTION' || !row.dialogFlag) {
+          if (row.dialogFlag === 'QPOST' || row.dialogFlag === 'QSECTION' || !row.dialogFlag) {
             // 役職マスタ
             this.$set(this.queryData2[row._index], 'selectValue', [])
           }
@@ -1020,7 +1023,7 @@
           const { data } = await this.http.get(`sys/tree/posts?psSite=${this.psSite}`)
           // 点击役職定義回显
           const targetArray = this.queryData2[this.clickedCell.where].selectValue
-          let IDs = targetArray && targetArray.map(e=> e.hswCvalue) || []
+          let IDs = targetArray && targetArray.map(e => e.hswCvalue) || []
           this.positonData = data.list.map(e => {
             return {
               ...e,
@@ -1037,7 +1040,7 @@
           const { data } = await this.http.get(`sys/tree/orgs?psSite=${this.psSite}&psApp=${this.psApp}`)
           // 点击追加組織・役職選択による定義回显
           const targetArray = this.queryData2[this.clickedCell.where].selectValue
-          let IDs = targetArray && targetArray.map(e=> e.hswCvalue) || []
+          let IDs = targetArray && targetArray.map(e => e.hswCvalue) || []
           this.treeData = this.convertTreeData(data, IDs, 'sectionId')
         },
         openEmpTree() {
@@ -1046,19 +1049,19 @@
           this.showGroupOrPositionDrawer = true
         },
         async handleSearchEmpt() {
-            try {
-              this.empSearchLoading = true
-              const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
-              this.checkDefaultEmpt(data)
-            } catch (error) {
-            } finally {
-              this.empSearchLoading = false
-            }
+          try {
+            this.empSearchLoading = true
+            const { data } = await this.http.get(`sys/groupmanager/empsearch?psSite=${this.psSite}`, { searchWord: this.searchEmpt, type: 1 })
+            this.checkDefaultEmpt(data)
+          } catch (error) {
+          } finally {
+            this.empSearchLoading = false
+          }
         },
         checkDefaultEmpt(data) {
           // 点开后将默认勾选勾上
           const targetArray = this.queryData2[this.clickedCell.where].selectValue
-          let IDs = targetArray && targetArray.map(e=> e.hswCvalue) || []
+          let IDs = targetArray && targetArray.map(e => e.hswCvalue) || []
           console.log(IDs)
           this.searchEmpData = data.map(e => {
             return { ...e, _checked: IDs.includes(e.meCemployeeidCk) }
@@ -1066,134 +1069,147 @@
         },
         handleSelectDept() {
           this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.selectTree.getCheckedNodes().map(e => {
-              return {
-                id: e.moId,
-                name: ` ${e.sectionName}(${e.sectionId})`,
-                hswCvalue: e.sectionId,
-              }
-            }))
+            return {
+              id: e.moId,
+              name: ` ${e.sectionName}(${e.sectionId})`,
+              hswCvalue: e.sectionId,
+            }
+          }))
           this.showGroupOrPositionDrawer = false
         },
         addPostTree() {
-            this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.postTable.getSelection().map(e => {
-              return {
-                id: e.mapId,
-                name: ` ${e.mapCpostname}(${e.mapCpostidCk})`,
-                hswCvalue: e.mapCpostidCk,
-              }
-            }))
+          this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.postTable.getSelection().map(e => {
+            return {
+              id: e.mapId,
+              name: ` ${e.mapCpostname}(${e.mapCpostidCk})`,
+              hswCvalue: e.mapCpostidCk,
+            }
+          }))
           this.showGroupOrPositionDrawer = false
         },
         // 将选择中的社员加到社員を指定表格里
         addSearchEmp() {
-            this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.empTable.getSelection().map(e => {
-              return {
-                id: e.meId,
-                name: ` ${e.empName}(${e.meCemployeeidCk})`,
-                hswCvalue: e.meCemployeeidCk,
-              }
-            }))
+          this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.empTable.getSelection().map(e => {
+            return {
+              id: e.meId,
+              name: ` ${e.empName}(${e.meCemployeeidCk})`,
+              hswCvalue: e.meCemployeeidCk,
+            }
+          }))
           this.showGroupOrPositionDrawer = false
         },
-          async update() {
-            // this.$Modal.confirm({
-            //   title: '注意',
-            //   content: '入力内容を保存します。よろしいですか？',
-            //   okText: 'OK',
-            //   cancelText: 'キャンセル',
-            //   onOk: async () => {
-            //     this.loading = true
-            //     const update = this.tableData.map((e, i) => {
-            //       return {
-            //         ...e,
-            //         templateId: e.templateId === 'null' ? null : e.templateId,
-            //         permissionType: e.permissionType === 'null' ? null : e.permissionType
-            //       }
-            //     })
-            //     try {
-            //       const { data } = await this.http.post('sys/appmanager/update', update)
-            //       this.$Message.success('更新完了')
-            //       this.getTableData()
-            //       this.updateValue = {}
-            //     } catch (error) {
-            //     } finally {
-            //       history.go(0)
-            //       this.loading = false
-            //     }
-            //   }
-            // })
-          },
-          async freeSearch(mode) {
-            let query = {
-              useQueryDefinition: this.isByConditionMethod,
-              useCooperation: false, // 検索結果データ：有没有用
-              hseCusecooperation: false, // 検索結果データ：有没有用
-              standardDateType: this.searchData.standardDateType,
-              standardDate: Utils.formatDate(this.searchData.standardDate, 'YYYY/MM/DD'),
-              showMastCode: this.searchData.showMastCode,
-              mode: mode,
-              pagerLinkDTO:{
-                currentPage:1,
-                pagerCondition:50,
-              },
-              companyId: '01', // 法人code
-              pagingEvent: 'currentPage',
-              selectDtoList:this.$refs.transfer.rightList.map((e,i)=>{
+        async update() {
+          // this.$Modal.confirm({
+          //   title: '注意',
+          //   content: '入力内容を保存します。よろしいですか？',
+          //   okText: 'OK',
+          //   cancelText: 'キャンセル',
+          //   onOk: async () => {
+          //     this.loading = true
+          //     const update = this.tableData.map((e, i) => {
+          //       return {
+          //         ...e,
+          //         templateId: e.templateId === 'null' ? null : e.templateId,
+          //         permissionType: e.permissionType === 'null' ? null : e.permissionType
+          //       }
+          //     })
+          //     try {
+          //       const { data } = await this.http.post('sys/appmanager/update', update)
+          //       this.$Message.success('更新完了')
+          //       this.getTableData()
+          //       this.updateValue = {}
+          //     } catch (error) {
+          //     } finally {
+          //       history.go(0)
+          //       this.loading = false
+          //     }
+          //   }
+          // })
+        },
+        async freeSearch(mode) {
+          let query = {
+            useQueryDefinition: this.isByConditionMethod,
+            useCooperation: false, // 検索結果データ：有没有用
+            hseCusecooperation: false, // 検索結果データ：有没有用
+            standardDateType: this.searchData.standardDateType,
+            standardDate: Utils.formatDate(this.searchData.standardDate, 'YYYY/MM/DD'),
+            showMastCode: this.searchData.showMastCode,
+            mode: mode,
+            pagerLinkDTO: {
+              currentPage: 1,
+              pagerCondition: 50,
+            },
+            companyId: '01', // 法人code
+            pagingEvent: 'currentPage',
+            selectDtoList: this.$refs.transfer.rightList.map((e, i) => {
               return {
-                hssNseq:`${i}`,
-                hssCcolumn:e.columnName
+                hssNseq: `${i}`,
+                hssCcolumn: e.columnName
               }
             }),
-              orderDtoList:this.$refs.transfer2.rightList.map((e,i)=>{
+            orderDtoList: this.$refs.transfer2.rightList.map((e, i) => {
               return {
-                hsoNseq:`${i}`,
-                hsoCorder:`${i}`,
-                hsoCcolumn:e.columnName,
-                hsoCcolumId:`${e.columnName} ${e.rightLabel.indexOf('昇') > -1 ? 'ASC' : 'DESC'}`,
+                hsoNseq: `${i}`,
+                hsoCorder: `${i}`,
+                hsoCcolumn: e.columnName,
+                hsoCcolumnId: `${e.columnName} ${e.rightLabel.indexOf('昇') > -1 ? 'ASC' : 'DESC'}`,
               }
             }),
-            hseCcompanyselect:'', // 法人選択区分 1=全法人共通
-            hseNdataId:'',        // 連携データID,当mode为table模式时才使用到
-            }
-            if(this.isByConditionMethod) {
-              query.queryConditionDtoList = this.queryData.map(e=> {
-              return {
-                value: e.dialogType ? `${e.dialogType}|${e.theId}` : e.displayvalue,
-                columnid: e.name,
-                columnname: e.description,
-                displayvalue: e.displayvalue,
-                operator: e.operatorValue,
-                displayoperator: e.operator,
-                andor: e.andor,
-                openedparenthsis: e.openedparenthsis,
-                closedparenthsis: e.closedparenthsis,
-                tableid: e.tableid,
-                typeofcolumn: e.type,
-                companyid: '01',
-                mastertablename: e.dialogType ?  e.dialogType : ''
-
-              }
-             })
-            } else {
-              query.whereDtoList = this.queryData2.map(e=> {
-                return {
-                  mswId:'',
-                  mswCtableid: e.tableName,
-                  mswCcolumnid: e.columnName,
-                  mswCemployee: e.employFlag,
-                  selectValue: e.selectValue,
-                  use: e.use
+            hseCcompanyselect: '', // 法人選択区分 1=全法人共通
+            hseNdataId: '',        // 連携データID,当mode为table模式时才使用到
+          }
+          if (this.isByConditionMethod) {
+            if (this.queryData.length > 0 && this.queryData[0].displayoperator) {
+              if (!this.queryDat.some(e => {
+                if (!e.description) {
+                  this.$Notice.warning({ title: '注意', desc: '項目内容が設定されていません、必ず設定してください', duration: 6.5 })
+                  return true
                 }
-              })
-            }
-            console.log(query)
-            const { data } = await this.http.post('sys/conditionsearch/search', query)
+                if (!e.displayvalue && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') {
+                  this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
+                  return true
+                }
+              })) {
+                query.queryConditionDtoList = this.queryData.map(e => {
+                  return {
+                    value: e.dialogType ? `${e.dialogType}|${e.theId}` : e.displayvalue,
+                    columnid: e.name,
+                    columnname: e.description,
+                    displayvalue: e.displayvalue,
+                    operator: e.operatorValue,
+                    displayoperator: e.operator,
+                    andor: e.andor,
+                    openedparenthsis: e.openedparenthsis,
+                    closedparenthsis: e.closedparenthsis,
+                    tableid: e.tableid,
+                    typeofcolumn: e.type,
+                    companyid: '01',
+                    mastertablename: e.dialogType ? e.dialogType : ''
 
-          },
-          handleScroll: Throttle(function (e) {
-            this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-          }, 50)
-        }
-      })
-    </script>
+                  }
+                })
+              }
+            }
+          } else {
+            query.whereDtoList = this.queryData2.map(e => {
+              return {
+                mswId: '',
+                mswCtableid: e.tableName,
+                mswCcolumnid: e.columnName,
+                mswCemployee: e.employFlag,
+                selectValue: e.selectValue,
+                use: e.use
+              }
+            })
+          }
+          console.log(query)
+          const { data } = await this.http.post('sys/conditionsearch/search', query)
+
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+        }, 50)
+      }
+    })
+  </script>
 </body>

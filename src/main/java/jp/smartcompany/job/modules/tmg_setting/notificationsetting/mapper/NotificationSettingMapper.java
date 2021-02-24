@@ -2,6 +2,15 @@ package jp.smartcompany.job.modules.tmg_setting.notificationsetting.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
+import org.apache.ibatis.annotations.Param;
 
-public interface NotificationSettingMapper extends BaseMapper<MastGenericDetailDO> {
+import java.util.List;
+
+public interface NotificationSettingMapper extends BaseMapper<TmgNtfCheckDo> {
+
+    //新规时查找check
+    List<TmgNtfCheckDo> getNewCheckList(@Param("ntfType") String ntfType,
+                                        @Param("sysdate") String sysdate,
+                                        @Param("timeType") String timeType);
 }
