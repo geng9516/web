@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -33,7 +34,7 @@ public class NtfDispVo {
     private String dispTypeId;
     private TypeChildrenVo dispType;
 
-    private List<RELVo> workTypeInfo;
+    private List<RELVo> workTypeInfo = new ArrayList<>();
     private String workType;
     private String limitCheck;//使用有無
     private String limitNum;//取得上限値

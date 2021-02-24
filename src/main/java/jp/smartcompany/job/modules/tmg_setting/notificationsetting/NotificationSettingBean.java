@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.dto.MgdDto;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.RELVo;
@@ -341,10 +342,18 @@ public class NotificationSettingBean {
         return iMastGenericDetailService.getNTFTypeGroup(sysdate);
     }
 
+//    todo
+//    public List<TmgNtfCheckDo> getCheckList(){
+//
+//    }
+
 
 
     //获取主页面所有内容
-    private List<NtfDispVo> getNtfDisp(String ntfGroup,String sysdate){
+    public List<NtfDispVo> getNtfDisp(String ntfGroup,String sysdate){
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
         //TMG_APPROVAL_LEVEL
         //TMG_NTFTYPE2
         //TMG_NTFTYPE
@@ -360,7 +369,7 @@ public class NotificationSettingBean {
                 for(int i=0;i<ntfDispVos.size();i++){
                     if(ntfDispVos.get(i).getNtfTypeId().equals(vo.getNtfTypeId())){
                         //当前职种是否适用
-                        if(vo.getLimitCheck().equals("1")){
+                        if(!StrUtil.hasBlank(vo.getLimitCheck()) && vo.getLimitCheck().equals("1")){
                             RELVo relVo=new RELVo();
                             //RELATION
                             relVo.setWorkType(vo.getWorkType());

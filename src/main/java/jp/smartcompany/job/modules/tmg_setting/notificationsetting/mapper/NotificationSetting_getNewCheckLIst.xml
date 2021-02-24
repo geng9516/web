@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.tmg_setting.notificationsetting.mapper.NotificationSettingMapper">
+
+    <select id="getNewCheckList"
+            resultType="jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo">
+        select
+               TNC_CFUNCNAME,
+               TNC_CFUNCID,
+               TNC_CCOMMENT,
+               TNC_CGROUPINGCODE,
+               TNC_CLIMIT,
+               TNC_CLIMITUNIT
+        from
+             TMG_NTF_CHECK
+        where
+              exists (
+                  select
+                         1
+                  from
+                       MAST_GENERIC_DETAIL
+                  where
+                        MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+                  AND MGD_CSPARECHAR2='TMG_NTFTYPE|0100'
+                  AND TNC_CGROUP = MGD_CSPARECHAR1
+                  )
+        or  exists(
+                select
+                    1
+                from
+                    MAST_GENERIC_DETAIL
+                where
+                        MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+                  AND MGD_CSPARECHAR2= #{ntfType}
+                  AND TNC_CGROUPTYPE = MGD_CSPARECHAR4
+            )
+        AND #{sysdate} between TNC_DSTARTDATE and TNC_DENDDATE
+        AND TNC_CTIMETYPE = #{timeType}
+    </select>
+</mapper>

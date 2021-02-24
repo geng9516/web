@@ -21,6 +21,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
@@ -284,5 +285,6 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     List<NtfDispVo> getNtfTypeDetail(@Param("ntfGroup")String ntfGroup, @Param("sysdate")String sysdate);
 
     List<TypeGroupVo> getNTFTypeGroup(@Param("sysdate") String sysdate);
+
 }
 
