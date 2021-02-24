@@ -1157,7 +1157,7 @@
             if(this.isByConditionMethod) {
               query.queryConditionDtoList = this.queryData.map(e=> {
               return {
-                value: `${e.dialogType}|${e.theId}`,
+                value: e.dialogType ? `${e.dialogType}|${e.theId}` : e.displayvalue,
                 columnid: e.name,
                 columnname: e.description,
                 displayvalue: e.displayvalue,
@@ -1169,7 +1169,7 @@
                 tableid: e.tableid,
                 typeofcolumn: e.type,
                 companyid: '01',
-                mastertablename: e.dialogType
+                mastertablename: e.dialogType ?  e.dialogType : ''
 
               }
              })
@@ -1186,7 +1186,7 @@
               })
             }
             console.log(query)
-            // const { data } = await this.http.post('sys/conditionsearch/search', query)
+            const { data } = await this.http.post('sys/conditionsearch/search', query)
 
           },
           handleScroll: Throttle(function (e) {
