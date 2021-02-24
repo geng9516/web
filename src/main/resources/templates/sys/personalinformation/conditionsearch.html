@@ -22,7 +22,7 @@
             </div>
             <div class="btnbox">
               <span style="flex:1"></span>
-              <i-button type="primary" icon="ios-search" @click="freeSearch('SCREEN')" :loading="editLoading">検索</i-button>
+              <i-button type="primary" icon="ios-search" @click="freeSearch('CSV')" :loading="editLoading">検索</i-button>
               <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード</i-button>
               <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
             </div>
@@ -136,7 +136,7 @@
                   <i-table v-show="!isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'" :columns="queryColumns2"
                     :disabled-hover="true" :data="queryData2" no-data-text=""　ref="table">
                     <template slot-scope="{ row }"slot="use">
-                      <Checkbox v-model="row.isChecked"></Checkbox>
+                      <Checkbox v-model="queryData2[row._index].use"></Checkbox>
                     </template>
 
                     <template slot-scope="{ row }" slot="columnname">
@@ -809,6 +809,7 @@
           try {
             this.queryconditionsLoading = true
             const { data } = await this.http.get('sys/conditionsearch/defs/col', { table: e.name })
+            this.queryData[this.clickedCell.where].tableid = e.name
             this.hasSearchedQueryconditions = true
             this.queryconditionsList = data
           } catch (error) {
@@ -834,7 +835,10 @@
             }
             if (this.clickedCell.which === 'displayvalue') this.queryData[this.clickedCell.where].value = value2
             // 这里和group不同，需要显示label
-            if (this.clickedCell.which === 'operator') this.queryData[this.clickedCell.where].operator = e
+            if (this.clickedCell.which === 'operator') {
+              this.queryData[this.clickedCell.where].operator = e
+              this.queryData[this.clickedCell.where].operatorValue = value2
+            }
             if (this.clickedCell.which === 'openedparenthsis') this.queryData[this.clickedCell.where].closedparenthsis = paernthsis[e]
             if (this.clickedCell.which === 'closedparenthsis') this.queryData[this.clickedCell.where].openedparenthsis = paernthsis[e]
           }
@@ -930,6 +934,7 @@
           //   return
           // }
           this.queryData[this.clickedCell.where][this.clickedCell.which] = `${e[0].sectionName}[${e[0].sectionId}]`
+          this.queryData[this.clickedCell.where].theId = e[0].sectionId
           this.showGroupOrPositionDrawer = false
         },
         handleClickCheckTree(e, current) {
@@ -1118,9 +1123,10 @@
             // })
           },
           async freeSearch(mode) {
-            const query = {
+            let query = {
               useQueryDefinition: this.isByConditionMethod,
               useCooperation: false, // 検索結果データ：有没有用
+              hseCusecooperation: false, // 検索結果データ：有没有用
               standardDateType: this.searchData.standardDateType,
               standardDate: Utils.formatDate(this.searchData.standardDate, 'YYYY/MM/DD'),
               showMastCode: this.searchData.showMastCode,
@@ -1145,8 +1151,42 @@
                 hsoCcolumId:`${e.columnName} ${e.rightLabel.indexOf('昇') > -1 ? 'ASC' : 'DESC'}`,
               }
             }),
+            hseCcompanyselect:'', // 法人選択区分 1=全法人共通
+            hseNdataId:'',        // 連携データID,当mode为table模式时才使用到
             }
-            const { data } = await this.http.post('sys/conditionsearch/search', query)
+            if(this.isByConditionMethod) {
+              query.queryConditionDtoList = this.queryData.map(e=> {
+              return {
+                value: `${e.dialogType}|${e.theId}`,
+                columnid: e.name,
+                columnname: e.description,
+                displayvalue: e.displayvalue,
+                operator: e.operatorValue,
+                displayoperator: e.operator,
+                andor: e.andor,
+                openedparenthsis: e.openedparenthsis,
+                closedparenthsis: e.closedparenthsis,
+                tableid: e.tableid,
+                typeofcolumn: e.type,
+                companyid: '01',
+                mastertablename: e.dialogType
+
+              }
+             })
+            } else {
+              query.whereDtoList = this.queryData2.map(e=> {
+                return {
+                  mswId:'',
+                  mswCtableid: e.tableName,
+                  mswCcolumnid: e.columnName,
+                  mswCemployee: e.employFlag,
+                  selectValue: e.selectValue,
+                  use: e.use
+                }
+              })
+            }
+            console.log(query)
+            // const { data } = await this.http.post('sys/conditionsearch/search', query)
 
           },
           handleScroll: Throttle(function (e) {
