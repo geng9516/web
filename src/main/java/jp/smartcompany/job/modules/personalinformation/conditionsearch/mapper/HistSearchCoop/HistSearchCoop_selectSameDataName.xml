@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchCoop.HistSearchCoopMapper">
+
+    <select id="selectSameDataName" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            HIST_SEARCH_COOP
+        WHERE
+            HSC_CDATANAME = #{value}
+    </select>
+
+</mapper>

@@ -66,7 +66,10 @@ public class ConditionSettingDTO {
      * 共有範囲
      */
     private List<ConditionSettingTargetDTO> targetDtoList;
-
+    /**
+     * コンテンツ横断自由条件検索連携テーブル
+     */
+    private CooperationDTO coopDTO;
     /**
      * true=利用条件式检索 false=利用条件项目检索
      */

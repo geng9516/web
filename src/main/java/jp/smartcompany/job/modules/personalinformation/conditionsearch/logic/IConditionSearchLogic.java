@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic;
 
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.bo.SqlBO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
@@ -41,5 +42,6 @@ public interface IConditionSearchLogic {
 
     Map<String,Object> search(ConditionSettingDTO settingDTO);
 
+    String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO);
 
 }

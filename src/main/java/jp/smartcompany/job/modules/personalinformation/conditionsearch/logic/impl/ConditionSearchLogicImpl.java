@@ -115,7 +115,8 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
      * @param settingDto 検索条件
      * @return String
      */
-    private String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO) {
+    @Override
+    public String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO) {
         String psLoginUserId = SecurityUtil.getUserId();
         String psMode = settingDto.getMode();
         int nStart = 0;

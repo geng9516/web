@@ -299,8 +299,9 @@ public class ConditionSearchSqlBuilder {
                 orderSql.append(getOrderSql(conditionOrderDTO)).append(",");
             }
             // 末尾の,を取り除く
-            orderSql.substring(0, orderSql.length() - 1);
-            sqlBO.setOrderStatement(orderSql.toString());
+            int lastOrderCommaIndex = orderSql.lastIndexOf(",");
+            String orderStatement = orderSql.substring(0,lastOrderCommaIndex);
+            sqlBO.setOrderStatement(orderStatement);
         }
 
         // メインテーブルの追加

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchCoopDetail.HistSearchCoopDetailMapper">
+
+    <select id="saveQuery">
+        INSERT INTO HIST_SEARCH_COOP_DETAIL (
+            HSD_ID,
+            HSD_NDATA_ID,
+            HSD_CCOND_CUSTOMERID,
+            HSD_CCOND_USERID,
+            HSD_CMODIFIERUSERID,
+            HSD_DMODIFIEDDATE,
+            VERSIONNO
+        ) values ${value}
+    </select>
+
+</mapper>
