@@ -280,19 +280,21 @@ public class ConditionSearchSqlBuilder {
         String searchRangeWhere = getSearchRangeWhere();
         String searchCoopWhere = getSearchCoopWhere(useCoop , coopDataId);
         String conditionWhere = null;
-            // チェック
-            if (CollUtil.isNotEmpty(whereDtoList)) {
-                // WHERE句（絞込条件）の組立(簡易版)
-                conditionWhere = getConditionWhereSql(whereDtoList);
-            } else if (CollUtil.isNotEmpty(whereQueryDtoList)){
-                // WHERE句（絞込条件）の組立(定義式)
-                conditionWhere = createQueryCondition(companyId,whereQueryDtoList);
-            }
+        // チェック
+        if (CollUtil.isNotEmpty(whereDtoList)) {
+            // WHERE句（絞込条件）の組立(簡易版)
+            conditionWhere = getConditionWhereSql(whereDtoList);
+        } else if (CollUtil.isNotEmpty(whereQueryDtoList)){
+            // WHERE句（絞込条件）の組立(定義式)
+            conditionWhere = createQueryCondition(companyId,whereQueryDtoList);
+        }
         if (StrUtil.isNotBlank(conditionWhere)) {
             sqlBO.setWhereConditionStatement(conditionWhere + searchRangeWhere + searchCoopWhere);
-        } else {
-            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
         }
+// ----- feats: 老代码出现了这段，新代码觉得这段会产生问题，在此注释 修改日期： 2021/02/24 18:24 ----
+//        else {
+//            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
+//        }
         if (CollUtil.isNotEmpty(orderDtoList)) {
             StringBuilder orderSql = new StringBuilder();
             for (ConditionOrderDTO conditionOrderDTO : orderDtoList) {

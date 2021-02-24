@@ -34,6 +34,7 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         if (StrUtil.isBlank(sSql)) {
             throw new GlobalException("SEARCH_SQL");
         }
+        log.info("【执行的sql:{}】",sSql);
         Object oSqlResult = dbAccessLogic.executeQuery(connection,sSql);
         return convertData(oSqlResult);
     }
