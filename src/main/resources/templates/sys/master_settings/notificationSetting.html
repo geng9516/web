@@ -57,10 +57,8 @@
         </div>
         <div class="searchwrap">
             <div class="label">親区分</div><!--NTFGROUP-->
-            <i-select v-model="ntfGroupType" editable filterable style="width: 15%;">
-                <i-option value="1">年次有給休暇</i-option>
-                <i-option value="2">その他</i-option>
-                <i-option value="3">特別休暇：夏季休暇</i-option>
+            <i-select v-model="ntfGroupType" editable filterable style="width: 15%;" @on-change="handleGroup($event)">
+                <i-option v-for="(item, i) of groupList" :key="i" :value="item.id">{{ item.name }}</i-option>
             </i-select>
         </div>
     </div>
@@ -114,9 +112,7 @@
                                 <i-select v-model="editData.group" editable filterable clearable
                                           class="mb10 no-border-radius">
 <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="1">年次有給休暇</i-option>
-                                    <i-option value="2">その他</i-option>
-                                    <i-option value="3">特別休暇：夏季休暇</i-option>
+                                    <i-option v-for="(item, i) of groupList" :key="i" :value="item.id">{{ item.name }}</i-option>
                                 </i-select>
                             </section>
                             <section class="tl mt5">
@@ -140,10 +136,7 @@
                                 <i-select v-model="editData.typeGroup"  editable filterable clearable
                                           class="mb10 no-border-radius">
                                     <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">&nbsp</i-option>
-                                    <i-option value="1">年次有給休暇</i-option>
-                                    <i-option value="2">病気休暇（私傷病)</i-option>
-                                    <i-option value="3">病気休暇（業務上)</i-option>
+                                    <i-option v-for="(item, i) of typeGroupList" :key="i" :value="item.typeGroupId">{{ item.typeGroupName }}</i-option>
                                 </i-select>
                             </section>
                             <section class="tl mt5">
@@ -167,7 +160,6 @@
                                 <p class="mb5">決裁レベル</p>
                                 <i-select v-model="editData.type"  editable filterable clearable
                                           class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
                                     <i-option value="TMG_APPROVAL_LEVEL|1">レベル1</i-option>
                                     <i-option value="TMG_APPROVAL_LEVEL|2">レベル2</i-option>
                                     <i-option value="TMG_APPROVAL_LEVEL|3">レベル3</i-option>
@@ -313,7 +305,7 @@
         </div>
     </Modal>
 
-    <Modal :title=" typeId==='TYPEGROUP'? '申請種類管理':'親区分管理'"  :width="typeId==='TYPEGROUP'? '70':'40'" v-model="managerFlg" footer-hide :mask-closable="false">
+    <Modal :title=" typeId==='TYPEGROUP'? '申請種類管理':'親区分管理'"  :width="typeId==='TYPEGROUP'? '80':'40'" v-model="managerFlg" footer-hide :mask-closable="false">
 
         <div style="position: relative;">
             <div v-if="typeId ==='GROUP'">
@@ -341,7 +333,7 @@
 
                 <dtree :class="tableHeadFixed ? 'table-head-fixed' : ''"
                        :data="dGroupTreeData"
-                       @drag="sortTableByDrag(arguments)" border
+                       @drag="sortGroupTableByDrag(arguments)" border
                        :isdraggable="isGroupDraggable" ref="groupTable">
                     <template #selection="{row}">
                       <span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
@@ -354,11 +346,88 @@
                 <div class="table-top">
                     <div class="btnbox tr">
                         <span style="flex:1"></span>
-                        <i-button type="primary" icon="md-create" @click="" v-show="">編集</i-button>
-                        <i-button type="primary" icon="md-create" @click="" v-show="">登録</i-button>
+                        <i-button type="primary" icon="md-create" @click="typeGroupEditbtn()">{{ typeGroupEdit ?  '取消' : '編集'}}</i-button>
+
+                        <i-button type="primary" icon="md-create" @click="":disabled="!typeGroupEdit">登録</i-button>
                     </div>
                 </div>
-                <i-table class="mt10"  border :columns="typeGroupColumns" :data="typeGroupTableData"  show-header>
+                <i-table class="mt10" border :columns="typeGroupColumns" :data="typeGroupTableData"  show-header>
+                    <template slot-scope="{ index , row }" slot="typeGroupName">
+                        <Tooltip placement="bottom" class="width100" transfer>
+                            <span style="white-space: normal;" slot="content">{{row.typeGroupName}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{row.typeGroupName}}</span>
+                        </Tooltip>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="avgSection">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{avgSection[row.avgSection]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{avgSection[row.avgSection]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].avgSection" slot="append" v-show="typeGroupEdit">
+                            <i-option value="0">平均勤務時間どおり</i-option>
+                            <i-option value="1">平均勤務時間を1時間単位で切り捨て</i-option>
+                            <i-option value="2">平均勤務時間を1時間単位で切り上げ</i-option>
+                        </i-select>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="digestionSection">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{digestionSection[row.digestionSection]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{digestionSection[row.digestionSection]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].digestionSection" slot="append" v-show="typeGroupEdit">
+                            <i-option value="0">申請時間どおり消化(1日の平均勤務時間超も可)</i-option>
+                            <i-option value="1">申請時間どおり消化(1日の平均勤務時間超は不可)</i-option>
+                            <i-option value="2">申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超も可)</i-option>
+                            <i-option value="3">申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超は不可)</i-option>
+                            <i-option value="4">申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超は不可)</i-option>
+                        </i-select>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="workDay">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{workDay[row.workDay]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{workDay[row.workDay]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].workDay" slot="append" v-show="typeGroupEdit">
+                            <i-option value="0">営業日(休日は含まない)</i-option>
+                            <i-option value="1">暦日(休日を含む)</i-option>
+                        </i-select>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="contiCheck">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{contiCheck[row.contiCheck]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{contiCheck[row.contiCheck]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].contiCheck" slot="append" v-show="typeGroupEdit">
+                            <i-option value="0">連続チェック不要</i-option>
+                            <i-option value="1">連続チェック必要</i-option>
+                        </i-select>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="yearBeginMonth">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{yearBeginMonth[row.yearBeginMonth]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{yearBeginMonth[row.yearBeginMonth]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].yearBeginMonth" slot="append" v-show="typeGroupEdit">
+                            <i-option value="1">1月</i-option>
+                            <i-option value="4">4月</i-option>
+                        </i-select>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="startDateRange">
+
+
+                        <span class="ml5">{{ typeGroupTableData[index].startDateRange }}</span>
+                    </template>
+                    <template slot-scope="{ index , row }" slot="hasuuSection">
+                        <Tooltip placement="bottom" class="width100" transfer v-show="!typeGroupEdit">
+                            <span style="white-space: normal;" slot="content">{{hasuuSection[row.hasuuSection]}}</span>
+                            <span class="ivu-table-cell-tooltip-content">{{hasuuSection[row.hasuuSection]}}</span>
+                        </Tooltip>
+                        <i-select v-model="typeGroupTableData[index].hasuuSection" slot="append" v-show="typeGroupEdit">
+                            <i-option value="0">端数処理なし(1分未満は切り上げ)</i-option>
+                            <i-option value="1">1時間単位で切り捨て</i-option>
+                            <i-option value="2">1時間単位で切り上げ</i-option>
+                        </i-select>
+                    </template>
                 </i-table>
 
             </div>
@@ -375,7 +444,8 @@
         el: '.ntfsettings-warp',
         data() {
             return {
-                ntfGroupType:'1',
+                groupList:[],
+                ntfGroupType:'',
                 columns:[],
                 tableData:[],
                 tableColumnsChecked:['basic','dispType','workType','others'],
@@ -440,7 +510,7 @@
 
                 },
                 EditLoading:false,
-
+                typeGroupList:[], //新规下拉框
 
                 //親区分管理
                 managerFlg:false,
@@ -466,21 +536,109 @@
 
 
                 //申請種類
-                typeGroupColumns:[],
+                typeGroupColumns:[
+                    {
+                        title: '申請種類名',
+                        slot: 'typeGroupName',
+                        align: 'left',
+                        minWidth: 200
+                    },
+                    {
+                        title: '平均勤務時間・' +
+                            '\n年休残時間の換算',
+                        slot: 'avgSection',
+                        align: 'left',
+                        minWidth: 220
+                    },
+                    {
+                        title: '消化時間' +
+                            '\nの換算区分',
+                        slot: 'digestionSection',
+                        align: 'left',
+                        minWidth: 350
+                    },
+                    {
+                        title: ' 営業日・' +
+                            '\n暦日区分',
+                        slot: 'workDay',
+                        align: 'left',
+                        minWidth: 150
+                    },
+                    {
+                        title: '連続チェック有無',
+                        slot: 'contiCheck',
+                        align: 'left',
+                        minWidth: 180
+                    },
+                    {
+                        title: '年度開始月',
+                        slot: 'yearBeginMonth',
+                        align: 'left',
+                        minWidth: 100
+                    },
+                    {
+                        title: '同一とみなす' +
+                            '\n起算日の範囲',
+                        slot: 'startDateRange',
+                        align: 'left',
+                        minWidth: 160
+                    },
+                    {
+                        title: '消化時間に端数がある場合の換算区分',
+                        slot: 'hasuuSection',
+                        align: 'left',
+                        minWidth: 140
+                    },
+                ],
                 typeGroupTableData:[],
+                typeGroupEdit:false,
+                avgSection:{
+                    0:'平均勤務時間どおり',
+                    1:'平均勤務時間を1時間単位で切り捨て',
+                    2:'平均勤務時間を1時間単位で切り上げ'
+                },
+                digestionSection:{
+                    0:'申請時間どおり消化(1日の平均勤務時間超も可)',
+                    1:'申請時間どおり消化(1日の平均勤務時間超は不可)',
+                    2:'申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超も可)',
+                    3:'申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超は不可)',
+                    4:'申請時間を1時間単位で切り上げて消化(1日の平均勤務時間超は不可)',
+                },
+                workDay:{
+                    0:'営業日(休日は含まない)',
+                    1:'暦日(休日を含む)',
+                },
+                contiCheck:{
+                    0:'連続チェック不要',
+                    1:'連続チェック必要',
+                },
+                yearBeginMonth:{
+                    1:'1月',
+                    4:'4月'
+                },
+                hasuuSection:{
+                    0:'端数処理なし(1分未満は切り上げ)',
+                    1:'1時間単位で切り捨て',
+                    2:'1時間単位で切り上げ'
+                },
+
+
             }
         },
         components: {
             dtree: dtree.default
         },
         async created() {
-            this.getGroupTableData()
+
+
             window.addEventListener('scroll', this.handleScroll, { passive: true })
         },
         beforeDestroy() {
             window.removeEventListener('scroll', this.handleScroll, { passive: true })
         },
-        mounted () {
+        async mounted() {
+            await this.getGroupTableData()
+            this.handleGroup()
             this.changeTableColumns();
         },
         computed: {
@@ -490,6 +648,14 @@
             }
         },
         methods: {
+            async handleGroup() {
+                try {
+                    const {data} = await this.http.get('sys/notificationSetting/ntfDisp',{ntfGroup:this.ntfGroupType})
+                    console.log(data)
+                } catch (error) {
+                } finally {
+                }
+            },
             getTable2Columns () {
                 const table2ColumnList = {
                     ntfType: [{
@@ -686,7 +852,6 @@
                             data.push(e)
                         })
                 });
-                console.log(data)
                 return data;
             },
             changeTableColumns () {
@@ -718,17 +883,18 @@
                 this.managerFlg=true;
                 if(e==='GROUP'){
                     this.typeId='GROUP'
+                    // this.getGroupTableData()
                 }else{
                     this.typeId='TYPEGROUP'
+                    this.getTypeGroupTableData()
                 }
-                console.log(this.typeId)
             },
 
             handleScroll: Throttle(function (e) {
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             //拖动
-            sortTableByDrag(e) {
+            sortGroupTableByDrag(e) {
                 // let samesite = true
                 //
                 // fromUnits.forEach((e,i)=> {
@@ -753,13 +919,35 @@
                     }
                 })
             },
+
+            typeGroupEditbtn(){
+                this.managerLoading=true
+                this.typeGroupEdit=!this.typeGroupEdit
+                setTimeout(() =>{
+                    this.managerLoading=false
+                },1000);
+            },
             async getGroupTableData(){
                 this.managerLoading = true
                 try {
                     const { data } = await this.http.get('sys/notificationSetting/groupManager')
+
+                    this.groupList = data
+                    this.ntfGroupType = this.groupList[0].id
                     this.dGroupTreeData.lists = data
-                    console.log(this.dGroupTreeData)
                     this.$refs.groupTable.OpenAll()
+                } catch (error) {
+                } finally {
+                    this.managerLoading = false
+                }
+            },
+
+            async getTypeGroupTableData(){
+                this.managerLoading = true
+                try {
+                    const { data } = await this.http.get('sys/notificationSetting/typeGroupManager')
+                    this.typeGroupTableData = data
+                    this.typeGroupList = data
                 } catch (error) {
                 } finally {
                     this.managerLoading = false
