@@ -17,7 +17,7 @@ public class ConditionWhereDTO {
     /**
      * 顧客コード
      */
-    private String mswCcsutomerid;
+    private String mswCcustomerid;
     /**
      * テーブルID
      */

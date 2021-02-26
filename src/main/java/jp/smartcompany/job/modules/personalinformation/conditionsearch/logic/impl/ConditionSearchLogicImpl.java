@@ -103,7 +103,9 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         // 常量代表 custId language
         List<String> lstTitle = getTitle(lstSearchResult, "01", "ja", mode);
         // １行目はカラム情報なので除去する
-        lstSearchResult.remove(0);
+        if (CollUtil.isNotEmpty(lstSearchResult)) {
+            lstSearchResult.remove(0);
+        }
 
         Map<String,Object> result = MapUtil.newHashMap();
         result.put("title",lstTitle);
@@ -208,6 +210,9 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
      */
     private List<String> getTitle(
             List<List<Object>> pSearchResult, String psCustomer, String psLanguage, String psMode) {
+        if (CollUtil.isEmpty(pSearchResult)) {
+            return CollUtil.newArrayList();
+        }
         // 先頭行のカラム情報を取得
         List <Object> lstColumnInfo = pSearchResult.get(0);
         List <String> lstColumnName = CollUtil.newArrayList();
