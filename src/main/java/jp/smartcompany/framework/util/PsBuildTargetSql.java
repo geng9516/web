@@ -860,6 +860,7 @@ public class PsBuildTargetSql {
 
         // カラムに別名を付与する
         nIndex = 0;
+
         for (String sFrom : this.gFromListMap.get(this.getDomain())) {
             // 対象テーブル取得
             // 使用するテーブルの情報を取得

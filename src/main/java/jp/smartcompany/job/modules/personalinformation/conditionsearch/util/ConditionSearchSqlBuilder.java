@@ -19,7 +19,6 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.bo.SqlBO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,7 +28,6 @@ import java.util.regex.Pattern;
  * @author Xiao Wenpeng
  */
 @Service
-@Scope("prototype")
 @RequiredArgsConstructor
 public class ConditionSearchSqlBuilder {
 
@@ -291,6 +289,7 @@ public class ConditionSearchSqlBuilder {
         if (StrUtil.isNotBlank(conditionWhere)) {
             sqlBO.setWhereConditionStatement(conditionWhere + searchRangeWhere + searchCoopWhere);
         }
+        System.out.println(sqlBO.getWhereConditionStatement());
 // ----- feats: 老代码出现了这段，新代码觉得这段会产生问题，在此注释 修改日期： 2021/02/24 18:24 ----
 //        else {
 //            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
