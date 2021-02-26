@@ -140,7 +140,7 @@
           <i-table v-show="!isByConditionMethod" class="mt5 no-padding" border :row-class-name="()=>'select-col'"
             :columns="queryColumns2" :disabled-hover="true" :data="queryData2" no-data-text="" 　ref="table">
             <template slot-scope="{ row }" slot="use">
-              <Checkbox v-model="queryData2[row._index].use"></Checkbox>
+              <Checkbox v-model="queryData2[row._index].useFlag"></Checkbox>
             </template>
 
             <template slot-scope="{ row }" slot="columnname">
@@ -1126,7 +1126,10 @@
           //   }
           // })
         },
-        async freeSearch(mode) {
+        freeSearch: Debounce(async function(mode) {
+          if(this.$refs.transfer.rightList.length === 0) {
+            return this.$Notice.warning({ title: '注意', desc: '表示項目を選択してください', duration: 6.5 })
+          }
           let query = {
             useQueryDefinition: this.isByConditionMethod,
             useCooperation: false, // 検索結果データ：有没有用
@@ -1159,13 +1162,13 @@
             hseNdataId: '',        // 連携データID,当mode为table模式时才使用到
           }
           if (this.isByConditionMethod) {
-            if (this.queryData.length > 0 && this.queryData[0].displayoperator) {
-              if (!this.queryDat.some(e => {
+            if (this.queryData.length > 0 && this.queryData[0].operatorValue) {
+              if (!this.queryData.some(e => {
                 if (!e.description) {
                   this.$Notice.warning({ title: '注意', desc: '項目内容が設定されていません、必ず設定してください', duration: 6.5 })
                   return true
                 }
-                if (!e.displayvalue && e.operator !== 'ISNULL' && e.operator !== 'ISNOTNULL') {
+                if (!e.displayvalue && e.operatorValue !== 'ISNULL' && e.operatorValue !== 'ISNOTNULL') {
                   this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
                   return true
                 }
@@ -1197,15 +1200,15 @@
                 mswCtableid: e.tableName,
                 mswCcolumnid: e.columnName,
                 mswCemployee: e.employFlag,
-                selectValue: e.selectValue,
-                use: e.use
+                selectValue: e.selectValue &&  e.selectValue.length > 0 ? e.selectValue : [],
+                use: e.useFlag ? e.useFlag : false
               }
             })
           }
           console.log(query)
           const { data } = await this.http.post('sys/conditionsearch/search', query)
 
-        },
+        }),
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
         }, 50)
