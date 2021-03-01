@@ -992,11 +992,13 @@
             // 在職 退職
             this.$set(this.queryData2[this.clickedCell.where], 'postFlag', true)
             this.$set(this.queryData2[this.clickedCell.where], 'postCode', '1')
+            this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           }
           if (row.dialogFlag === 'QHONKEN') {
             // 本務 兼務
             this.$set(this.queryData2[this.clickedCell.where], 'inWorkFlag', true)
             this.$set(this.queryData2[this.clickedCell.where], 'atWorkCode', '1')
+            this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           }
           if (row.dialogFlag === 'QPOST') {
             // 役職マスタ
@@ -1087,6 +1089,7 @@
               hswCvalue: e.sectionId,
             }
           }))
+          this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           this.showGroupOrPositionDrawer = false
         },
         addPostTree() {
@@ -1097,6 +1100,7 @@
               hswCvalue: e.mapCpostidCk,
             }
           }))
+          this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           this.showGroupOrPositionDrawer = false
         },
         // 将选择中的社员加到社員を指定表格里
@@ -1108,6 +1112,7 @@
               hswCvalue: e.meCemployeeidCk,
             }
           }))
+          this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           this.showGroupOrPositionDrawer = false
         },
         async update() {

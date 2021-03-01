@@ -29,11 +29,16 @@ const ReTransfer = {
     </Col>
     <Col span="10">
       <div class="ivu-transfer-list width100" style="height: 500px;">
-        <div class="ivu-transfer-list-header">
+        <div class="ivu-transfer-list-header" style="display:flex">
             <span class="ivu-transfer-list-header-title">{{ rightTitle }}</span>
+            <span style="flex: 1;"></span>
+            <span class="mr10">ドラッグ機能:  </span><i-switch v-model="isDraggable" size="large">
+            <span slot="open">ON</span>
+            <span slot="close">OFF</span>
+          </i-switch>
         </div>
         <div class="ivu-transfer-list-body">
-            <draggable class="ivu-transfer-list-content" v-model="rightList" v-bind="dragOptions" @start="onDragStart" @end="onDragEnd" forceFallback>
+            <draggable class="ivu-transfer-list-content" v-model="rightList" v-bind="dragOptions" @start="onDragStart" @end="onDragEnd" :disabled="!isDraggable" forceFallback>
             <transition-group type="transition" :name="!drag ? 'flip-list' : null">
                 <li class="ivu-transfer-list-content-item conditionlist-transfer"
                     v-for="(item, i) of rightList" :key="item[rightKey]"
@@ -107,17 +112,15 @@ const ReTransfer = {
             displayLeaftList: [],
             displayRightList: [],
             rightList: [],
-            drag: false
-        }
-    },
-    computed: {
-        dragOptions() {
-            return {
-                animation: 200,
-                group: "sort",
-                disabled: false,
-                ghostClass: "ghost"
-            };
+            isDraggable: true,
+            drag: false,
+            dragOptions() {
+                return {
+                    animation: 200,
+                    group: "sort",
+                    ghostClass: "ghost"
+                };
+            }
         }
     },
     methods: {
@@ -151,7 +154,7 @@ const ReTransfer = {
             })
         },
         onDragStart(e) {
-            this.drag = ture
+            this.drag = true
         },
         onDragEnd(e) {
             // 将被drag歪掉的check的复位
