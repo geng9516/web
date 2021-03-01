@@ -10,6 +10,17 @@
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <!-- 菜单导航栏 -->
   <div th:replace="layout/sider"></div>
+  <style>
+    flip-list-move {
+      transition: transform 0.5s;
+    }
+
+
+    .ghost {
+      opacity: .5;
+      background: var(--primary-info-bg);
+    }
+  </style>
   <main class="content protosettings-warp" ref="layout">
     <div class="content_head">
       <div class="header">
@@ -398,6 +409,7 @@
     <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
+  <script th:src="${baseUrl + '/static/libs/Sortable.min.js?t='+ now}"></script>
   <script th:src="${baseUrl + '/static/component/conditionSearch/re-transfer.js?t='+ now}"></script>
   <script>
     var operatorList = [
@@ -1126,8 +1138,8 @@
           //   }
           // })
         },
-        freeSearch: Debounce(async function(mode) {
-          if(this.$refs.transfer.rightList.length === 0) {
+        freeSearch: Debounce(async function (mode) {
+          if (this.$refs.transfer.rightList.length === 0) {
             return this.$Notice.warning({ title: '注意', desc: '表示項目を選択してください', duration: 6.5 })
           }
           let query = {
@@ -1200,13 +1212,13 @@
                 mswCtableid: e.tableName,
                 mswCcolumnid: e.columnName,
                 mswCemployee: e.employFlag,
-                selectValue: e.selectValue &&  e.selectValue.length > 0 ? e.selectValue : [],
+                selectValue: e.selectValue && e.selectValue.length > 0 ? e.selectValue : [],
                 use: e.useFlag ? e.useFlag : false
               }
             })
           }
           console.log(query)
-          const { data } = await this.http.post('sys/conditionsearch/search', query)
+          const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
 
         }),
         handleScroll: Throttle(function (e) {

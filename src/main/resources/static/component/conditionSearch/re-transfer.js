@@ -33,7 +33,8 @@ const ReTransfer = {
             <span class="ivu-transfer-list-header-title">{{ rightTitle }}</span>
         </div>
         <div class="ivu-transfer-list-body">
-            <ul class="ivu-transfer-list-content">
+            <draggable class="ivu-transfer-list-content" v-model="rightList" v-bind="dragOptions" @start="onDragStart" @end="onDragEnd" forceFallback>
+            <transition-group type="transition" :name="!drag ? 'flip-list' : null">
                 <li class="ivu-transfer-list-content-item conditionlist-transfer"
                     v-for="(item, i) of rightList" :key="item[rightKey]"
                     @click="handleClickedRightLeaf(i)">
@@ -41,7 +42,8 @@ const ReTransfer = {
                     {{ item[rightShowLabel] }}
                 </li>
                 <li class="ivu-transfer-list-content-not-found"></li>
-            </ul>
+            </transition-group>
+            </draggable>
         </div>
     </div>
     </Col>
@@ -51,6 +53,7 @@ const ReTransfer = {
         Row: iview.Row,
         Col: iview.Col,
         Checkbox: iview.Checkbox,
+        draggable: vuedraggable
     },
     props: {
         leftTitle: {
@@ -104,6 +107,17 @@ const ReTransfer = {
             displayLeaftList: [],
             displayRightList: [],
             rightList: [],
+            drag: false
+        }
+    },
+    computed: {
+        dragOptions() {
+            return {
+                animation: 200,
+                group: "sort",
+                disabled: false,
+                ghostClass: "ghost"
+            };
         }
     },
     methods: {
@@ -120,7 +134,7 @@ const ReTransfer = {
             this.displayLeaftList.forEach(e => {
                 if (e === 0 || e) {
                     const target = this.leftList.splice(e - index, 1)
-                    this.rightList.push({...target[0], [this.rightShowLabel]: this.rightBtnFn(target[0][this.rightLabel])})
+                    this.rightList.push({ ...target[0], [this.rightShowLabel]: this.rightBtnFn(target[0][this.rightLabel]) })
                     this.$set(this.displayLeaftList, e, undefined)
                     index += 1
                 }
@@ -136,5 +150,18 @@ const ReTransfer = {
                 }
             })
         },
+        onDragStart(e) {
+            this.drag = ture
+        },
+        onDragEnd(e) {
+            // 将被drag歪掉的check的复位
+            if(e.oldIndex !== e.newIndex) {
+                if(this.displayRightList[e.oldIndex] || this.displayRightList[e.oldIndex] === 0) {
+                    this.$set(this.displayRightList, e.newIndex, e.newIndex)
+                    this.$set(this.displayRightList, e.oldIndex, undefined)
+                }
+            }
+            this.drag = false
+        }
     }
 }
