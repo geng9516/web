@@ -47,11 +47,15 @@
       <div style="display: flex;z-index: 1;">
         <div>
           <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-download"
-            @click="()=>  console.log(this.displayCheckboxList)" :loading="editLoading">読込</i-button>
+          <i-select v-model="searchData.queryListId" style="width: 400px;" transfer>
+            <i-option value="0">なし
+            </i-option>
+            <i-option v-for="(item, i) of queryList" :key="i" value="01">{{item}}
+            </i-option>
+          </i-select>
+          <i-button type="primary" ghost icon="md-refresh" @click="getQueryListParam"></i-button>
           <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存
           </i-button>
-          <i-button type="error" ghost icon="md-trash" @click="update" :loading="editLoading">削除</i-button>
         </div>
         <div style="flex: 1;"></div>
         <div>
@@ -406,7 +410,52 @@
         </div>
       </div>
     </div>
-    <back-top></back-top>
+
+    <!--  条件式保存 start-->
+    <Modal class="tc" placement="right" :width="700" title="設定保存" :mask-closable="false" v-model="shareQuerySaveModal" ok-text="登録">
+
+      <Row :gutter="4">
+        <i-col span="10">
+          <div class="label pl10 tc">設定名</div>
+          <div class="person-info">
+            <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
+              v-model="shareQueryData.hseCsettingname" :maxlength="1000"></i-input>
+          </div>
+        </i-col>
+        <i-col span="3">
+          <div class="label pl10 tc">共有</div>
+          <div class="person-info tc" style="padding-left: 0;">
+            <Checkbox v-model="shareQueryData.hseCpubli" :true-value="1" :false-value="0"  @on-change="shareQueryData.checkbox = []"></Checkbox>
+          </div>
+        </i-col>
+        <i-col span="11">
+          <div class="label pl10 tc">備考</div>
+          <div class="person-info">
+            <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
+              v-model="shareQueryData.hseCcomment" :maxlength="1000"></i-input>
+          </div>
+        </i-col>
+      </Row>
+      <!-- 所属选择树 -->
+      <div class="label mt10 tc">共有対象</div>
+      <div class="tl person-info">
+        <radio-group class="tl" v-model="shareQueryData.isAll" vertical @on-change="shareQueryData.checkbox = []">
+          <Radio label="1" :disabled="!shareQueryData.hseCpubli">全て</Radio>
+          <Radio label="0" :disabled="!shareQueryData.hseCpubli">グループ指定</Radio>
+        </radio-group>
+        <ul class="ivu-transfer-list-content">
+          <li class="ivu-transfer-list-content-item conditionlist-transfer" v-for="(item, i) of shareData"
+            :key="item.groupId" @click="clickShareBox(i)">
+            <Checkbox v-model="shareQueryData.checkbox[i]" :disabled="!shareQueryData.hseCpubli || shareQueryData.isAll === '1'"></Checkbox>
+            {{ item.groupName }}
+          </li>
+        </ul>
+      </div>
+      </i-col>
+      </Row>
+      <Spin size="large" fix v-if="shareQuerySaveLoading"></Spin>
+      </Drawer>
+      <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
   <script th:src="${baseUrl + '/static/libs/Sortable.min.js?t='+ now}"></script>
@@ -596,6 +645,12 @@
           isByConditionMethod: true,
           searchData: { standardDateType: 1, standardDate: new Date(), histroyDataId: '0', showMastCode: false },
           resultHistoryList: [],
+          queryList: [],
+          // 条件保存
+          shareQuerySaveModal: false,
+          shareQuerySaveLoading: false,
+          shareData: [],
+          shareQueryData: { checkbox: [], isAll: '1' }
         }
       },
       async created() {
@@ -605,7 +660,7 @@
         this.getResultHistoryList()
         this.getDisplayList()
         this.getqueryconditions()
-        this.getShareQuertParam()
+        this.getShareQueryParam()
         window.addEventListener('scroll', this.handleScroll, { passive: true })
       },
       beforeDestroy() {
@@ -701,10 +756,19 @@
           const { data } = await this.http.get('sys/conditionsearch/show/read')
           this.resultHistoryList = data
         }),
-        async getShareQuertParam() {
+        async getShareQueryParam() {
           const { data } = await this.http.get('sys/conditionsearch/show/addOrUpdate')
-          this.shareData = data
+          this.shareData = data.groups
         },
+        getQueryListParam: Debounce(async function () {
+          try {
+            this.shareQuerySaveLoading = true
+            const { data } = await this.http.get('sys/conditionsearch/show/read')
+            this.queryList = data
+          } finally {
+            this.shareQuerySaveLoading = false
+          }
+        }),
         async getqueryconditions() {
           const { data } = await this.http.get('sys/conditionsearch/defs/tbl')
           this.queryconditionsList = data
@@ -1121,6 +1185,7 @@
           this.showGroupOrPositionDrawer = false
         },
         async update() {
+          this.shareQuerySaveModal = true
           // this.$Modal.confirm({
           //   title: '注意',
           //   content: '入力内容を保存します。よろしいですか？',
@@ -1227,7 +1292,7 @@
               }
             })
           }
-          if(mode === 'CSV') {
+          if (mode === 'CSV') {
             const { data } = await this.http.post(`sys/conditionsearch/csv/show?psSite=${this.psSite}`, query)
             window.open(`${BASE_URL}${data[0].filePath}`, '_blank')
           } else {
@@ -1235,6 +1300,10 @@
           }
 
         }),
+        clickShareBox(i) {
+          if (!this.shareQueryData.checkbox[i] && this.shareQueryData.checkbox[i] !== 0) this.$set(this.shareQueryData.checkbox, i, true)
+          else this.$set(this.shareQueryData.checkbox, i, false)
+        },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
         }, 50)
