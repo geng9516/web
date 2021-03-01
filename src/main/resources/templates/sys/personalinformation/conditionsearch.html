@@ -32,7 +32,7 @@
         </div>
         <div class="btnbox">
           <span style="flex:1"></span>
-          <i-button type="primary" icon="ios-search" @click="freeSearch('CSV')" :loading="editLoading">検索</i-button>
+          <i-button type="primary" icon="ios-search" @click="freeSearch('SCREEN')" :loading="editLoading">検索</i-button>
           <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード
           </i-button>
           <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
@@ -605,6 +605,7 @@
         this.getResultHistoryList()
         this.getDisplayList()
         this.getqueryconditions()
+        this.getShareQuertParam()
         window.addEventListener('scroll', this.handleScroll, { passive: true })
       },
       beforeDestroy() {
@@ -700,6 +701,10 @@
           const { data } = await this.http.get('sys/conditionsearch/show/read')
           this.resultHistoryList = data
         }),
+        async getShareQuertParam() {
+          const { data } = await this.http.get('sys/conditionsearch/show/addOrUpdate')
+          this.shareData = data
+        },
         async getqueryconditions() {
           const { data } = await this.http.get('sys/conditionsearch/defs/tbl')
           this.queryconditionsList = data
@@ -1154,7 +1159,7 @@
             standardDateType: this.searchData.standardDateType,
             standardDate: Utils.formatDate(this.searchData.standardDate, 'YYYY/MM/DD'),
             showMastCode: this.searchData.showMastCode,
-            mode: mode,
+            mode: 'CSV',
             pagerLinkDTO: {
               currentPage: 1,
               pagerCondition: 50,
@@ -1222,8 +1227,12 @@
               }
             })
           }
-          console.log(query)
-          const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
+          if(mode === 'CSV') {
+            const { data } = await this.http.post(`sys/conditionsearch/csv/show?psSite=${this.psSite}`, query)
+            window.open(`${BASE_URL}${data[0].filePath}`, '_blank')
+          } else {
+            const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
+          }
 
         }),
         handleScroll: Throttle(function (e) {

@@ -27,7 +27,7 @@ const ReTransfer = {
         <slot name="btm-btn" :left="displayLeaftList" :right="displayRightList" rightList="rightList"></slot>
       </div>
     </Col>
-    <Col span="10">
+    <Col span="11">
       <div class="ivu-transfer-list width100" style="height: 500px;">
         <div class="ivu-transfer-list-header" style="display:flex">
             <span class="ivu-transfer-list-header-title">{{ rightTitle }}</span>
