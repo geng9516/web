@@ -125,7 +125,7 @@ public class ConditionSettingDTO {
     /**
      * 備考
      */
-    private Long hseCcomment;
+    private String hseCcomment;
     /**
      *  連携データID
      */

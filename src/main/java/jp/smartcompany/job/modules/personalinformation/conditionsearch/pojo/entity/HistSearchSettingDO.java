@@ -64,7 +64,7 @@ public class HistSearchSettingDO {
     /**
      * 備考
      */
-    private Long hseCcomment;
+    private String hseCcomment;
     /**
      *  連携データID
      */

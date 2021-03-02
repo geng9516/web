@@ -412,8 +412,7 @@
     </div>
 
     <!--  条件式保存 start-->
-    <Modal class="tc" placement="right" :width="700" title="設定保存" :mask-closable="false" v-model="shareQuerySaveModal" ok-text="登録">
-
+    <Modal class="tc" placement="right" :width="700" title="設定保存" :mask-closable="false" v-model="shareQuerySaveModal">
       <Row :gutter="4">
         <i-col span="10">
           <div class="label pl10 tc">設定名</div>
@@ -425,7 +424,8 @@
         <i-col span="3">
           <div class="label pl10 tc">共有</div>
           <div class="person-info tc" style="padding-left: 0;">
-            <Checkbox v-model="shareQueryData.hseCpubli" :true-value="1" :false-value="0"  @on-change="shareQueryData.checkbox = []"></Checkbox>
+            <Checkbox v-model="shareQueryData.hseCpubli" :true-value="1" :false-value="0"
+              @on-change="shareQueryData.checkbox = []"></Checkbox>
           </div>
         </i-col>
         <i-col span="11">
@@ -446,16 +446,22 @@
         <ul class="ivu-transfer-list-content">
           <li class="ivu-transfer-list-content-item conditionlist-transfer" v-for="(item, i) of shareData"
             :key="item.groupId" @click="clickShareBox(i)">
-            <Checkbox v-model="shareQueryData.checkbox[i]" :disabled="!shareQueryData.hseCpubli || shareQueryData.isAll === '1'"></Checkbox>
+            <Checkbox v-model="shareQueryData.checkbox[i]"
+              :disabled="!shareQueryData.hseCpubli || shareQueryData.isAll === '1'"></Checkbox>
             {{ item.groupName }}
           </li>
         </ul>
       </div>
       </i-col>
       </Row>
+      <div slot="footer">
+        <i-button type="text" @click="closeShareModal">キャンセル</i-button>
+        <i-button type="primary" icon="md-add" @click="freeSearch('SAVESETTING')" :loading="shareQuerySaveLoading">登録
+        </i-button>
+      </div>
       <Spin size="large" fix v-if="shareQuerySaveLoading"></Spin>
-      </Drawer>
-      <back-top></back-top>
+    </Modal>
+    <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
   <script th:src="${baseUrl + '/static/libs/Sortable.min.js?t='+ now}"></script>
@@ -1186,32 +1192,6 @@
         },
         async update() {
           this.shareQuerySaveModal = true
-          // this.$Modal.confirm({
-          //   title: '注意',
-          //   content: '入力内容を保存します。よろしいですか？',
-          //   okText: 'OK',
-          //   cancelText: 'キャンセル',
-          //   onOk: async () => {
-          //     this.loading = true
-          //     const update = this.tableData.map((e, i) => {
-          //       return {
-          //         ...e,
-          //         templateId: e.templateId === 'null' ? null : e.templateId,
-          //         permissionType: e.permissionType === 'null' ? null : e.permissionType
-          //       }
-          //     })
-          //     try {
-          //       const { data } = await this.http.post('sys/appmanager/update', update)
-          //       this.$Message.success('更新完了')
-          //       this.getTableData()
-          //       this.updateValue = {}
-          //     } catch (error) {
-          //     } finally {
-          //       history.go(0)
-          //       this.loading = false
-          //     }
-          //   }
-          // })
         },
         freeSearch: Debounce(async function (mode) {
           if (this.$refs.transfer.rightList.length === 0) {
@@ -1295,14 +1275,68 @@
           if (mode === 'CSV') {
             const { data } = await this.http.post(`sys/conditionsearch/csv/show?psSite=${this.psSite}`, query)
             window.open(`${BASE_URL}${data[0].filePath}`, '_blank')
-          } else {
+          }
+
+          if (mode === 'SCREEN') {
             const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
+          }
+
+          if (mode === 'SAVESETTING') {
+            if (!this.shareQueryData.hseCsettingname) {
+              return this.$Notice.warning({ title: '注意', desc: '設定名称を入力してください', duration: 6.5 })
+            }
+            this.$Modal.confirm({
+              title: '注意',
+              content: '入力内容を保存します。よろしいですか？',
+              okText: 'OK',
+              cancelText: 'キャンセル',
+              onOk: async () => {
+                this.shareQuerySaveLoading = true
+                try {
+                  const _query = {
+                    ...query,
+                    hseCpublic: this.shareQueryData.hseCpubli, // 共有有無 1=共有 0=不共有
+                    hseCcomment: this.shareQueryData.hseCcomment, // 備考
+                    hseCusecooperation: '0', // 連携使用有無
+                    hseCmastercodeflg: query.showMastCode, // マスタコード表示フラグ
+                    hseCcompanyidCk: '01', // 法人コード，保持为01即可
+                    hseCcompanyselect: '0', // 法人選択区分，保持为0即可
+                    hseCsettingname: this.shareQueryData.hseCsettingname, // 設定名
+                  }
+                  if(_query.hseCpublic === 1 && this.shareQueryData.isAll === '0') {
+                    let targetDtoList = []
+                    this.shareQueryData.checkbox.forEach((e, i)=> {
+                      if(e) {
+                        targetDtoList = targetDtoList.concat({
+                          hstCtargetsystem: '01',
+                          hstCtargetgroup: this.shareData[i].groupId,
+
+                        })
+                      }
+                    })
+                    if(targetDtoList.length > 0) _query.targetDtoList = targetDtoList
+                  }
+                  // console.log(_query)
+                  const { data } = await this.http.post(`sys/conditionsearch/addOrUpdate?psSite=${this.psSite}`, _query)
+                  this.shareQuerySaveModal = false
+                  this.$Message.success('設定を保存しました')
+                  this.getQueryListParam()
+                } catch (error) {
+                } finally {
+                  this.shareQuerySaveLoading = false
+                }
+              }
+            })
           }
 
         }),
         clickShareBox(i) {
           if (!this.shareQueryData.checkbox[i] && this.shareQueryData.checkbox[i] !== 0) this.$set(this.shareQueryData.checkbox, i, true)
           else this.$set(this.shareQueryData.checkbox, i, false)
+        },
+        closeShareModal() {
+          this.shareQuerySaveModal = false
+          this.shareQueryData = { checkbox: [], isAll: '1', hseCpubli: 0 }
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
