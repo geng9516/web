@@ -50,4 +50,11 @@ public class NotificationSettingController {
     public List<NtfDispVo> getNtfDisp(@RequestParam("ntfGroup")String ntfGroup,@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getNtfDisp(ntfGroup,sysdate);
     }
+
+
+    @GetMapping("editDisp")
+    public Map<String,Object> getEditDisp(@RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.getEditDisp(sysdate);
+    }
+
 }

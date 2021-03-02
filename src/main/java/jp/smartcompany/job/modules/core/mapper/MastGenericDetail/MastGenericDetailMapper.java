@@ -286,5 +286,36 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
 
     List<TypeGroupVo> getNTFTypeGroup(@Param("sysdate") String sysdate);
 
+    @Select("SELECT " +
+            " MGD_CMASTERCODE workTypeId," +
+            " MGD_CGENERICDETAILDESC workType" +
+            " FROM MAST_GENERIC_DETAIL " +
+            " WHERE MGD_CGENERICGROUPID = 'TMG_WORKERTYPE' " +
+            " and #{value}  between MGD_DSTART_CK and  MGD_DEND ")
+    List<Map<String, Object>> getTotalWorkType(String sysdate);
+
+    @Select("select" +
+            "    MGD_CMASTERCODE  timeTypeId ," +
+            "    MGD_CGENERICDETAILDESC timeType" +
+            " from" +
+            "     MAST_GENERIC_DETAIL tmgwork" +
+            " where" +
+            "      tmgwork.MGD_CGENERICGROUPID = 'TMG_WORK'" +
+            "  AND tmgwork.MGD_CSPARECHAR5 ='0'" +
+            " AND #{value}  between MGD_DSTART_CK AND  MGD_DEND ")
+    List<Map<String, Object>> getDayTimeType(String sysdate);
+
+
+    @Select("select" +
+            "    MGD_CMASTERCODE timeTypeId," +
+            "    MGD_CGENERICDETAILDESC timeType" +
+            " from " +
+            "    MAST_GENERIC_DETAIL notwork" +
+            " where " +
+            "      notwork.MGD_CGENERICGROUPID = 'TMG_NOTWORK'" +
+            "  AND notwork.MGD_NSPARENUM2 = 1 " +
+            "  AND #{value}  between MGD_DSTART_CK AND  MGD_DEND ")
+    List<Map<String, Object>> getHourTimeType(String sysdate);
+
 }
 

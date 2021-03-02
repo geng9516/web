@@ -657,4 +657,19 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public List<TypeGroupVo> getNTFTypeGroup(String sysdate){
         return baseMapper.getNTFTypeGroup(sysdate);
     }
+
+
+    @Override
+    public List<Map<String, Object>> getTotalWorkType(String sysdate){
+        return baseMapper.getTotalWorkType(sysdate);
+    }
+
+    @Override
+    public List<Map<String, Object>> getHourTimeType(String sysdate){
+        return baseMapper.getHourTimeType(sysdate);
+    }
+    @Override
+    public List<Map<String, Object>> getDayTimeType(String sysdate){
+        return baseMapper.getDayTimeType(sysdate);
+    }
 }

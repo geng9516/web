@@ -11,19 +11,13 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.TypeChildrenVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.dto.MgdDto;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
-import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
-import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
-import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.RELVo;
-import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -334,7 +328,7 @@ public class NotificationSettingBean {
         return iMastGenericDetailService.getNTFGroup(sysdate);
     }
 
-    //申請種類グルーピングコード
+    //申請種類グルーピングコード 获取
     public List<TypeGroupVo> getNTFTypeGroup(String sysdate){
         if(StrUtil.hasBlank(sysdate)){
             sysdate = TmgUtil.getSysdate();
@@ -364,6 +358,7 @@ public class NotificationSettingBean {
         for (NtfDispVo vo:ntfDispVoList) {
             if(!ntfDispVos.stream().filter(m->m.getNtfTypeId().equals(vo.getNtfTypeId())).findAny().isPresent()){
                 //去重
+                vo.setDispType(num2TypeHandle(vo.getDispTypeId()));
                 ntfDispVos.add(vo);
             }else{
                 for(int i=0;i<ntfDispVos.size();i++){
@@ -385,5 +380,29 @@ public class NotificationSettingBean {
         return  ntfDispVos;
     }
 
+    //新规.修改画面选择数据获取
+    public Map<String, Object> getEditDisp(String sysdate) {
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
+        Map<String, Object> edit=new HashMap<>();
+        //职种
+        List<Map<String, Object>> totalWorkType= iMastGenericDetailService.getTotalWorkType(sysdate);
+        //反映先
+            //时间
+        List<Map<String, Object>> hourTimeType= iMastGenericDetailService.getHourTimeType(sysdate);
+            //终日
+        List<Map<String, Object>> dayTimeType= iMastGenericDetailService.getDayTimeType(sysdate);
+        edit.put("totalWorkType" ,totalWorkType);
+        edit.put("hourTimeType" ,hourTimeType);
+        edit.put("dayTimeType" ,dayTimeType);
+        return edit;
+    }
 
+    //选择typegroup 与 group后决定check function
+    public List<CheckFuncVo> getCheckFunc(String group,String typeGroup,String sysdate){
+        List<CheckFuncVo> checkFuncVos=new ArrayList<>();
+        //todo
+        return checkFuncVos;
+    }
 }

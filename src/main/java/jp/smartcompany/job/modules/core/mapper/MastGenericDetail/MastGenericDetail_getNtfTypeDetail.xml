@@ -7,9 +7,14 @@
         select
             NTFTYPE.MGD_CMASTERCODE         ntf_Type_Id,
             NTFTYPE.MGD_CGENERICDETAILDESC  ntf_Type,
-            NTFTYPE.MGD_DSTART_CK           start_Date,
-            NTFTYPE.MGD_DEND                end_Date,
-            NTFTYPE.MGD_CSPARECHAR2         time_Type,
+            TO_CHAR(NTFTYPE.MGD_DSTART_CK,'yyyy/mm/dd')           start_Date,
+            TO_CHAR(NTFTYPE.MGD_DEND,'yyyy/mm/dd')                end_Date,
+            TMG_F_GET_MGD(
+                       NTFTYPE.MGD_CSPARECHAR2,
+                       #{sysdate},
+                       NTFTYPE.MGD_CCUSTOMERID,
+                       NTFTYPE.MGD_CCOMPANYID_CK_FK)         time_Type,
+            NTFTYPE.MGD_CSPARECHAR2         time_Type_Id,
             NTFTYPE.MGD_CSPARECHAR3         necessary_Comment,
             NTFTYPE.MGD_CSPARECHAR5         site_Id,
             NTFTYPE.MGD_NSPARENUM1,
@@ -18,12 +23,27 @@
             NTFTYPE.MGD_NSPARENUM4,
             NTFTYPE.MGD_NSPARENUM5,
 
+            TMG_F_GET_MGD(
+                       NTFTYPE2.MGD_CSPARECHAR1,
+                       #{sysdate},
+                       NTFTYPE2.MGD_CCUSTOMERID,
+                       NTFTYPE2.MGD_CCOMPANYID_CK_FK)  ntf_Group,
             NTFTYPE2.MGD_CSPARECHAR1        ntf_Group_Id,
             NTFTYPE2.MGD_CSPARECHAR3        comment_D,
+            TMG_F_GET_MGD(
+                       NTFTYPE2.MGD_CSPARECHAR4,
+                       #{sysdate},
+                       NTFTYPE2.MGD_CCUSTOMERID,
+                       NTFTYPE2.MGD_CCOMPANYID_CK_FK)        type_Group,
             NTFTYPE2.MGD_CSPARECHAR4        type_Group_Id,
             NTFTYPE2.MGD_NSPARENUM1 ,
             NTFTYPE2.MGD_NSPARENUM2         necessaryFile,
-            NTFTYPE2.MGD_NSPARENUM3         time_Type,
+            TMG_F_GET_MGD(
+                       NTFTYPE2.MGD_NSPARENUM3,
+                       #{sysdate},
+                       NTFTYPE2.MGD_CCUSTOMERID,
+                       NTFTYPE2.MGD_CCOMPANYID_CK_FK)         time_Range,
+            NTFTYPE2.MGD_NSPARENUM3         time_Range_Id,
             NTFTYPE2.MGD_NSPARENUM4,
 
             APP.MGD_CSPARECHAR2 app_Level,

@@ -17,6 +17,7 @@
     .tree-column {
         font-size: 14px;
         padding: 2px 10px;
+        overflow: visible;
         background: var(--table-body-bg);
     }
     .tree-row {
@@ -65,14 +66,193 @@
 
     <div class="content_body">
         <div>
-            <Checkbox-group v-model="tableColumnsChecked" @on-change="changeTableColumns" class="tr">
-                <Checkbox label="basic">基本設定</Checkbox>
-                <Checkbox label="dispType">表示タイプ設定</Checkbox>
-                <Checkbox label="workType">職種設定</Checkbox>
-                <Checkbox label="others">その他設定</Checkbox>
-            </Checkbox-group>
-            <i-table class="mt10"  border :columns="columns" :data="tableData"  show-header>
-            </i-table>
+            <div class="tr mb10">
+                <Radio-group v-model="tableColumnsChecked" @on-change="changeTableColumns" class="tr" type="button">
+                    <Radio label="basic">基本設定</Radio>
+                    <Radio label="dispType">表示タイプ設定</Radio>
+                    <Radio label="workType">職種設定</Radio>
+                    <Radio label="others">その他設定</Radio>
+                </Radio-group>
+
+            </div>
+            <dtree :class="tableHeadFixed ? 'table-head-fixed' : ''"
+                   :data="dTypeTreeData"
+                   @drag="sortTypeTableByDrag(arguments)" border
+                   :isdraggable="isTypeDraggable" ref="typeTable">
+                <template #selection="{row}">
+                    <Tooltip placement="bottom" class="width100" transfer>
+                        <span style="white-space: normal;" slot="content">{{row.ntfType}}</span>
+                        <span class="ivu-table-cell-tooltip-content">{{row.ntfType}}</span>
+                    </Tooltip>
+                </template>
+                <template #start="{row}">
+                      <span>
+                        {{row.startDate}}
+                      </span>
+                </template>
+                <template #end="{row}">
+                      <span>
+                        {{row.endDate}}
+                      </span>
+                </template>
+<!--                <template #group="{row}">-->
+<!--                      <span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">-->
+<!--                        {{row.start}}-->
+<!--                      </span>-->
+<!--                </template>-->
+                <template #site="{row}">
+                      <span>
+                        {{row.site}}
+                      </span>
+                </template>
+                <template #timetype="{row}">
+                    <Tooltip placement="bottom" class="width100" transfer>
+                        <span style="white-space: normal;" slot="content">{{row.timeType}}</span>
+                        <span class="ivu-table-cell-tooltip-content">{{row.timeType}}</span>
+                    </Tooltip>
+                </template>
+                <template #typegroup="{row}">
+                    <Tooltip placement="bottom" class="width100" transfer>
+                        <span style="white-space: normal;" slot="content">{{row.typeGroup}}</span>
+                        <span class="ivu-table-cell-tooltip-content">{{row.typeGroup}}</span>
+                    </Tooltip>
+                </template>
+                <template #transfer="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.transfer)}}
+                      </span>
+                </template>
+                <template #timezone="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.timeZone)}}
+                      </span>
+                </template>
+                <template #worktime="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.workTime)}}
+                      </span>
+                </template>
+                <template #sickname="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.sickName)}}
+                      </span>
+                </template>
+                <template #sickapply="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.sickApply)}}
+                      </span>
+                </template>
+                <template #period="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.period)}}
+                      </span>
+                </template>
+                <template #adddate="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.addDate)}}
+                      </span>
+                </template>
+                <template #label="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.label)}}
+                      </span>
+                </template>
+                <template #resttime="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.restTime)}}
+                      </span>
+                </template>
+                <template #name="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.name)}}
+                      </span>
+                </template>
+                <template #relation="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.relation)}}
+                      </span>
+                </template>
+                <template #birthday="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.birthday)}}
+                      </span>
+                </template>
+                <template #daysofweek="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.daysOfWeek)}}
+                      </span>
+                </template>
+                <template #targetnumber="{row}">
+                      <span >
+                        {{dispTypeText(row.dispType.targetNumber)}}
+                      </span>
+                </template>
+                <template #worktype="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #limit="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #limittype1="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #limitnum="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #limitrange="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #limittype2="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #type="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #level="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #necessaryfile="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #necessarycomment="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #comment="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #rangetype="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+                <template #imart="{row}">
+                      <span >
+<!--                        todo-->
+                      </span>
+                </template>
+            </dtree>
         </div>
     </div>
 
@@ -117,20 +297,16 @@
                             </section>
                             <section class="tl mt5">
                                 <p class="mb5">可能サイト</p>
-                                <Tag v-for="item in editData.site" :key="item.siteId" :name="item.name" closable @on-close="">{{ item.name }}</Tag>
-                                <i-button icon="ios-add" type="dashed" size="small" @click="" v-show="editData.site.length < 3">add</i-button>
+                                <Tag v-for="item in editData.site" :key="item.siteId" :name="item.name" closable @on-close="delSite(item)">{{ item.name }}</Tag>
+                                <Poptip v-model="sitevisible" placement="right" transfer>
+                                    <div class="api" slot="content">
+                                        <a class="ml5 mr5" v-for="(item,i) of leftSite" @click="addSite(item)">{{item.name}}</a>
+                                    </div>
+                                    <i-button icon="ios-add" type="dashed" size="small" v-show="editData.site.length < 3">add</i-button>
+                                </Poptip>
+
                             </section>
-                            <section class="tl mt5">
-                                <p class="mb5">反映先</p>
-                                <i-select v-model="editData.work" editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">特別休暇(有給)</i-option>
-                                    <i-option value="1">特別休暇(時間・有給)</i-option>
-                                    <i-option value="2">特別休暇(無給)</i-option>
-                                    <i-option value="3">特別休暇(時間・無給)</i-option>
-                                </i-select>
-                            </section>
+
                             <section class="tl mt5">
                                 <p class="mb5">申請種類</p>
                                 <i-select v-model="editData.typeGroup"  editable filterable clearable
@@ -154,6 +330,11 @@
                                     <i-option value="3">半休</i-option>
                                     <i-option value="4">相対</i-option>
                                     <i-option value="5">絶対</i-option>
+                                    <i-option value="6">出張</i-option>
+                                    <i-option value="7">勤務時間指定</i-option>
+                                    <i-option value="8">予定シフト</i-option>
+                                    <i-option value="9">振替</i-option>
+                                    <i-option value="10">半日振替</i-option>
                                 </i-select>
                             </section>
                             <section class="tl mt5">
@@ -174,25 +355,7 @@
                                 </i-input>
                             </section>
 
-                            <section class="tl mt5">
-                                <p class="mb5">申請期間区分</p>
-                                <i-select v-model="editData.rangeType"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">勤怠シートが存在する</i-option>
-                                    <i-option value="1">カレンダーが存在する</i-option>
-                                </i-select>
-                            </section>
-                            <section class="tl mt5">
-                                <p class="mb5">IMARTスケジュール連携対象有無</p>
-                                <i-select v-model="editData.IMART"  editable filterable clearable
-                                          class="mb10 no-border-radius">
-                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
-                                    <i-option value="0">連携しない</i-option>
-                                    <i-option value="1">連携する</i-option>
-                                    <i-option value="2">振替先を連携する</i-option>
-                                </i-select>
-                            </section>
+
                         </Card>
                     </i-col>
                     <i-col span="6">
@@ -230,6 +393,17 @@
                                 <br></br>
                                 <checkbox v-model="editData.targetNumber"></checkbox><h class="mb5 ml10">対象人数</h>
                             </section>
+                            <section class="tl mt20">
+                                <p class="mb5">反映先</p>
+                                <i-select v-model="editData.timeType" editable filterable clearable
+                                          class="mb10 no-border-radius" v-if="editData.timeZone">
+                                    <i-option v-for="(item, i) of hourtimeTypeList" :key="i" :value="item.TIMETYPEID">{{ item.TIMETYPE }}</i-option>
+                                </i-select>
+                                <i-select v-model="editData.timeType" editable filterable clearable
+                                          class="mb10 no-border-radius" v-if="!editData.timeZone">
+                                    <i-option v-for="(item, i) of daytimeTypeList" :key="i" :value="item.TIMETYPEID">{{ item.TIMETYPE }}</i-option>
+                                </i-select>
+                            </section>
                         </Card>
                     </i-col>
                     <i-col span="6">
@@ -240,8 +414,13 @@
                             </div>
                             <section class="tl mt20">
                                 <p class="mb5">職種</p>
-                                <Tag v-for="item in editData.workType" :key="item" :name="item" closable @on-close="">{{ item }}</Tag>
-                                <i-button icon="ios-add" type="dashed" size="small" @click="">add</i-button>
+                                <Tag v-for="item in editData.workType" :key="item.WORKTYPEID" :name="item.WORKTYPE" closable @on-close="delWorktype(item)">{{ item.WORKTYPE }}</Tag>
+                                <Poptip v-model="worktypevisible" word-wrap width="200" placement="right" transfer>
+                                    <div slot="content">
+                                        <i-button class="mt5" v-for="(item,i) of leftworktype" @click="addWorktype(item)">{{item.WORKTYPE}}</i-button>
+                                    </div>
+                                    <i-button icon="ios-add" type="dashed" size="small" v-show="totalworktype.length > editData.workType.length">add</i-button>
+                                </Poptip>
                             </section>
                             <section class="tl mt20">
                                 <p class="mb5">上限値</p>
@@ -268,6 +447,25 @@
                                         <i-option value="week">週</i-option>
                                     </i-select>
                                 </i-input>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">申請期間区分</p>
+                                <i-select v-model="editData.rangeType"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">勤怠シートが存在する</i-option>
+                                    <i-option value="1">カレンダーが存在する</i-option>
+                                </i-select>
+                            </section>
+                            <section class="tl mt20">
+                                <p class="mb5">IMARTスケジュール連携対象有無</p>
+                                <i-select v-model="editData.IMART"  editable filterable clearable
+                                          class="mb10 no-border-radius">
+                                    <!--                                    <i-option v-for="" :value="" :key="i" :label=""></i-option>-->
+                                    <i-option value="0">連携しない</i-option>
+                                    <i-option value="1">連携する</i-option>
+                                    <i-option value="2">振替先を連携する</i-option>
+                                </i-select>
                             </section>
                         </Card>
                     </i-col>
@@ -446,16 +644,21 @@
             return {
                 groupList:[],
                 ntfGroupType:'',
-                columns:[],
-                tableData:[],
-                tableColumnsChecked:['basic','dispType','workType','others'],
+                dTypeTreeData:{
+                    columns: [],
+                    lists: [],
+                },
+                isTypeDraggable: true,
+                tableColumnsChecked:'basic',
                 editFlag:false,
+
+
                 editData: {
                     begin:'',
                     end:'',
                     group:'',
-                    site:[{name:'入力',siteId:'TMG_INP'},{name:'管理',siteId:'TMG_ADMIN'}],
-                    work:'',
+                    site:[],
+                    timeType:'',
                     typeGroup:'',
                     ntfTypeName:'',
 
@@ -475,7 +678,8 @@
                     daysOfWeek:false,
                     targetNumber:false,
 
-                    workType:['職種1','職種2','職種3','職種4','職種5','職種6','職種7','職種8','職種9'],
+
+                    workType:[],
                     limit:'',
                     limitType1:'day',
                     limitNum:'',
@@ -509,7 +713,17 @@
 
 
                 },
+
+                daytimeTypeList:[],
+                hourtimeTypeList:[],
+                totalworktype:[],
+                leftworktype:[],
+                totalSite:[{name:'入力',siteId:'TMG_INP'},{name:'承認',siteId:'TMG_PERM'},{name:'管理',siteId:'TMG_ADMIN'}],
+                leftSite:[],
+                sitevisible:false,
+                worktypevisible:false,
                 EditLoading:false,
+
                 typeGroupList:[], //新规下拉框
 
                 //親区分管理
@@ -621,16 +835,12 @@
                     1:'1時間単位で切り捨て',
                     2:'1時間単位で切り上げ'
                 },
-
-
             }
         },
         components: {
             dtree: dtree.default
         },
         async created() {
-
-
             window.addEventListener('scroll', this.handleScroll, { passive: true })
         },
         beforeDestroy() {
@@ -638,8 +848,10 @@
         },
         async mounted() {
             await this.getGroupTableData()
+            this.changeTableColumns()
             this.handleGroup()
-            this.changeTableColumns();
+            this.getTypeGroupTableData()
+            this.editInit()
         },
         computed: {
             tableHeadFixed() {
@@ -651,217 +863,311 @@
             async handleGroup() {
                 try {
                     const {data} = await this.http.get('sys/notificationSetting/ntfDisp',{ntfGroup:this.ntfGroupType})
-                    console.log(data)
+                    //this.dTypeTreeData.columns= this.getTable2Columns()
+                    this.dTypeTreeData.lists=data
+                    this.dTypeTreeData.lists.forEach((e,i)=>{
+                        if(e.siteId.indexOf('TMG_INP')>-1){
+                            this.dTypeTreeData.lists[i].site = e.siteId.replace('TMG_INP','入力')
+                        }
+                        if(this.dTypeTreeData.lists[i].site.indexOf('TMG_PERM')>-1){
+                            this.dTypeTreeData.lists[i].site = this.dTypeTreeData.lists[i].site.replace('TMG_PERM','承認')
+                        }
+                        if(this.dTypeTreeData.lists[i].site.indexOf('TMG_ADMIN')>-1) {
+                            this.dTypeTreeData.lists[i].site = this.dTypeTreeData.lists[i].site.replace('TMG_ADMIN', '管理')
+                        }
+                    })
                 } catch (error) {
                 } finally {
+
+                }
+            },
+            dispTypeText(e){
+                if(e){
+                    return '○'
+                }else{
+                    return '×'
                 }
             },
             getTable2Columns () {
                 const table2ColumnList = {
                     ntfType: [{
+                        type: 'selection',
                         title: '申請区分',
-                        slot: 'ntfType',
-                        width: 100,
-                        align: 'center',
-                        fixed: 'left'
+                        //slot: 'ntfType',
+                        align: 'left',
+                        flex: 2
                     }],
                     basic: [
                         {
-                        title: '開始日',
-                        key: 'start',
-                        width: 100,
-                        sortable: true
+                            type: 'slot',
+                            slot: 'start',
+                            title: '開始日',
+                            flex: 1
                         },
                         {
-                        title: '終了日',
-                        key: 'end',
-                        width: 100,
-                        sortable: true
+                            type: 'slot',
+                            title: '終了日',
+                            slot: 'end',
+                            flex: 1
+                        },
+                        // {
+                        //     type: 'slot',
+                        //     title: '親区分',
+                        //     slot: 'group',
+                        //     flex: 1
+                        // },
+                        {
+                            type: 'slot',
+                            title: '可能サイト',
+                            slot: 'site',
+                            flex: 1
                         },
                         {
-                        title: '親区分',
-                        key: 'group',
-                        width: 150,
-                        sortable: true
+                            type: 'slot',
+                            title: '反映先',
+                            align: 'left',
+                            slot: 'timetype',
+                            flex: 1
                         },
                         {
-                        title: '可能サイト',
-                        key: 'site',
-                        width: 100
-                        },
-                        {
-                        title: '反映先',
-                        key: 'work',
-                        width: 100,
-                        sortable: true
-                        },
-                        {
-                        title: '申請種類',
-                        key: 'typeGroup',
-                        width: 100,
-                        sortable: true
+                            title: '申請種類',
+                            slot: 'typegroup',
+                            type: 'slot',
+                            flex: 1
                         },
                     ],
                     dispType: [
                         {
-                        title: '振替先・元',
-                        key: 'transfer',
-                        width: 100
+                            title: '振替',
+                            slot: 'transfer',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '時間帯',
-                        key: 'timeZone',
-                        width: 100
+                            title: '時間帯',
+                            slot: 'timezone',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '始業・終業',
-                        key: 'workTime',
-                        width: 100
+                            title: '始終業',
+                            slot: 'worktime',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '傷病名',
-                        key: 'sickName',
-                        width: 100
+                            title: '傷病名',
+                            slot: 'sickname',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '労災申請',
-                        key: 'sickApply',
-                        width: 100
+                            title: '労災申請',
+                            slot: 'sickapply',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '起算日',
-                        key: 'period',
-                        width: 100
+                            title: '起算日',
+                            slot: 'period',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '加算日数',
-                        key: 'addDate',
-                        width: 100
+                            title: '加算日数',
+                            slot: 'adddate',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '勤務時間ラベル',
-                        key: 'label',
-                        width: 150
+                            title: 'ラベル',
+                            slot: 'label',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '休憩時間',
-                        key: 'restTime',
-                        width: 100
+                            title: '休憩時間',
+                            slot: 'resttime',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '氏名',
-                        key: 'name',
-                        width: 100
+                            title: '氏名',
+                            slot: 'name',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '続柄',
-                        key: 'relation',
-                        width: 100
+                            title: '続柄',
+                            slot: 'relation',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '生年月日',
-                        key: 'birthday',
-                        width: 100
+                            title: '生年月日',
+                            slot: 'birthday',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '曜日',
-                        key: 'daysOfWeek',
-                        width: 100
+                            title: '曜日',
+                            slot: 'daysofweek',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '対象人数',
-                        key: 'targetNumber',
-                        width: 100
+                            title: '対象人数',
+                            slot: 'targetnumber',
+                            type: 'slot',
+                            flex: 1
                         },
                     ],
                     workType: [
                         {
-                        title: '職種',
-                        key: 'workType',
-                        width: 300,
-                        sortable: true
+                            title: '職種',
+                            slot: 'worktype',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '上限値',
-                        key: 'limit',
-                        width: 100
+                            title: '上限値',
+                            slot: 'limit',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '単位',
-                        key: 'limitType1',
-                        width: 50
+                            title: '単位',
+                            slot: 'limittype1',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '回数',
-                        key: 'limitNum',
-                        width: 100
+                            title: '回数',
+                            slot: 'limitnum',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '期間',
-                        key: 'limitRange',
-                        width: 100
+                            title: '期間',
+                            slot: 'limitrange',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '単位',
-                        key: 'limitType2',
-                        width: 50
+                            title: '単位',
+                            slot: 'limittype2',
+                            type: 'slot',
+                            flex: 1
                         },
                     ],
                     others: [
                         {
-                        title: '種類',
-                        key: 'type',
-                        width: 50
+                            title: '種類',
+                            slot: 'type',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '決裁レベル',
-                        key: 'level',
-                        width: 130,
-                        sortable: true
+                            title: '決裁レベル',
+                            slot: 'level',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: 'ファイル必須',
-                        key: 'necessaryFile',
-                        width: 130
+                            title: 'ファイル必須',
+                            slot: 'necessaryfile',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '事由必須',
-                        key: 'necessaryComment',
-                        width: 100
+                            title: '事由必須',
+                            slot: 'necessarycomment',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '説明文',
-                        key: 'comment',
-                        width: 100
+                            title: '説明文',
+                            slot: 'comment',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: '期間区分',
-                        key: 'rangeType',
-                        width: 100
+                            title: '期間区分',
+                            slot: 'rangetype',
+                            type: 'slot',
+                            flex: 1
                         },
                         {
-                        title: 'IMART',
-                        key: 'imart',
-                        width: 100
+                            title: 'IMART',
+                            slot: 'imart',
+                            type: 'slot',
+                            flex: 1
                         },
                     ],
                 }
                 let data = table2ColumnList.ntfType;
-                this.tableColumnsChecked.forEach(col =>{
-                        table2ColumnList[col].forEach(e=>{
-                            data.push(e)
-                        })
-                });
+                table2ColumnList[this.tableColumnsChecked].forEach(e=>{
+                    data.push(e)
+                })
                 return data;
             },
             changeTableColumns () {
-                this.columns = this.getTable2Columns();
+                this.dTypeTreeData.columns= this.getTable2Columns()
+            },
+            async editInit() {
+                try {
+                    const {data} = await this.http.get('sys/notificationSetting/editDisp')
+                    this.hourtimeTypeList = data.hourTimeType
+                    this.daytimeTypeList = data.dayTimeType
+                    this.totalworktype = data.totalWorkType
+                    console.log(this.totalworktype.length)
+                    this.leftworktype = this.totalworktype
+                    this.leftSite = this.totalSite
+                } catch (error) {
+                } finally {
+
+                }
             },
             editDisp(e){
                 if(e){
 
                 }
                 this.editFlag=true
+            },
+            delSite(e){
+                this.leftSite.push(e)
+                this.editData.site.find((j,i)=>{
+                    if(e===j){
+                        this.editData.site.splice(i,1)
+                    }
+                })
+            },
+            addSite(e){
+                this.editData.site.push(e)
+                this.leftSite.find((j,i)=>{
+                    if(e===j){
+                        this.leftSite.splice(i,1)
+                    }
+                })
+                this.sitevisible=false
+            },
+            delWorktype(e){
+                this.leftworktype.push(e)
+                this.editData.workType.find((j,i)=>{
+                    if(e===j){
+                        this.editData.workType.splice(i,1)
+                    }
+                })
+            },
+            addWorktype(e){
+                this.editData.workType.push(e)
+                this.leftworktype.find((j,i)=>{
+                    if(e===j){
+                        this.leftworktype.splice(i,1)
+                    }
+                })
+                this.worktypevisible=false
+                console.log(this.editData.workType.length)
             },
             remove(item) {
                 this.$Modal.confirm({
@@ -908,6 +1214,9 @@
                 // this.deepNodes(this.dGroupTreeData.lists, e[1].id, (nodes) => {
                 //     this.sortList = this.sortList.concat({id:nodes.id, sort: sort++})
                 // })
+
+            },
+            sortTypeTableByDrag(e){
 
             },
             deepNodes(nodes, id, cb) {

@@ -371,4 +371,9 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     List<NtfDispVo> getNtfTypeDetail(String ntfGroup, String sysdate);
 
     List<TypeGroupVo> getNTFTypeGroup(String sysdate);
+
+    List<Map<String, Object>> getTotalWorkType(String sysdate);
+
+    List<Map<String, Object>> getHourTimeType(String sysdate);
+    List<Map<String, Object>> getDayTimeType(String sysdate);
 }
