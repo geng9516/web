@@ -9,7 +9,6 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
@@ -25,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLogic {
 
-    private final ScCacheUtil cacheUtil;
     private final IHistSearchSettingService histSearchSettingService;
     private final IHistSearchSelectService histSearchSelectService;
     private final IHistSearchWhereService histSearchWhereService;
@@ -55,7 +54,7 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         Long oHssNsettingid;
         String loginUserId = psSession.getLoginUser();
         // 他者作成の設定を上書きできるかどうか
-        String sJkPermitOverwrite = cacheUtil.getSystemProperty(PROP_JK_PERMIT_OVERWRITE);
+//        String sJkPermitOverwrite = cacheUtil.getSystemProperty(PROP_JK_PERMIT_OVERWRITE);
         Long searchSettingId = settingDTO.getHseId();
         if (Objects.isNull(searchSettingId)) {
             // 名称取得
@@ -97,6 +96,8 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         settingDO.setHseCmodifieruserid(loginUserId);
         BeanUtil.copyProperties(settingDTO,settingDO);
 
+        histSearchSettingService.save(settingDO);
+
         if (Objects.nonNull(searchSettingId)){
             // 更新時はSelect句Dtoを削除しておく
             Map<String,Object> map = MapUtil.<String,Object>builder()
@@ -106,20 +107,25 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
 
         List<ConditionSelectDTO> selectDTOList = settingDTO.getSelectDtoList();
         int selectSeq = 0;
-        for (ConditionSelectDTO selectDTO : selectDTOList) {
-            if (Objects.isNull(selectDTO.getHssCcolumn())) {
-                break;
-            }
-            HistSearchSelectDO selectDO = new HistSearchSelectDO();
-            BeanUtil.copyProperties(settingDTO,selectDO);
-            selectDO.setHssNsettingid(oHssNsettingid);
-            selectDO.setHssCmodifieruserid(loginUserId);
-            selectDO.setHssNseq(selectSeq);
-            // Select句Dtoを挿入
-            histSearchSelectService.save(selectDO);
-            selectSeq++;
-        }
 
+        Date now = DateUtil.date();
+
+        if (CollUtil.isNotEmpty(selectDTOList)) {
+            for (ConditionSelectDTO selectDTO : selectDTOList) {
+                if (Objects.isNull(selectDTO.getHssCcolumn())) {
+                    break;
+                }
+                HistSearchSelectDO selectDO = new HistSearchSelectDO();
+                BeanUtil.copyProperties(selectDTO, selectDO);
+                selectDO.setHssNsettingid(oHssNsettingid);
+                selectDO.setHssCmodifieruserid(loginUserId);
+                selectDO.setHssNseq(selectSeq);
+                selectDO.setHssDmodifieddate(now);
+                // Select句Dtoを挿入
+                histSearchSelectService.save(selectDO);
+                selectSeq++;
+            }
+        }
         // 簡易版
         // 条件式
         if (Objects.isNull(searchSettingId)) {
@@ -130,8 +136,8 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         }
         Boolean useQueryCondition = settingDTO.getUseQueryDefinition();
         // 条件式妥当性チェック(条件式設定のみ)
-        if (useQueryCondition) {
-            List<QueryConditionRowDTO> queryConditionRowDTOList = settingDTO.getQueryConditionDtoList();
+        List<QueryConditionRowDTO> queryConditionRowDTOList = settingDTO.getQueryConditionDtoList();
+        if (useQueryCondition && CollUtil.isNotEmpty(queryConditionRowDTOList)) {
             int querySeq = 0;
             for (QueryConditionRowDTO queryConditionRowDTO : queryConditionRowDTOList) {
                 // 比較演算子
@@ -173,6 +179,7 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
                     definitionsDO.setHsdCclosedparenthsis(queryConditionRowDTO.getClosedparenthsis());
                     // 最終更新者
                     definitionsDO.setHsdCmodifieruserid(loginUserId);
+                    definitionsDO.setHsdDmodifieddate(now);
                     histSearchDefinitionsService.save(definitionsDO);
                     // カウント
                     querySeq++;
@@ -181,16 +188,19 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         } else {
             // 簡易版登録処理開始
             List<ConditionWhereDTO> whereDTOList = settingDTO.getWhereDtoList();
-            for (ConditionWhereDTO conditionWhereDTO : whereDTOList) {
-                for (ConditionWhereValueDTO conditionWhereValueDTO : conditionWhereDTO.getSelectValue()) {
-                    HistSearchWhereDO whereDO = new HistSearchWhereDO();
-                    BeanUtil.copyProperties(conditionWhereValueDTO,whereDO);
-                    if (conditionWhereDTO.getUse()) {
-                        whereDO.setHswCuse("1");
+            if (CollUtil.isNotEmpty(whereDTOList)) {
+                for (ConditionWhereDTO conditionWhereDTO : whereDTOList) {
+                    for (ConditionWhereValueDTO conditionWhereValueDTO : conditionWhereDTO.getSelectValue()) {
+                        HistSearchWhereDO whereDO = new HistSearchWhereDO();
+                        BeanUtil.copyProperties(conditionWhereValueDTO, whereDO);
+                        if (conditionWhereDTO.getUse()) {
+                            whereDO.setHswCuse("1");
+                        }
+                        whereDO.setHswNsettingid(oHssNsettingid);
+                        whereDO.setHswCmodifieruserid(loginUserId);
+                        whereDO.setHswDmodifieddate(now);
+                        histSearchWhereService.save(whereDO);
                     }
-                    whereDO.setHswNsettingid(oHssNsettingid);
-                    whereDO.setHswCmodifieruserid(loginUserId);
-                    histSearchWhereService.save(whereDO);
                 }
             }
         }
@@ -203,14 +213,18 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         }
 
         List<ConditionOrderDTO> orderDtoList = settingDTO.getOrderDtoList();
-        for (ConditionOrderDTO orderDTO : orderDtoList) {
-            HistSearchOrderDO orderDO = new HistSearchOrderDO();
-            BeanUtil.copyProperties(orderDTO,orderDO);
-            if (StrUtil.isBlank(orderDO.getHsoCcolumn())) {
-                break;
+        if (CollUtil.isNotEmpty(orderDtoList)) {
+            for (ConditionOrderDTO orderDTO : orderDtoList) {
+                HistSearchOrderDO orderDO = new HistSearchOrderDO();
+                BeanUtil.copyProperties(orderDTO, orderDO);
+                if (StrUtil.isBlank(orderDO.getHsoCcolumn())) {
+                    break;
+                }
+                orderDO.setHsoNsettingid(oHssNsettingid);
+                orderDO.setHsoCmodifieruserid(loginUserId);
+                orderDO.setHsoDmodifieddate(now);
+                histSearchOrderService.save(orderDO);
             }
-            orderDO.setHsoNsettingid(oHssNsettingid);
-            histSearchOrderService.save(orderDO);
         }
 
         // 共有範囲登録処理
@@ -225,6 +239,8 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
                 HistSearchSettingTargetDO targetDO = new HistSearchSettingTargetDO();
                 BeanUtil.copyProperties(targetDTO,targetDO);
                 targetDO.setHstNsettingid(oHssNsettingid);
+                targetDO.setHstDmodifieddate(now);
+                targetDO.setHstCmodifieruserid(loginUserId);
                 histSearchSettingTargetService.save(targetDO);
             }
         }
