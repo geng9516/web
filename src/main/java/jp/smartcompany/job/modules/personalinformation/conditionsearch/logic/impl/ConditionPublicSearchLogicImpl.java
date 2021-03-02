@@ -111,7 +111,7 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
                 break;
             }
             HistSearchSelectDO selectDO = new HistSearchSelectDO();
-            BeanUtil.copyProperties(selectDO,selectDO);
+            BeanUtil.copyProperties(settingDTO,selectDO);
             selectDO.setHssNsettingid(oHssNsettingid);
             selectDO.setHssCmodifieruserid(loginUserId);
             selectDO.setHssNseq(selectSeq);
