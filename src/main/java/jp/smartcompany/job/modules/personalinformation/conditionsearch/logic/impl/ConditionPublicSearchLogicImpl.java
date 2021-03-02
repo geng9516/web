@@ -91,10 +91,15 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         histSearchSettingService.removeById(oHssNsettingid);
 
         HistSearchSettingDO settingDO = new HistSearchSettingDO();
+        BeanUtil.copyProperties(settingDTO,settingDO);
         settingDO.setHseCuserid(loginUserId);
+        if (settingDTO.getShowMastCode()){
+            settingDO.setHseCmastercodeflg("1");
+        } else {
+            settingDO.setHseCmastercodeflg("0");
+        }
         settingDO.setHseCcustomerid(psSession.getLoginCustomer());
         settingDO.setHseCmodifieruserid(loginUserId);
-        BeanUtil.copyProperties(settingDTO,settingDO);
 
         histSearchSettingService.save(settingDO);
 
