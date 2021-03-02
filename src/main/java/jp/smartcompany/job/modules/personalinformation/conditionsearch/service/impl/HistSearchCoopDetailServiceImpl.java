@@ -19,4 +19,5 @@ implements IHistSearchCoopDetailService {
     public void deleteDetail(Long oDataId) {
         baseMapper.deleteDetail(oDataId);
     }
+
 }

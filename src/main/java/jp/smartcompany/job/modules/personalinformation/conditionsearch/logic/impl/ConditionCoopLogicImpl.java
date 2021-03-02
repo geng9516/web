@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +60,19 @@ public class ConditionCoopLogicImpl implements IConditionCoopLogic {
         } else {
             throw new GlobalException("クエリ結果が存在しません");
         }
+    }
+
+    @Override
+    public List<HistSearchCoopDO> selectCoopList() {
+        String userId = SecurityUtil.getUserId();
+        return histSearchCoopService.selectCoopList(userId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void delCoop(Long dataId) {
+        histSearchCoopService.deleteCoop(dataId);
+        histSearchCoopDetailService.deleteDetail(dataId);
     }
 
 }

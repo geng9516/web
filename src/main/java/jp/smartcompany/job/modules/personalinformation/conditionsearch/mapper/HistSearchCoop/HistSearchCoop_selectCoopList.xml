@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchCoop.HistSearchCoopMapper">
+
+    <select id="selectCoopList" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchCoopDO">
+        SELECT
+            HSC_NDATA_ID,
+            HSC_CDATANAME,
+            HSC_CPUBLIC,
+            HSC_CCOMMENT
+        FROM
+            HIST_SEARCH_COOP
+        WHERE
+           (HSC_CUSERID = #{value} AND HSC_CCUSTOMERID = '01')
+           OR  HSC_CPUBLIC = '1'
+        ORDER BY
+            HSC_CPUBLIC DESC,
+            HSC_CDATANAME
+    </select>
+
+</mapper>

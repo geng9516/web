@@ -6,6 +6,8 @@ import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.enti
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IHistSearchCoopService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class HistSearchCoopServiceImpl extends ServiceImpl<HistSearchCoopMapper, HistSearchCoopDO> implements IHistSearchCoopService
 {
@@ -18,6 +20,16 @@ public class HistSearchCoopServiceImpl extends ServiceImpl<HistSearchCoopMapper,
     @Override
     public Long selectSeq() {
       return baseMapper.selectSeq();
+    }
+
+    @Override
+    public List<HistSearchCoopDO> selectCoopList(String userId) {
+        return baseMapper.selectCoopList(userId);
+    }
+
+    @Override
+    public void deleteCoop(Long dataId) {
+       baseMapper.deleteCoop(dataId);
     }
 
 }
