@@ -241,7 +241,7 @@
         <Icon type="logo-buffer"></Icon>
         検索結果
       </div>
-      <div style="overflow-x: scroll;" v-show="columns.length > 0">
+      <div style="overflow-x: auto;" v-show="columns.length > 0">
           <i-table border class="no-padding"
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table" no-data-text="">
@@ -727,12 +727,13 @@
               this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else if (type === 'sort') {
+              this.$refs.transfer2.displayLeaftList = []
               this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else {
+              this.$refs.transfer.displayLeaftList = []
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             }
-            if (type === 'sort') this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
-            else this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
+            this.$refs.transfer
           } catch (error) {
           } finally {
             // this.loading = false
