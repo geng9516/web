@@ -241,10 +241,12 @@
         <Icon type="logo-buffer"></Icon>
         検索結果
       </div>
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-        :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-        :loading="loading" ref="table">
-      </i-table>
+      <div style="overflow-x: scroll;" v-show="columns.length > 0">
+          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+            :loading="loading" ref="table" no-data-text="">
+          </i-table>
+      </div>
     </div>
     <!--  条件式による定義 选择group和 役職 start-->
     <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
@@ -1288,14 +1290,18 @@
             try {
               this.loading = true
               const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
+              let _length = 0
               this.columns = data.title.map((e, i) => {
+                if(data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
+                else _length = e.length
                 return {
                   title: e,
                   key: `value${i}`,
+                  width: _length * 15 + 50,
                   align: 'left'
                 }
               })
-              this.tableData = data.result.map(e => {
+              this.tableData = data.result.map((e,j) => {
                 if (e.length === 0) return
                 if (e.length === 1) return { value0: e[0] }
                 if (e.length > 1) {
