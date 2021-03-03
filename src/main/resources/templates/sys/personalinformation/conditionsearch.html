@@ -242,7 +242,7 @@
         検索結果
       </div>
       <div style="overflow-x: scroll;" v-show="columns.length > 0">
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
+          <i-table border class="no-padding"
             :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
             :loading="loading" ref="table" no-data-text="">
           </i-table>
@@ -549,7 +549,6 @@
           displayListForSort: [],
           displayResultList: [],
           sortResultList: [],
-          contentScrollTop: 0,
           queryColumns: [
             {
               title: 'ＡＮＤ/ＯＲ',
@@ -694,16 +693,8 @@
         this.getDisplayList()
         this.getqueryconditions()
         this.getShareQueryParam()
-        window.addEventListener('scroll', this.handleScroll, { passive: true })
-      },
-      beforeDestroy() {
-        window.removeEventListener('scroll', this.handleScroll, { passive: true })
       },
       computed: {
-        tableHeadFixed() {
-          if (this.contentScrollTop > 780) return true
-          else return false
-        }
       },
       methods: {
         async getDisplayList() {
@@ -1371,10 +1362,7 @@
         closeShareModal() {
           this.shareQuerySaveModal = false
           this.shareQueryData = { checkbox: [], isAll: '1', hseCpubli: 0 }
-        },
-        handleScroll: Throttle(function (e) {
-          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-        }, 50)
+        }
       }
     })
   </script>
