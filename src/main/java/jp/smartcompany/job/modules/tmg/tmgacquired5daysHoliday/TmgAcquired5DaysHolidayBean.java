@@ -94,22 +94,22 @@ public class TmgAcquired5DaysHolidayBean {
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
         // 重複Flg判断
         for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
-
-            if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
-                    && (Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>10
-                    || acquired5DaysVOList.get(i+1).getTpfDpaidHolidayFix11() !=null
-                    || acquired5DaysVOList.get(i+1).getTpfDkikanbiFix12() !=null
-                    || acquired5DaysVOList.get(i+1).getTpfNusedaysAjdust13() !=null
-                    || acquired5DaysVOList.get(i+1).getTpfNmustdaysFix14() !=null )
-                    && (Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>10
-                    || acquired5DaysVOList.get(i).getTpfDpaidHolidayFix11() !=null
-                    || acquired5DaysVOList.get(i).getTpfDkikanbiFix12() !=null
-                    || acquired5DaysVOList.get(i).getTpfNusedaysAjdust13() !=null
-                    || acquired5DaysVOList.get(i).getTpfNmustdaysFix14() !=null )
-                    && DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()), DateUnit.DAY,false)<=
-                       DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false)
-            ){
-                acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
+            if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())){
+               if (Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
+                       || acquired5DaysVOList.get(i+1).getTpfDpaidHolidayFix11() !=null
+                       || acquired5DaysVOList.get(i+1).getTpfDkikanbiFix12() !=null
+                       || acquired5DaysVOList.get(i+1).getTpfNusedaysAjdust13() !=null
+                       || acquired5DaysVOList.get(i+1).getTpfNmustdaysFix14() !=null ){
+                    if  (Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>=10
+                            || acquired5DaysVOList.get(i).getTpfDpaidHolidayFix11() !=null
+                            || acquired5DaysVOList.get(i).getTpfDkikanbiFix12() !=null
+                            || acquired5DaysVOList.get(i).getTpfNusedaysAjdust13() !=null
+                            || acquired5DaysVOList.get(i).getTpfNmustdaysFix14() !=null ){
+                         if (DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()), DateUnit.DAY,false)<= DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false)){
+                                acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
+                         }
+                    }
+               }
             }
 
         }
