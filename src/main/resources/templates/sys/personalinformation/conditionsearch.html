@@ -1283,7 +1283,7 @@
               const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
               let _length = 0
               this.columns = data.title.map((e, i) => {
-                if(data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
+                if(data.result.length !== 0 && data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
                 else _length = e.length
                 return {
                   title: e,
@@ -1292,7 +1292,8 @@
                   align: 'left'
                 }
               })
-              this.tableData = data.result.map((e,j) => {
+              if(data.result.length === 0) this.tableData = []
+              else this.tableData = data.result.map((e,j) => {
                 if (e.length === 0) return
                 if (e.length === 1) return { value0: e[0] }
                 if (e.length > 1) {
@@ -1301,6 +1302,7 @@
                   return result
                 }
               })
+              console.log(this.$refs.table)
             } finally {
               this.loading = false
             }
