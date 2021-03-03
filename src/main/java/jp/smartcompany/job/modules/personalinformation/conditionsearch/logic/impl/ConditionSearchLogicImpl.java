@@ -98,7 +98,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         // できあがった検索結果をListに変換する
         List<List<Object>> lstSearchResult = convertDBResult(vSearchResult,mode);
         // 把为null的结果过滤掉
-        lstSearchResult.removeIf(colResult -> CollUtil.isNotEmpty(colResult) && colResult.get(0) == null);
+//        lstSearchResult.removeIf(colResult -> CollUtil.isNotEmpty(colResult) && colResult.get(0) == null);
         // 検索結果からデータディクショナリ情報を取得し、タイトル列を取得する
         // 常量代表 custId language
         List<String> lstTitle = getTitle(lstSearchResult, "01", "ja", mode);

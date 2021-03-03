@@ -197,10 +197,6 @@ public class HasUrlPermissionImpl implements HasUrlPermission {
         }
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
-        System.out.println(session.getLanguage());
-        System.out.println("++------------------");
-        System.out.println(groupCodes);
-        System.out.println(httpSession.getAttribute(Constant.IS_APPROVER));
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,(Boolean)httpSession.getAttribute(Constant.IS_APPROVER));
         timedCache.put(Constant.getSessionMenuId(httpSession.getId()),menuGroupList);
         return menuGroupList;

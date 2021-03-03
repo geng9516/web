@@ -289,7 +289,6 @@ public class ConditionSearchSqlBuilder {
         if (StrUtil.isNotBlank(conditionWhere)) {
             sqlBO.setWhereConditionStatement(conditionWhere + searchRangeWhere + searchCoopWhere);
         }
-        System.out.println(sqlBO.getWhereConditionStatement());
 // ----- feats: 老代码出现了这段，新代码觉得这段会产生问题，在此注释 修改日期： 2021/02/24 18:24 ----
 //        else {
 //            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
