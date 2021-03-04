@@ -376,4 +376,6 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
 
     List<Map<String, Object>> getHourTimeType(String sysdate);
     List<Map<String, Object>> getDayTimeType(String sysdate);
+
+    int checkNtfName(String ntfName, String sysdate,String type);
 }

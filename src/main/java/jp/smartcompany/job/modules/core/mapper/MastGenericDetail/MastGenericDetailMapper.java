@@ -317,5 +317,15 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
             "  AND #{value}  between MGD_DSTART_CK AND  MGD_DEND ")
     List<Map<String, Object>> getHourTimeType(String sysdate);
 
+
+    @Select("select" +
+            "    count(*) " +
+            " from " +
+            "    MAST_GENERIC_DETAIL " +
+            " where " +
+            "      MGD_CGENERICDETAILDESC = #{ntfName} " +
+            "  AND MGD_CGENERICGROUPID =#{type} "+
+            "  AND #{sysdate}  between MGD_DSTART_CK AND  MGD_DEND ")
+    int checkNtfName(@Param("ntfName") String ntfName,@Param("sysdate") String sysdate,@Param("type") String type);
 }
 

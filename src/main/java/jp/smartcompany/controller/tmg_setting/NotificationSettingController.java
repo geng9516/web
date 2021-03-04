@@ -33,28 +33,52 @@ public class NotificationSettingController {
 
     private final NotificationSettingBean notificationSettingBean;
 
+    //Group管理画面data获取
     @GetMapping("groupManager")
     public List<GroupVo> getNTFGroup(@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getNTFGroup(sysdate);
     }
 
-
+    //typeGroup管理画面data获取
     @GetMapping("typeGroupManager")
     public List<TypeGroupVo> getNTFTypeGroup(@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getNTFTypeGroup(sysdate);
     }
 
 
-
+    //主页面data获取
     @GetMapping("ntfDisp")
     public List<NtfDispVo> getNtfDisp(@RequestParam("ntfGroup")String ntfGroup,@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getNtfDisp(ntfGroup,sysdate);
     }
 
-
+    //新规 编辑画面 data获取
     @GetMapping("editDisp")
     public Map<String,Object> getEditDisp(@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getEditDisp(sysdate);
     }
+
+    //新规 修改申请名 checkNtfName
+    @GetMapping("checkNtfName")
+    public int checkNtfName(@RequestParam("ntfName") String ntfName,
+                            @RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.checkName(ntfName,sysdate,"TMG_NTFTYPE");
+    }
+
+    //新规 修改申请名 checkGroupName
+    @GetMapping("checkGroupName")
+    public int checkGroupName(@RequestParam("ntfName") String groupName,
+                            @RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.checkName(groupName,sysdate,"TMG_NTFGROUP");
+    }
+
+    //新规 修改申请名 checkTypeGroupName
+    @GetMapping("checkTypeGroupName")
+    public int checkTypeGroupName(@RequestParam("ntfName") String typeGroupName,
+                            @RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.checkName(typeGroupName,sysdate,"TMG_NTFTYPEGROUP");
+    }
+
+
 
 }

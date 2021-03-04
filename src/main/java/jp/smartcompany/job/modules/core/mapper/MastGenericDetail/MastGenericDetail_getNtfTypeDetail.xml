@@ -21,7 +21,7 @@
             NTFTYPE.MGD_NSPARENUM2          disp_Type_Id,
             NTFTYPE.MGD_NSPARENUM3,
             NTFTYPE.MGD_NSPARENUM4,
-            NTFTYPE.MGD_NSPARENUM5,
+            NTFTYPE.MGD_NSPARENUM5          type_N,
 
             TMG_F_GET_MGD(
                        NTFTYPE2.MGD_CSPARECHAR1,
@@ -44,18 +44,20 @@
                        NTFTYPE2.MGD_CCUSTOMERID,
                        NTFTYPE2.MGD_CCOMPANYID_CK_FK)         time_Range,
             NTFTYPE2.MGD_NSPARENUM3         time_Range_Id,
-            NTFTYPE2.MGD_NSPARENUM4,
+            NTFTYPE2.MGD_NSPARENUM4         imart,
 
             APP.MGD_CSPARECHAR2 app_Level,
 
-            REL.MGD_CSPARECHAR1  work_Type,
-            REL.MGD_CSPARECHAR3 ,
-            REL.MGD_CSPARECHAR4,
-            REL.MGD_CSPARECHAR5,
+            REL.MGD_CSPARECHAR1  work_Type_Id,
+            TMG_F_GET_MGD(
+                       REL.MGD_CSPARECHAR1,
+                       #{sysdate},
+                       NTFTYPE2.MGD_CCUSTOMERID,
+                       NTFTYPE2.MGD_CCOMPANYID_CK_FK)   work_Type,
             REL.MGD_NSPARENUM1 limit_Check,
-            REL.MGD_NSPARENUM3 ,
-            REL.MGD_NSPARENUM4 ,
-            REL.MGD_NSPARENUM5
+            REL.MGD_NSPARENUM3 limit_Num,
+            REL.MGD_NSPARENUM4 limit_Count,
+            REL.MGD_NSPARENUM5 limit_Range
         FROM
             MAST_GENERIC_DETAIL NTFTYPE
                 left join MAST_GENERIC_DETAIL REL

@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.dto.MgdDto;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.*;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.service.INotificationSettingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class NotificationSettingBean {
 
     private final HttpSession httpSession;
 
+    private final INotificationSettingService iNotificationSettingService;
 
     //TMG_NTFTYPE
 //    String = "TYPE_文字2"   '更新区分
@@ -97,20 +99,20 @@ public class NotificationSettingBean {
     //亲区分
     private void insertNTFGROUP(List<MgdDto> ntfGroupDtoList){
 
-        List<MastGenericDetailDO> mgdDoList =new ArrayList<>();
-        List<Integer> existList = checkExist(ntfGroupDtoList);
-        mgdDoList= setBaseMGD(ntfGroupDtoList,"TMG_NTFGROUP");
-        //todo：排序
-        mgdDoList.stream().sorted(Comparator.comparing(MastGenericDetailDO::getMgdNsparenum1)).collect(Collectors.toList());
-
-        List<MastGenericDetailDO> finalMgdDoList = mgdDoList;
-        Stream.iterate(0, i -> i + 1).limit(mgdDoList.size()).forEach(i -> {
-            if(existList.get(i).equals(0)){
-                iMastGenericDetailService.getBaseMapper().insert(finalMgdDoList.get(i));
-            }else{
-                //todo重复
-            }
-        });
+//        List<MastGenericDetailDO> mgdDoList =new ArrayList<>();
+//        List<Integer> existList = checkExist(ntfGroupDtoList);
+//        mgdDoList= setBaseMGD(ntfGroupDtoList,"TMG_NTFGROUP");
+//        //todo：排序
+//        mgdDoList.stream().sorted(Comparator.comparing(MastGenericDetailDO::getMgdNsparenum1)).collect(Collectors.toList());
+//
+//        List<MastGenericDetailDO> finalMgdDoList = mgdDoList;
+//        Stream.iterate(0, i -> i + 1).limit(mgdDoList.size()).forEach(i -> {
+//            if(existList.get(i).equals(0)){
+//                iMastGenericDetailService.getBaseMapper().insert(finalMgdDoList.get(i));
+//            }else{
+//                //todo重复
+//            }
+//        });
     }
 
     //TMG_NTFHOLRESTTYPE
@@ -219,15 +221,6 @@ public class NotificationSettingBean {
         return detailIdList;
     }
 
-
-    //检查有效期与名字重复
-    private List<Integer> checkExist(List<MgdDto> mgdDtoList){
-        List<Integer> existList =new ArrayList<>();
-        for(MgdDto mgdDto:mgdDtoList ){
-            existList.add(iMastGenericDetailService.existMgdDesc(mgdDto.getNtfName(),mgdDto.getStartDate(),mgdDto.getEndDate()));
-        }
-        return existList;
-    }
 
 
 
@@ -359,6 +352,14 @@ public class NotificationSettingBean {
             if(!ntfDispVos.stream().filter(m->m.getNtfTypeId().equals(vo.getNtfTypeId())).findAny().isPresent()){
                 //去重
                 vo.setDispType(num2TypeHandle(vo.getDispTypeId()));
+                RELVo relVo=new RELVo();
+                //RELATION
+                relVo.setWorkType(vo.getWorkType());
+                relVo.setWorkTypeId(vo.getWorkTypeId());
+                relVo.setLimitRange(vo.getLimitRange());
+                relVo.setLimitNum(vo.getLimitNum());
+                relVo.setLimitCount(vo.getLimitCount());
+                vo.getWorkTypeInfo().add(relVo);
                 ntfDispVos.add(vo);
             }else{
                 for(int i=0;i<ntfDispVos.size();i++){
@@ -368,6 +369,7 @@ public class NotificationSettingBean {
                             RELVo relVo=new RELVo();
                             //RELATION
                             relVo.setWorkType(vo.getWorkType());
+                            relVo.setWorkTypeId(vo.getWorkTypeId());
                             relVo.setLimitRange(vo.getLimitRange());
                             relVo.setLimitNum(vo.getLimitNum());
                             relVo.setLimitCount(vo.getLimitCount());
@@ -399,10 +401,18 @@ public class NotificationSettingBean {
         return edit;
     }
 
-    //选择typegroup 与 group后决定check function
-    public List<CheckFuncVo> getCheckFunc(String group,String typeGroup,String sysdate){
-        List<CheckFuncVo> checkFuncVos=new ArrayList<>();
-        //todo
+    //选择typegroup , group,是否是时间/终日 后 决定check function
+    public List<TmgNtfCheckDo> getCheckFunc(String group,String typeGroup,String sysdate,String time){
+        List<TmgNtfCheckDo> checkFuncVos=iNotificationSettingService.getNewCheckList(group,typeGroup,sysdate,time);
         return checkFuncVos;
+    }
+
+    //新规 修改申请名 check
+    public int checkName(String ntfName, String sysdate,String type) {
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
+        ntfName=w2f(ntfName);
+        return iMastGenericDetailService.checkNtfName(ntfName,sysdate,type);
     }
 }

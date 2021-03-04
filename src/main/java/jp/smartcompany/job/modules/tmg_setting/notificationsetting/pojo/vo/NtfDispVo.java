@@ -38,13 +38,15 @@ public class NtfDispVo {
 
     private List<RELVo> workTypeInfo = new ArrayList<>();
     private String workType;
+    private String workTypeId;
     private String limitCheck;//使用有無
     private String limitNum;//取得上限値
     private String limitCount;//取得可能回数
     private String limitRange; //取得可能期
 
-    private String timeTypeId;//種類
-    private String timeType;//種類
+    private String timeTypeId;//反映先
+    private String timeType;
+    private String typeN;//種類
     private String appLevel;//決裁レベル
     private String necessaryFile;//ファイル必須
     private String necessaryComment;//事由必須

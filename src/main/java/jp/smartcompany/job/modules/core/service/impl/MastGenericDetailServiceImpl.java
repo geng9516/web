@@ -672,4 +672,8 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public List<Map<String, Object>> getDayTimeType(String sysdate){
         return baseMapper.getDayTimeType(sysdate);
     }
+    @Override
+    public int checkNtfName(String ntfName, String sysdate,String type){
+        return baseMapper.checkNtfName(ntfName,sysdate,type);
+    }
 }

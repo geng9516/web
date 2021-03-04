@@ -15,26 +15,8 @@
         from
              TMG_NTF_CHECK
         where
-              exists (
-                  select
-                         1
-                  from
-                       MAST_GENERIC_DETAIL
-                  where
-                        MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
-                  AND MGD_CSPARECHAR2='TMG_NTFTYPE|0100'
-                  AND TNC_CGROUP = MGD_CSPARECHAR1
-                  )
-        or  exists(
-                select
-                    1
-                from
-                    MAST_GENERIC_DETAIL
-                where
-                        MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
-                  AND MGD_CSPARECHAR2= #{ntfType}
-                  AND TNC_CGROUPTYPE = MGD_CSPARECHAR4
-            )
+            ( TNC_CGROUP=#{group}
+        or  TNC_CTYPEGROUP = #{typeGroup} )
         AND #{sysdate} between TNC_DSTARTDATE and TNC_DENDDATE
         AND TNC_CTIMETYPE = #{timeType}
     </select>
