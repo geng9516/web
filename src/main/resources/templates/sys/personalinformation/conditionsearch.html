@@ -50,7 +50,7 @@
           <i-button type="primary" icon="ios-search" @click="freeSearch('SCREEN')" :loading="loading">検索</i-button>
           <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード
           </i-button>
-          <i-button type="primary" ghost icon="ios-undo" @click="update" :loading="editLoading">クリア</i-button>
+          <i-button type="primary" ghost icon="ios-undo" @click="refreshPage">クリア</i-button>
         </div>
       </div>
     </div>
@@ -61,18 +61,19 @@
       </div>
       <div style="display: flex;z-index: 1;">
         <div>
-          <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);">現在読み込み中の設定：</span>
+          <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);" ref="clickHelper">現在読み込み中の設定：</span>
           <i-select v-model="searchData.queryListId" class="share-query-select" transfer>
             <i-option :value="0">なし
             </i-option>
-            <i-option v-for="(item, i) of queryList" :key="i" :value="item.hseId" :label="item.hseCsettingName">
-              <div>{{ item.hseCsettingName }}</div>
-              <span style="font-size: 12px;">{{ item.hseCcomment ? item.hseCcomment : '　' }}</span>
-              <span style="float:right;color: var(--red);">{{ '削除' }}</span>
+            <i-option v-for="(item, i) of queryList" :key="i" :value="item.hseNsettingid" :label="item.hseCsettingName" style="position: relative;">
+              <div>{{ `設定名: ${item.hseCsettingName}` }}</div>
+              <span class="pr10" style="font-size: 12px;">{{ `備考: ${item.hseCcomment ? item.hseCcomment : '　'}` }}</span>
+              <div style="color: var(--login-svg-fill);position: absolute;top:5px;right: 16px;" v-show="item.hseCpublic">共有</div>
+              <i-button type="error" ghost icon="md-trash" size="small" @click.stop="delSettingShare(item.hseNsettingid)" style="float:right;color: var(--red);">削除</i-button>
             </i-option>
           </i-select>
           <i-button type="primary" ghost icon="md-refresh" @click="getQueryListParam"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareSetting" :loading="editLoading">保存
           </i-button>
         </div>
         <div style="flex: 1;"></div>
@@ -85,7 +86,7 @@
             </i-option>
           </i-select>
           <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="update" :loading="editLoading">保存
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareResult" :loading="editLoading">保存
           </i-button>
         </div>
       </div>
@@ -439,19 +440,21 @@
     </div>
 
     <!--  条件式保存 start-->
-    <Modal class="tc" placement="right" :width="700" title="設定保存" :mask-closable="false" v-model="shareQuerySaveModal">
+    <Modal class="tc" placement="right" :width="700" :title="isSharingSetting ? '設定保存' : '検索結果データ保存'" :mask-closable="false" v-model="shareQuerySaveModal">
       <Row :gutter="4">
         <i-col span="10">
-          <div class="label pl10 tc">設定名</div>
+          <div class="label pl10 tc">{{ isSharingSetting ? '設定名' : '検索結果データ名'}}</div>
           <div class="person-info">
             <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
-              v-model="shareQueryData.hseCsettingname" :maxlength="1000"></i-input>
+              v-model="shareQueryData.hseCsettingname" :maxlength="1000" v-if="isSharingSetting"></i-input>
+              <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
+              v-model="shareQueryData.dataName" :maxlength="1000" v-if="!isSharingSetting"></i-input>
           </div>
         </i-col>
         <i-col span="3">
           <div class="label pl10 tc">共有</div>
           <div class="person-info tc" style="padding-left: 0;">
-            <Checkbox v-model="shareQueryData.hseCpubli" :true-value="1" :false-value="0"
+            <Checkbox v-model="shareQueryData.hseCpublic" :true-value="1" :false-value="0"
               @on-change="shareQueryData.checkbox = []"></Checkbox>
           </div>
         </i-col>
@@ -464,8 +467,8 @@
         </i-col>
       </Row>
       <!-- 所属选择树 -->
-      <div class="label mt10 tc">共有対象</div>
-      <div class="tl person-info">
+      <div class="label mt10 tc" v-if="isSharingSetting">共有対象</div>
+      <div class="tl person-info" v-if="isSharingSetting">
         <radio-group class="tl" v-model="shareQueryData.isAll" vertical @on-change="shareQueryData.checkbox = []">
           <Radio label="1" :disabled="!shareQueryData.hseCpubli">全て</Radio>
           <Radio label="0" :disabled="!shareQueryData.hseCpubli">グループ指定</Radio>
@@ -681,7 +684,8 @@
           shareQuerySaveModal: false,
           shareQuerySaveLoading: false,
           shareData: [],
-          shareQueryData: { checkbox: [], isAll: '1' }
+          shareQueryData: { checkbox: [], isAll: '1' },
+          isSharingSetting: false
         }
       },
       async created() {
@@ -1191,8 +1195,24 @@
           this.$set(this.queryData2[this.clickedCell.where], 'useFlag', true)
           this.showGroupOrPositionDrawer = false
         },
-        async update() {
+        shareSetting() {
+          this.isSharingSetting = true
           this.shareQuerySaveModal = true
+        },
+        shareResult() {
+          this.isSharingSetting = false
+          this.shareQuerySaveModal = true
+        },
+        refreshPage(){
+          this.$Modal.confirm({
+            title: '注意',
+            content: '現在編集中の設定は全て破棄されます。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: () => {
+              history.go(0)
+            }
+          })
         },
         freeSearch: Debounce(async function (mode) {
           if (this.$refs.transfer.rightList.length === 0) {
@@ -1303,15 +1323,19 @@
                   return result
                 }
               })
-              console.log(this.$refs.table)
+              this.$Message.success('検索が終了しました')
             } finally {
               this.loading = false
             }
           }
 
           if (mode === 'SAVESETTING') {
-            if (!this.shareQueryData.hseCsettingname) {
+            if (this.isSharingSetting && !this.shareQueryData.hseCsettingname) {
               return this.$Notice.warning({ title: '注意', desc: '設定名称を入力してください', duration: 6.5 })
+            }
+
+            if (!this.isSharingSetting && !this.shareQueryData.dataName) {
+              return this.$Notice.warning({ title: '注意', desc: '検索結果データ名を入力してください', duration: 6.5 })
             }
             this.$Modal.confirm({
               title: '注意',
@@ -1323,15 +1347,16 @@
                 try {
                   const _query = {
                     ...query,
-                    hseCpublic: this.shareQueryData.hseCpubli, // 共有有無 1=共有 0=不共有
+                    hseCpublic: this.shareQueryData.hseCpublic, // 共有有無 1=共有 0=不共有
                     hseCcomment: this.shareQueryData.hseCcomment, // 備考
                     hseCusecooperation: '0', // 連携使用有無
                     hseCmastercodeflg: query.showMastCode, // マスタコード表示フラグ
                     hseCcompanyidCk: '01', // 法人コード，保持为01即可
                     hseCcompanyselect: '0', // 法人選択区分，保持为0即可
                     hseCsettingname: this.shareQueryData.hseCsettingname, // 設定名
+                    dataName: this.shareQueryData.dataName, // 設定名
                   }
-                  if (_query.hseCpublic === 1 && this.shareQueryData.isAll === '0') {
+                  if (_query.hseCpublic === 1 && this.shareQueryData.isAll === '0' && this.isSharingSetting) {
                     let targetDtoList = []
                     this.shareQueryData.checkbox.forEach((e, i) => {
                       if (e) {
@@ -1344,11 +1369,17 @@
                     })
                     if (targetDtoList.length > 0) _query.targetDtoList = targetDtoList
                   }
-                  // console.log(_query)
-                  const { data } = await this.http.post(`sys/conditionsearch/addOrUpdate?psSite=${this.psSite}`, _query)
-                  this.shareQuerySaveModal = false
-                  this.$Message.success('設定を保存しました')
-                  this.getQueryListParam()
+                  if(this.isSharingSetting) {
+                    const { data } = await this.http.post(`sys/conditionsearch/addOrUpdate?psSite=${this.psSite}`, _query)
+                    this.shareQuerySaveModal = false
+                    this.getQueryListParam()
+                    this.$Message.success('設定を保存しました')
+                  } else {
+                    const { data } = await this.http.post(`sys/conditionsearch/coop/save?psSite=${this.psSite}`, _query)
+                    this.shareQuerySaveModal = false
+                    this.$Message.success('検索結果データを保存しました')
+                    this.getResultHistoryList()
+                  }
                 } catch (error) {
                 } finally {
                   this.shareQuerySaveLoading = false
@@ -1365,6 +1396,24 @@
         closeShareModal() {
           this.shareQuerySaveModal = false
           this.shareQueryData = { checkbox: [], isAll: '1', hseCpubli: 0 }
+        },
+        delSettingShare(hseNsettingid) {
+          this.$refs.clickHelper.click()
+          this.$Modal.confirm({
+            title: '注意',
+            content: '削除します。よろしいですか？',
+            okText: 'OK',
+            cancelText: 'キャンセル',
+            onOk: async () => {
+              try {
+                const { data } = await this.http.get('sys/conditionsearch/delete', {settingId:hseNsettingid})
+                this.$Message.success('削除完了')
+                this.getQueryListParam()
+              } catch (error) {
+              } finally {
+              }
+            }
+          })
         }
       }
     })
