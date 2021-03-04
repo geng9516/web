@@ -241,10 +241,12 @@
         <Icon type="logo-buffer"></Icon>
         検索結果
       </div>
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'"
-        :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-        :loading="loading" ref="table">
-      </i-table>
+      <div style="overflow-x: auto;" v-show="columns.length > 0">
+          <i-table border class="no-padding"
+            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
+            :loading="loading" ref="table" no-data-text="">
+          </i-table>
+      </div>
     </div>
     <!--  条件式による定義 选择group和 役職 start-->
     <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
@@ -547,7 +549,6 @@
           displayListForSort: [],
           displayResultList: [],
           sortResultList: [],
-          contentScrollTop: 0,
           queryColumns: [
             {
               title: 'ＡＮＤ/ＯＲ',
@@ -692,16 +693,8 @@
         this.getDisplayList()
         this.getqueryconditions()
         this.getShareQueryParam()
-        window.addEventListener('scroll', this.handleScroll, { passive: true })
-      },
-      beforeDestroy() {
-        window.removeEventListener('scroll', this.handleScroll, { passive: true })
       },
       computed: {
-        tableHeadFixed() {
-          if (this.contentScrollTop > 780) return true
-          else return false
-        }
       },
       methods: {
         async getDisplayList() {
@@ -734,12 +727,13 @@
               this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else if (type === 'sort') {
+              this.$refs.transfer2.displayLeaftList = []
               this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else {
+              this.$refs.transfer.displayLeaftList = []
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             }
-            if (type === 'sort') this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
-            else this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
+            this.$refs.transfer
           } catch (error) {
           } finally {
             // this.loading = false
@@ -1288,14 +1282,19 @@
             try {
               this.loading = true
               const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
+              let _length = 0
               this.columns = data.title.map((e, i) => {
+                if(data.result.length !== 0 && data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
+                else _length = e.length
                 return {
                   title: e,
                   key: `value${i}`,
+                  width: _length * 15 + 50,
                   align: 'left'
                 }
               })
-              this.tableData = data.result.map(e => {
+              if(data.result.length === 0) this.tableData = []
+              else this.tableData = data.result.map((e,j) => {
                 if (e.length === 0) return
                 if (e.length === 1) return { value0: e[0] }
                 if (e.length > 1) {
@@ -1304,6 +1303,7 @@
                   return result
                 }
               })
+              console.log(this.$refs.table)
             } finally {
               this.loading = false
             }
@@ -1365,10 +1365,7 @@
         closeShareModal() {
           this.shareQuerySaveModal = false
           this.shareQueryData = { checkbox: [], isAll: '1', hseCpubli: 0 }
-        },
-        handleScroll: Throttle(function (e) {
-          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-        }, 50)
+        }
       }
     })
   </script>

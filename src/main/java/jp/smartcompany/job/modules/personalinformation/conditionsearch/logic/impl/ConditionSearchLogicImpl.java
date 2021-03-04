@@ -1,43 +1,31 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
-import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
-import jp.smartcompany.framework.util.PsSearchCompanyUtil;
-import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
-import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionSearchLogic;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.bo.SqlBO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnQueryDefinitionOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.TableQueryDefinitionOptionDTO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.*;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.*;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
-import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.*;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.ConditionSettingDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.PagerLinkDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.SelectItemDTO;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IConditionSearchService;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.util.ConditionSearchSqlBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -98,7 +86,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         // できあがった検索結果をListに変換する
         List<List<Object>> lstSearchResult = convertDBResult(vSearchResult,mode);
         // 把为null的结果过滤掉
-        lstSearchResult.removeIf(colResult -> CollUtil.isNotEmpty(colResult) && colResult.get(0) == null);
+//        lstSearchResult.removeIf(colResult -> CollUtil.isNotEmpty(colResult) && colResult.get(0) == null);
         // 検索結果からデータディクショナリ情報を取得し、タイトル列を取得する
         // 常量代表 custId language
         List<String> lstTitle = getTitle(lstSearchResult, "01", "ja", mode);
