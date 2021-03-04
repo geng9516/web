@@ -508,8 +508,6 @@
 
                 this.dataDetailBack = e
                 this.tphDyyyymmdd = e.dyyyymmdd
-                console.log("--------------------1------------------------")
-                console.log(e)
                 setTimeout(() => this.paidDetailsLoading = false)
             },
 
@@ -565,7 +563,12 @@
             }),
             // 計算ボタン押下
             calculation() {
-
+                if (this.paidNowData[3].expiryDate == ""){
+                    this.paidNowData[3].expiryDate = null;
+                }
+                if (this.paidNowData[4].expiryDate == ""){
+                    this.paidNowData[4].expiryDate = null;
+                }
                 let nadjust = this.paidNowData[3].days
                 let nadjustHours = this.paidNowData[3].times
                 let dexpireAdjust = this.paidNowData[3].expiryDate
