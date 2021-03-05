@@ -45,6 +45,7 @@ public class ConditionCoopLogicImpl implements IConditionCoopLogic {
         histSearchCoopDO.setHscCcustomerid("01");
         histSearchCoopDO.setHscCuserid(loginUserId);
         histSearchCoopDO.setHscDmodifieddate(now);
+        histSearchCoopDO.setHscCmodifieruserid(loginUserId);
         Long oDataId = histSearchCoopService.selectSeq();
         histSearchCoopDO.setHscNdataId(oDataId);
         histSearchCoopService.save(histSearchCoopDO);

@@ -12,7 +12,7 @@
             HSD_CMODIFIERUSERID,
             HSD_DMODIFIEDDATE,
             VERSIONNO
-        ) values ${value}
+        ) ${value}
     </select>
 
 </mapper>
