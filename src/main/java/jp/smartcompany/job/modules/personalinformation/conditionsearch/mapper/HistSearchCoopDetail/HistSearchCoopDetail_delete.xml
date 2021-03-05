@@ -3,9 +3,9 @@
 
 <mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchCoopDetail.HistSearchCoopDetailMapper">
 
-    <select id="deleteDetail">
+    <delete id="deleteDetail" parameterType="java.lang.Long">
         DELETE FROM HIST_SEARCH_COOP_DETAIL
         WHERE HSD_NDATA_ID = #{value}
-    </select>
+    </delete>
 
 </mapper>
