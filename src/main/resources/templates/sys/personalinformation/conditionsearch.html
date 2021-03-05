@@ -35,6 +35,20 @@
       opacity: .5;
       background: var(--primary-info-bg);
     }
+
+    .ivu-table,
+    .ivu-transfer-list-header {
+      background-color: var(--content-bg);
+    }
+
+    .ivu-transfer-list-content-item:not(.primary-set),
+    .ivu-transfer-list-header {
+      color: var(--grey);
+    }
+
+    .ivu-tabs.ivu-tabs-card>.ivu-tabs-bar .ivu-tabs-tab {
+      background: inherit;
+    }
   </style>
   <main class="content protosettings-warp" ref="layout">
     <div class="content_head">
@@ -61,32 +75,49 @@
       </div>
       <div style="display: flex;z-index: 1;">
         <div>
-          <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);" ref="clickHelper">現在読み込み中の設定：</span>
+          <span style="margin-left: 3px;font-weight: bold;color: var(--primary-info);"
+            ref="clickHelper">現在読み込み中の設定：</span>
           <i-select v-model="searchData.queryListId" class="share-query-select" transfer>
             <i-option :value="0">なし
             </i-option>
-            <i-option v-for="(item, i) of queryList" :key="i" :value="item.hseNsettingid" :label="item.hseCsettingName" style="position: relative;">
+            <i-option v-for="(item, i) of queryList" :key="i" :value="item.hseNsettingid" :label="item.hseCsettingName"
+              style="position: relative;">
               <div>{{ `設定名: ${item.hseCsettingName}` }}</div>
-              <span class="pr10" style="font-size: 12px;">{{ `備考: ${item.hseCcomment ? item.hseCcomment : '　'}` }}</span>
-              <div style="color: var(--login-svg-fill);position: absolute;top:5px;right: 16px;" v-show="item.hseCpublic">共有</div>
-              <i-button type="error" ghost icon="md-trash" size="small" @click.stop="delSettingShare(item.hseNsettingid)" style="float:right;color: var(--red);">削除</i-button>
+              <span class="pr10" style="font-size: 12px;">{{ `備考: ${item.hseCcomment ? item.hseCcomment : '　'}`
+                }}</span>
+              <div style="color: var(--login-svg-fill);position: absolute;top:5px;right: 16px;"
+                v-show="item.hseCpublic">共有</div>
+              <i-button type="error" ghost icon="md-trash" size="small"
+                @click.stop="delSettingShare(item.hseNsettingid, 'setting')" style="float:right;color: var(--red);">削除
+              </i-button>
             </i-option>
           </i-select>
           <i-button type="primary" ghost icon="md-refresh" @click="getQueryListParam"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareSetting" :loading="editLoading">保存
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareSetting"
+            :loading="editLoading">保存
           </i-button>
         </div>
         <div style="flex: 1;"></div>
         <div>
           <span style="font-weight: bold;color: var(--primary-info);">検索結果データ：</span>
           <i-select v-model="searchData.histroyDataId" class="share-query-select" transfer>
-            <i-option value="0">なし
+            <i-option :value="0">なし
             </i-option>
-            <i-option v-for="(item, i) of resultHistoryList" :key="i" value="01">{{item}}
+            <i-option v-for="(item, i) of resultHistoryList" :key="i" :value="item.hscNdataId"
+              :label="item.hscCdataname" style="position: relative;">
+              <div>{{ `データ名: ${item.hscCdataname}` }}</div>
+              <span class="pr10" style="font-size: 12px;">{{ `備考: ${item.hscCcomment ? item.hscCcomment : '　'}`
+                }}</span>
+              <div style="color: var(--login-svg-fill);position: absolute;top:5px;right: 16px;"
+                v-show="item.hscCpublic">共有</div>
+              <i-button type="error" ghost icon="md-trash" size="small"
+                @click.stop="delSettingShare(item.hscNdataId, 'result')" style="float:right;color: var(--red);">削除
+              </i-button>
             </i-option>
           </i-select>
           <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareResult" :loading="editLoading">保存
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareResult" :loading="editLoading">
+            保存
           </i-button>
         </div>
       </div>
@@ -243,10 +274,9 @@
         検索結果
       </div>
       <div style="overflow-x: auto;" v-show="columns.length > 0">
-          <i-table border class="no-padding"
-            :row-class-name="() => 'select-col'" :columns="columns" :disabled-hover="true" :data="tableData"
-            :loading="loading" ref="table" no-data-text="">
-          </i-table>
+        <i-table border class="no-padding" :row-class-name="() => 'select-col'" :columns="columns"
+          :disabled-hover="true" :data="tableData" :loading="loading" ref="table" no-data-text="">
+        </i-table>
       </div>
     </div>
     <!--  条件式による定義 选择group和 役職 start-->
@@ -440,15 +470,16 @@
     </div>
 
     <!--  条件式保存 start-->
-    <Modal class="tc" placement="right" :width="700" :title="isSharingSetting ? '設定保存' : '検索結果データ保存'" :mask-closable="false" v-model="shareQuerySaveModal">
+    <Modal class="tc" placement="right" :width="700" :title="isSharingSetting ? '設定保存' : '検索結果データ保存'"
+      :mask-closable="false" v-model="shareQuerySaveModal">
       <Row :gutter="4">
         <i-col span="10">
           <div class="label pl10 tc">{{ isSharingSetting ? '設定名' : '検索結果データ名'}}</div>
           <div class="person-info">
             <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
               v-model="shareQueryData.hseCsettingname" :maxlength="1000" v-if="isSharingSetting"></i-input>
-              <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small"
-              v-model="shareQueryData.dataName" :maxlength="1000" v-if="!isSharingSetting"></i-input>
+            <i-input class="tl" style="padding: 3px;margin-left: -6px;" size="small" v-model="shareQueryData.dataName"
+              :maxlength="1000" v-if="!isSharingSetting"></i-input>
           </div>
         </i-col>
         <i-col span="3">
@@ -1203,7 +1234,7 @@
           this.isSharingSetting = false
           this.shareQuerySaveModal = true
         },
-        refreshPage(){
+        refreshPage() {
           this.$Modal.confirm({
             title: '注意',
             content: '現在編集中の設定は全て破棄されます。よろしいですか？',
@@ -1300,11 +1331,17 @@
 
           if (mode === 'SCREEN') {
             try {
+              // 设定和结果读入再设置
+              if (this.searchData.histroyDataId !== 0) {
+                query.useCooperation = true
+                query.hseCusecooperation = '1'
+                query.hseNdataId = this.searchData.histroyDataId
+              }
               this.loading = true
               const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
               let _length = 0
               this.columns = data.title.map((e, i) => {
-                if(data.result.length !== 0 && data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
+                if (data.result.length !== 0 && data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
                 else _length = e.length
                 return {
                   title: e,
@@ -1313,8 +1350,8 @@
                   align: 'left'
                 }
               })
-              if(data.result.length === 0) this.tableData = []
-              else this.tableData = data.result.map((e,j) => {
+              if (data.result.length === 0) this.tableData = []
+              else this.tableData = data.result.map((e, j) => {
                 if (e.length === 0) return
                 if (e.length === 1) return { value0: e[0] }
                 if (e.length > 1) {
@@ -1354,7 +1391,12 @@
                     hseCcompanyidCk: '01', // 法人コード，保持为01即可
                     hseCcompanyselect: '0', // 法人選択区分，保持为0即可
                     hseCsettingname: this.shareQueryData.hseCsettingname, // 設定名
-                    dataName: this.shareQueryData.dataName, // 設定名
+                    mode: 'TABLE',
+                    coopDTO: {
+                      hscCdataName: this.shareQueryData.dataName, // 設定名
+                      hscCpublic: this.shareQueryData.hseCpublic, // 共有有無 1=共有 0=不共有
+                      hscCcomment: this.shareQueryData.hseCcomment,
+                    },
                   }
                   if (_query.hseCpublic === 1 && this.shareQueryData.isAll === '0' && this.isSharingSetting) {
                     let targetDtoList = []
@@ -1369,7 +1411,7 @@
                     })
                     if (targetDtoList.length > 0) _query.targetDtoList = targetDtoList
                   }
-                  if(this.isSharingSetting) {
+                  if (this.isSharingSetting) {
                     const { data } = await this.http.post(`sys/conditionsearch/addOrUpdate?psSite=${this.psSite}`, _query)
                     this.shareQuerySaveModal = false
                     this.getQueryListParam()
@@ -1397,7 +1439,7 @@
           this.shareQuerySaveModal = false
           this.shareQueryData = { checkbox: [], isAll: '1', hseCpubli: 0 }
         },
-        delSettingShare(hseNsettingid) {
+        delSettingShare(id, type) {
           this.$refs.clickHelper.click()
           this.$Modal.confirm({
             title: '注意',
@@ -1406,9 +1448,14 @@
             cancelText: 'キャンセル',
             onOk: async () => {
               try {
-                const { data } = await this.http.get('sys/conditionsearch/delete', {settingId:hseNsettingid})
+                if (type === 'setting') {
+                  const { data } = await this.http.get('sys/conditionsearch/delete', { settingId: id })
+                  this.getQueryListParam()
+                } else {
+                  const { data } = await this.http.get('sys/conditionsearch/coop/del', { dataId: id })
+                  this.getResultHistoryList()
+                }
                 this.$Message.success('削除完了')
-                this.getQueryListParam()
               } catch (error) {
               } finally {
               }
