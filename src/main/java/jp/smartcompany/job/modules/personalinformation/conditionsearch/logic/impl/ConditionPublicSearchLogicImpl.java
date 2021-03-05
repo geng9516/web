@@ -279,6 +279,30 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         return result;
     }
 
+    @Override
+    public Map<String, Object> getSettingDetail(Long settingId) {
+        HistSearchSettingDO histSearchSettingDO = histSearchSettingService.selectSettingInfo(settingId);
+        if (histSearchSettingDO==null) {
+            throw new GlobalException("設定内容は存在しません");
+        }
+        Map<String,Object> result = MapUtil.newHashMap();
+
+        List<HistSearchSelectDO> histSelectList = histSearchSelectService.selectBySettingId(settingId);
+
+        List<HistSearchWhereDO> histWhereList = histSearchWhereService.selectBySettingId(settingId);
+        List<HistSearchDefinitionsDO> histQueryWhereList = histSearchDefinitionsService.selectBySettingId(settingId);
+        List<HistSearchOrderDO> histOrderList = histSearchOrderService.selectBySettingId(settingId);
+        List<HistSearchSettingTargetDO> histTargetList = histSearchSettingTargetService.selectBySettingId(settingId);
+
+        result.put("mainInfo",histSearchSettingDO);
+        result.put("selectInfo",histSelectList);
+        result.put("whereInfo",histWhereList);
+        result.put("queryWhereInfo",histQueryWhereList);
+        result.put("orderInfo",histOrderList);
+        result.put("targetInfo",histTargetList);
+        return result;
+    }
+
     /**
      * 設定削除処理
      */

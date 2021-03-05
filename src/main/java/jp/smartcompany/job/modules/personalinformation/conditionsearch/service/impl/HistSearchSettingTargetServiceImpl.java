@@ -6,7 +6,15 @@ import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.enti
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.service.IHistSearchSettingTargetService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class HistSearchSettingTargetServiceImpl extends ServiceImpl<HistSearchSettingTargetMapper, HistSearchSettingTargetDO>
 implements IHistSearchSettingTargetService {
+
+    @Override
+    public List<HistSearchSettingTargetDO> selectBySettingId(Long settingId) {
+       return baseMapper.selectBySettingId(settingId);
+    }
+
 }

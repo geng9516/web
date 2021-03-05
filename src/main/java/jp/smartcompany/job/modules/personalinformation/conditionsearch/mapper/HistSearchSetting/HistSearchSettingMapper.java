@@ -15,7 +15,7 @@ public interface HistSearchSettingMapper extends BaseMapper<HistSearchSettingDO>
 
     long selectSeq();
 
-    String selectSettingOwner(Long settingId);
+    HistSearchSettingDO selectSettingInfo(Long settingId);
 
     List<CommonConditionVO> selectCommonList(@Param("custId") String custId,
                                              @Param("userId") String loginUserId,

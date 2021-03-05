@@ -17,4 +17,5 @@ public interface IConditionPublicSearchLogic {
 
     void deleteSettings(Long settingId);
 
+    Map<String, Object> getSettingDetail(Long settingId);
 }

@@ -24,8 +24,8 @@ implements IHistSearchSettingService {
     }
 
     @Override
-    public String selectSettingOwner(Long settingId) {
-        return baseMapper.selectSettingOwner(settingId);
+    public HistSearchSettingDO selectSettingInfo(Long settingId) {
+        return baseMapper.selectSettingInfo(settingId);
     }
 
     @Override

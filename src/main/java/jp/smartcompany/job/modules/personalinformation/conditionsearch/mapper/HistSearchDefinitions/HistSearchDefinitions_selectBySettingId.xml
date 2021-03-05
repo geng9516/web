@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchDefinitions.HistSearchDefinitionsMapper">
+
+    <select id="selectBySettingId"  resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchDefinitionsDO">
+        SELECT
+            HSD_ID, HSD_NSETTINGID, HSD_NSEQ, HSD_CANDOR, HSD_COPENEDPARENTHSIS,
+            HSD_CTABLEID, HSD_CCOLUMNID, HSD_CCOLUMNNAME, HSD_CTYPEOFCOLUMN, HSD_COPERATOR,
+            HSD_CVALUE, HSD_CDISPLAYVALUE, HSD_CCLOSEDPARENTHSIS
+        FROM
+            HIST_SEARCH_DEFINITIONS
+        WHERE
+            HSD_NSETTINGID = #{value}
+    </select>
+
+</mapper>

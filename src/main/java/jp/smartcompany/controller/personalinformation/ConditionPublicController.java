@@ -30,6 +30,14 @@ public class ConditionPublicController {
     }
 
     /**
+     * 获取保存的设定详情
+     */
+    @GetMapping("setting/detail")
+    public Map<String,Object> settingDetail(@RequestParam Long settingId) {
+        return conditionPublicSearchLogic.getSettingDetail(settingId);
+    }
+
+    /**
      * 编辑共有
      * 参数示例（新增动作）：
      * 搜索条件让某些group共有：

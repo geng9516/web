@@ -12,7 +12,8 @@ public interface IHistSearchSettingService extends IService<HistSearchSettingDO>
 
     long selectSeq();
 
-    String selectSettingOwner(Long settingId);
-
     List<CommonConditionVO> selectList(String s, String loginUserId, List<String> companyList, List<String> groupIds);
+
+    HistSearchSettingDO selectSettingInfo(Long settingId);
+
 }

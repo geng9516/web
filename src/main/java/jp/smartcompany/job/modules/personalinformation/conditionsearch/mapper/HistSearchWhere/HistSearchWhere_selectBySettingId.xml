@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchWhere.HistSearchWhereMapper">
+
+    <select id="selectBySettingId" resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchWhereDO">
+        SELECT
+            HSW_ID, HSW_NSETTINGID, HSW_CTABLE, HSW_CCOLUMN, HSW_CVALUE, HSW_CUSE
+        FROM
+            HIST_SEARCH_WHERE
+        WHERE
+            HSW_NSETTINGID = #{value}
+    </select>
+
+</mapper>

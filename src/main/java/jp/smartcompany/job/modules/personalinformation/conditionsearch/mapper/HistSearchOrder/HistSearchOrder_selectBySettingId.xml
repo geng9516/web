@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.personalinformation.conditionsearch.mapper.HistSearchOrder.HistSearchOrderMapper">
+
+    <select id="selectBySettingId"  resultType="jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.HistSearchOrderDO">
+        SELECT
+            HSO_ID, HSO_NSETTINGID, HSO_NSEQ, HSO_CCOLUMN, HSO_CORDER
+        FROM
+            HIST_SEARCH_ORDER
+        WHERE
+            HSO_NSETTINGID = #{value}
+    </select>
+
+</mapper>
