@@ -554,7 +554,7 @@
                             await this.getDetailList(this.paramters.dyyyymmdd, this.paramters.cemployeeid)
                             this.updateLoading = false
                             this.paidNowLoading = false
-                            // this.paidHolidayInitRList = false
+                            this.paidHolidayInitRList = false
                         },
                         onCancel: () => {
                         }
@@ -563,6 +563,18 @@
             }),
             // 計算ボタン押下
             calculation() {
+                if (this.paidNowData[3].days == ""){
+                    this.paidNowData[3].days = "0.0";
+                }
+                if (this.paidNowData[4].days == ""){
+                    this.paidNowData[4].days = "0.0";
+                }
+                if (this.paidNowData[3].times == ""){
+                    this.paidNowData[3].times = "0.00";
+                }
+                if (this.paidNowData[4].times == ""){
+                    this.paidNowData[4].times = "0.00";
+                }
                 if (this.paidNowData[3].expiryDate == ""){
                     this.paidNowData[3].expiryDate = null;
                 }
