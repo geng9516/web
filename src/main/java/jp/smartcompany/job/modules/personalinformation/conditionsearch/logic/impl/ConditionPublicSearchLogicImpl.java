@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionPublicSearchLogic;
+import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.option.ColumnOptionDTO;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity.*;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.vo.CommonConditionVO;
@@ -293,12 +294,12 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         List<HistSearchSelectDO> histSelectList = histSearchSelectService.selectBySettingId(settingId);
 
         histSelectList.forEach(selectItem -> {
+            String column = selectItem.getHssCcolumn();
             MastDatadictionaryDO dataDictionary = cacheUtil.getDataDictionary(
-                    "01" + "_" + selectItem.getHssCcolumn());
+                    "01" + "_" + column);
             String sTableId = dataDictionary.getMdCtablename();
-            String sColumnType = dataDictionary.getMdCtypeofcolumn();
-            selectItem.setTableName(sTableId);
-            selectItem.setColumnType(sColumnType);
+            ColumnOptionDTO columnInfo = conditionSearchService.selectColumnByTableAndColumn(sTableId,column);
+            selectItem.setColumnName(columnInfo.getColumnFieldName());
         });
 
         List<HistSearchWhereDO> histWhereList = histSearchWhereService.selectBySettingId(settingId);

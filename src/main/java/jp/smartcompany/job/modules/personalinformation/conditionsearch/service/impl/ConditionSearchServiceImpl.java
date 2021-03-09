@@ -192,5 +192,10 @@ implements IConditionSearchService {
         baseMapper.deleteTargetSetting(settingId);
     }
 
+    @Override
+    public ColumnOptionDTO selectColumnByTableAndColumn(String sTableId, String hssCcolumn) {
+        return baseMapper.selectColumnByTableAndColumn(sTableId,hssCcolumn);
+    }
+
     /* ================== 共有设定 End ================ */
 }

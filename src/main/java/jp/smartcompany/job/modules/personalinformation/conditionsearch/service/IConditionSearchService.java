@@ -72,4 +72,6 @@ public interface IConditionSearchService extends IService<MastDatadictionaryDO> 
     void deleteOrderSetting(Long settingId);
 
     void deleteTargetSetting(Long settingId);
+
+    ColumnOptionDTO  selectColumnByTableAndColumn(String sTableId, String hssCcolumn);
 }

@@ -53,9 +53,5 @@ public class HistSearchSelectDO implements Serializable {
     private Long versionno;
 
     @TableField(exist = false)
-    private String tableName;
-
-    @TableField(exist = false)
-    private String columnType;
-
+    private String columnName;
 }

@@ -125,4 +125,6 @@ public interface ConditionSearchMapper extends BaseMapper<MastDatadictionaryDO> 
 
     void deleteTargetSetting(Long settingId);
 
+    ColumnOptionDTO selectColumnByTableAndColumn(@Param("tableId") String sTableId,@Param("columnId") String hssCcolumn);
+
 }
