@@ -104,6 +104,11 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         }
         settingDO.setHseCcustomerid(psSession.getLoginCustomer());
         settingDO.setHseCmodifieruserid(loginUserId);
+        if (settingDTO.getStandardDateType()!=null && settingDTO.getStandardDateType().equals(1)) {
+            settingDO.setHseCusedate("1");
+        } else {
+            settingDO.setHseCusedate("0");
+        }
 
         histSearchSettingService.save(settingDO);
 

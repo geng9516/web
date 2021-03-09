@@ -69,15 +69,16 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
 
     @Override
     public Map<String,Object> search(ConditionSettingDTO settingDTO) {
+        Map<String,Object> result = MapUtil.newHashMap();
         SqlBO sqlBO = sqlBuilder.createSql(settingDTO);
         String mode = settingDTO.getMode();
         if (!StrUtil.equalsIgnoreCase(MODE_TABLE,mode)) {
             // 組み立てたSQLを実行して検索結果を取得する
             int nTotalCount = getTotalCount(sqlBO);
             // 開始行、終了行を取得する
-            if (StrUtil.equalsIgnoreCase(MODE_SCREEN,mode)) {
-                calcStartEnd(nTotalCount,settingDTO);
-            }
+//            if (StrUtil.equalsIgnoreCase(MODE_SCREEN,mode)) {
+                result.put("pager",calcStartEnd(nTotalCount,settingDTO));
+//            }
         }
         // 検索条件Dtoを解析してSQLを組み立てる
         String sSearchSql = getSearchSql(settingDTO, sqlBO);
@@ -85,8 +86,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         Vector <Vector<Object>> vSearchResult = executeSql(sSearchSql);
         // できあがった検索結果をListに変換する
         List<List<Object>> lstSearchResult = convertDBResult(vSearchResult,mode);
-        // 把为null的结果过滤掉
-//        lstSearchResult.removeIf(colResult -> CollUtil.isNotEmpty(colResult) && colResult.get(0) == null);
+
         // 検索結果からデータディクショナリ情報を取得し、タイトル列を取得する
         // 常量代表 custId language
         List<String> lstTitle = getTitle(lstSearchResult, "01", "ja", mode);
@@ -95,9 +95,9 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
             lstSearchResult.remove(0);
         }
 
-        Map<String,Object> result = MapUtil.newHashMap();
         result.put("title",lstTitle);
         result.put("result",lstSearchResult);
+
 
         return result;
     }
@@ -325,7 +325,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
      *
      * @param psTotalCount 総件数
      */
-    private void calcStartEnd(int psTotalCount,ConditionSettingDTO settingDTO) {
+    private PagerLinkDTO calcStartEnd(int psTotalCount,ConditionSettingDTO settingDTO) {
         PagerLinkDTO pagerLinkDto = settingDTO.getPagerLinkDTO();
         String sEvent = settingDTO.getPagingEvent();
 
@@ -429,6 +429,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
 
         // ConditionSettingDtoに格納
         settingDTO.setPagerLinkDTO(pagerLinkDto);
+        return pagerLinkDto;
     }
 
 }
