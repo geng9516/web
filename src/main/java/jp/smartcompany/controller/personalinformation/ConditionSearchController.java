@@ -152,7 +152,7 @@ public class ConditionSearchController {
                   hsoNsettingid 設定ID
                   hsoNseq 行番号
                   hsoCcolumn カラムID
-                  hsoCorder ソート順
+                  hsoCorder ソート順 ("0" 正序 "1" 倒序)
               }
      *     ],
      *     // 共有範囲
