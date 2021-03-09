@@ -217,7 +217,7 @@
             </template>
             <template slot-scope="{ row }" slot="displayvalue">
               <span v-if="queryData2[row._index].selectValue">{{ queryData2[row._index].selectValue.map(e=>
-                e.name).join() }}</span>
+                e.hswCname).join() }}</span>
               <span v-if="queryData2[row._index].postFlag">
                 <radio-group class="tl" v-model="queryData2[row._index].postCode">
                   <Radio label="1">本務</Radio>
@@ -1196,8 +1196,8 @@
         handleSelectDept() {
           this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.selectTree.getCheckedNodes().map(e => {
             return {
-              id: e.moId,
-              name: ` ${e.sectionName}(${e.sectionId})`,
+              hswId: e.moId,
+              hswCname: ` ${e.sectionName}(${e.sectionId})`,
               hswCvalue: e.sectionId,
             }
           }))
@@ -1207,8 +1207,8 @@
         addPostTree() {
           this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.postTable.getSelection().map(e => {
             return {
-              id: e.mapId,
-              name: ` ${e.mapCpostname}(${e.mapCpostidCk})`,
+              hswId: e.mapId,
+              hswCname: ` ${e.mapCpostname}(${e.mapCpostidCk})`,
               hswCvalue: e.mapCpostidCk,
             }
           }))
@@ -1219,8 +1219,8 @@
         addSearchEmp() {
           this.$set(this.queryData2[this.clickedCell.where], 'selectValue', this.$refs.empTable.getSelection().map(e => {
             return {
-              id: e.meId,
-              name: ` ${e.empName}(${e.meCemployeeidCk})`,
+              hswId: e.meId,
+              hswCname: ` ${e.empName}(${e.meCemployeeidCk})`,
               hswCvalue: e.meCemployeeidCk,
             }
           }))
@@ -1273,7 +1273,7 @@
             orderDtoList: this.$refs.transfer2.rightList.map((e, i) => {
               return {
                 hsoNseq: `${i}`,
-                hsoCorder: `${i}`,
+                hsoCorder: e.rightLabel.indexOf('昇') > -1 ? '0' : '1',
                 hsoCcolumn: e.columnName,
                 hsoCcolumnId: `${e.columnName} ${e.rightLabel.indexOf('昇') > -1 ? 'ASC' : 'DESC'}`,
               }
