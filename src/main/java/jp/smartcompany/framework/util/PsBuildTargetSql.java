@@ -781,14 +781,20 @@ public class PsBuildTargetSql {
      * @return 検索対象範囲を適用するEXISTS句条件
      */
     public String getExistsQuery(String psUserColName) {
+        // ================fix: 针对自由条件检索对domain进行特殊处理 修改时间 2021/03/09
+        if (StrUtil.equals(domain,"03") && StrUtil.equals(request.getParameter(PsConst.PARAM_KEY_SITEID),"PersonalInformation")) {
+            domain = "01";
+        }
+
         if (StrUtil.isBlank(psUserColName)) {
             // カラム指定されていないので例外
             throw new GlobalException(
                     "psUserColName "+ ERR_NOT_NULL);
         }
-        this.createSearchRange("0");
+        createSearchRange("0");
         int nCondRetired = getCondRetired();
         StringBuilder sb = new StringBuilder();
+
         // ▼ #3161 未設定時は、取得した条件式のみ返却する
         if (!this.gbSetFlg) {
             if(StrUtil.equals(domain,PsConst.DOMAIN_ORGANIZATION)){

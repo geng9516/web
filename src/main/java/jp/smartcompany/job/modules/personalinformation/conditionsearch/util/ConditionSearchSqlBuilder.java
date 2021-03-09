@@ -289,6 +289,7 @@ public class ConditionSearchSqlBuilder {
         if (StrUtil.isNotBlank(conditionWhere)) {
             sqlBO.setWhereConditionStatement(conditionWhere + searchRangeWhere + searchCoopWhere);
         }
+
 // ----- feats: 老代码出现了这段，新代码觉得这段会产生问题，在此注释 修改日期： 2021/02/24 18:24 ----
 //        else {
 //            sqlBO.setWhereConditionStatement(searchRangeWhere + searchCoopWhere);
@@ -823,11 +824,7 @@ public class ConditionSearchSqlBuilder {
                 setTableAlias(tableId);
                 fromMap.put(tableId.toUpperCase(), tableId.toUpperCase() + " " + getTableAlias(tableId));
             }
-            String sOrder = orderDto.getHsoCcolumnId();
-            if (StrUtil.equals(sortMethod,"1")) {
-                sOrder += " DESC";
-            }
-            return getTableAlias(tableId) + "." + sOrder;
+            return getTableAlias(tableId) + "." + orderDto.getHsoCcolumnId();
         }else{
             return "";
         }
