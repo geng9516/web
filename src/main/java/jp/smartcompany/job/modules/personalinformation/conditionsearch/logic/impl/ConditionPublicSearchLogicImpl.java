@@ -305,6 +305,15 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         List<HistSearchWhereDO> histWhereList = histSearchWhereService.selectBySettingId(settingId);
         List<HistSearchDefinitionsDO> histQueryWhereList = histSearchDefinitionsService.selectBySettingId(settingId);
         List<HistSearchOrderDO> histOrderList = histSearchOrderService.selectBySettingId(settingId);
+        histOrderList.forEach(orderItem -> {
+            String column = orderItem.getHsoCcolumn();
+            MastDatadictionaryDO dataDictionary = cacheUtil.getDataDictionary(
+                    "01" + "_" + column);
+            String sTableId = dataDictionary.getMdCtablename();
+            ColumnOptionDTO columnInfo = conditionSearchService.selectColumnByTableAndColumn(sTableId,column);
+            orderItem.setColumnName(columnInfo.getColumnFieldName());
+        });
+
         List<HistSearchSettingTargetDO> histTargetList = histSearchSettingTargetService.selectBySettingId(settingId);
 
         result.put("mainInfo",histSearchSettingDO);
