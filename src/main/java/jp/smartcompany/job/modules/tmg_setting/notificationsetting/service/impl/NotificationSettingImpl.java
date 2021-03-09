@@ -17,4 +17,10 @@ public class NotificationSettingImpl extends ServiceImpl<NotificationSettingMapp
     public List<TmgNtfCheckDo> getNewCheckList(String group,String typeGroup,String sysdate,String timeType){
         return baseMapper.getNewCheckList( group, typeGroup,sysdate,timeType);
     }
+
+    @Override
+    public List<TmgNtfCheckDo> getCheckFunc(String ntfType, String sysdate){
+        return baseMapper.getCheckFunc( ntfType, sysdate);
+
+    }
 }

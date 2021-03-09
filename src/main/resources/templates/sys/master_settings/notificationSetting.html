@@ -53,6 +53,7 @@
                 <i-button type="primary" icon="md-book" @click="groupManager('GROUP')" >親区分管理</i-button>
                 <i-button type="primary" icon="ios-book" @click="groupManager('TYPEGROUP')" >申請種類管理</i-button>
                 <i-button type="primary" icon="ios-add-circle" @click="editDisp()" >新規</i-button>
+                <i-button type="primary" icon="md-create" @click="" :disabled="groupSortList.length === 0">ソード更新</i-button>
             </div>
         </div>
         <div class="searchwrap">
@@ -66,6 +67,19 @@
     <div class="content_body">
         <div>
             <div class="tr mb10">
+                <div class="tr mt10">
+                    <Alert v-show="hasTypeChange" class="error-info tl">設定した内容を反映する場合、再度ログインする必要があります</Alert>
+                    <div class="table-top">
+                        <Row :gutter="16">
+                            <i-col span="24" class="tr">
+                                <span class="mr10">ドラッグ機能:  </span><i-switch v-model="isTypeDraggable" size="large">
+                                <span slot="open">ON</span>
+                                <span slot="close">OFF</span>
+                            </i-switch>
+                            </i-col>
+                        </Row>
+                    </div>
+                </div>
                 <Radio-group v-model="tableColumnsChecked" @on-change="changeTableColumns" class="tr" type="button">
                     <Radio label="basic">基本設定</Radio>
                     <Radio label="dispType">表示タイプ設定</Radio>
@@ -77,7 +91,8 @@
             <dtree :class="tableHeadFixed ? 'table-head-fixed' : ''"
                    :data="dTypeTreeData"
                    @drag="sortTypeTableByDrag(arguments)" border
-                   :isdraggable="isTypeDraggable" ref="typeTable">
+                   :isdraggable="isTypeDraggable" ref="typeTable"
+                    v-show="!managerFlg">
                 <template #selection="{row}">
                     <Tooltip placement="bottom" class="width100" transfer>
                         <span style="white-space: normal;" slot="content">{{row.ntfType}}</span>
@@ -364,7 +379,7 @@
 
                             <section class="tl mt5">
                                 <p class="mb5">説明文</p>
-                                <i-input class="tl" v-model="editData.comment" type="textarea">
+                                <i-input class="tl" v-model="editData.commentD" type="textarea">
                                 </i-input>
                             </section>
 
@@ -412,7 +427,7 @@
                                           class="mb10 no-border-radius" v-if="editData.timeZone">
                                     <i-option v-for="(item, i) of hourtimeTypeList" :key="i" :value="item.TIMETYPEID">{{ item.TIMETYPE }}</i-option>
                                 </i-select>
-                                <i-select v-model="editData.timeType" editable filterable clearable
+                                <i-select v-model="editData.timeTypeId" editable filterable clearable
                                           class="mb10 no-border-radius" v-if="!editData.timeZone">
                                     <i-option v-for="(item, i) of daytimeTypeList" :key="i" :value="item.TIMETYPEID">{{ item.TIMETYPE }}</i-option>
                                 </i-select>
@@ -432,7 +447,7 @@
                                     <div slot="content">
                                         <i-button class="mt5" v-for="(item,i) of leftworktype" @click="addWorktype(item)">{{item.WORKTYPE}}</i-button>
                                     </div>
-                                    <i-button icon="ios-add" type="dashed" size="small" v-show="totalworktype.length > editData.workType.length">add</i-button>
+                                    <i-button icon="ios-add" type="dashed" size="small" v-show="totalworktype.length > leftworktype.length">add</i-button>
                                 </Poptip>
                             </section>
                             <section class="tl mt20">
@@ -521,15 +536,17 @@
         </div>
     </Modal>
 
-    <Modal :title=" typeId==='TYPEGROUP'? '申請種類管理':'親区分管理'"  :width="typeId==='TYPEGROUP'? '80':'40'" v-model="managerFlg" footer-hide :mask-closable="false">
+    <Modal :title=" typeId==='TYPEGROUP'? '申請種類管理':'親区分管理'" :width="typeId==='TYPEGROUP'? '80':'40'" v-model="managerFlg" footer-hide :mask-closable="false">
 
         <div style="position: relative;">
             <div v-if="typeId ==='GROUP'">
                 <div class="table-top">
                     <div class="btnbox tr">
                         <span style="flex:1"></span>
-                        <i-button type="primary" icon="md-create" @click="" >新規親区分</i-button>
-                        <i-button type="primary" icon="md-create" @click="" :disabled="sortList.length === 0">ソード更新</i-button>
+
+                        <i-button type="primary" icon="md-create" @click="groupEdit = !groupEdit" >{{ groupEdit ?  '取消' : '編集'}}</i-button>
+                        <i-button type="success" icon="md-create" @click="" >新規</i-button>
+                        <i-button type="primary" icon="md-create" @click="" :disabled="typeSortList.length === 0">ソード更新</i-button>
                     </div>
                     <div class="tr mt10">
                         <Alert v-show="hasGroupChange" class="error-info tl">設定した内容を反映する場合、再度ログインする必要があります</Alert>
@@ -552,9 +569,10 @@
                        @drag="sortGroupTableByDrag(arguments)" border
                        :isdraggable="isGroupDraggable" ref="groupTable">
                     <template #selection="{row}">
-                      <span class="ml5 mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
-                        {{row.name}}
-                      </span>
+                        <span v-if="!groupEdit">
+                            {{row.name}}
+                        </span>
+                        <i-input v-if="groupEdit" v-model="row.name" width="80"></i-input>
                     </template>
                 </dtree>
             </div>
@@ -563,7 +581,7 @@
                     <div class="btnbox tr">
                         <span style="flex:1"></span>
                         <i-button type="primary" icon="md-create" @click="typeGroupEditbtn()">{{ typeGroupEdit ?  '取消' : '編集'}}</i-button>
-
+                        <i-button type="success" icon="md-create" @click="" >新規</i-button>
                         <i-button type="primary" icon="md-create" @click="":disabled="!typeGroupEdit">登録</i-button>
                     </div>
                 </div>
@@ -666,7 +684,7 @@
                     columns: [],
                     lists: [],
                 },
-                isTypeDraggable: true,
+
                 tableColumnsChecked:'basic',
                 editFlag:false,
 
@@ -712,22 +730,7 @@
                     imart:'',
 
                     //选中的check func
-                    checkFunc:[
-                        {
-                            checkname:'1',
-                            checkFunc:'1',
-                            checkType:'1',
-                            checkLimit:'1',
-                            checkLimitType:'1'
-                        },
-                        {
-                            checkname:'2',
-                            checkFunc:'2',
-                            checkType:'2',
-                            checkLimit:'2',
-                            checkLimitType:'2'
-                        },
-                    ],
+                    checkFunc:[],
                 },
                 //全部可选check func
                 totalCheckFunc:[],
@@ -752,7 +755,10 @@
                 managerFlg:false,
                 typeId:'',
                 managerLoading:false,
+
                 isGroupDraggable: true,
+                isTypeDraggable:true,
+
                 contentScrollTop:0,
                 dGroupTreeData: {
                     columns: [
@@ -765,9 +771,10 @@
                     ],
                     lists: [],
                 },
-                sortList:[],
+                groupSortList:[],
+                typeSortList:[],
                 hasGroupChange:false,
-
+                hasTypeChange:false,
 
 
 
@@ -828,6 +835,7 @@
                 ],
                 typeGroupTableData:[],
                 typeGroupEdit:false,
+                groupEdit:false,
                 typeSection:{
                     1 :"終日",
                     2 :"休憩45分",
@@ -1170,117 +1178,156 @@
                     this.daytimeTypeList = data.dayTimeType
                     this.totalworktype = data.totalWorkType
                     this.leftworktype = this.totalworktype
-                    this.leftSite = this.totalSite
                 } catch (error) {
                 } finally {
 
                 }
             },
-            editDisp(e,update){
+            async editDisp(e, update) {
                 console.log(e)
-                if(e){
+                //编辑 或copy新规时
+                if (e) {
                     this.editData.begin = e.startDate
-                    this.editData.end=e.endDate
-                    this.editData.groupId=e.ntfGroupId
-                    this.editData.typeGroupId=e.typeGroupId
-                    this.editData.site=e.siteId
-                    this.editData.timeTypeId=e.timeTypeId
+                    this.editData.end = e.endDate
+                    this.editData.groupId = e.ntfGroupId
+                    this.editData.typeGroupId = e.typeGroupId
+                    //site处理
+                    this.leftSite = []
+                    this.editData.site = []
+                    this.totalSite.forEach(j => {
+                        if (e.siteId.indexOf(j.siteId) > -1) {
+                            this.editData.site.push(j)
+                        } else {
+                            this.leftSite.push(j)
+                        }
+                    })
 
-                    this.editData.ntfTypeName=''
-                    this.editData.checkntfTypeName= ''
+                    this.editData.timeTypeId = e.timeTypeId
+                    this.editData.ntfTypeName = ''
+                    this.editData.checkntfTypeName = ''
 
-                    this.editData.transfer=e.dispType.transfer
-                    this.editData.timeZone=e.dispType.timeZone
-                    this.editData.workTime=e.dispType.workTime
-                    this.editData.sickName=e.dispType.sickName
-                    this.editData.sickApply=e.dispType.sickApply
-                    this.editData.period=e.dispType.period
-                    this.editData.addDate=e.dispType.addDate
-                    this.editData.label=e.dispType.label
-                    this.editData.restTime=e.dispType.restTime
-                    this.editData.name=e.dispType.name
-                    this.editData.relation=e.dispType.relation
-                    this.editData.birthday=e.dispType.birthday
-                    this.editData.daysOfWeek=e.dispType.daysOfWeek
-                    this.editData.targetNumber=e.dispType.targetNumber
+                    this.editData.transfer = e.dispType.transfer
+                    this.editData.timeZone = e.dispType.timeZone
+                    this.editData.workTime = e.dispType.workTime
+                    this.editData.sickName = e.dispType.sickName
+                    this.editData.sickApply = e.dispType.sickApply
+                    this.editData.period = e.dispType.period
+                    this.editData.addDate = e.dispType.addDate
+                    this.editData.label = e.dispType.label
+                    this.editData.restTime = e.dispType.restTime
+                    this.editData.name = e.dispType.name
+                    this.editData.relation = e.dispType.relation
+                    this.editData.birthday = e.dispType.birthday
+                    this.editData.daysOfWeek = e.dispType.daysOfWeek
+                    this.editData.targetNumber = e.dispType.targetNumber
 
+                    //workType处理
                     // this.editData.workType=e.
+                    this.leftworktype = []
+                    this.editData.workType = []
+                    console.log(this.totalworktype)
+                    this.totalworktype.forEach(k => {
+                        let include = false
+                        e.workTypeInfo.forEach(l => {
+                            if (l.workTypeId === k.WORKTYPEID) {
+                                include = true
+                            }
+                        })
+                        if (include) {
+                            this.editData.workType.push(k)
+                        } else {
+                            this.leftworktype.push(k)
+                        }
+                    })
+
                     // this.editData.limit=e.
                     // this.editData.limitType1=e.
                     // this.editData.limitNum=e.
                     // this.editData.limitRange=e.
                     // this.editData.limitType2=e.
 
-                    this.editData.typeN=e.typeN
-                    this.editData.appLevel=e.appLevel
-                    this.editData.necessaryFile= e.necessaryFile ==='1'? true:false
-                    this.editData.necessaryComment=e.necessaryComment ==='1'? true:false
-                    this.editData.commentD=e.commentD
-                    this.editData.timeRangeId=e.timeRangeId
-                    this.editData.imart=e.imart
+                    this.editData.typeN = e.typeN
+                    this.editData.appLevel = e.appLevel
+                    this.editData.necessaryFile = e.necessaryFile === '1' ? true : false
+                    this.editData.necessaryComment = e.necessaryComment === '1' ? true : false
+                    this.editData.commentD = e.commentD
+                    this.editData.timeRangeId = e.timeRangeId
+                    this.editData.imart = e.imart
+
+
+                    //查询checkFunc
+                    this.editData.checkFunc=[]
+                    try {
+                        const {data} = await this.http.get('sys/notificationSetting/checkFunc',{ntfType:e.ntfTypeId})
+                        console.log(data)
+
+                        data.forEach(n=>{
+                            let func={}
+                            func.checkname=n.tncCcomment
+                            func.checkFunc=n.tncCfuncname
+                            func.checkType=n.tncCfuncid
+                            func.checkLimit=n.tncClimit
+                            func.checkLimitType= n.tncClimitunit
+                            this.editData.checkFunc.push(func)
+                        })
+
+
+                    } catch (error) {
+                    } finally {
+
+                    }
+
                 }
-                if(update){
-                    this.typeUpdateFlag=true
+                //编辑
+                if (update) {
+                    this.typeUpdateFlag = true
                 }
-                if(!e && !update){
+                //新规时初始化
+                if (!e && !update) {
+                    this.leftSite = this.totalSite
                     this.editData = {
-                        begin:'',
-                        end:'',
-                        groupId:'',
-                        typeGroupId:'',
-                        site:[],
-                        timeTypeId:'',
-                        ntfTypeName:'',
-                        checkntfTypeName:'',
+                        begin: '',
+                        end: '',
+                        groupId: '',
+                        typeGroupId: '',
+                        site: [],
+                        timeTypeId: '',
+                        ntfTypeName: '',
+                        checkntfTypeName: '',
 
-                        transfer:false,
-                        timeZone:false,
-                        workTime:false,
-                        sickName:false,
-                        sickApply:false,
-                        period:false,
-                        addDate:false,
-                        label:false,
-                        restTime:false,
-                        name:false,
-                        relation:false,
-                        birthday:false,
-                        daysOfWeek:false,
-                        targetNumber:false,
+                        transfer: false,
+                        timeZone: false,
+                        workTime: false,
+                        sickName: false,
+                        sickApply: false,
+                        period: false,
+                        addDate: false,
+                        label: false,
+                        restTime: false,
+                        name: false,
+                        relation: false,
+                        birthday: false,
+                        daysOfWeek: false,
+                        targetNumber: false,
 
 
-                        workType:[],
-                        limit:'',
-                        limitType1:'day',
-                        limitNum:'',
-                        limitRange:'',
-                        limitType2:'',
+                        workType: [],
+                        limit: '',
+                        limitType1: 'day',
+                        limitNum: '',
+                        limitRange: '',
+                        limitType2: '',
 
-                        typeN:'',
-                        appLevel:'',
-                        necessaryFile:false,
-                        necessaryComment:false,
-                        commentD:'',
-                        timeRangeId:'',
-                        imart:'',
+                        typeN: '',
+                        appLevel: '',
+                        necessaryFile: false,
+                        necessaryComment: false,
+                        commentD: '',
+                        timeRangeId: '',
+                        imart: '',
 
                         //选中的check func
-                        checkFunc:[
-                            {
-                                checkname:'1',
-                                checkFunc:'1',
-                                checkType:'1',
-                                checkLimit:'1',
-                                checkLimitType:'1'
-                            },
-                            {
-                                checkname:'2',
-                                checkFunc:'2',
-                                checkType:'2',
-                                checkLimit:'2',
-                                checkLimitType:'2'
-                            },
-                        ],
+                        checkFunc: [],
                     }
                 }
                 this.editFlag = true
@@ -1352,34 +1399,19 @@
             }, 50),
             //拖动
             sortGroupTableByDrag(e) {
-                // let samesite = true
-                //
-                // fromUnits.forEach((e,i)=> {
-                //     if(i < fromUnits.length - 1 && e !== toUnits[i] ){
-                //         samesite = false
-                //     }
-                // })
-                // if (e[3] === 'center' || e[2].type === '0' || !samesite) return
-                // this.dGroupTreeData.lists = e[0]
-                // let sort = 0
-                // this.deepNodes(this.dGroupTreeData.lists, e[1].id, (nodes) => {
-                //     this.sortList = this.sortList.concat({id:nodes.id, sort: sort++})
-                // })
-
+                console.log(111)
+                console.log(e)
+                if (e[3] === 'center' || !e[2]) return
+                this.dGroupTreeData.lists = e[0]
+                this.groupSortList = this.groupSortList.concat({id:e[1].id})
             },
             sortTypeTableByDrag(e){
-
+                console.log(222)
+                console.log(e)
+                if (e[3] === 'center' || !e[2]) return
+                this.dTypeTreeData.lists = e[0]
+                this.typeSortList = this.typeSortList.concat({id:e[1].id})
             },
-            deepNodes(nodes, id, cb) {
-                const that = this
-                nodes.forEach((e, i) => {
-                    cb(e)
-                    if (e.children && e.children.length > 0) {
-                        that.deepNodes(e.children, id, cb)
-                    }
-                })
-            },
-
             typeGroupEditbtn(){
                 this.managerLoading=true
                 this.typeGroupEdit=!this.typeGroupEdit

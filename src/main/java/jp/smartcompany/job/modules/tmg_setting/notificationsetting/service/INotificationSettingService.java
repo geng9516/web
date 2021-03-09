@@ -9,4 +9,5 @@ public interface INotificationSettingService  extends IService<TmgNtfCheckDo> {
 
     List<TmgNtfCheckDo> getNewCheckList(String group,String typeGroup,String sysdate,String timeType);
 
+    List<TmgNtfCheckDo> getCheckFunc(String ntfType, String sysdate);
 }

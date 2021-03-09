@@ -16,4 +16,7 @@ public interface NotificationSettingMapper extends BaseMapper<TmgNtfCheckDo> {
                                         @Param("typeGroup") String typeGroup,
                                         @Param("sysdate") String sysdate,
                                         @Param("timeType") String timeType);
+
+    List<TmgNtfCheckDo> getCheckFunc(@Param("ntfType")String ntfType,
+                                     @Param("sysdate")String sysdate);
 }

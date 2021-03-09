@@ -42,8 +42,8 @@ public class TmgNtfCheckDo implements Serializable {
         @TableField("tnc_cgroup")
         private String tncCgroup;
 
-        @TableField("tnc_cgrouptype")
-        private String maCcustomerid;
+        @TableField("tnc_ctypegroup")
+        private String tncCtypegroup;
 
         @TableField("tnc_ctimetype")
         private String tncCtimetype;
@@ -56,8 +56,5 @@ public class TmgNtfCheckDo implements Serializable {
 
         @TableField("tnc_climitunit")
         private String tncClimitunit;
-
-//        @Version
-//        @TableField("versionno") Long versionno;
 
 }

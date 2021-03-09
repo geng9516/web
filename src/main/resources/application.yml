@@ -47,7 +47,7 @@ spring:
 mybatis-plus:
   mapper-locations: classpath:jp/smartcompany/job/modules/core/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/genericmanager/mapper/**/*.xml,
                     classpath:jp/smartcompany/job/modules/tmg_setting/mailmanager/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_inp/noticeboard/mapper/**/*.xml,
-                    classpath:jp/smartcompany/job/modules/personalinformation/conditionsearch/mapper/**/*.xml
+                    classpath:jp/smartcompany/job/modules/personalinformation/conditionsearch/mapper/**/*.xml,classpath:jp/smartcompany/job/modules/tmg_setting/notificationsetting/mapper/**/*.xml
   global-config:
     db-config:
       id-type: INPUT

@@ -313,7 +313,7 @@ public class NotificationSettingBean {
     }
 
 
-    //获取所有主区分
+    //获取所有 亲区分
     public List<GroupVo> getNTFGroup(String sysdate){
         if(StrUtil.hasBlank(sysdate)){
             sysdate = TmgUtil.getSysdate();
@@ -321,7 +321,7 @@ public class NotificationSettingBean {
         return iMastGenericDetailService.getNTFGroup(sysdate);
     }
 
-    //申請種類グルーピングコード 获取
+    //获取所有 申請種類グルーピングコード
     public List<TypeGroupVo> getNTFTypeGroup(String sysdate){
         if(StrUtil.hasBlank(sysdate)){
             sysdate = TmgUtil.getSysdate();
@@ -329,12 +329,21 @@ public class NotificationSettingBean {
         return iMastGenericDetailService.getNTFTypeGroup(sysdate);
     }
 
-//    todo
-//    public List<TmgNtfCheckDo> getCheckList(){
-//
-//    }
+    //    todo 获取checkFuncList
+    //选择typegroup , group,是否是时间/终日 后 决定check function
+    public List<TmgNtfCheckDo> getCheckFunc(String group,String typeGroup,String sysdate,String time){
+        List<TmgNtfCheckDo> checkFuncVos=iNotificationSettingService.getNewCheckList(group,typeGroup,sysdate,time);
+        return checkFuncVos;
+    }
 
-
+    //   获取checkFunc(既存)
+    public List<TmgNtfCheckDo> getCheckFunc(String ntfType,String sysdate){
+        if(StrUtil.hasBlank(sysdate)){
+            sysdate = TmgUtil.getSysdate();
+        }
+        List<TmgNtfCheckDo> checkFunc=iNotificationSettingService.getCheckFunc(ntfType,sysdate);
+        return checkFunc;
+    }
 
     //获取主页面所有内容
     public List<NtfDispVo> getNtfDisp(String ntfGroup,String sysdate){
@@ -401,11 +410,7 @@ public class NotificationSettingBean {
         return edit;
     }
 
-    //选择typegroup , group,是否是时间/终日 后 决定check function
-    public List<TmgNtfCheckDo> getCheckFunc(String group,String typeGroup,String sysdate,String time){
-        List<TmgNtfCheckDo> checkFuncVos=iNotificationSettingService.getNewCheckList(group,typeGroup,sysdate,time);
-        return checkFuncVos;
-    }
+
 
     //新规 修改申请名 check
     public int checkName(String ntfName, String sysdate,String type) {

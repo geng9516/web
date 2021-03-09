@@ -12,6 +12,7 @@ import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.MailConfigDT
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.TestSendMail;
 import jp.smartcompany.job.modules.tmg_setting.mailmanager.pojo.dto.UpdateMailDTO;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.NotificationSettingBean;
+import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.GroupVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.NtfDispVo;
 import jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.vo.TypeGroupVo;
@@ -57,6 +58,20 @@ public class NotificationSettingController {
     public Map<String,Object> getEditDisp(@RequestParam(value="sysdate",required = false) String sysdate) {
         return notificationSettingBean.getEditDisp(sysdate);
     }
+
+//    //新规 编辑画面 总checkList获取
+//    @GetMapping("checkFuncList")
+//    public List<TmgNtfCheckDo> getCheckFuncList(@RequestParam(value="sysdate",required = false) String sysdate) {
+//        return notificationSettingBean.getCheckFuncList(sysdate);
+//    }
+
+    //copy新规 编辑画面 既存check获取
+    @GetMapping("checkFunc")
+    public List<TmgNtfCheckDo> getCheckFunc(@RequestParam("ntfType") String ntfType
+            , @RequestParam(value="sysdate",required = false) String sysdate) {
+        return notificationSettingBean.getCheckFunc(ntfType,sysdate);
+    }
+
 
     //新规 修改申请名 checkNtfName
     @GetMapping("checkNtfName")

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="jp.smartcompany.job.modules.tmg_setting.notificationsetting.mapper.NotificationSettingMapper">
+
+    <select id="getCheckFunc"
+            resultType="jp.smartcompany.job.modules.tmg_setting.notificationsetting.pojo.entity.TmgNtfCheckDo">
+        select
+            TNC_CFUNCNAME,
+            TNC_CFUNCID,
+            TNC_CCOMMENT,
+            TNC_CGROUPINGCODE,
+            TNC_CLIMIT,
+            TNC_CLIMITUNIT
+        from TMG_NTF_CHECK tnc
+            where exists(
+                          select
+                                 1
+                          from
+                               MAST_GENERIC_DETAIL
+                          where MGD_CGENERICGROUPID='TMG_NTFCHECK'
+                            and MGD_CSPARECHAR2 = #{ntfType}
+                            and tnc.TNC_CFUNCNAME=MGD_CSPARECHAR1
+                            and #{sysdate} between  MGD_DSTART_CK and MGD_DEND
+                      )
+            and #{sysdate} between tnc.TNC_DSTARTDATE and tnc.TNC_DENDDATE
+    </select>
+</mapper>
