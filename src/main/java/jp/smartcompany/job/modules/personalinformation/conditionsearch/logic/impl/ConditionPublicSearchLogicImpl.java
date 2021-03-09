@@ -9,11 +9,13 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.IConditionPublicSearchLogic;
 import jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.dto.search.*;
@@ -42,6 +44,7 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
     private final PsSearchCompanyUtil searchCompanyUtil;
     private final IHistSearchSettingTargetService histSearchSettingTargetService;
     private final IConditionSearchService conditionSearchService;
+    private final ScCacheUtil cacheUtil;
 
     /**
      *  設定保存処理
@@ -288,6 +291,15 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         Map<String,Object> result = MapUtil.newHashMap();
 
         List<HistSearchSelectDO> histSelectList = histSearchSelectService.selectBySettingId(settingId);
+
+        histSelectList.forEach(selectItem -> {
+            MastDatadictionaryDO dataDictionary = cacheUtil.getDataDictionary(
+                    "01" + "_" + selectItem.getHssCcolumn());
+            String sTableId = dataDictionary.getMdCtablename();
+            String sColumnType = dataDictionary.getMdCtypeofcolumn();
+            selectItem.setTableName(sTableId);
+            selectItem.setColumnType(sColumnType);
+        });
 
         List<HistSearchWhereDO> histWhereList = histSearchWhereService.selectBySettingId(settingId);
         List<HistSearchDefinitionsDO> histQueryWhereList = histSearchDefinitionsService.selectBySettingId(settingId);
