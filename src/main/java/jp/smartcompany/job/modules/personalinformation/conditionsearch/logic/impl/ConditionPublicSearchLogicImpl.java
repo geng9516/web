@@ -205,6 +205,8 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
                         if (conditionWhereDTO.getUse()) {
                             whereDO.setHswCuse("1");
                         }
+                        whereDO.setHswCtable(conditionWhereDTO.getMswCtableid());
+                        whereDO.setHswCcolumn(conditionWhereDTO.getMswCcolumnid());
                         whereDO.setHswNsettingid(oHssNsettingid);
                         whereDO.setHswCmodifieruserid(loginUserId);
                         whereDO.setHswDmodifieddate(now);
@@ -229,6 +231,8 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
                 if (StrUtil.isBlank(orderDO.getHsoCcolumn())) {
                     break;
                 }
+                String sortMethod = orderDTO.getHsoCorder();
+                orderDO.setHsoCorder(sortMethod);
                 orderDO.setHsoNsettingid(oHssNsettingid);
                 orderDO.setHsoCmodifieruserid(loginUserId);
                 orderDO.setHsoDmodifieddate(now);

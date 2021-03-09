@@ -326,7 +326,7 @@ public class ConditionSearchSqlBuilder {
      * @param pbMasterCodeFlag コード表示フラグ
      * @return SELECT句
      */
-    protected String createSelectSql(ConditionSelectDTO pConditionSelectDto,
+    private String createSelectSql(ConditionSelectDTO pConditionSelectDto,
                                   String psCustomerId,
                                   String psCriterialDate,
                                   boolean pbMasterCodeFlag,
@@ -811,6 +811,7 @@ public class ConditionSearchSqlBuilder {
     private String getOrderSql(ConditionOrderDTO orderDto) {
         // 表示対象カラムIDの取得
         String columnId = orderDto.getHsoCcolumn();
+        String sortMethod = orderDto.getHsoCorder();
         if(StrUtil.isNotBlank(columnId)){
             // データディクショナリ情報の参照
             MastDatadictionaryDO dataDictionary = cacheUtil.getDataDictionary("01" + "_" + columnId);
@@ -823,6 +824,9 @@ public class ConditionSearchSqlBuilder {
                 fromMap.put(tableId.toUpperCase(), tableId.toUpperCase() + " " + getTableAlias(tableId));
             }
             String sOrder = orderDto.getHsoCcolumnId();
+            if (StrUtil.equals(sortMethod,"1")) {
+                sOrder += " DESC";
+            }
             return getTableAlias(tableId) + "." + sOrder;
         }else{
             return "";
