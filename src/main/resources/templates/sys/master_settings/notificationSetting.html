@@ -683,6 +683,9 @@
                 dTypeTreeData:{
                     columns: [],
                     lists: [],
+                    custom_field: {
+                        id: 'ntfTypeId'
+                    }
                 },
 
                 tableColumnsChecked:'basic',
@@ -1410,7 +1413,7 @@
                 console.log(e)
                 if (e[3] === 'center' || !e[2]) return
                 this.dTypeTreeData.lists = e[0]
-                this.typeSortList = this.typeSortList.concat({id:e[1].id})
+                this.typeSortList = this.typeSortList.concat({id:e[1].ntfTypeId})
             },
             typeGroupEditbtn(){
                 this.managerLoading=true
