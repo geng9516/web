@@ -758,17 +758,17 @@
             const { data } = await this.http.get('sys/conditionsearch/options/col', { table: name })
             // 新获取表示項目时，应该排除已经选择的项目
             const rightListIds = this.$refs.transfer.rightList.map(e => e.columnName)
+            const rightListIds2 = this.$refs.transfer2.rightList.map(e => e.columnName)
             if (type === 'init') {
-              this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
+              this.sortResultList = data.filter(e => !rightListIds2.includes(e.columnName))
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             } else if (type === 'sort') {
               this.$refs.transfer2.displayLeaftList = []
-              this.sortResultList = data.filter(e => !rightListIds.includes(e.columnName))
+              this.sortResultList = data.filter(e => !rightListIds2.includes(e.columnName))
             } else {
               this.$refs.transfer.displayLeaftList = []
               this.displayResultList = data.filter(e => !rightListIds.includes(e.columnName))
             }
-            this.$refs.transfer
           } catch (error) {
           } finally {
             // this.loading = false
@@ -889,7 +889,6 @@
               this.treeData[0].expand = true
               return
             }
-            // this.curdisplayPanel
           }
           const elemLocation = event.target.offsetParent.getBoundingClientRect()
           this.poptipStyle.display = 'block'
@@ -1314,7 +1313,6 @@
               }
             }
           } else {
-            console.log(this.queryData2)
             const getValue = e => {
               if(e.postFlag) {
                 return [{hswCvalue: e.postCode}]
@@ -1480,13 +1478,61 @@
           })
         },
         async getSettingDetail(e) {
-          if (e === 0) return
+          // 去除没有和被删除时
+          if (e === 0 || e === undefined) return
           const { data } = await this.http.get('sys/conditionsearch/setting/detail', { settingId: e })
           // マスタ参照項目を表示するときはコードも併せて表示する
-          this.searchData.showMastCode = data.hseCmastercodeflg === '1'
+          this.searchData.showMastCode = data.mainInfo.hseCmastercodeflg === '1'
           if(data.whereInfo.length > 0) {
             this.isByConditionMethod = false
           }
+          if(data.orderInfo.length > 0) {
+            this.$refs.transfer2.rightList = data.orderInfo.map(e=>{
+              return {
+                columnName: e.hsoCcolumn,
+                rightLabel: `${e.columnName}${e.hsoCorder === '1' ? '(降)' : '(昇)'}`,
+                columnFieldName: e.columnName
+              }
+            })
+          }
+
+          if(data.selectInfo.length > 0) {
+            this.$refs.transfer.rightList = data.selectInfo.map(e=>{
+              return {
+                columnName: e.hssCcolumn,
+                columnFieldName: e.columnName
+              }
+            })
+          }
+          // 获取表示項目时，应该排除已经选择的项目
+          this.getDisplayList()
+
+          // 履歴も全て検索す
+          this.searchData.standardDateType = +data.mainInfo.hseCusedate
+
+          // 条件式
+          this.queryData = data.queryWhereInfo.map(e=>{
+            let _operator
+            if(e.hsdCtypeofcolumn === 'VARCHAR2' || e.hsdCtypeofcolumn === 'NVARCHAR2') {
+              _operator = operatorList.find(t=> t.value === e.hsdCoperator).name
+            } else {
+              _operator = operatorList.find(t=> t.value === e.hsdCoperator).name
+            }
+            return {
+              andor: e.hsdCandor ? e.hsdCandor : '',
+              closedparenthsis: e.hsdCclosedparenthsis ? e.hsdCclosedparenthsis : '',
+              name: e.hsdCcolumnid,
+              description: e.hsdCcolumnname,
+              // displayvalue: e.hsdCdisplayvalue,
+              openedparenthsis: e.hsdCopenedparenthsis ? e.hsdCopenedparenthsis : '',
+              operator: _operator,
+              operatorValue: e.hsdCoperator,
+              tableid: e.hsdCtableid,
+              type: e.hsdCtypeofcolumn,
+              displayvalue: e.hsdCvalue,
+              theId: e.hsdId,
+            }
+          })
         }
       }
     })
