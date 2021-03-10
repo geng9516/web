@@ -2301,10 +2301,10 @@ public class TmgScheduleBean {
      * 編集権限を制御する
      *
      * @param psDBBean
-     * @param baseDate 2020/09/01  月初
+     * @para 2020/09/01  月初
      * @return
      */
-    public GlobalResponse isEditable(PsDBBean psDBBean, String baseDate) {
+    public GlobalResponse isEditable(PsDBBean psDBBean, String startDate,String endDate) {
         //01
         String _targetCustCode = psDBBean.getCustID();
         //01
@@ -2320,34 +2320,34 @@ public class TmgScheduleBean {
             logger.error("編集権限を制御する依頼のPsDBBeanが空です");
             return GlobalResponse.error("システムエーラ");
         }
-        if (null == baseDate || "".equals(baseDate)) {
+        if (null == startDate || "".equals(startDate)) {
             logger.warn("編集権限を制御する依頼のbaseDateが空です、もう初期化された");
-            baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+            startDate = DateUtil.format(new Date(), "yyyy/MM/dd");
         }
-        String dateStr = DateUtil.parse(baseDate).toString("yyyy年MM月");
+        String dateStr = DateUtil.parse(startDate).toString("yyyy年MM月");
 
-        String dstart = DateUtil.parse(baseDate, "yyyy/MM").toString("yyyy/MM") + "/01";
+        String dstart = DateUtil.parse(startDate, "yyyy/MM").toString("yyyy/MM") + "/01";
         String dend = DateUtil.endOfMonth(DateUtil.parse(dstart, "yyyy/MM/dd")).toString("yyyy/MM/dd");
 
         Boolean isEditable = null;
         if (isEditable == null) {
             // 「給与確定済」の場合、サイト関係なく常に編集不可
-            if (isFixedSalary(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, baseDate, dstart, dend)) {
+            if (isFixedSalary(startDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, startDate, dstart, dend)) {
                 isEditable = false;
                 return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに確認済みになりました。\n" + "予定変更することができません。");
             }
             // 「勤怠締め完了済」の場合、管理サイトでなければ編集不可
-            else if (isFixedMonthly(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, baseDate, dstart, dend) && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
+            else if (isFixedMonthly(startDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, startDate, dstart, dend) && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
                 isEditable = false;
                 return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業管理をご利用ください。");
             }
             // 入力サイトのみ、月次ステータスが「承認済」の場合、編集不可
-            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(siteId) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, baseDate, dstart, dend))) {
+            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(siteId) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus(startDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, startDate, dstart, dend))) {
                 isEditable = false;
                 return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業承認・就業管理をご利用ください。");
             }
             // 承認サイトのみ、予定作成の権限を持っているか判定を行う。権限が無ければ編集不可
-            else if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) && !existsAuthorityAtEmpSchedule(baseDate, _targetUserCode)) {
+            else if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) && !existsAuthorityAtEmpSchedule(startDate,endDate, _targetUserCode)) {
                 isEditable = false;
                 return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠に対して、予定編集するの権限がありません。\n" + "利用権限について、\n" + "権限設定画面で確認してください。");
             }
@@ -2463,13 +2463,12 @@ public class TmgScheduleBean {
     /**
      * 指定した職員についての勤怠承認権限フラグ
      *
-     * @param baseDate
      * @param targetUserCode
      * @return
      */
-    private boolean existsAuthorityAtEmpSchedule(String baseDate, String targetUserCode) {
+    private boolean existsAuthorityAtEmpSchedule(String startDate,String endDate, String targetUserCode) {
         try {
-            return referList.hasAuthorityAtEmployee(baseDate, targetUserCode, TmgUtil.Cs_AUTHORITY_SCHEDULE);
+            return referList.hasAuthorityAtEmployee(startDate,endDate, targetUserCode, TmgUtil.Cs_AUTHORITY_SCHEDULE);
         } catch (Exception e) {
             logger.error("指定した職員についての勤怠承認権限フラグ", e);
             return false;

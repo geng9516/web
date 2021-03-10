@@ -347,14 +347,16 @@ public class ScheduleController {
     /**
      * 編集権限を制御する
      *
-     * @param baseDate
+     * @param startDate
+     * @param endDate
      * @param psDBBean
      * @return
      */
     @GetMapping("isEditable")
     @ResponseBody
-    public GlobalResponse isEditable(@RequestParam("baseDate") String baseDate, @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        return tmgScheduleBean.isEditable(psDBBean, baseDate);
+    public GlobalResponse isEditable(@RequestParam("startDate") String startDate,
+                                     @RequestParam("endDate") String endDate, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgScheduleBean.isEditable(psDBBean, startDate,endDate);
     }
 
 }

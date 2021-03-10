@@ -913,7 +913,8 @@
                         psSite:this.query.psSite,
                         psApp:this.query.psApp,
                         //选择的年月
-                        baseDate: this.query.txtBaseDate
+                        startDate: this.query.txtBaseDate,
+                        endDate:this.query.txtEndDate
                     }
                     await  this.http.get(`sys/schedule/isEditable`,query)
                     //选择的年月能编辑
