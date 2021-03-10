@@ -793,6 +793,7 @@
         async getQueryWhereList() {
           const { data } = await this.http.get('sys/conditionsearch/options/where')
           this.queryData2 = data
+          this._queryData2 = Utils.deepClone(data)
         },
         getResultHistoryList: Debounce(async function () {
           const { data } = await this.http.get('sys/conditionsearch/coop/list')
@@ -1314,15 +1315,15 @@
             }
           } else {
             const getValue = e => {
-              if(e.postFlag) {
-                return [{hswCvalue: e.postCode}]
+              if (e.postFlag) {
+                return [{ hswCvalue: e.postCode }]
               }
 
-              if(e.inWorkFlag) {
-                return [{hswCvalue: e.atWorkCode}]
+              if (e.inWorkFlag) {
+                return [{ hswCvalue: e.atWorkCode }]
               }
 
-              if(e.selectValue && e.selectValue.length > 0) {
+              if (e.selectValue && e.selectValue.length > 0) {
                 return e.selectValue
               }
 
@@ -1483,11 +1484,8 @@
           const { data } = await this.http.get('sys/conditionsearch/setting/detail', { settingId: e })
           // マスタ参照項目を表示するときはコードも併せて表示する
           this.searchData.showMastCode = data.mainInfo.hseCmastercodeflg === '1'
-          if(data.whereInfo.length > 0) {
-            this.isByConditionMethod = false
-          }
-          if(data.orderInfo.length > 0) {
-            this.$refs.transfer2.rightList = data.orderInfo.map(e=>{
+          if (data.orderInfo.length > 0) {
+            this.$refs.transfer2.rightList = data.orderInfo.map(e => {
               return {
                 columnName: e.hsoCcolumn,
                 rightLabel: `${e.columnName}${e.hsoCorder === '1' ? '(降)' : '(昇)'}`,
@@ -1496,8 +1494,8 @@
             })
           }
 
-          if(data.selectInfo.length > 0) {
-            this.$refs.transfer.rightList = data.selectInfo.map(e=>{
+          if (data.selectInfo.length > 0) {
+            this.$refs.transfer.rightList = data.selectInfo.map(e => {
               return {
                 columnName: e.hssCcolumn,
                 columnFieldName: e.columnName
@@ -1511,12 +1509,12 @@
           this.searchData.standardDateType = +data.mainInfo.hseCusedate
 
           // 条件式
-          this.queryData = data.queryWhereInfo.map(e=>{
+          this.queryData = data.queryWhereInfo.map(e => {
             let _operator
-            if(e.hsdCtypeofcolumn === 'VARCHAR2' || e.hsdCtypeofcolumn === 'NVARCHAR2') {
-              _operator = operatorList.find(t=> t.value === e.hsdCoperator).name
+            if (e.hsdCtypeofcolumn === 'VARCHAR2' || e.hsdCtypeofcolumn === 'NVARCHAR2') {
+              _operator = operatorList.find(t => t.value === e.hsdCoperator).name
             } else {
-              _operator = operatorList.find(t=> t.value === e.hsdCoperator).name
+              _operator = operatorList.find(t => t.value === e.hsdCoperator).name
             }
             return {
               andor: e.hsdCandor ? e.hsdCandor : '',
@@ -1533,6 +1531,51 @@
               theId: e.hsdId,
             }
           })
+
+          if (data.whereInfo.length > 0) {
+            this.isByConditionMethod = false
+            // 条件
+            let _queryData2 = Utils.deepClone(this._queryData2)
+            data.whereInfo.forEach(e => {
+              _queryData2.forEach(t => {
+                if (t.columnName === e.hswCcolumn) {
+                  t.useFlag = true
+                  if (!t.selectValue) {
+                    // 如果是最下面两个则没有id, name并且只有一份
+                    if (e.hswCcolumn === 'HVHD_CIFKEYORADDITIONALROLE') {
+                      t.postFlag = true
+                      t.postCode = e.hswCvalue
+                    } else if (e.hswCcolumn === 'ME_CIFSTILLEMPLOYEDID') {
+                      t.inWorkFlag = true
+                      t.atWorkCode = e.hswCvalue
+                    }
+                    else {
+                      t.selectValue = [{
+                        hswId: e.hswId,
+                        hswCname: ` ${e.displayName}(${e.hswCvalue})`,
+                        hswCvalue: e.hswCvalue
+                      }]
+                    }
+                  } else {
+                    t.selectValue = t.selectValue.concat({
+                      hswId: e.hswId,
+                      hswCname: ` ${e.displayName}(${e.hswCvalue})`,
+                      hswCvalue: e.hswCvalue
+                    })
+                  }
+                }
+              })
+            })
+            this.queryData2 = _queryData2
+          } else {
+            this.isByConditionMethod = true
+            setTimeout(() => this.queryData2 = this._queryData2.map(e => {
+              return {
+                ...e,
+                useFlag: false
+              }
+            }), 800)
+          }
         }
       }
     })
