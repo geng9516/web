@@ -5,6 +5,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.handler.StringHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
@@ -27,6 +29,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +51,7 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
     private final IHistSearchSettingTargetService histSearchSettingTargetService;
     private final IConditionSearchService conditionSearchService;
     private final ScCacheUtil cacheUtil;
+    private final DataSource dataSource;
 
     /**
      *  設定保存処理
@@ -312,6 +318,37 @@ public class ConditionPublicSearchLogicImpl implements IConditionPublicSearchLog
         });
 
         List<HistSearchWhereDO> histWhereList = histSearchWhereService.selectBySettingId(settingId);
+        if (CollUtil.isNotEmpty(histWhereList)) {
+            try (Connection conn = dataSource.getConnection()) {
+                conn.setReadOnly(true);
+                for (HistSearchWhereDO whereItem : histWhereList) {
+                    String column = whereItem.getHswCcolumn();
+                    String value = whereItem.getHswCvalue();
+                        // 職員番号
+                    if (StrUtil.containsIgnoreCase(column, "employeeid_ck")) {
+                        String employName = SqlExecutor.query(conn, "SELECT DISTINCT ME_CKANJINAME FROM MAST_EMPLOYEES WHERE ME_CEMPLOYEEID_CK = ? ", new StringHandler(),value);
+                        whereItem.setDisplayName(employName);
+                        // 所属
+                    } else if (StrUtil.containsIgnoreCase(column, "sectionid_fk")) {
+                        String sectionName = SqlExecutor.query(conn,"SELECT DISTINCT MO_CSECTIONNAME FROM MAST_ORGANISATION WHERE MO_CSECTIONID_CK = ? ",new StringHandler(),value);
+                        whereItem.setDisplayName(sectionName);
+                        // 役職
+                    } else if (StrUtil.containsIgnoreCase(column, "postid_fk")) {
+                        String postName = SqlExecutor.query(conn,"SELECT DISTINCT MAP_CPOSTNICK FROM MAST_POST WHERE MAP_CPOSTID_CK = ? ",new StringHandler(),value);
+                        whereItem.setDisplayName(postName);
+                        // 本務兼務区分 本務:1 兼務:0
+                    } else if (StrUtil.containsIgnoreCase(column, "HVHD_CIFKEYORADDITIONALROLE")) {
+                        whereItem.setDisplayName(StrUtil.equals(value,"1")?"本務":"兼務");
+                        // 在職区分 在職:1 退職:0
+                    } else {
+                        whereItem.setDisplayName(StrUtil.equals(value,"1")?"在職":"退職");
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
         List<HistSearchDefinitionsDO> histQueryWhereList = histSearchDefinitionsService.selectBySettingId(settingId);
         List<HistSearchOrderDO> histOrderList = histSearchOrderService.selectBySettingId(settingId);
         histOrderList.forEach(orderItem -> {

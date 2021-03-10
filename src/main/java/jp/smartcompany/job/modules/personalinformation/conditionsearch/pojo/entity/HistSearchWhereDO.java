@@ -1,9 +1,6 @@
 package jp.smartcompany.job.modules.personalinformation.conditionsearch.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,5 +59,9 @@ public class HistSearchWhereDO implements Serializable {
      */
     @Version
     private Long versionno;
+
+
+    @TableField(exist = false)
+    private String displayName;
 
 }
