@@ -62,7 +62,7 @@
         <div class="btnbox">
           <span style="flex:1"></span>
           <i-button type="primary" icon="ios-search" @click="freeSearch('SCREEN')" :loading="loading">検索</i-button>
-          <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="editLoading">CSV ダウンロード
+          <i-button type="primary" ghost icon="md-download" @click="freeSearch('CSV')" :loading="csvLoading">CSV ダウンロード
           </i-button>
           <i-button type="primary" ghost icon="ios-undo" @click="refreshPage">クリア</i-button>
         </div>
@@ -92,9 +92,8 @@
               </i-button>
             </i-option>
           </i-select>
-          <i-button type="primary" ghost icon="md-refresh" @click="getQueryListParam"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareSetting"
-            :loading="editLoading">保存
+          <i-button type="primary" ghost icon="md-refresh" @click="getQueryListParam" :loading="shareQuerySaveLoading"></i-button>
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareSetting">保存
           </i-button>
         </div>
         <div style="flex: 1;"></div>
@@ -115,8 +114,8 @@
               </i-button>
             </i-option>
           </i-select>
-          <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList"></i-button>
-          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareResult" :loading="editLoading">
+          <i-button type="primary" ghost icon="md-refresh" @click="getResultHistoryList" :loading="shareResultSaveLoading"></i-button>
+          <i-button class="mr5" type="primary" ghost icon="md-cloud-upload" @click="shareResult">
             保存
           </i-button>
         </div>
@@ -278,6 +277,9 @@
           :disabled-hover="true" :data="tableData" :loading="loading" ref="table" no-data-text="">
         </i-table>
       </div>
+
+      <Alert class="primary-info" v-show="noData">データが見つかりませんでした</Alert>
+
     </div>
     <!--  条件式による定義 选择group和 役職 start-->
     <Drawer class="tc" placement="right" :width="curdisplayPanel === 'searchDept' ? '100' : '700'" title="該当条件選択"
@@ -560,7 +562,7 @@
         return {
           isShow: false,
           loading: false,
-          editLoading: false,
+          csvLoading: false,
           btnLoading: false,
           defaultOption: false,
           psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -716,7 +718,9 @@
           shareQuerySaveLoading: false,
           shareData: [],
           shareQueryData: { checkbox: [], isAll: '1' },
-          isSharingSetting: false
+          isSharingSetting: false,
+          noData: false,
+          shareResultSaveLoading: false,
         }
       },
       async created() {
@@ -796,8 +800,13 @@
           this._queryData2 = Utils.deepClone(data)
         },
         getResultHistoryList: Debounce(async function () {
-          const { data } = await this.http.get('sys/conditionsearch/coop/list')
-          this.resultHistoryList = data
+          try {
+            this.shareResultSaveLoading = true
+            const { data } = await this.http.get('sys/conditionsearch/coop/list')
+            this.resultHistoryList = data
+          } finally {
+            this.shareResultSaveLoading = false
+          }
         }),
         async getShareQueryParam() {
           const { data } = await this.http.get('sys/conditionsearch/show/addOrUpdate')
@@ -1283,13 +1292,17 @@
           }
           if (this.isByConditionMethod) {
             if (this.queryData.length > 0 && this.queryData[0].operatorValue) {
-              if (!this.queryData.some(e => {
+              if (!this.queryData.some((e, i) => {
                 if (!e.description) {
                   this.$Notice.warning({ title: '注意', desc: '項目内容が設定されていません、必ず設定してください', duration: 6.5 })
                   return true
                 }
                 if (!e.displayvalue && e.operatorValue !== 'ISNULL' && e.operatorValue !== 'ISNOTNULL') {
                   this.$Notice.warning({ title: '注意', desc: '比較がIS NULL,IS NOT NULLでない場合は必ず値を入力してください', duration: 6.5 })
+                  return true
+                }
+                if (!e.andor && i > 0) {
+                  this.$Notice.warning({ title: '注意', desc: '条件式に２行以上設定する場合はAND/ORを設定してください。', duration: 6.5 })
                   return true
                 }
               })) {
@@ -1311,7 +1324,7 @@
 
                   }
                 })
-              }
+              } else return
             }
           } else {
             const getValue = e => {
@@ -1341,8 +1354,13 @@
             })
           }
           if (mode === 'CSV') {
-            const { data } = await this.http.post(`sys/conditionsearch/csv/show?psSite=${this.psSite}`, query)
-            window.open(`${BASE_URL}${data[0].filePath}`, '_blank')
+            this.csvLoading = true
+            try {
+              const { data } = await this.http.post(`sys/conditionsearch/csv/show?psSite=${this.psSite}`, query)
+              window.open(`${BASE_URL}${data[0].filePath}`, '_blank')
+            }finally {
+              this.csvLoading = false
+            }
           }
 
           if (mode === 'SCREEN') {
@@ -1376,6 +1394,8 @@
                   return result
                 }
               })
+              if (data.title.length === 0)　this.noData = true
+              else this.noData = false
               this.$Message.success('検索が終了しました')
             } finally {
               this.loading = false
@@ -1529,6 +1549,7 @@
               type: e.hsdCtypeofcolumn,
               displayvalue: e.hsdCvalue,
               theId: e.hsdId,
+              id: e.hsdId
             }
           })
 
