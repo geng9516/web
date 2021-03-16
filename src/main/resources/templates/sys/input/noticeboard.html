@@ -278,7 +278,7 @@
                     opts: {
                         order: 'desc',
                         page: 1,
-                        limit: 50
+                        limit: 20
                     },
                     pageValue: {
                         amount: 0,
@@ -295,12 +295,12 @@
                     opts2: {
                         order: 'desc',
                         page: 1,
-                        limit: 50
+                        limit: 20
                     },
                     opts3: {
                         order: 'desc',
                         page: 1,
-                        limit: 50
+                        limit: 20
                     },
                     updateValue: {
                         hbtCheaddisp: '0'
@@ -723,17 +723,17 @@
                     this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
                 },
                 pageChangeNotice(e) {
-                    this.opts2.sPage = e
-                    this.pageValueNotice.curPage = e
+                    this.opts2.page = e
+                    this.pageValue.curPage = e
                     this.getTableData()
                 },
                 pageChangeDraft(e) {
-                    this.opts.Page = e
+                    this.opts.page = e
                     this.pageValueDraft.curPage = e
                     this.getDraftData()
                 },
                 pageChangeHistory(e) {
-                    this.opts3.Page = e
+                    this.opts3.page = e
                     this.pageValueHistory.curPage = e
                     this.getHistoryData()
                 }
