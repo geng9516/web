@@ -119,6 +119,13 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         int pageSize = settingDto.getPagerLinkDTO().getPagerCondition();
         int nStart = PageUtil.getStart(currentPage,pageSize);
         int nEnd = PageUtil.getEnd(currentPage,pageSize);
+
+        System.out.println("currentPage = " + currentPage);
+        System.out.println("nStart = " + nStart);
+        System.out.println("nEnd = " + nEnd);
+        System.out.println("分页开始和分页结束索引：");
+        System.out.println(nStart);
+        System.out.println(nEnd);
         // SQL部品作成処理
         String sSelect;
         if (StrUtil.equalsIgnoreCase(psMode,MODE_CSV)) {
@@ -127,9 +134,10 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         } else if (StrUtil.equalsIgnoreCase(MODE_SCREEN,psMode)) {
             // 検索モードは先頭にユーザIDを追加
             sSelect = "M1." + COLUMN_ME_CUSERID_AS + "," + sqlBO.getSelectStatement();
-            PagerLinkDTO pagerLinkDto = settingDto.getPagerLinkDTO();
-            nStart = pagerLinkDto.getPageFrom();
-            nEnd = pagerLinkDto.getPageTo();
+// fix：分页条数已设置好，无需像老代码一样使用前端传入的分页条数
+//            PagerLinkDTO pagerLinkDto = settingDto.getPagerLinkDTO();
+//            nStart = pagerLinkDto.getPageFrom();
+//            nEnd = pagerLinkDto.getPageTo();
         } else {
             // 連携データ出力モードは顧客コードとユーザIDのみ
             Long nDataId = settingDto.getHseNdataId();
@@ -176,7 +184,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         }
         // 末尾の条件
         if (StrUtil.equalsAnyIgnoreCase(psMode,MODE_SCREEN,MODE_CSV)) {
-            sbSql.append(" ) RN ) WHERE ROW_NUM >= ").append(nStart).append(" AND ROW_NUM <= ").append(nEnd);
+            sbSql.append(" ) RN ) WHERE ROW_NUM >= ").append(nStart).append(" AND ROW_NUM < ").append(nEnd);
         }
         return sbSql.toString();
     }
