@@ -272,6 +272,11 @@
         <Icon type="logo-buffer"></Icon>
         検索結果
       </div>
+      <div class="tr mb10" v-show="columns.length > 0">
+        <span style="position: relative;top: 1px;">{{ pageValue.amount }}件</span>
+        <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+              :page-size="pageValue.curSize" @on-change="pageChange" simple/>
+      </div>
       <div style="overflow-x: auto;" v-show="columns.length > 0">
         <i-table border class="no-padding" :row-class-name="() => 'select-col'" :columns="columns"
           :disabled-hover="true" :data="tableData" :loading="loading" ref="table" no-data-text="">
@@ -721,6 +726,12 @@
           isSharingSetting: false,
           noData: false,
           shareResultSaveLoading: false,
+          pageValue: {
+            amount: 0,
+            curPage: 1,
+            list: [20, 30, 50, 100],
+            curSize: 20
+          },
         }
       },
       async created() {
@@ -1255,7 +1266,7 @@
             }
           })
         },
-        freeSearch: Debounce(async function (mode) {
+        freeSearch: Debounce(async function (mode, refreshFlag) {
           if (this.$refs.transfer.rightList.length === 0) {
             return this.$Notice.warning({ title: '注意', desc: '表示項目を選択してください', duration: 6.5 })
           }
@@ -1268,7 +1279,7 @@
             showMastCode: this.searchData.showMastCode,
             mode: 'CSV',
             pagerLinkDTO: {
-              currentPage: 1,
+              currentPage: this.pageValue.curPage,
               pagerCondition: 50,
             },
             companyId: '01', // 法人code
@@ -1374,7 +1385,7 @@
               this.loading = true
               const { data } = await this.http.post(`sys/conditionsearch/search?psSite=${this.psSite}`, query)
               let _length = 0
-              this.columns = data.title.map((e, i) => {
+              this.columns = data.title.slice(1).map((e, i) => {
                 if (data.result.length !== 0 && data.result[0][i] !== null) _length = data.result[0][i].length > e.length ? data.result[0][i].length : e.length
                 else _length = e.length
                 return {
@@ -1387,16 +1398,17 @@
               if (data.result.length === 0) this.tableData = []
               else this.tableData = data.result.map((e, j) => {
                 if (e.length === 0) return
-                if (e.length === 1) return { value0: e[0] }
-                if (e.length > 1) {
+                if (e.length === 2) return { value0: e[1] }
+                if (e.length > 2) {
                   let result = {}
-                  e.forEach((t, i) => result[`value${i}`] = t)
+                  e.slice(1).forEach((t, i) => result[`value${i}`] = t)
                   return result
                 }
               })
+              this.pageValue.amount = data.pager.totalCount
               if (data.title.length === 0)　this.noData = true
               else this.noData = false
-              this.$Message.success('検索が終了しました')
+              if(!refreshFlag) this.$Message.success('検索が終了しました')
             } finally {
               this.loading = false
             }
@@ -1597,6 +1609,10 @@
               }
             }), 800)
           }
+        },
+        pageChange(e) {
+          this.pageValue.curPage = e
+          this.freeSearch('SCREEN', true)
         }
       }
     })
