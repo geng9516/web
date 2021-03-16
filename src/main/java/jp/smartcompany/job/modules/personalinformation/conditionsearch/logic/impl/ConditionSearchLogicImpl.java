@@ -120,12 +120,12 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         int nStart = PageUtil.getStart(currentPage,pageSize);
         int nEnd = PageUtil.getEnd(currentPage,pageSize);
 
-        System.out.println("currentPage = " + currentPage);
-        System.out.println("nStart = " + nStart);
-        System.out.println("nEnd = " + nEnd);
-        System.out.println("分页开始和分页结束索引：");
-        System.out.println(nStart);
-        System.out.println(nEnd);
+//        System.out.println("currentPage = " + currentPage);
+//        System.out.println("nStart = " + nStart);
+//        System.out.println("nEnd = " + nEnd);
+//        System.out.println("分页开始和分页结束索引：");
+//        System.out.println(nStart);
+//        System.out.println(nEnd);
         // SQL部品作成処理
         String sSelect;
         if (StrUtil.equalsIgnoreCase(psMode,MODE_CSV)) {
