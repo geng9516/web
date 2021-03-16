@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.personalinformation.conditionsearch.logic.im
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.PageUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ScCacheUtil;
@@ -72,18 +73,20 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         Map<String,Object> result = MapUtil.newHashMap();
         SqlBO sqlBO = sqlBuilder.createSql(settingDTO);
         String mode = settingDTO.getMode();
+        int nTotalCount;
         if (!StrUtil.equalsIgnoreCase(MODE_TABLE,mode)) {
             // 組み立てたSQLを実行して検索結果を取得する
-            int nTotalCount = getTotalCount(sqlBO);
+            nTotalCount = getTotalCount(sqlBO);
             // 開始行、終了行を取得する
 //            if (StrUtil.equalsIgnoreCase(MODE_SCREEN,mode)) {
                 result.put("pager",calcStartEnd(nTotalCount,settingDTO));
 //            }
         }
+
         // 検索条件Dtoを解析してSQLを組み立てる
         String sSearchSql = getSearchSql(settingDTO, sqlBO);
         // 組み立てたSQLを実行して検索結果を取得する
-        Vector <Vector<Object>> vSearchResult = executeSql(sSearchSql);
+        Vector<Vector<Object>> vSearchResult = executeSql(sSearchSql);
         // できあがった検索結果をListに変換する
         List<List<Object>> lstSearchResult = convertDBResult(vSearchResult,mode);
 
@@ -112,8 +115,10 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
     public String getSearchSql(ConditionSettingDTO settingDto, SqlBO sqlBO) {
         String psLoginUserId = SecurityUtil.getUserId();
         String psMode = settingDto.getMode();
-        int nStart = 0;
-        int nEnd = 0;
+        int currentPage = settingDto.getPagerLinkDTO().getCurrentPage() - 1;
+        int pageSize = settingDto.getPagerLinkDTO().getPagerCondition();
+        int nStart = PageUtil.getStart(currentPage,pageSize);
+        int nEnd = PageUtil.getEnd(currentPage,pageSize);
         // SQL部品作成処理
         String sSelect;
         if (StrUtil.equalsIgnoreCase(psMode,MODE_CSV)) {
@@ -142,7 +147,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
         // SQL組立処理
         StringBuilder sbSql = new StringBuilder();
         // 検索モードは１ページ分のデータを検索
-        if (StrUtil.equalsIgnoreCase(MODE_SCREEN,psMode)) {
+        if (StrUtil.equalsAnyIgnoreCase(psMode,MODE_SCREEN,MODE_CSV)) {
             sbSql.append("SELECT * FROM (SELECT ROWNUM AS ROW_NUM, RN.* FROM (SELECT ").append(sSelect).append(" FROM ");
         } else {
             sbSql.append("SELECT ").append(sSelect).append(" FROM ");
@@ -170,7 +175,7 @@ public class ConditionSearchLogicImpl implements IConditionSearchLogic {
             sbSql.append(" ORDER BY ").append(orderSql);
         }
         // 末尾の条件
-        if (StrUtil.equalsIgnoreCase(psMode,MODE_SCREEN)) {
+        if (StrUtil.equalsAnyIgnoreCase(psMode,MODE_SCREEN,MODE_CSV)) {
             sbSql.append(" ) RN ) WHERE ROW_NUM >= ").append(nStart).append(" AND ROW_NUM <= ").append(nEnd);
         }
         return sbSql.toString();

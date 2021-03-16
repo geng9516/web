@@ -13,7 +13,7 @@ public class PagerLinkDTO {
         this.totalCount = 0;
         this.totalPage = 1;
         this.pageFrom = 0;
-        this.pageTo = 0;
+        this.pageTo = 50;
         this.currentPage = 1;
         this.pageForPaging = 10;
         this.pagerCondition = 20;
