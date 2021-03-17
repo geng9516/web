@@ -313,14 +313,14 @@ style="display: none;">
             if (this.uploadFiles.length >= 5) {
                 this.$Notice.warning({
                     title: '注意',
-                    desc: '添付可能なファイル数が上限（5個）を超えました', duration: 6.5
+                    desc: MSG.UPLOAD_CHECK.LENGTH, duration: 6.5
                 })
                 checkPassed = false
             }
             if (files.size / (1024 * 1024) > 20) {
                 this.$Notice.warning({
                     title: '注意',
-                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました', duration: 6.5
+                    desc: MSG.UPLOAD_CHECK.SIZE_20M(files.name), duration: 6.5
                 })
                 checkPassed = false
             }
@@ -334,14 +334,14 @@ style="display: none;">
             let checkPassed = true
             if (files.size / (1024 * 1024) > 20) {
                 this.$Notice.warning({
-                    desc: 'ファイル「' + files.name + '」のサイズが上限（20MBytes）を超えました', duration: 6.5
+                    desc: MSG.UPLOAD_CHECK.SIZE(files.name), duration: 6.5
                 })
                 checkPassed = false
             }
             const imgType = ["jpg", "jpeg", "png", "gif"]
             if (!imgType.includes(files.type.split('image/')[1])) {
                 this.$Notice.warning({
-                    desc: 'ファイル「' + files.name + '」のタイプがjpg、jpeg、png、gifではありません', duration: 6.5
+                    desc: MSG.UPLOAD_CHECK.FORMAT(files.name), duration: 6.5
                 })
                 checkPassed = false
             }

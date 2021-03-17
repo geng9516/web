@@ -5,7 +5,9 @@
         th:replace="layout/header::common_header(title='休暇・休業申請',cssPaths='/pages/content.min.css,' + '/pages/restApply.min.css')">
 </head>
 
-<body>
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
@@ -365,6 +367,7 @@
     <div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 999999;" v-if="loading"></div>
 </main>
 <div th:replace="layout/head::header"></div>
+<script th:src="${baseUrl + '/static/lang/input/vapply.js?t='+ now}"></script>
 <script type="text/babel" th:inline="javascript">
     const REST_APPLY = new Vue({
         el: '.restApply-warp',
@@ -538,7 +541,7 @@
                     const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                     this.applyHistoryListData = data.list
                     this.applyHistoryListAmount = data.totalCount
-                    if (!isInit) this.$Message.success('再表示完了')
+                    if (!isInit) this.$Message.success(MSG.SUCCESS.REFREASH)
                 } catch (error) {
                     return
                 } finally {
@@ -586,7 +589,7 @@
                     inDrawer: true,
                     title: '注意',
                     width: 480,
-                    content: 'この申請を取り下げます。よろしいですか？',
+                    content: MSG.ACTION.APPLY_CANCEL,
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
@@ -599,7 +602,7 @@
                                 psSite: this.opts.psSite
                             })
                             await this.getRestInfo()
-                            this.$Message.success('取り消し完了')
+                            this.$Message.success(MSG.SUCCESS.APPLY_CANCEL)
                         } catch (error) {
                             return
                         } finally {
@@ -619,10 +622,10 @@
                 // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
                 this.errorInfo = false
                 this.restApply.action = 'ACT_MakeApply_CAppl'
-                this.contentMsg = 'この内容で申請します。よろしいですか？'
+                this.contentMsg = MSG.ACTION.APPLY
                 if(isRestApply) {
                     this.restApply.action = 'ACT_ReMakeApply_CAppl'
-                    this.contentMsg = 'この内容で再申請します。よろしいですか？'
+                    this.contentMsg = MSG.ACTION.APPLY_AGAIN
                 }
                 this.restApply.typeNew = this.selectedRestInfo.ntfId
                 // 代理申请用，个人申请此处为空
@@ -645,30 +648,30 @@
                 }
                 if(!this.restApply.typeNew) {
                     this.errorInfo = true
-                    this.errorMsg = '申請区分を選んでください。'
+                    this.errorMsg = MSG.REQ_CHECK.APPLY_TYPE
                     return
                 }
 
                 if(!this.restApply.begin || !this.restApply.end) {
                     this.errorInfo = true
-                    this.errorMsg = '期間を選んでください。'
+                    this.errorMsg = MSG.REQ_CHECK.TIME_TRANGE
                     return
                 }
 
                 if (this.restApply.begin || this.restApply.end) {
                     if (this.restApply.begin && !this.restApply.end) {
                         this.errorInfo = true
-                        this.errorMsg = '開始期間を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.START_RANGE
                         return
                     }
                     if (!this.restApply.begin && this.restApply.end) {
                         this.errorInfo = true
-                        this.errorMsg = '終了期間を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.END_RANGE
                         return
                     }
                     if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
                         this.errorInfo = true
-                        this.errorMsg = '対象期間(終了日)は(開始日)より後の日付を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.START_END_RANGE
                         return
                     }
                 }
@@ -676,75 +679,75 @@
                 if(this.selectedRestInfo.timeZone) {
                     if(!this.restApply.timezoneOpen) {
                         this.errorInfo = true
-                        this.errorMsg = '開始時間を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.START
                         return
                     }
                     if(!this.restApply.timezoneClose) {
                         this.errorInfo = true
-                        this.errorMsg = '終了時間を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.END
                         return
                     }
                     if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
                         this.errorInfo = true
-                        this.errorMsg = '対象時間(終了時間)は(開始時間)より後の時刻を入力してください。'
+                        this.errorMsg = MSG.TIME_CHECK.START_END
                         return
                     }
                 }
                 if (!this.hasPassedTimeCheck) {
                     this.errorInfo = true
-                    this.errorMsg = '時刻をHH:MM形式で入力してください。'
+                    this.errorMsg = MSG.TIME_CHECK.TIME
                     return
                 }
                 if(this.selectedRestInfo.workTime) {
                     if (!this.restApply.timeOpen) {
                         this.errorInfo = true
-                        this.errorMsg = '始業後時刻を入力してください。'
+                        this.errorMsg = MSG.REQ_CHECK.TIME_OPEN
                         return
                     }
                     if (!this.restApply.timeClose) {
                         this.errorInfo = true
-                        this.errorMsg = '終業前時刻を入力してください。'
+                        this.errorMsg = MSG.REQ_CHECK.TIME_CLOSE
                         return
                     }
                 }
                 if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
                     this.errorInfo = true
-                    this.errorMsg = '起算日を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.TIME_PERIOD
                     return
                 }
                 if(this.selectedRestInfo.name && !this.restApply.txtName ) {
                     this.errorInfo = true
-                    this.errorMsg = '氏名を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.NAME
                     return
                 }
                 if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
                     this.errorInfo = true
-                    this.errorMsg = '続柄を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.RELATION
                     return
                 }
                 if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
                     this.errorInfo = true
-                    this.errorMsg = '対象の人数を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.TARGET_NUMBER
                     return
                 }
                 if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
                     this.errorInfo = true
-                    this.errorMsg = '生年月日を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.BIRTHDAY
                     return
                 }
                 if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
                     this.errorInfo = true
-                    this.errorMsg = '傷病名を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.SICK_NAME
                     return
                 }
                 if(this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
                     this.errorInfo = true
-                    this.errorMsg = '申請事由を入力してください。'
+                    this.errorMsg = MSG.REQ_CHECK.CONFIRM_COMMENT
                     return
                 }
                 if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
                     this.errorInfo = true
-                    this.errorMsg = '添付ファイルを追加してください。'
+                    this.errorMsg = MSG.REQ_CHECK.FILE
                     return
                 }
                 if(this.restApply.noreserved == 0
@@ -756,7 +759,7 @@
                     && this.restApply.sat == '0'
                     && this.restApply.sun == '0') {
                     this.errorInfo = true
-                    this.errorMsg = '曜日を指定してください。'
+                    this.errorMsg = MSG.REQ_CHECK.WEEK
                     return
                 }
 
@@ -769,7 +772,7 @@
                     data.forEach(e => {
                         msg = e.daysOfWeek + '\n' + msg
                     })
-                    this.contentMsg =  '下記の日付に超過勤務命令があります。\n' + this.contentMsg  + '\n' + msg
+                    this.contentMsg =  MSG.REQ_CHECK.OVERWORK_FC(this.contentMsg, msg)
                 }
 
                 this.$Modal.confirm({
@@ -805,7 +808,7 @@
                             this.isReApplyIng = false
                             await this.getApplyHistory(true)
                             await this.getRestInfo()
-                            this.$Message.success('申請完了')
+                            this.$Message.success(MSG.SUCCESS.APPLY)
                             this.uploadFiles = []
                         } catch (error) {
                             if(error.config || error.response && error.response.status === 500) return
@@ -976,13 +979,13 @@
                 let checkPassed = true
                 if (this.uploadFiles.length >= 5) {
                     this.$Notice.warning({
-                        desc: '添付可能なファイル数が上限（5個）を超えました。'
+                        desc: MSG.UPLOAD_CHECK.LENGTH,
                     })
                     checkPassed = false
                 }
                 if (files.size / 1024 > 500) {
                     this.$Notice.warning({
-                        desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+                        desc: MSG.UPLOAD_CHECK.SIZE_500K(files.name)
                     })
                     checkPassed = false
                 }
@@ -1021,7 +1024,7 @@
                     }
                     const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                     this.applyHistoryListData = this.applyHistoryListData.concat(data.list)
-                    this.$Message.success('再表示完了')
+                    this.$Message.success(MSG.SUCCESS.REFREASH)
                 } catch (error) {
                     return
                 } finally {

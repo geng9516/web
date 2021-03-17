@@ -6,7 +6,9 @@
         th:replace="layout/header::common_header(title='在宅勤務登録',cssPaths='/pages/content.min.css')">
 </head>
 
-<body>
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()},
+      now = ${new java.util.Date().getTime()
+    }">
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
@@ -161,6 +163,7 @@
     </div>
 </main>
 <div th:replace="layout/head::header"></div>
+<script th:src="${baseUrl + '/static/lang/input/inphomework.js?t='+ now}"></script>
 <script type="text/babel" th:inline="javascript">
     const WORK_YEAR_SCHEDULE = new Vue({
         el: '.oconfirm-warp',
@@ -388,23 +391,23 @@
                     let msday=this.HomeWorkVOListEditBack[i].hwApplicationdate + " : ";
                     if (this.HomeWorkVOListEditBack[i].hwStatus === '1') {
                         if( this.HomeWorkVOListEditBack[i].hwHomework === null){
-                            this.$Notice.error({desc: msday + "在宅勤務を入力してください。"})
+                            this.$Notice.error({desc: MSG.TIME_CHECK.ATHOME_FC(msday)})
                             return checkFlg=true;
                         }
                     }
                     if(this.HomeWorkVOListEditBack[i].hwHomework === '4' ){
                         if (this.HomeWorkVOListEditBack[i].hwStart ==null ||  !this.time_check(this.HomeWorkVOListEditBack[i].hwStart)) {
-                            this.$Notice.error({desc: msday + "開始時間は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                            this.$Notice.error({desc: MSG.TIME_CHECK.START_FC(msday)})
                             return checkFlg=true;
                         }
                         if (this.HomeWorkVOListEditBack[i].hwEnd ==null ||  !this.time_check(this.HomeWorkVOListEditBack[i].hwEnd)) {
-                            this.$Notice.error({desc: msday + "終了時間は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
+                            this.$Notice.error({desc: MSG.TIME_CHECK.END_FC(msday)})
                             return checkFlg=true;
                         }
                         if(this.HomeWorkVOListEditBack[i].hwStart!='' && this.HomeWorkVOListEditBack[i].hwEnd!=''){
                             let count=Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwEnd)-Utils.timeToMinute(this.HomeWorkVOListEditBack[i].hwStart)
                             if(0>=count){
-                                this.$Notice.error({desc: msday + "開始時間は終了時間の前になるようにしてください。"})
+                                this.$Notice.error({desc: MSG.TIME_CHECK.START_END_FC(msday)})
                                 return checkFlg=true;
                             }
                         }
@@ -415,7 +418,7 @@
                 }
                 this.$Modal.confirm({
                     title: '注意',
-                    content: 'この編集内容で登録します。よろしいですか？',
+                    content: MSG.ACTION.CONFIRM,
                     okText: 'OK',
                     width: 480,
                     cancelText: 'キャンセル',

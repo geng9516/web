@@ -238,6 +238,7 @@
     </main>
     <script th:src="${baseUrl + '/static/component/drawer-footer.js?t='+ now}"></script>
     <div th:replace="layout/head::header"></div>
+    <script th:src="${baseUrl + '/static/lang/input/noticeboard.js?t='+ now}"></script>
     <script th:src="${baseUrl + '/static/libs/quill.min.js?t='+ now}"></script>
     <script th:src="${baseUrl + '/static/libs/image-resize.min.js?t='+ now}"></script>
     <script th:src="${baseUrl + '/static/js/emoji.js?t='+ now}"></script>
@@ -552,7 +553,7 @@
                     this.$Modal.confirm({
                         title: '注意',
                         width: 480,
-                        content: 'この下書を削除します。よろしいですか？',
+                        content: MSG.ACTION.DELECT_DRAFT,
                         okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
@@ -561,7 +562,7 @@
                             this.getDraftData()
                             this.getTableData()
                             this.getHistory()
-                            this.$Message.success('削除しました')
+                            this.$Message.success(MSG.SUCCESS.DELECT)
                         }
                     })
                 },
@@ -569,7 +570,7 @@
                     this.$Modal.confirm({
                         title: '注意',
                         width: 480,
-                        content: 'この通知を削除します。よろしいですか？',
+                        content: MSG.ACTION.DELECT_NOTICE,
                         okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
@@ -577,7 +578,7 @@
                             this.resetDraft()
                             this.getTableData()
                             this.getHistory()
-                            this.$Message.success('削除しました')
+                            this.$Message.success(MSG.SUCCESS.DELECT)
                         }
                     })
                 },
@@ -609,22 +610,22 @@
                 },
                 uploadNotice(hbtCfix) {
                     if (this.searchRange.length === 0) {
-                        return this.$Notice.warning({ title: '注意', desc: '掲示範囲を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: MSG.REQ_CHECK.NOTICE_RANGE, duration: 6.5 })
 
                     }
                     if (!this.updateValue.hbtCtitle) {
-                        return this.$Notice.warning({ title: '注意', desc: '件名を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: MSG.REQ_CHECK.NOTICE_NAME, duration: 6.5 })
 
                     }
                     if (!this.updateValue.hbtDdateofannouncement) {
-                        return this.$Notice.warning({ title: '注意', desc: '掲示開始日を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: MSG.TIME_CHECK.START_NOTICE, duration: 6.5 })
 
                     }
                     if (!this.updateValue.hbtDdateofexpire) {
                         this.updateValue.hbtDdateofexpire = '2222/12/31'
                     }
                     if (this.updateValue.hbtDdateofexpire && new Date(this.updateValue.hbtDdateofannouncement) > new Date(this.updateValue.hbtDdateofexpire)) {
-                        return this.$Notice.warning({ title: '注意', desc: '掲示期間(終了日)は(開始日)より後の日付を入力してください', duration: 6.5 })
+                        return this.$Notice.warning({ title: '注意', desc: MSG.TIME_CHECK.START_END_NOTICE, duration: 6.5 })
                     }
 
                     if (!this.updateValue.hbtDdateofexpire) delete this.updateValue.hbtDdateofexpire
@@ -667,7 +668,7 @@
                         inDrawer: true,
                         title: '注意',
                         width: 480,
-                        content: `${ hbtCfix ? '一時保存' : '投稿'}します。よろしいですか？`,
+                        content: MSG.ACTION.CONFIRM_NOTICE_FC(hbtCfix),
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
@@ -702,7 +703,7 @@
                                 } else {
                                     await this.http.uploadFiles('sys/noticeboard/draft/addOrUpdate', opts)
                                 }
-                                this.$Message.success(hbtCfix ? '一時保存しました' : '投稿しました')
+                                this.$Message.success(MSG.SUCCESS.NOTICE_FC(hbtCfix))
                                 this.drawerShow = false
                                 this.resetDraft()
                                 this.getDraftData()
