@@ -38,7 +38,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/wsum";
+        return "sys/manage/DeptStatList";
     }
 
     /**
@@ -61,7 +61,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/require5days";
+        return "sys/manage/TmgAcquired5DaysHoliday";
     }
 
     /**
@@ -83,7 +83,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/attendancebook";
+        return "sys/manage/AttendanceBook";
     }
 
     /**
@@ -105,7 +105,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/tmgschedule";
+        return "sys/manage/TmgSchedule";
     }
 
     /**
@@ -125,7 +125,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/permstatlist";
+        return "sys/manage/PermStatList";
     }
 
     /**
@@ -134,7 +134,7 @@ public class TmgPermController {
     @GetMapping("TmgNotification")
     public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
-        return "sys/manage/tmgnotification";
+        return "sys/manage/TmgNotification";
     }
 
 
@@ -144,7 +144,7 @@ public class TmgPermController {
     @GetMapping("TmgResults")
     public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
-        return "sys/manage/addwork";
+        return "sys/manage/TmgResults";
     }
 
 
@@ -155,7 +155,7 @@ public class TmgPermController {
     @GetMapping("EvaluaterSetting")
     public String toEvaluaterSetting(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
-        return "sys/manage/perms";
+        return "sys/manage/EvaluaterSetting";
     }
 
     /**
@@ -177,7 +177,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/patternsetting";
+        return "sys/manage/PatternSetting";
     }
 
 
@@ -201,7 +201,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/overtimeinstruct";
+        return "sys/manage/OvertimeInstruct";
     }
 
     /**
@@ -223,7 +223,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/manhomework";
+        return "sys/manage/TmgHomeWork";
     }
 
     /**
@@ -243,7 +243,7 @@ public class TmgPermController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-        return "sys/manage/tmgliquidationperiod";
+        return "sys/manage/TmgLiquidationPeriod";
     }
 
 }
