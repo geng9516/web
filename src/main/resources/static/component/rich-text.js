@@ -324,6 +324,23 @@ style="display: none;">
                 })
                 checkPassed = false
             }
+
+            const extensionIndex = files.name.lastIndexOf('.')
+            let extensionCheck = false
+            if(extensionIndex > -1) {
+                if(files.name.slice(0, extensionIndex).length > 20){
+                    extensionCheck = true
+                }
+            } else if(files.name.length > 20) {
+                extensionCheck = true
+            }
+            if (extensionCheck) {
+                this.$Notice.warning({
+                    title: '注意',
+                    desc: MSG.UPLOAD_CHECK.NAME_LENGTH(files.name), duration: 6.5
+                })
+                checkPassed = false
+            }
             if (checkPassed) {
                 this.$emit('add-files', files)
             }

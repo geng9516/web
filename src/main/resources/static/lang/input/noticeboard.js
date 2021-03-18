@@ -15,6 +15,7 @@ const MSG = {
     UPLOAD_CHECK:{
         LENGTH: '添付可能なファイル数が上限（5個）を超えました',
         SIZE_20M: msg => `ファイル「${msg}」のサイズが上限（20MBytes）を超えました`,
+        NAME_LENGTH: msg => `ファイル「${msg}」の名称20文字以内になっております`,
         FORMAT: msg => `ファイル「${msg}」のタイプがjpg、jpeg、png、gifではありません`,
     },
     SUCCESS:{
