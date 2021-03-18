@@ -1,7 +1,6 @@
 package jp.smartcompany.controller.tmg_inp;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +24,7 @@ public class TmgInpController {
     @GetMapping("TmgTimePunch")
     public String toTmgTimePunch(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
       modelMap.addAttribute("moduleIndex",moduleIndex);
-      return "sys/input/sign";
+      return "sys/input/tmgtimepunch";
     }
 
     /**
@@ -39,11 +38,11 @@ public class TmgInpController {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isIPhoneOrIPod || isAndroid) {
             if (isAndroidPad) {
-                return "sys/input/addwork";
+                return "sys/input/tmgresults";
             }
             return "mobile/index";
         }
-        return "sys/input/addwork";
+        return "sys/input/tmgresults";
     }
 
     /**
@@ -57,11 +56,11 @@ public class TmgInpController {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isIPhoneOrIPod || isAndroid) {
             if (isAndroidPad) {
-                return "sys/input/vapply";
+                return "sys/input/tmgnotification";
             }
             return "mobile/restapply";
         }
-        return "sys/input/vapply";
+        return "sys/input/tmgnotification";
     }
 
     /**
@@ -71,7 +70,7 @@ public class TmgInpController {
     public String toAttendanceBook(
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
-        return "sys/input/wschedule";
+        return "sys/input/attendancebook";
     }
 
     /**
@@ -85,11 +84,11 @@ public class TmgInpController {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isIPhoneOrIPod || isAndroid) {
             if (isAndroidPad) {
-                return "sys/input/oconfirm";
+                return "sys/input/tmgschedulecheck";
             }
             return "mobile/scheduleconfirm";
         }
-        return "sys/input/oconfirm";
+        return "sys/input/tmgschedulecheck";
     }
     /**
      * 跳转到在宅勤务
@@ -102,11 +101,11 @@ public class TmgInpController {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isIPhoneOrIPod || isAndroid) {
             if (isAndroidPad) {
-                return "sys/input/inphomework";
+                return "sys/input/tmghomework";
             }
             return "mobile/mobhomework";
         }
-        return "sys/input/inphomework";
+        return "sys/input/tmghomework";
     }
 
     /**
